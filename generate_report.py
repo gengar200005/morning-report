@@ -28,7 +28,7 @@ def read_github_file(filename):
 
 
 # ── Claude API 호출 ───────────────────────────────────
-def call_claude(us_data, kr_data):
+def call_claude(us_data, kr_data, loc_data=""):
     prompt = f"""당신은 서울 이촌동 거주 소화기내과 봉직의의 전담 모닝리포트 작성 AI입니다.
 오늘({TODAY_STR}) 데이터를 분석해 노션 모바일 앱에서 한눈에 보기 좋은 모닝리포트를 작성하세요.
 
@@ -41,6 +41,9 @@ def call_claude(us_data, kr_data):
 
 === 국장 데이터 ===
 {kr_data}
+
+=== 개원입지 분석 데이터 ===
+{loc_data}
 
 아래 형식을 정확히 따라 작성하세요. 출근길 5분 내 독해 가능해야 합니다.
 
@@ -107,7 +110,6 @@ def call_claude(us_data, kr_data):
 | 아마존 | 실제값 | |
 | 메타 | 실제값 | |
 | 테슬라 | 실제값 | |
-| 엔비디아(중복제거) | | |
 
 > 💬 **코멘트:** 미장 핵심 흐름 1~2줄
 
@@ -166,6 +168,47 @@ A/B등급 종목이 있으면 종목별로 아래 형식 반복:
 - 📌 **종목:** 주시할 종목·충족 조건 한 줄
 - 🚦 **액션:** 매수 진입 / 관망 / 보류 중 하나를 명확히
 
+---
+
+## 🏥 ⑦ 개원입지 분석
+
+개원입지 분석 데이터가 없으면 이 섹션 전체를 생략하세요.
+데이터가 있으면 아래 형식으로 작성하세요.
+
+### 오늘의 추천 생활권: [생활권명] ([지역])
+**Claude 추천 순위: X위 / 전체 Y위**
+
+| 인구 지표 | 수치 |
+|-----------|------|
+| 총인구 | X,XXX명 |
+| 0~14세 (소아) | X,XXX명 (X.X%) |
+| 15~34세 (청년) | X,XXX명 (X.X%) |
+| 35~64세 (중장년) | X,XXX명 (X.X%) |
+| 65세이상 (노인) | X,XXX명 (X.X%) |
+| 고령화율 | X.X% |
+| 중장년 비율 | X.X% |
+
+| 경쟁 지표 | 수치 |
+|-----------|------|
+| 내과계 클리닉 | X개 |
+| 인구당 내과 수 | X,XXX명/개 |
+| 전체 의원 | X개 |
+| 클리닉 밀도 | X.XX개/천명 |
+| 전문의 수 | X명 |
+
+| 세부 점수 | 점수 |
+|-----------|------|
+| 종합점수 | X.X / 100 |
+| 경쟁점수 | X / 100 |
+| 고령화점수 | X / 100 |
+| 인구점수 | X / 100 |
+| 중장년점수 | X / 100 |
+
+> 📊 **종합평가:** 이 생활권의 개원 매력도 핵심 특징 1~2줄 (인구 규모, 경쟁 강도, 고령화 수준 중심)
+> 🎯 **전략:** 소화기내과 봉직의 관점에서 이 지역 개원 시 핵심 전략 1줄
+> ⚠️ **리스크:** 주의해야 할 리스크 1줄 (경쟁 과포화, 인구 감소 추세 등)
+> 📅 **내일 예정:** [내일 생활권명] ([지역]) — 종합 X.X점
+
 ⚠️ **절대 규칙:** ④ 스크리닝 결과에 등장한 종목만 언급할 것. 결과에 없는 종목은 일반 지식·추론으로도 절대 언급 금지."""
 
     headers = {
@@ -216,12 +259,11 @@ def is_separator_line(line):
 
 
 def parse_cells(line):
-    s = line.strip()[1:-1]  # 양쪽 | 제거
+    s = line.strip()[1:-1]
     return [c.strip() for c in s.split("|")]
 
 
 def build_table_block(rows_raw):
-    """markdown table rows → Notion table block"""
     data_rows = []
     has_header = False
     for row in rows_raw:
@@ -260,48 +302,41 @@ def to_notion_blocks(text):
         line = lines[i]
         s = line.strip()
 
-        # 빈 줄
         if not s:
             blocks.append({"object": "block", "type": "paragraph",
                            "paragraph": {"rich_text": []}})
             i += 1
             continue
 
-        # 구분선
         if re.match(r'^[-=]{3,}$', s):
             blocks.append({"object": "block", "type": "divider", "divider": {}})
             i += 1
             continue
 
-        # heading_2 (##)
         if s.startswith("## "):
             blocks.append({"object": "block", "type": "heading_2",
                            "heading_2": {"rich_text": parse_rich_text(s[3:])}})
             i += 1
             continue
 
-        # heading_3 (###)
         if s.startswith("### "):
             blocks.append({"object": "block", "type": "heading_3",
                            "heading_3": {"rich_text": parse_rich_text(s[4:])}})
             i += 1
             continue
 
-        # bullet list
         if s.startswith("- "):
             blocks.append({"object": "block", "type": "bulleted_list_item",
                            "bulleted_list_item": {"rich_text": parse_rich_text(s[2:])}})
             i += 1
             continue
 
-        # quote / callout
         if s.startswith("> "):
             blocks.append({"object": "block", "type": "quote",
                            "quote": {"rich_text": parse_rich_text(s[2:])}})
             i += 1
             continue
 
-        # 테이블 (연속 | 라인 수집)
         if is_table_line(line):
             table_raw = []
             while i < len(lines) and (is_table_line(lines[i]) or is_separator_line(lines[i])):
@@ -312,7 +347,6 @@ def to_notion_blocks(text):
                 blocks.append(block)
             continue
 
-        # 일반 단락
         blocks.append({"object": "block", "type": "paragraph",
                        "paragraph": {"rich_text": parse_rich_text(s)}})
         i += 1
@@ -330,7 +364,6 @@ def save_to_notion(report_text):
     all_blocks = to_notion_blocks(report_text)
     first_batch, remaining = all_blocks[:100], all_blocks[100:]
 
-    # 페이지 생성
     r = requests.post(
         "https://api.notion.com/v1/pages",
         headers=notion_headers,
@@ -349,7 +382,6 @@ def save_to_notion(report_text):
     page_id  = r.json()["id"]
     page_url = r.json().get("url", "")
 
-    # 나머지 블록 추가 (100개씩)
     while remaining:
         batch, remaining = remaining[:100], remaining[100:]
         r2 = requests.patch(
@@ -369,10 +401,16 @@ if __name__ == "__main__":
     print("📥 데이터 파일 읽는 중...")
     us_data = read_github_file("us_data.txt")
     kr_data = read_github_file("kr_data.txt")
+    try:
+        loc_data = read_github_file("location_data.txt")
+        print("✅ 개원입지 데이터 로드 완료")
+    except Exception as e:
+        print(f"⚠️ 개원입지 데이터 없음 (섹션 ⑦ 생략): {e}")
+        loc_data = ""
     print("✅ 데이터 로드 완료")
 
     print("🤖 Claude API 리포트 생성 중...")
-    report = call_claude(us_data, kr_data)
+    report = call_claude(us_data, kr_data, loc_data)
     print("✅ 리포트 생성 완료")
     print("\n" + "=" * 60)
     print(report)
