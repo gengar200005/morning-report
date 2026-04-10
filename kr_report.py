@@ -21,13 +21,11 @@ NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
 def prev_trading_day():
-    """전 거래일 날짜 반환 (06:00 실행 시 당일 장 전이므로 전날 기준)"""
     d = NOW.date() - timedelta(days=1)
-    while d.weekday() >= 5:   # 토(5)·일(6) 건너뜀
+    while d.weekday() >= 5:
         d -= timedelta(days=1)
     return d.strftime("%Y%m%d")
 
-# FCF 흑자 확인된 유니버스 (분기별 수동 업데이트)
 FCF_UNIVERSE = [
     ("005930", "삼성전자"),
     ("000660", "SK하이닉스"),
@@ -41,15 +39,14 @@ FCF_UNIVERSE = [
     ("012330", "현대모비스"),
 ]
 
-# 종목별 섹터 ETF 매핑 (pykrx 코드)
 SECTOR_ETF = {
     "005930": ("091160", "KODEX반도체"),
     "000660": ("091160", "KODEX반도체"),
     "005380": ("091180", "KODEX자동차"),
-    "035420": None,                        # NAVER — 적합한 ETF 없음
-    "051910": None,                        # LG화학 — ETF 코드 불확실
-    "068270": None,                        # 셀트리온 — ETF 코드 불확실
-    "028260": None,                        # 삼성물산 — 지주사, ETF 없음
+    "035420": None,
+    "051910": None,
+    "068270": None,
+    "028260": None,
     "105560": ("091170", "KODEX은행"),
     "055550": ("091170", "KODEX은행"),
     "012330": ("091180", "KODEX자동차"),
@@ -94,9 +91,8 @@ def calc_ma(prices, n):
         return None
     return round(sum(prices[-n:]) / n, 0)
 
-# ── 섹터 ETF 60MA 체크 (pykrx) ───────────────────
+# ── 섹터 ETF 60MA 체크 ────────────────────────────
 def get_etf_ma60(etf_info):
-    """섹터 ETF가 60MA 위인지 확인. 매핑 없으면 None 반환."""
     if not etf_info:
         return None, "N/A"
     etf_code, etf_name = etf_info
@@ -106,13 +102,12 @@ def get_etf_ma60(etf_info):
         df = krx.get_etf_ohlcv_by_date(start, end, etf_code)
         if len(df) < 60:
             return None, etf_name
-        # 종가 컬럼 탐색
         for col in ["종가", "Close", "close", "NAV"]:
             if col in df.columns:
                 prices = df[col].dropna()
                 if len(prices) >= 60:
-                    ma60 = float(prices.tail(60).mean())
-                    cur  = float(prices.iloc[-1])
+                    ma60  = float(prices.tail(60).mean())
+                    cur   = float(prices.iloc[-1])
                     above = cur > ma60
                     print(f"    ETF {etf_name}: {cur:,.0f} vs MA60 {ma60:,.0f} ({'✓' if above else '✗'})")
                     return above, etf_name
@@ -122,26 +117,22 @@ def get_etf_ma60(etf_info):
 
 # ── 저항→지지 전환 체크 ───────────────────────────
 def check_sr(closes, window=5, tolerance=0.04):
-    """전 고점(저항) 근처에 현재가가 있으면 저항→지지 전환 신호."""
     if len(closes) < 40:
         return False, None
     current = closes[-1]
-    # 최근 10~80일 구간에서 스윙 하이 탐색
-    search = closes[-80:-10] if len(closes) >= 90 else closes[:-10]
+    search  = closes[-80:-10] if len(closes) >= 90 else closes[:-10]
     swing_highs = []
     for i in range(window, len(search) - window):
         if (all(search[i] >= search[i-j] for j in range(1, window+1)) and
                 all(search[i] >= search[i+j] for j in range(1, window+1))):
             swing_highs.append(search[i])
     for high in sorted(swing_highs, key=lambda x: abs(x - current)):
-        # 현재가가 전 고점의 ±4% 이내 (저항 돌파 후 지지 테스트 중)
         if high * (1 - tolerance) <= current <= high * (1 + tolerance):
             return True, int(high)
     return False, None
 
-# ── 0. VIX & 코스피 60MA (yfinance) ──────────────
+# ── 0. VIX & 코스피 60MA ──────────────────────────
 def get_market_context():
-    """VIX 현재값 + 코스피 실제 60MA 비교"""
     ctx = {
         "vix": None, "vix_ok": False,
         "kospi_ma60": None, "kospi_above_ma60": False,
@@ -151,7 +142,7 @@ def get_market_context():
         if not hist.empty:
             ctx["vix"]    = round(float(hist["Close"].iloc[-1]), 2)
             ctx["vix_ok"] = ctx["vix"] < 20
-            print(f"  VIX: {ctx['vix']} ({'✓ 20이하' if ctx['vix_ok'] else '✗ 20초과'})")
+            print(f"  VIX: {ctx['vix']} ({'✓' if ctx['vix_ok'] else '✗'})")
     except Exception as e:
         print(f"  VIX 오류: {e}")
 
@@ -162,18 +153,18 @@ def get_market_context():
             cur  = round(float(hist["Close"].iloc[-1]), 2)
             ctx["kospi_ma60"]       = ma60
             ctx["kospi_above_ma60"] = cur > ma60
-            print(f"  코스피 {cur:,.2f} vs MA60 {ma60:,.2f} ({'✓ 위' if ctx['kospi_above_ma60'] else '✗ 아래'})")
+            print(f"  코스피 {cur:,.2f} vs MA60 {ma60:,.2f} ({'✓' if ctx['kospi_above_ma60'] else '✗'})")
     except Exception as e:
         print(f"  코스피 MA60 오류: {e}")
 
     return ctx
 
-# ── 1. 코스피·코스닥 지수 ────────────────────────
+# ── 1. 코스피·코스닥 지수 ─────────────────────────
 def get_index(token):
     result = {}
     for code, name in [("0001", "코스피"), ("1001", "코스닥")]:
         try:
-            data = kis_get(token,
+            data  = kis_get(token,
                 "/uapi/domestic-stock/v1/quotations/inquire-index-price",
                 "FHPUP02100000",
                 {"FID_COND_MRKT_DIV_CODE": "U", "FID_INPUT_ISCD": code}
@@ -190,30 +181,37 @@ def get_index(token):
         time.sleep(0.3)
     return result
 
-# ── 2. 외국인·기관·개인 수급 (pykrx → KRX 공식 데이터) ──
+# ── 2. 수급 (pykrx → KIS 백업) ───────────────────
 def get_trading(token):
     result   = {"외국인": 0, "기관": 0, "개인": 0, "단위": "억원"}
-    prev_day = prev_trading_day()  # YYYYMMDD
+    prev_day = prev_trading_day()
 
-    # ── 방법 1: pykrx (KRX 투자자별 거래대금) ────────
     try:
         df = krx.get_market_trading_value_by_investor(prev_day, prev_day, "KOSPI")
-        print(f"  수급(pykrx) index: {list(df.index)}")
-        for label, key in [
-            ("외국인합계", "외국인"), ("기관합계", "기관"), ("개인", "개인"),
-            ("외국인",     "외국인"),                           # 라벨 대안
-        ]:
-            if label in df.index and result[key] == 0:
-                val = int(df.loc[label, "순매수"]) // 100_000_000  # 원 → 억원
-                result[key] = val
-        if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
-            print(f"  수급(pykrx) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
-            return result
+        print(f"  수급(pykrx) shape={df.shape} index={list(df.index)} cols={list(df.columns)}")
+
+        # 순매수 컬럼 탐색 (pykrx 버전별 컬럼명 차이 대응)
+        net_col = next((c for c in ["순매수", "순매수금액", "net", "Net"] if c in df.columns), None)
+        if net_col is None and len(df.columns) >= 3:
+            net_col = df.columns[-1]
+            print(f"  순매수 컬럼 추정: '{net_col}'")
+
+        if net_col:
+            for label, key in [
+                ("외국인합계", "외국인"), ("외국인",  "외국인"),
+                ("기관합계",   "기관"),   ("기관",    "기관"),
+                ("개인",       "개인"),
+            ]:
+                if label in df.index and result[key] == 0:
+                    val = int(df.loc[label, net_col]) // 100_000_000
+                    result[key] = val
+            if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
+                print(f"  수급(pykrx) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
+                return result
         print("  수급(pykrx) 값 모두 0 — KIS 백업 시도")
     except Exception as e:
         print(f"  수급(pykrx) 오류: {e}")
 
-    # ── 방법 2: KIS API 백업 ──────────────────────────
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
@@ -281,7 +279,7 @@ def get_ohlcv(token, code):
 
     return closes, volumes
 
-# ── 4. 외국인 5일 순매수 (종목별) ─────────────────
+# ── 4. 외국인 5일 순매수 ──────────────────────────
 def get_foreign_5d(token, code):
     try:
         data = kis_get(token,
@@ -311,7 +309,7 @@ def get_foreign_5d(token, code):
     except:
         return 0
 
-# ── 4-A. 종목 가격상세 (PER/PBR/ROE) ──────────────
+# ── 4-A. 종목 가격상세 (PER/PBR/ROE) ─────────────
 def get_price_detail(token, code):
     try:
         data = kis_get(token,
@@ -331,7 +329,6 @@ def get_price_detail(token, code):
                 return None
         per = sf(out.get("per"))
         pbr = sf(out.get("pbr"))
-        # ROE = EPS / BPS × 100 (inquire-price에 직접 roe 필드 없음)
         eps = sf(out.get("eps"))
         bps = sf(out.get("bps"))
         roe = round(eps / bps * 100, 2) if eps and bps else None
@@ -340,11 +337,11 @@ def get_price_detail(token, code):
         print(f"  {code} 가격상세 오류: {e}")
         return {"per": None, "pbr": None, "roe": None}
 
-# ── 5. 체크리스트 스크리닝 ────────────────────────
+# ── 5. 스크리닝 ───────────────────────────────────
 def screen_stocks(token, mkt_ctx):
     results  = []
-    kospi_ok = mkt_ctx["kospi_above_ma60"]   # 코스피 60MA 위
-    vix_ok   = mkt_ctx["vix_ok"]             # VIX 20 이하
+    kospi_ok = mkt_ctx["kospi_above_ma60"]
+    vix_ok   = mkt_ctx["vix_ok"]
 
     for code, name in FCF_UNIVERSE:
         try:
@@ -371,17 +368,13 @@ def screen_stocks(token, mkt_ctx):
             detail = get_price_detail(token, code)
             time.sleep(0.2)
 
-            # 섹터 ETF 60MA
             etf_ok, etf_name = get_etf_ma60(SECTOR_ETF.get(code))
-
-            # 저항→지지 전환
-            sr_ok, sr_level = check_sr(closes)
+            sr_ok, sr_level  = check_sr(closes)
 
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            # 점수: 5점 기본 + ETF(해당 시) + SR 보너스
-            score = sum([aligned, vol_ok, foreign_ok, kospi_ok, vix_ok])
+            score     = sum([aligned, vol_ok, foreign_ok, kospi_ok, vix_ok])
             if etf_ok is True:  score += 1
             if sr_ok:           score += 1
             max_score = 5 + (1 if etf_ok is not None else 0) + 1
@@ -455,8 +448,8 @@ def build_text(indices, trading, candidates, mkt_ctx):
     lines.append(f"\n【 시장 컨텍스트 】")
     vix  = mkt_ctx.get("vix")
     ma60 = mkt_ctx.get("kospi_ma60")
-    vix_str  = f"{vix:.2f}" if vix  else "N/A"
-    ma60_str = f"{ma60:,.2f}" if ma60 else "N/A"
+    vix_str  = f"{vix:.2f}"    if vix  else "N/A"
+    ma60_str = f"{ma60:,.2f}"  if ma60 else "N/A"
     lines.append(f"  VIX         {vix_str:>8}  {'✓ 20이하 — 변동성 안정' if mkt_ctx['vix_ok'] else '✗ 20초과 — 변동성 경계'}")
     lines.append(f"  코스피 MA60 {ma60_str:>10}  {'✓ MA60 위 — 상승추세 유지' if mkt_ctx['kospi_above_ma60'] else '✗ MA60 아래 — 진입 보류'}")
 
