@@ -22,5 +22,5 @@ jobs:
 
       - name: 리포트 실행
         env:
-          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          MORNINGREPOT: ${{ secrets.MY_GITHUB_TOKEN }}
         run: python morning_report.py
