@@ -16,6 +16,15 @@ KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
+WEATHER_KR = {
+    "Sunny": "맑음", "Clear": "맑음", "Partly cloudy": "구름 조금",
+    "Partly Cloudy": "구름 조금", "Cloudy": "구름 많음", "Overcast": "흐림",
+    "Mist": "안개", "Fog": "안개", "Light drizzle": "이슬비",
+    "Light rain": "가벼운 비", "Moderate rain": "비", "Heavy rain": "강한 비",
+    "Thunderstorm": "천둥번개", "Light snow": "가벼운 눈", "Snow": "눈",
+    "Blizzard": "폭설",
+}
+
 # ── 헬퍼 ──────────────────────────────────────────
 def q(sym, period="5d"):
     try:
@@ -43,8 +52,45 @@ def fmt_price(val, decimals=2):
     if val is None: return "N/A"
     return f"{val:,.{decimals}f}"
 
+# ── 날씨 (이촌동, wttr.in) ─────────────────────────
+def get_weather():
+    try:
+        # 이촌동 좌표
+        r = requests.get(
+            "https://wttr.in/37.5219,126.9736?format=j1",
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=8,
+        )
+        data = r.json()
+        cur  = data["current_condition"][0]
+        desc_en = cur["weatherDesc"][0]["value"]
+        desc_kr = WEATHER_KR.get(desc_en, desc_en)
+
+        # 오늘 예보 (최고/최저기온)
+        today_fc = data.get("weather", [{}])[0]
+        max_c = today_fc.get("maxtempC", "?")
+        min_c = today_fc.get("mintempC", "?")
+
+        result = {
+            "temp":     cur["temp_C"],
+            "feels":    cur["FeelsLikeC"],
+            "desc":     desc_kr,
+            "humidity": cur["humidity"],
+            "wind":     cur["windspeedKmph"],
+            "max_c":    max_c,
+            "min_c":    min_c,
+        }
+        print(f"  날씨: {desc_kr} {cur['temp_C']}°C (체감 {cur['FeelsLikeC']}°C)")
+        return result
+    except Exception as e:
+        print(f"  날씨 오류: {e}")
+        return None
+
 # ── 데이터 수집 ────────────────────────────────────
 def get_all_data():
+    print("📡 날씨 수집 중...")
+    weather = get_weather()
+
     print("📡 주요 지수 수집 중...")
     indices = {
         "S&P500":   q("^GSPC"),
@@ -65,11 +111,8 @@ def get_all_data():
         score  = round(float(data["fear_and_greed"]["score"]), 1)
         rating = data["fear_and_greed"]["rating"]
         rating_kr = {
-            "Extreme Fear": "극단적 공포",
-            "Fear": "공포",
-            "Neutral": "중립",
-            "Greed": "탐욕",
-            "Extreme Greed": "극단적 탐욕",
+            "Extreme Fear": "극단적 공포", "Fear": "공포",
+            "Neutral": "중립", "Greed": "탐욕", "Extreme Greed": "극단적 탐욕",
         }.get(rating, rating)
         fg = {"score": score, "rating": rating_kr}
     except Exception as e:
@@ -105,13 +148,13 @@ def get_all_data():
         "삼성전자ADR":   q("SSNLF"),
     }
     m7 = {
-        "애플":          q("AAPL"),
+        "애플":           q("AAPL"),
         "마이크로소프트": q("MSFT"),
-        "아마존":        q("AMZN"),
-        "알파벳":        q("GOOGL"),
-        "메타":          q("META"),
-        "테슬라":        q("TSLA"),
-        "엔비디아":      q("NVDA"),
+        "아마존":         q("AMZN"),
+        "알파벳":         q("GOOGL"),
+        "메타":           q("META"),
+        "테슬라":         q("TSLA"),
+        "엔비디아":       q("NVDA"),
     }
 
     print("📡 섹터 ETF 수집 중...")
@@ -125,22 +168,29 @@ def get_all_data():
         "유틸리티(XLU)": q("XLU"),
     }
 
-    return indices, fg, rates, comms, vix, semis, m7, sectors
+    return weather, indices, fg, rates, comms, vix, semis, m7, sectors
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(indices, fg, rates, comms, vix, semis, m7, sectors):
+def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
     lines = []
     lines.append(f"{'='*52}")
     lines.append(f"  미장 데이터 브리핑 — {TODAY_STR}")
     lines.append(f"  뉴욕 전일 마감 기준")
     lines.append(f"{'='*52}")
 
+    # 날씨
+    if weather:
+        lines.append(f"\n【 이촌동 날씨 】")
+        lines.append(f"  현재: {weather['desc']} {weather['temp']}°C (체감 {weather['feels']}°C)")
+        lines.append(f"  오늘: 최고 {weather['max_c']}°C / 최저 {weather['min_c']}°C")
+        lines.append(f"  습도: {weather['humidity']}%  바람: {weather['wind']}km/h")
+
     # 공포탐욕
     score = fg["score"]
     if score:
-        filled  = int(score / 10)
-        bar     = "█" * filled + "░" * (10 - filled)
-        emoji   = "😱" if score < 25 else "😰" if score < 45 else "😐" if score < 55 else "😏" if score < 75 else "🤑"
+        filled = int(score / 10)
+        bar    = "█" * filled + "░" * (10 - filled)
+        emoji  = "😱" if score < 25 else "😰" if score < 45 else "😐" if score < 55 else "😏" if score < 75 else "🤑"
         lines.append(f"\n【 공포탐욕지수 】")
         lines.append(f"  {emoji} {score} / 100  [{bar}]  {fg['rating']}")
         lines.append(f"  ※ 25이하=매수기회 / 75이상=과열주의")
@@ -162,7 +212,7 @@ def build_text(indices, fg, rates, comms, vix, semis, m7, sectors):
     t10 = rates.get("미국채10년", {}).get("close")
     t2  = rates.get("미국채2년",  {}).get("close")
     if t10 and t2:
-        spread = round(t10 - t2, 3)
+        spread  = round(t10 - t2, 3)
         comment = "정상" if spread > 0 else "역전 ⚠️ 경기침체 신호"
         lines.append(f"  → 장단기 금리차(10Y-2Y): {spread:+.3f}%  [{comment}]")
 
@@ -202,14 +252,11 @@ def save_to_github(content):
         "Authorization": f"token {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json",
     }
-
-    # 기존 파일 SHA 조회 (업데이트 시 필요)
     sha = None
     r = requests.get(url, headers=headers)
     if r.status_code == 200:
         sha = r.json().get("sha")
 
-    # 파일 업로드
     payload = {
         "message": f"미장 데이터 업데이트 — {TODAY_STR}",
         "content": base64.b64encode(content.encode("utf-8")).decode("utf-8"),
@@ -225,10 +272,10 @@ def save_to_github(content):
 
 # ── 메인 ──────────────────────────────────────────
 if __name__ == "__main__":
-    indices, fg, rates, comms, vix, semis, m7, sectors = get_all_data()
+    weather, indices, fg, rates, comms, vix, semis, m7, sectors = get_all_data()
 
     print("📝 텍스트 생성 중...")
-    text = build_text(indices, fg, rates, comms, vix, semis, m7, sectors)
+    text = build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors)
 
     print(text)
 
