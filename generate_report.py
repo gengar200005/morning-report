@@ -63,7 +63,7 @@ def call_claude(us_data, kr_data):
         "content-type": "application/json",
     }
     body = {
-        "model": "claude-opus-4-6",
+        "model": "claude-sonnet-4-6",
         "max_tokens": 2048,
         "messages": [{"role": "user", "content": prompt}],
     }
