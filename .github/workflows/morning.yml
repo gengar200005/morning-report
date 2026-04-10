@@ -20,7 +20,7 @@ jobs:
 
       - name: 라이브러리 설치
         run: |
-          pip install yfinance pytz requests
+          pip install yfinance pytz requests anthropic
 
       - name: 미장 데이터 수집
         env:
@@ -33,3 +33,10 @@ jobs:
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python kr_report.py
+
+      - name: Claude 리포트 생성 + 노션 저장
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python generate_report.py
