@@ -3,6 +3,7 @@ import base64
 import requests
 import time
 import yfinance as yf
+from pykrx import stock as krx
 from datetime import datetime, timedelta
 import pytz
 
@@ -130,53 +131,30 @@ def get_index(token):
         time.sleep(0.3)
     return result
 
-# ── 2. 외국인·기관·개인 수급 (KRX 공공 데이터) ───
+# ── 2. 외국인·기관·개인 수급 (pykrx → KRX 공식 데이터) ──
 def get_trading(token):
-    result   = {"외국인": 0, "기관": 0, "개인": 0}
+    result   = {"외국인": 0, "기관": 0, "개인": 0, "단위": "억원"}
     prev_day = prev_trading_day()  # YYYYMMDD
 
-    # ── 방법 1: KRX 투자자별 거래실적 (API 키 불필요) ──
+    # ── 방법 1: pykrx (KRX 투자자별 거래대금) ────────
     try:
-        r = requests.post(
-            "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "Referer": "http://data.krx.co.kr/",
-                "User-Agent": "Mozilla/5.0",
-            },
-            data={
-                "bld":         "dbms/MDC/STAT/standard/MDCSTAT02303",
-                "locale":      "ko_KR",
-                "trdDd":       prev_day,
-                "mktId":       "STK",   # 코스피
-                "money":       "1",     # 단위: 백만원
-                "csvxls_isNo": "false",
-            },
-            timeout=10,
-        )
-        rows = r.json().get("output", [])
-        print(f"  수급(KRX) rows={len(rows)}")
-        for row in rows:
-            name = row.get("INVST_NM", "")
-            qty  = row.get("NETBUY_TRDVOL", "0").replace(",", "")
-            try:
-                val = int(qty)
-            except:
-                val = 0
-            if "외국인" in name:
-                result["외국인"] = val
-            elif "기관" in name and "합계" in name:
-                result["기관"] = val
-            elif "개인" in name:
-                result["개인"] = val
-        if any(v != 0 for v in result.values()):
-            print(f"  수급(KRX) 성공: 외국인={result['외국인']:,} 기관={result['기관']:,}")
+        df = krx.get_market_trading_value_by_investor(prev_day, prev_day, "KOSPI")
+        print(f"  수급(pykrx) index: {list(df.index)}")
+        for label, key in [
+            ("외국인합계", "외국인"), ("기관합계", "기관"), ("개인", "개인"),
+            ("외국인",     "외국인"),                           # 라벨 대안
+        ]:
+            if label in df.index and result[key] == 0:
+                val = int(df.loc[label, "순매수"]) // 100_000_000  # 원 → 억원
+                result[key] = val
+        if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
+            print(f"  수급(pykrx) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
             return result
-        print("  수급(KRX) 값 모두 0 — 방법2 시도")
+        print("  수급(pykrx) 값 모두 0 — KIS 백업 시도")
     except Exception as e:
-        print(f"  수급(KRX) 오류: {e}")
+        print(f"  수급(pykrx) 오류: {e}")
 
-    # ── 방법 2: KIS API 백업 ──────────────────────
+    # ── 방법 2: KIS API 백업 ──────────────────────────
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
@@ -197,6 +175,7 @@ def get_trading(token):
             result["외국인"] = int(row.get("frgn_ntby_qty", 0))
             result["기관"]   = int(row.get("orgn_ntby_qty", 0))
             result["개인"]   = int(row.get("indv_ntby_qty", 0))
+            result["단위"]   = "주"
             print(f"  수급(KIS) 성공: 외국인={result['외국인']:,}")
             return result
     except Exception as e:
@@ -392,11 +371,12 @@ def build_text(indices, trading, candidates, mkt_ctx):
             pct  = f"{'+' if d['pct'] >= 0 else ''}{d['pct']:.2f}%"
             lines.append(f"  {name:<8} {d['close']:>10,.2f}  {sign} {pct}")
 
-    lines.append(f"\n【 수급 (코스피) 】")
+    unit = trading.get("단위", "억원")
+    lines.append(f"\n【 수급 (코스피) — 단위: {unit} 】")
     for key in ["외국인", "기관", "개인"]:
         val  = trading.get(key, 0)
         sign = "+" if val >= 0 else ""
-        lines.append(f"  {key:<6} {sign}{val:,}주")
+        lines.append(f"  {key:<6} {sign}{val:,}{unit}")
 
     lines.append(f"\n【 시장 컨텍스트 】")
     vix  = mkt_ctx.get("vix")
