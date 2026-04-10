@@ -1,6 +1,5 @@
 import os
 import smtplib
-import json
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
@@ -16,12 +15,10 @@ GMAIL_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]
 ANTHROPIC_KEY  = os.environ["ANTHROPIC_API_KEY"]
 SEND_TO        = "sieun8475@gmail.com"
 
-KST = pytz.timezone("Asia/Seoul")
-NOW = datetime.now(KST)
-TODAY_STR  = NOW.strftime("%Y년 %m월 %d일")
-TODAY_DATE = NOW.strftime("%Y%m%d")
+KST       = pytz.timezone("Asia/Seoul")
+NOW       = datetime.now(KST)
+TODAY_STR = NOW.strftime("%Y년 %m월 %d일")
 
-# 전 거래일 (주말 처리)
 def prev_trading_day(d):
     d = d - timedelta(days=1)
     while d.weekday() >= 5:
@@ -30,9 +27,34 @@ def prev_trading_day(d):
 
 PREV_KR = prev_trading_day(NOW).strftime("%Y%m%d")
 
-# ── 1. 미장 데이터 (yfinance) ───────────────────────
+# ── 헬퍼 ──────────────────────────────────────────
+def get_ma(series, n):
+    if len(series) < n:
+        return None
+    return round(float(series.iloc[-n:].mean()), 0)
+
+def yf_quote(sym):
+    """yfinance로 종가·등락률 반환"""
+    try:
+        hist = yf.Ticker(sym).history(period="5d")
+        if len(hist) >= 2:
+            prev  = float(hist["Close"].iloc[-2])
+            close = float(hist["Close"].iloc[-1])
+            pct   = (close - prev) / prev * 100
+            return {"close": round(close, 2), "pct": round(pct, 2)}
+    except:
+        pass
+    return {"close": None, "pct": None}
+
+def pykrx_col(df, keyword):
+    """pykrx DataFrame에서 키워드 포함 컬럼명 반환"""
+    df.columns = [c.strip() for c in df.columns]
+    cols = [c for c in df.columns if keyword in c]
+    return cols[0] if cols else None
+
+# ── 1. 미장 데이터 (yfinance 전용) ────────────────
 def get_us_data():
-    tickers = {
+    symbols = {
         "S&P500":  "^GSPC",
         "나스닥":  "^IXIC",
         "다우":    "^DJI",
@@ -41,25 +63,8 @@ def get_us_data():
         "WTI":     "CL=F",
         "금":      "GC=F",
     }
-    result = {}
-    for name, sym in tickers.items():
-        try:
-            tk = yf.Ticker(sym)
-            hist = tk.history(period="2d")
-            if len(hist) >= 2:
-                prev  = hist["Close"].iloc[-2]
-                close = hist["Close"].iloc[-1]
-                chg   = close - prev
-                pct   = chg / prev * 100
-                result[name] = {
-                    "close": round(close, 2),
-                    "chg":   round(chg, 2),
-                    "pct":   round(pct, 2),
-                }
-        except Exception as e:
-            result[name] = {"error": str(e)}
+    result = {k: yf_quote(v) for k, v in symbols.items()}
 
-    # 섹터 ETF
     sectors = {
         "반도체": "SOXX",
         "테크":   "XLK",
@@ -67,66 +72,34 @@ def get_us_data():
         "금융":   "XLF",
         "헬스케어": "XLV",
     }
-    sector_result = {}
-    for name, sym in sectors.items():
-        try:
-            tk = yf.Ticker(sym)
-            hist = tk.history(period="2d")
-            if len(hist) >= 2:
-                prev  = hist["Close"].iloc[-2]
-                close = hist["Close"].iloc[-1]
-                pct   = (close - prev) / prev * 100
-                sector_result[name] = round(pct, 2)
-        except:
-            sector_result[name] = None
-    result["섹터"] = sector_result
+    result["섹터"] = {k: yf_quote(v)["pct"] for k, v in sectors.items()}
     return result
 
-# ── pykrx 컬럼명 정규화 헬퍼 ──────────────────────
-def get_close_col(df):
-    df.columns = [c.strip() for c in df.columns]
-    candidates = [c for c in df.columns if "종가" in c]
-    return candidates[0] if candidates else df.columns[0]
-
-# ── 2. 국장 데이터 (pykrx) ─────────────────────────
+# ── 2. 국장 데이터 (pykrx + yfinance 혼용) ────────
 def get_kr_data():
     result = {}
     try:
-        start7  = (NOW - timedelta(days=7)).strftime("%Y%m%d")
+        # 코스피·코스닥 — yfinance (pykrx 지수 API 불안정)
+        kospi_q  = yf_quote("^KS11")
+        kosdaq_q = yf_quote("^KQ11")
+        result["코스피"]       = kospi_q["close"]
+        result["코스피_등락"]  = kospi_q["pct"]
+        result["코스닥"]       = kosdaq_q["close"]
+        result["코스닥_등락"]  = kosdaq_q["pct"]
 
-        # 코스피
-        kospi_hist = stock.get_index_ohlcv_by_date(start7, PREV_KR, "1001")
-        if not kospi_hist.empty:
-            col = get_close_col(kospi_hist)
-            result["코스피"] = round(float(kospi_hist[col].iloc[-1]), 2)
-            if len(kospi_hist) >= 2:
-                prev  = float(kospi_hist[col].iloc[-2])
-                close = float(kospi_hist[col].iloc[-1])
-                result["코스피_등락"] = round((close - prev) / prev * 100, 2)
-
-        # 코스닥
-        kosdaq_hist = stock.get_index_ohlcv_by_date(start7, PREV_KR, "2001")
-        if not kosdaq_hist.empty:
-            col = get_close_col(kosdaq_hist)
-            result["코스닥"] = round(float(kosdaq_hist[col].iloc[-1]), 2)
-            if len(kosdaq_hist) >= 2:
-                prev  = float(kosdaq_hist[col].iloc[-2])
-                close = float(kosdaq_hist[col].iloc[-1])
-                result["코스닥_등락"] = round((close - prev) / prev * 100, 2)
-
-        # 외국인·기관·개인 수급
+        # 수급 — pykrx (거래소 공식)
         trading = stock.get_market_trading_volume_by_date(PREV_KR, PREV_KR, "KOSPI")
         if not trading.empty:
             trading.columns = [c.strip() for c in trading.columns]
             row = trading.iloc[-1]
-            result["외국인"] = int(row.get("외국인", 0))
-            result["기관"]   = int(row.get("기관합계", 0))
-            result["개인"]   = int(row.get("개인", 0))
+            for key in ["외국인", "기관합계", "기관", "개인"]:
+                if key in row:
+                    result[key] = int(row[key])
     except Exception as e:
         result["error"] = str(e)
     return result
 
-# ── 3. 체크리스트 스크리닝 (pykrx) ────────────────
+# ── 3. 체크리스트 스크리닝 ────────────────────────
 FCF_UNIVERSE = [
     "005930",  # 삼성전자
     "000660",  # SK하이닉스
@@ -140,28 +113,25 @@ FCF_UNIVERSE = [
     "012330",  # 현대모비스
 ]
 
-def get_ma(prices, n):
-    if len(prices) < n:
-        return None
-    return round(float(prices.iloc[-n:].mean()), 0)
-
 def screen_stocks():
-    result = []
-    start200 = (NOW - timedelta(days=200)).strftime("%Y%m%d")
-    start10  = (NOW - timedelta(days=10)).strftime("%Y%m%d")
+    result    = []
+    start200  = (NOW - timedelta(days=280)).strftime("%Y%m%d")
+    start10   = (NOW - timedelta(days=14)).strftime("%Y%m%d")
 
-    # 코스피 추세 확인
-    kospi_hist = stock.get_index_ohlcv_by_date(start200, PREV_KR, "1001")
-    col = get_close_col(kospi_hist)
-    kospi_close = kospi_hist[col]
-    kospi_ma60  = get_ma(kospi_close, 60)
-    kospi_ma120 = get_ma(kospi_close, 120)
-    kospi_now   = float(kospi_close.iloc[-1])
-    kospi_trend = bool(kospi_ma60 and kospi_ma120 and kospi_now > kospi_ma60 and kospi_now > kospi_ma120)
+    # 코스피 추세 — yfinance로 대체 (pykrx 지수 API 버그 회피)
+    ks11 = yf.Ticker("^KS11").history(period="200d")
+    if not ks11.empty:
+        ks_close    = ks11["Close"]
+        ks_ma60     = get_ma(ks_close, 60)
+        ks_ma120    = get_ma(ks_close, 120)
+        ks_now      = float(ks_close.iloc[-1])
+        kospi_trend = bool(ks_ma60 and ks_ma120 and ks_now > ks_ma60 and ks_now > ks_ma120)
+    else:
+        kospi_trend = False
 
     # VIX
-    vix_data = yf.Ticker("^VIX").history(period="2d")
-    vix_val  = float(vix_data["Close"].iloc[-1]) if not vix_data.empty else 99
+    vix_hist = yf.Ticker("^VIX").history(period="2d")
+    vix_val  = float(vix_hist["Close"].iloc[-1]) if not vix_hist.empty else 99
     vix_ok   = vix_val < 20
 
     for code in FCF_UNIVERSE:
@@ -172,37 +142,32 @@ def screen_stocks():
                 continue
 
             ohlcv.columns = [c.strip() for c in ohlcv.columns]
-            close_col_name = get_close_col(ohlcv)
-            vol_col_name   = [c for c in ohlcv.columns if "거래량" in c]
-            if not vol_col_name:
+            close_col = pykrx_col(ohlcv, "종가")
+            vol_col   = pykrx_col(ohlcv, "거래량")
+            if not close_col or not vol_col:
                 continue
-            vol_col_name = vol_col_name[0]
 
-            close_series = ohlcv[close_col_name]
-            vol_series   = ohlcv[vol_col_name]
-            close_now    = float(close_series.iloc[-1])
+            close_s   = ohlcv[close_col]
+            vol_s     = ohlcv[vol_col]
+            close_now = float(close_s.iloc[-1])
 
-            ma20  = get_ma(close_series, 20)
-            ma60  = get_ma(close_series, 60)
-            ma120 = get_ma(close_series, 120)
-
+            ma20  = get_ma(close_s, 20)
+            ma60  = get_ma(close_s, 60)
+            ma120 = get_ma(close_s, 120)
             aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
 
-            vol_now = float(vol_series.iloc[-1])
-            vol_avg = float(vol_series.iloc[-21:-1].mean())
+            vol_now = float(vol_s.iloc[-1])
+            vol_avg = float(vol_s.iloc[-21:-1].mean()) if len(vol_s) > 20 else vol_now
             vol_ok  = vol_now >= vol_avg * 1.5
 
             trading = stock.get_market_trading_volume_by_date(start10, PREV_KR, code)
+            foreign_5d, foreign_ok = 0, False
             if not trading.empty:
                 trading.columns = [c.strip() for c in trading.columns]
-                foreign_col = [c for c in trading.columns if "외국인" in c]
-                if foreign_col:
-                    foreign_5d = int(trading[foreign_col[0]].iloc[-5:].sum())
+                fcol = pykrx_col(trading, "외국인")
+                if fcol:
+                    foreign_5d = int(trading[fcol].iloc[-5:].sum())
                     foreign_ok = foreign_5d > 0
-                else:
-                    foreign_5d, foreign_ok = 0, False
-            else:
-                foreign_5d, foreign_ok = 0, False
 
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
@@ -220,9 +185,9 @@ def screen_stocks():
                 "종목코드":     code,
                 "현재가":       int(close_now),
                 "등급":         grade,
-                "MA20":         int(ma20) if ma20 else None,
-                "MA60":         int(ma60) if ma60 else None,
-                "MA120":        int(ma120) if ma120 else None,
+                "MA20":         int(ma20) if ma20 else 0,
+                "MA60":         int(ma60) if ma60 else 0,
+                "MA120":        int(ma120) if ma120 else 0,
                 "이평선정배열": aligned,
                 "거래량":       vol_ok,
                 "외국인5일":    foreign_ok,
@@ -234,69 +199,65 @@ def screen_stocks():
                 "목표가":       int(target),
             })
         except Exception as e:
-            print(f"{code} 오류: {e}")
+            print(f"  {code} 스킵: {e}")
             continue
 
     result.sort(key=lambda x: (x["등급"], -x["현재가"]))
     return result, kospi_trend, round(vix_val, 2)
 
-# ── 4. Claude API 호출 ────────────────────────────
-def get_claude_analysis(us_data, kr_data, candidates):
+# ── 4. Claude API 분석 ────────────────────────────
+def get_claude_analysis(us, kr, candidates):
     client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
 
-    candidates_text = ""
-    if candidates:
-        for c in candidates:
-            candidates_text += f"""
-- {c['종목명']} ({c['종목코드']}) [{c['등급']}등급]
-  현재가: {c['현재가']:,}원 | MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}
-  이평선정배열: {'✓' if c['이평선정배열'] else '✗'} | 거래량1.5배: {'✓' if c['거래량'] else '✗'} | 외국인5일순매수: {'✓' if c['외국인5일'] else '✗'} ({c['외국인순매수']:+,}주)
-  손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)
+    def fmt(d, k):
+        v = d.get(k, {})
+        if isinstance(v, dict):
+            c, p = v.get("close"), v.get("pct")
+            sign = "+" if p and p > 0 else ""
+            return f"{c:,.2f} ({sign}{p:.2f}%)" if c else "N/A"
+        return str(v) if v else "N/A"
+
+    cand_text = ""
+    for c in candidates:
+        cand_text += f"""
+▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급]
+  현재가 {c['현재가']:,}원 | MA20 {c['MA20']:,} | MA60 {c['MA60']:,} | MA120 {c['MA120']:,}
+  이평선정배열 {'✓' if c['이평선정배열'] else '✗'} | 거래량1.5배 {'✓' if c['거래량'] else '✗'} | 외국인5일순매수 {'✓' if c['외국인5일'] else '✗'} ({c['외국인순매수']:+,}주)
+  손절가 {c['손절가']:,}원 (-7%) | 1차목표 {c['목표가']:,}원 (+18%)
 """
-    else:
-        candidates_text = "오늘 조건 충족 종목 없음"
+    if not cand_text:
+        cand_text = "오늘 조건 충족 종목 없음 — 진입 보류"
 
-    prompt = f"""
-오늘은 {TODAY_STR}입니다. 아래 데이터를 바탕으로 모닝 리포트를 작성해주세요.
+    prompt = f"""오늘은 {TODAY_STR}입니다. 아래 데이터로 모닝 리포트를 작성해주세요.
 
-## 미장 데이터 (뉴욕 전일 마감)
-- S&P500: {us_data.get('S&P500', {}).get('close')} ({us_data.get('S&P500', {}).get('pct')}%)
-- 나스닥: {us_data.get('나스닥', {}).get('close')} ({us_data.get('나스닥', {}).get('pct')}%)
-- 다우: {us_data.get('다우', {}).get('close')} ({us_data.get('다우', {}).get('pct')}%)
-- VIX: {us_data.get('VIX', {}).get('close')}
-- 달러/원: {us_data.get('달러/원', {}).get('close')}
-- WTI: {us_data.get('WTI', {}).get('close')} ({us_data.get('WTI', {}).get('pct')}%)
-- 금: {us_data.get('금', {}).get('close')} ({us_data.get('금', {}).get('pct')}%)
-- 섹터별: {us_data.get('섹터')}
+【미장 — 뉴욕 전일 마감】
+S&P500: {fmt(us,'S&P500')} | 나스닥: {fmt(us,'나스닥')} | 다우: {fmt(us,'다우')}
+VIX: {us.get('VIX',{}).get('close')} | 달러/원: {us.get('달러/원',{}).get('close')} | WTI: {fmt(us,'WTI')} | 금: {fmt(us,'금')}
+섹터: {us.get('섹터')}
 
-## 국내 시장 (전일 마감)
-- 코스피: {kr_data.get('코스피')} ({kr_data.get('코스피_등락')}%)
-- 코스닥: {kr_data.get('코스닥')} ({kr_data.get('코스닥_등락')}%)
-- 외국인: {kr_data.get('외국인'):,}백만원
-- 기관: {kr_data.get('기관'):,}백만원
-- 개인: {kr_data.get('개인'):,}백만원
+【국내 시장 — 전일 마감】
+코스피: {kr.get('코스피')} ({kr.get('코스피_등락')}%) | 코스닥: {kr.get('코스닥')} ({kr.get('코스닥_등락')}%)
+외국인: {kr.get('외국인','N/A')} | 기관: {kr.get('기관합계', kr.get('기관','N/A'))} | 개인: {kr.get('개인','N/A')}
 
-## 오늘 스크리닝 후보
-{candidates_text}
+【스크리닝 결과】
+{cand_text}
 
-아래 형식으로 작성해주세요:
+아래 순서로 작성해주세요 (출근길 5분 안에 읽을 수 있게 간결하게):
 
-1. 당일 시황 요약 (3줄)
-2. 미장 핵심 포인트 (섹터별 등락 포함)
-3. 국내 시장 분석 (수급 포함)
-4. 핵심 뉴스 3개 (개원/부동산, 의료정책, 자산관리 관련)
-5. 스크리닝 결과 및 종목별 진입 전략 (후보 없으면 "오늘 진입 보류" 명시)
-6. 오늘의 한 줄 인사이트
-
-간결하고 실용적으로, 출근길 5분 안에 읽을 수 있게 작성해주세요.
+1. 📊 시황 요약 (3줄)
+2. 🇺🇸 미장 핵심 포인트
+3. 🇰🇷 국내 시장 분석
+4. 📰 핵심 뉴스 3개 (①개원/부동산 ②의료정책 ③자산관리)
+5. 📈 오늘 스크리닝 결과 및 진입 전략
+6. 💡 오늘의 한 줄 인사이트
 """
 
-    message = client.messages.create(
+    msg = client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=2000,
         messages=[{"role": "user", "content": prompt}]
     )
-    return message.content[0].text
+    return msg.content[0].text
 
 # ── 5. Gmail 발송 ─────────────────────────────────
 def send_email(subject, body):
@@ -305,36 +266,37 @@ def send_email(subject, body):
     msg["From"]    = GMAIL_USER
     msg["To"]      = SEND_TO
 
-    html = f"""
-<html><body style="font-family: 'Noto Sans KR', sans-serif; max-width: 680px; margin: 0 auto; padding: 20px; color: #1A2033;">
-<div style="background: #1A3A5C; color: white; padding: 16px 20px; border-radius: 10px 10px 0 0;">
-  <h2 style="margin:0; font-size:18px;">📊 추세추종 모닝 리포트</h2>
-  <p style="margin:4px 0 0; font-size:12px; color:#A0B0C8;">{TODAY_STR}</p>
+    html = f"""<html><body style="font-family:sans-serif;max-width:680px;margin:0 auto;padding:20px;color:#1A2033;">
+<div style="background:#1A3A5C;color:white;padding:16px 20px;border-radius:10px 10px 0 0;">
+  <h2 style="margin:0;font-size:18px;">📊 추세추종 모닝 리포트</h2>
+  <p style="margin:4px 0 0;font-size:12px;color:#A0B0C8;">{TODAY_STR}</p>
 </div>
-<div style="background: #fff; border: 1px solid #D8DEE9; border-top: none; border-radius: 0 0 10px 10px; padding: 20px;">
-  <pre style="white-space: pre-wrap; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; line-height: 1.8; color: #1A2033;">{body}</pre>
+<div style="background:#fff;border:1px solid #D8DEE9;border-top:none;border-radius:0 0 10px 10px;padding:20px;">
+  <pre style="white-space:pre-wrap;font-size:13px;line-height:1.8;color:#1A2033;">{body}</pre>
 </div>
-<p style="font-size: 10px; color: #8B95B0; text-align: center; margin-top: 12px;">
+<p style="font-size:10px;color:#8B95B0;text-align:center;margin-top:12px;">
 본 리포트는 개인 투자 학습 목적입니다. 투자 판단의 최종 책임은 본인에게 있습니다.
-</p>
-</body></html>
-"""
+</p></body></html>"""
+
     msg.attach(MIMEText(body, "plain", "utf-8"))
     msg.attach(MIMEText(html,  "html",  "utf-8"))
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(GMAIL_USER, GMAIL_PASSWORD)
         server.sendmail(GMAIL_USER, SEND_TO, msg.as_string())
-    print(f"✅ 이메일 발송 완료: {SEND_TO}")
+    print(f"✅ 발송 완료 → {SEND_TO}")
 
 # ── 메인 ──────────────────────────────────────────
 if __name__ == "__main__":
-    print("📡 데이터 수집 중...")
-    us_data    = get_us_data()
-    kr_data    = get_kr_data()
-    candidates, kospi_trend, vix = screen_stocks()
+    print("📡 미장 데이터 수집 중...")
+    us_data = get_us_data()
 
-    print(f"✅ 미장·국장 수집 완료 | 후보 종목: {len(candidates)}개")
+    print("📡 국장 데이터 수집 중...")
+    kr_data = get_kr_data()
+
+    print("📡 스크리닝 중...")
+    candidates, kospi_trend, vix = screen_stocks()
+    print(f"  → 후보 종목 {len(candidates)}개 | 코스피추세 {'✓' if kospi_trend else '✗'} | VIX {vix}")
 
     print("🤖 Claude 분석 중...")
     report = get_claude_analysis(us_data, kr_data, candidates)
