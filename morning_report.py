@@ -82,35 +82,42 @@ def get_us_data():
     result["섹터"] = sector_result
     return result
 
+# ── pykrx 컬럼명 정규화 헬퍼 ──────────────────────
+def get_close_col(df):
+    df.columns = [c.strip() for c in df.columns]
+    candidates = [c for c in df.columns if "종가" in c]
+    return candidates[0] if candidates else df.columns[0]
+
 # ── 2. 국장 데이터 (pykrx) ─────────────────────────
 def get_kr_data():
     result = {}
     try:
-        # 코스피·코스닥 종가
-        kospi  = stock.get_index_ohlcv_by_date(PREV_KR, PREV_KR, "1001")
-        kosdaq = stock.get_index_ohlcv_by_date(PREV_KR, PREV_KR, "2001")
-        result["코스피"]  = round(float(kospi["종가"].iloc[-1]), 2)  if not kospi.empty  else None
-        result["코스닥"]  = round(float(kosdaq["종가"].iloc[-1]), 2) if not kosdaq.empty else None
+        start7  = (NOW - timedelta(days=7)).strftime("%Y%m%d")
 
-        # 코스피 등락률
-        kospi_hist = stock.get_index_ohlcv_by_date(
-            (NOW - timedelta(days=7)).strftime("%Y%m%d"), PREV_KR, "1001"
-        )
-        if len(kospi_hist) >= 2:
-            prev  = float(kospi_hist["종가"].iloc[-2])
-            close = float(kospi_hist["종가"].iloc[-1])
-            result["코스피_등락"] = round((close - prev) / prev * 100, 2)
-        kosdaq_hist = stock.get_index_ohlcv_by_date(
-            (NOW - timedelta(days=7)).strftime("%Y%m%d"), PREV_KR, "2001"
-        )
-        if len(kosdaq_hist) >= 2:
-            prev  = float(kosdaq_hist["종가"].iloc[-2])
-            close = float(kosdaq_hist["종가"].iloc[-1])
-            result["코스닥_등락"] = round((close - prev) / prev * 100, 2)
+        # 코스피
+        kospi_hist = stock.get_index_ohlcv_by_date(start7, PREV_KR, "1001")
+        if not kospi_hist.empty:
+            col = get_close_col(kospi_hist)
+            result["코스피"] = round(float(kospi_hist[col].iloc[-1]), 2)
+            if len(kospi_hist) >= 2:
+                prev  = float(kospi_hist[col].iloc[-2])
+                close = float(kospi_hist[col].iloc[-1])
+                result["코스피_등락"] = round((close - prev) / prev * 100, 2)
+
+        # 코스닥
+        kosdaq_hist = stock.get_index_ohlcv_by_date(start7, PREV_KR, "2001")
+        if not kosdaq_hist.empty:
+            col = get_close_col(kosdaq_hist)
+            result["코스닥"] = round(float(kosdaq_hist[col].iloc[-1]), 2)
+            if len(kosdaq_hist) >= 2:
+                prev  = float(kosdaq_hist[col].iloc[-2])
+                close = float(kosdaq_hist[col].iloc[-1])
+                result["코스닥_등락"] = round((close - prev) / prev * 100, 2)
 
         # 외국인·기관·개인 수급
         trading = stock.get_market_trading_volume_by_date(PREV_KR, PREV_KR, "KOSPI")
         if not trading.empty:
+            trading.columns = [c.strip() for c in trading.columns]
             row = trading.iloc[-1]
             result["외국인"] = int(row.get("외국인", 0))
             result["기관"]   = int(row.get("기관합계", 0))
@@ -140,15 +147,17 @@ def get_ma(prices, n):
 
 def screen_stocks():
     result = []
+    start200 = (NOW - timedelta(days=200)).strftime("%Y%m%d")
+    start10  = (NOW - timedelta(days=10)).strftime("%Y%m%d")
+
     # 코스피 추세 확인
-    kospi_hist = stock.get_index_ohlcv_by_date(
-        (NOW - timedelta(days=200)).strftime("%Y%m%d"), PREV_KR, "1001"
-    )
-    kospi_close = kospi_hist["종가"]
+    kospi_hist = stock.get_index_ohlcv_by_date(start200, PREV_KR, "1001")
+    col = get_close_col(kospi_hist)
+    kospi_close = kospi_hist[col]
     kospi_ma60  = get_ma(kospi_close, 60)
     kospi_ma120 = get_ma(kospi_close, 120)
     kospi_now   = float(kospi_close.iloc[-1])
-    kospi_trend = kospi_now > kospi_ma60 and kospi_now > kospi_ma120
+    kospi_trend = bool(kospi_ma60 and kospi_ma120 and kospi_now > kospi_ma60 and kospi_now > kospi_ma120)
 
     # VIX
     vix_data = yf.Ticker("^VIX").history(period="2d")
@@ -157,74 +166,72 @@ def screen_stocks():
 
     for code in FCF_UNIVERSE:
         try:
-            name = stock.get_market_ticker_name(code)
-            ohlcv = stock.get_market_ohlcv_by_date(
-                (NOW - timedelta(days=200)).strftime("%Y%m%d"), PREV_KR, code
-            )
+            name  = stock.get_market_ticker_name(code)
+            ohlcv = stock.get_market_ohlcv_by_date(start200, PREV_KR, code)
             if ohlcv.empty or len(ohlcv) < 60:
                 continue
 
-            close_series = ohlcv["종가"]
-            vol_series   = ohlcv["거래량"]
+            ohlcv.columns = [c.strip() for c in ohlcv.columns]
+            close_col_name = get_close_col(ohlcv)
+            vol_col_name   = [c for c in ohlcv.columns if "거래량" in c]
+            if not vol_col_name:
+                continue
+            vol_col_name = vol_col_name[0]
+
+            close_series = ohlcv[close_col_name]
+            vol_series   = ohlcv[vol_col_name]
             close_now    = float(close_series.iloc[-1])
 
             ma20  = get_ma(close_series, 20)
             ma60  = get_ma(close_series, 60)
             ma120 = get_ma(close_series, 120)
 
-            # 이평선 정배열
-            aligned = ma20 and ma60 and ma120 and ma20 > ma60 > ma120
+            aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
 
-            # 거래량 1.5배
             vol_now = float(vol_series.iloc[-1])
             vol_avg = float(vol_series.iloc[-21:-1].mean())
             vol_ok  = vol_now >= vol_avg * 1.5
 
-            # 외국인 5일 순매수
-            trading = stock.get_market_trading_volume_by_date(
-                (NOW - timedelta(days=10)).strftime("%Y%m%d"), PREV_KR, code
-            )
-            if not trading.empty and "외국인" in trading.columns:
-                foreign_5d = int(trading["외국인"].iloc[-5:].sum())
-                foreign_ok = foreign_5d > 0
+            trading = stock.get_market_trading_volume_by_date(start10, PREV_KR, code)
+            if not trading.empty:
+                trading.columns = [c.strip() for c in trading.columns]
+                foreign_col = [c for c in trading.columns if "외국인" in c]
+                if foreign_col:
+                    foreign_5d = int(trading[foreign_col[0]].iloc[-5:].sum())
+                    foreign_ok = foreign_5d > 0
+                else:
+                    foreign_5d, foreign_ok = 0, False
             else:
-                foreign_5d = 0
-                foreign_ok = False
+                foreign_5d, foreign_ok = 0, False
 
-            # 손절가·목표가
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            # 필수 5개 통과 여부
-            must_pass = all([True, True, kospi_trend, True, True])
-            # (FCF·밸류는 수동 확인 항목 — 유니버스 편입 시 이미 검증됨)
-
-            # 등급
             score = sum([aligned, vol_ok, foreign_ok, kospi_trend, vix_ok])
             if score >= 4 and aligned:
                 grade = "A"
             elif score >= 3:
                 grade = "B"
             else:
-                continue  # C등급 이하 제외
+                continue
 
             result.append({
-                "종목명":      name,
-                "종목코드":    code,
-                "현재가":      int(close_now),
-                "등급":        grade,
-                "MA20":        int(ma20) if ma20 else None,
-                "MA60":        int(ma60) if ma60 else None,
-                "MA120":       int(ma120) if ma120 else None,
+                "종목명":       name,
+                "종목코드":     code,
+                "현재가":       int(close_now),
+                "등급":         grade,
+                "MA20":         int(ma20) if ma20 else None,
+                "MA60":         int(ma60) if ma60 else None,
+                "MA120":        int(ma120) if ma120 else None,
                 "이평선정배열": aligned,
-                "거래량":      vol_ok,
-                "외국인5일":   foreign_ok,
+                "거래량":       vol_ok,
+                "외국인5일":    foreign_ok,
                 "외국인순매수": foreign_5d,
-                "코스피추세":  kospi_trend,
-                "VIX안정":    vix_ok,
-                "VIX":        round(vix_val, 2),
-                "손절가":      int(stop),
-                "목표가":      int(target),
+                "코스피추세":   kospi_trend,
+                "VIX안정":      vix_ok,
+                "VIX":          round(vix_val, 2),
+                "손절가":       int(stop),
+                "목표가":       int(target),
             })
         except Exception as e:
             print(f"{code} 오류: {e}")
