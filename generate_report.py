@@ -159,7 +159,7 @@ A/B등급 종목이 있으면 종목별로 아래 형식 반복:
     }
     body = {
         "model": "claude-sonnet-4-6",
-        "max_tokens": 3000,
+        "max_tokens": 4096,
         "messages": [{"role": "user", "content": prompt}],
     }
     r = requests.post(
