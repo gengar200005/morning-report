@@ -1,8 +1,8 @@
 import os
-import json
 import base64
 import requests
 import time
+import yfinance as yf
 from datetime import datetime, timedelta
 import pytz
 
@@ -79,21 +79,46 @@ def calc_ma(prices, n):
         return None
     return round(sum(prices[-n:]) / n, 0)
 
+# ── 0. VIX & 코스피 60MA (yfinance) ──────────────
+def get_market_context():
+    """VIX 현재값 + 코스피 실제 60MA 비교"""
+    ctx = {
+        "vix": None, "vix_ok": False,
+        "kospi_ma60": None, "kospi_above_ma60": False,
+    }
+    try:
+        hist = yf.Ticker("^VIX").history(period="5d")
+        if not hist.empty:
+            ctx["vix"]    = round(float(hist["Close"].iloc[-1]), 2)
+            ctx["vix_ok"] = ctx["vix"] < 20
+            print(f"  VIX: {ctx['vix']} ({'✓ 20이하' if ctx['vix_ok'] else '✗ 20초과'})")
+    except Exception as e:
+        print(f"  VIX 오류: {e}")
+
+    try:
+        hist = yf.Ticker("^KS11").history(period="100d")
+        if len(hist) >= 60:
+            ma60 = round(float(hist["Close"].tail(60).mean()), 2)
+            cur  = round(float(hist["Close"].iloc[-1]), 2)
+            ctx["kospi_ma60"]       = ma60
+            ctx["kospi_above_ma60"] = cur > ma60
+            print(f"  코스피 {cur:,.2f} vs MA60 {ma60:,.2f} ({'✓ 위' if ctx['kospi_above_ma60'] else '✗ 아래'})")
+    except Exception as e:
+        print(f"  코스피 MA60 오류: {e}")
+
+    return ctx
+
 # ── 1. 코스피·코스닥 지수 ────────────────────────
 def get_index(token):
     result = {}
-    indices = [
-        ("0001", "코스피"),
-        ("1001", "코스닥"),
-    ]
-    for code, name in indices:
+    for code, name in [("0001", "코스피"), ("1001", "코스닥")]:
         try:
             data = kis_get(token,
                 "/uapi/domestic-stock/v1/quotations/inquire-index-price",
                 "FHPUP02100000",
                 {"FID_COND_MRKT_DIV_CODE": "U", "FID_INPUT_ISCD": code}
             )
-            out = data.get("output", {})
+            out   = data.get("output", {})
             close = float(out.get("bstp_nmix_prpr", 0))
             chg   = float(out.get("bstp_nmix_prdy_vrss", 0))
             pct   = float(out.get("bstp_nmix_prdy_ctrt", 0))
@@ -107,32 +132,31 @@ def get_index(token):
 
 # ── 2. 외국인·기관·개인 수급 (코스피 전체) ────────
 def get_trading(token):
-    result = {"외국인": 0, "기관": 0, "개인": 0}
+    result   = {"외국인": 0, "기관": 0, "개인": 0}
     prev_day = prev_trading_day()
 
-    # ── 방법 1: 투자자별 거래실적 일별 (날짜 범위 필수) ──
+    # 방법 1: 투자자별 거래실적 일별 (날짜 범위 필수)
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
             "FHKST03020100",
             {
                 "FID_COND_MRKT_DIV_CODE": "J",
-                "FID_INPUT_ISCD": "0001",
+                "FID_INPUT_ISCD":   "0001",
                 "FID_INPUT_DATE_1": prev_day,
-                "FID_INPUT_DATE_2": prev_day,   # 시작일 = 종료일 (당일 기준)
+                "FID_INPUT_DATE_2": prev_day,
             }
         )
-        rt = data.get("rt_cd", "?")
+        rt  = data.get("rt_cd", "?")
         msg = data.get("msg1", "")
-        print(f"  수급(방법1) rt_cd={rt} msg={msg} 키={list(data.keys())}")
+        print(f"  수급(방법1) rt_cd={rt} msg={msg}")
         out = data.get("output1") or data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
-            print(f"  수급(방법1) row 키: {list(row.keys())[:10]}")
             result["외국인"] = int(row.get("frgn_ntby_qty", 0))
             result["기관"]   = int(row.get("orgn_ntby_qty", 0))
             result["개인"]   = int(row.get("indv_ntby_qty", 0))
-            print(f"  수급(방법1) 성공: 외국인={result['외국인']:,} 기관={result['기관']:,}")
+            print(f"  수급(방법1) 성공: 외국인={result['외국인']:,}")
             return result
         elif isinstance(out, dict):
             result["외국인"] = int(out.get("frgn_ntby_qty", 0))
@@ -143,7 +167,7 @@ def get_trading(token):
     except Exception as e:
         print(f"  수급(방법1) 오류: {e}")
 
-    # ── 방법 2: 시장별 투자자 시간대 매매동향 ──
+    # 방법 2: 시장별 투자자 시간대 매매동향
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market",
@@ -153,12 +177,11 @@ def get_trading(token):
                 "FID_INPUT_DATE_1": prev_day,
             }
         )
-        rt = data.get("rt_cd", "?")
+        rt  = data.get("rt_cd", "?")
         msg = data.get("msg1", "")
-        print(f"  수급(방법2) rt_cd={rt} msg={msg} 키={list(data.keys())}")
+        print(f"  수급(방법2) rt_cd={rt} msg={msg}")
         out = data.get("output1") or data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
-            # 전체 합산
             frgn, orgn, indv = 0, 0, 0
             for row in out:
                 try:
@@ -170,7 +193,7 @@ def get_trading(token):
             result["외국인"] = frgn
             result["기관"]   = orgn
             result["개인"]   = indv
-            print(f"  수급(방법2) 성공: 외국인={frgn:,} 기관={orgn:,}")
+            print(f"  수급(방법2) 성공: 외국인={frgn:,}")
             return result
     except Exception as e:
         print(f"  수급(방법2) 오류: {e}")
@@ -178,15 +201,13 @@ def get_trading(token):
     print("  ⚠️ 수급 데이터 수집 실패 — 0으로 처리")
     return result
 
-# ── 3. 종목 일봉 데이터 (100건씩 2회 호출) ────────
+# ── 3. 종목 일봉 데이터 ───────────────────────────
 def get_ohlcv(token, code):
     closes  = []
     volumes = []
     try:
         end   = NOW.strftime("%Y%m%d")
-        # 1차: 최근 100일
-        mid = (NOW - timedelta(days=105)).strftime("%Y%m%d")
-        # 2차: 그 이전 100일
+        mid   = (NOW - timedelta(days=105)).strftime("%Y%m%d")
         start = (NOW - timedelta(days=210)).strftime("%Y%m%d")
 
         for s, e in [(start, mid), (mid, end)]:
@@ -195,16 +216,14 @@ def get_ohlcv(token, code):
                 "FHKST03010100",
                 {
                     "FID_COND_MRKT_DIV_CODE": "J",
-                    "FID_INPUT_ISCD": code,
-                    "FID_INPUT_DATE_1": s,
-                    "FID_INPUT_DATE_2": e,
+                    "FID_INPUT_ISCD":      code,
+                    "FID_INPUT_DATE_1":    s,
+                    "FID_INPUT_DATE_2":    e,
                     "FID_PERIOD_DIV_CODE": "D",
-                    "FID_ORG_ADJ_PRC": "0",
+                    "FID_ORG_ADJ_PRC":    "0",
                 }
             )
-            items = data.get("output2", [])
-            if not items:
-                items = data.get("output1", [])
+            items = data.get("output2", []) or data.get("output1", [])
             for item in reversed(items):
                 try:
                     c = float(item.get("stck_clpr", 0))
@@ -215,7 +234,6 @@ def get_ohlcv(token, code):
                 except:
                     continue
             time.sleep(0.3)
-
     except Exception as e:
         print(f"  {code} 일봉 오류: {e}")
 
@@ -224,7 +242,6 @@ def get_ohlcv(token, code):
 # ── 4. 외국인 5일 순매수 (종목별) ─────────────────
 def get_foreign_5d(token, code):
     try:
-        # FHKST01010900: 주식 현재가 투자자 — 종목별 일별 투자자 데이터
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
             "FHKST01010900",
@@ -240,7 +257,7 @@ def get_foreign_5d(token, code):
         total, count = 0, 0
         for item in out:
             if item.get("stck_bsop_date") == today_str:
-                continue  # 당일 미체결 데이터 제외
+                continue
             try:
                 total += int(item.get("frgn_ntby_qty", 0))
                 count += 1
@@ -252,12 +269,38 @@ def get_foreign_5d(token, code):
     except:
         return 0
 
-# ── 5. 체크리스트 스크리닝 ────────────────────────
-def screen_stocks(token, kospi_close):
-    results = []
+# ── 4-A. 종목 가격상세 (PER/PBR/ROE) ──────────────
+def get_price_detail(token, code):
+    try:
+        data = kis_get(token,
+            "/uapi/domestic-stock/v1/quotations/inquire-price",
+            "FHKST01010100",
+            {
+                "FID_COND_MRKT_DIV_CODE": "J",
+                "FID_INPUT_ISCD": code,
+            }
+        )
+        out = data.get("output", {})
+        def sf(v):
+            try:
+                f = float(v)
+                return round(f, 2) if f != 0 else None
+            except:
+                return None
+        return {
+            "per": sf(out.get("per")),
+            "pbr": sf(out.get("pbr")),
+            "roe": sf(out.get("roe")),
+        }
+    except Exception as e:
+        print(f"  {code} 가격상세 오류: {e}")
+        return {"per": None, "pbr": None, "roe": None}
 
-    # 코스피 추세 판단 (간단 기준: 2400 이상)
-    kospi_trend = kospi_close > 2400 if kospi_close else False
+# ── 5. 체크리스트 스크리닝 ────────────────────────
+def screen_stocks(token, mkt_ctx):
+    results  = []
+    kospi_ok = mkt_ctx["kospi_above_ma60"]   # 코스피 60MA 위
+    vix_ok   = mkt_ctx["vix_ok"]             # VIX 20 이하
 
     for code, name in FCF_UNIVERSE:
         try:
@@ -272,7 +315,6 @@ def screen_stocks(token, kospi_close):
             ma20  = calc_ma(closes, 20)
             ma60  = calc_ma(closes, 60)
             ma120 = calc_ma(closes, 120)
-
             aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
 
             vol_now = volumes[-1]
@@ -282,16 +324,22 @@ def screen_stocks(token, kospi_close):
             foreign_5d = get_foreign_5d(token, code)
             foreign_ok = foreign_5d > 0
 
+            detail = get_price_detail(token, code)
+            time.sleep(0.2)
+
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            score = sum([aligned, vol_ok, foreign_ok, kospi_trend])
-            if score >= 3 and aligned:
+            # 점수: 최대 5점 (aligned + vol + foreign + kospi_ma60 + vix)
+            score = sum([aligned, vol_ok, foreign_ok, kospi_ok, vix_ok])
+            if score >= 4 and aligned:
                 grade = "A"
-            elif score >= 2:
+            elif score >= 3:
                 grade = "B"
             else:
                 grade = "C"
+
+            print(f"  {name} [{grade}] {score}/5점 — MA:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok} 코스피MA60:{kospi_ok} VIX:{vix_ok}")
 
             if grade in ("A", "B"):
                 results.append({
@@ -299,6 +347,7 @@ def screen_stocks(token, kospi_close):
                     "종목코드":     code,
                     "현재가":       int(close_now),
                     "등급":         grade,
+                    "점수":         score,
                     "MA20":         int(ma20) if ma20 else 0,
                     "MA60":         int(ma60) if ma60 else 0,
                     "MA120":        int(ma120) if ma120 else 0,
@@ -306,21 +355,24 @@ def screen_stocks(token, kospi_close):
                     "거래량":       "✓" if vol_ok else "✗",
                     "외국인5일":    "✓" if foreign_ok else "✗",
                     "외국인순매수": foreign_5d,
-                    "코스피추세":   "✓" if kospi_trend else "✗",
+                    "코스피MA60":   "✓" if kospi_ok else "✗",
+                    "VIX20이하":    "✓" if vix_ok else "✗",
+                    "PER":          detail["per"],
+                    "PBR":          detail["pbr"],
+                    "ROE":          detail["roe"],
                     "손절가":       int(stop),
                     "목표가":       int(target),
                 })
-            print(f"  {name} [{grade}] ─ MA정배열:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok}")
 
         except Exception as e:
             print(f"  {name} 오류: {e}")
             continue
 
-    results.sort(key=lambda x: (x["등급"], -x["현재가"]))
-    return results, kospi_trend
+    results.sort(key=lambda x: (x["등급"], -x["점수"]))
+    return results
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(indices, trading, candidates, kospi_trend):
+def build_text(indices, trading, candidates, mkt_ctx):
     lines = []
     lines.append(f"{'='*52}")
     lines.append(f"  국장 데이터 브리핑 — {TODAY_STR}")
@@ -340,16 +392,26 @@ def build_text(indices, trading, candidates, kospi_trend):
         sign = "+" if val >= 0 else ""
         lines.append(f"  {key:<6} {sign}{val:,}주")
 
-    lines.append(f"\n【 코스피 추세 】")
-    lines.append(f"  {'✓ 상승추세 유지' if kospi_trend else '✗ 추세 이탈 — 진입 보류'}")
+    lines.append(f"\n【 시장 컨텍스트 】")
+    vix  = mkt_ctx.get("vix")
+    ma60 = mkt_ctx.get("kospi_ma60")
+    vix_str  = f"{vix:.2f}" if vix  else "N/A"
+    ma60_str = f"{ma60:,.2f}" if ma60 else "N/A"
+    lines.append(f"  VIX         {vix_str:>8}  {'✓ 20이하 — 변동성 안정' if mkt_ctx['vix_ok'] else '✗ 20초과 — 변동성 경계'}")
+    lines.append(f"  코스피 MA60 {ma60_str:>10}  {'✓ MA60 위 — 상승추세 유지' if mkt_ctx['kospi_above_ma60'] else '✗ MA60 아래 — 진입 보류'}")
 
     lines.append(f"\n【 체크리스트 스크리닝 결과 】")
     if candidates:
         for c in candidates:
-            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급]")
+            per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
+            pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
+            roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
+            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/5점]")
             lines.append(f"    현재가: {c['현재가']:,}원")
             lines.append(f"    MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}")
             lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 외국인5일: {c['외국인5일']} ({c['외국인순매수']:+,}주)")
+            lines.append(f"    코스피MA60: {c['코스피MA60']} | VIX20이하: {c['VIX20이하']}")
+            lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
     else:
         lines.append("  오늘 조건 충족 종목 없음 — 진입 보류")
@@ -388,6 +450,9 @@ if __name__ == "__main__":
     token = get_token()
     print("✅ 토큰 발급 완료")
 
+    print("📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
+    mkt_ctx = get_market_context()
+
     print("📡 코스피·코스닥 지수 수집 중...")
     indices = get_index(token)
 
@@ -395,14 +460,12 @@ if __name__ == "__main__":
     trading = get_trading(token)
     print(f"  외국인: {trading['외국인']:,} | 기관: {trading['기관']:,} | 개인: {trading['개인']:,}")
 
-    kospi_close = indices.get("코스피", {}).get("close", 0) or 0
-
     print("📡 체크리스트 스크리닝 중...")
-    candidates, kospi_trend = screen_stocks(token, kospi_close)
+    candidates = screen_stocks(token, mkt_ctx)
     print(f"  → A/B등급 종목 {len(candidates)}개")
 
     print("📝 텍스트 생성 중...")
-    text = build_text(indices, trading, candidates, kospi_trend)
+    text = build_text(indices, trading, candidates, mkt_ctx)
     print(text)
 
     print("💾 GitHub 저장 중...")
