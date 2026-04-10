@@ -41,6 +41,20 @@ FCF_UNIVERSE = [
     ("012330", "현대모비스"),
 ]
 
+# 종목별 섹터 ETF 매핑 (pykrx 코드)
+SECTOR_ETF = {
+    "005930": ("091160", "KODEX반도체"),
+    "000660": ("091160", "KODEX반도체"),
+    "005380": ("091180", "KODEX자동차"),
+    "035420": None,                        # NAVER — 적합한 ETF 없음
+    "051910": None,                        # LG화학 — ETF 코드 불확실
+    "068270": None,                        # 셀트리온 — ETF 코드 불확실
+    "028260": None,                        # 삼성물산 — 지주사, ETF 없음
+    "105560": ("091170", "KODEX은행"),
+    "055550": ("091170", "KODEX은행"),
+    "012330": ("091180", "KODEX자동차"),
+}
+
 # ── KIS API 토큰 발급 ──────────────────────────────
 def get_token():
     url = f"{KIS_BASE_URL}/oauth2/tokenP"
@@ -79,6 +93,51 @@ def calc_ma(prices, n):
     if len(prices) < n:
         return None
     return round(sum(prices[-n:]) / n, 0)
+
+# ── 섹터 ETF 60MA 체크 (pykrx) ───────────────────
+def get_etf_ma60(etf_info):
+    """섹터 ETF가 60MA 위인지 확인. 매핑 없으면 None 반환."""
+    if not etf_info:
+        return None, "N/A"
+    etf_code, etf_name = etf_info
+    try:
+        end   = NOW.strftime("%Y%m%d")
+        start = (NOW - timedelta(days=100)).strftime("%Y%m%d")
+        df = krx.get_etf_ohlcv_by_date(start, end, etf_code)
+        if len(df) < 60:
+            return None, etf_name
+        # 종가 컬럼 탐색
+        for col in ["종가", "Close", "close", "NAV"]:
+            if col in df.columns:
+                prices = df[col].dropna()
+                if len(prices) >= 60:
+                    ma60 = float(prices.tail(60).mean())
+                    cur  = float(prices.iloc[-1])
+                    above = cur > ma60
+                    print(f"    ETF {etf_name}: {cur:,.0f} vs MA60 {ma60:,.0f} ({'✓' if above else '✗'})")
+                    return above, etf_name
+    except Exception as e:
+        print(f"    ETF {etf_name} 오류: {e}")
+    return None, etf_name
+
+# ── 저항→지지 전환 체크 ───────────────────────────
+def check_sr(closes, window=5, tolerance=0.04):
+    """전 고점(저항) 근처에 현재가가 있으면 저항→지지 전환 신호."""
+    if len(closes) < 40:
+        return False, None
+    current = closes[-1]
+    # 최근 10~80일 구간에서 스윙 하이 탐색
+    search = closes[-80:-10] if len(closes) >= 90 else closes[:-10]
+    swing_highs = []
+    for i in range(window, len(search) - window):
+        if (all(search[i] >= search[i-j] for j in range(1, window+1)) and
+                all(search[i] >= search[i+j] for j in range(1, window+1))):
+            swing_highs.append(search[i])
+    for high in sorted(swing_highs, key=lambda x: abs(x - current)):
+        # 현재가가 전 고점의 ±4% 이내 (저항 돌파 후 지지 테스트 중)
+        if high * (1 - tolerance) <= current <= high * (1 + tolerance):
+            return True, int(high)
+    return False, None
 
 # ── 0. VIX & 코스피 60MA (yfinance) ──────────────
 def get_market_context():
@@ -312,19 +371,31 @@ def screen_stocks(token, mkt_ctx):
             detail = get_price_detail(token, code)
             time.sleep(0.2)
 
+            # 섹터 ETF 60MA
+            etf_ok, etf_name = get_etf_ma60(SECTOR_ETF.get(code))
+
+            # 저항→지지 전환
+            sr_ok, sr_level = check_sr(closes)
+
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            # 점수: 최대 5점 (aligned + vol + foreign + kospi_ma60 + vix)
+            # 점수: 5점 기본 + ETF(해당 시) + SR 보너스
             score = sum([aligned, vol_ok, foreign_ok, kospi_ok, vix_ok])
-            if score >= 4 and aligned:
+            if etf_ok is True:  score += 1
+            if sr_ok:           score += 1
+            max_score = 5 + (1 if etf_ok is not None else 0) + 1
+
+            if score >= max_score - 1 and aligned:
                 grade = "A"
-            elif score >= 3:
+            elif score >= max_score - 2:
                 grade = "B"
             else:
                 grade = "C"
 
-            print(f"  {name} [{grade}] {score}/5점 — MA:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok} 코스피MA60:{kospi_ok} VIX:{vix_ok}")
+            etf_str = f"✓ {etf_name}" if etf_ok is True else (f"✗ {etf_name}" if etf_ok is False else "N/A")
+            sr_str  = f"✓ {sr_level:,}원" if sr_ok else "✗"
+            print(f"  {name} [{grade}] {score}/{max_score}점 — MA:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok} 코스피:{kospi_ok} VIX:{vix_ok} ETF:{etf_str} SR:{sr_str}")
 
             if grade in ("A", "B"):
                 results.append({
@@ -333,6 +404,7 @@ def screen_stocks(token, mkt_ctx):
                     "현재가":       int(close_now),
                     "등급":         grade,
                     "점수":         score,
+                    "최대점수":     max_score,
                     "MA20":         int(ma20) if ma20 else 0,
                     "MA60":         int(ma60) if ma60 else 0,
                     "MA120":        int(ma120) if ma120 else 0,
@@ -342,6 +414,8 @@ def screen_stocks(token, mkt_ctx):
                     "외국인순매수": foreign_5d,
                     "코스피MA60":   "✓" if kospi_ok else "✗",
                     "VIX20이하":    "✓" if vix_ok else "✗",
+                    "섹터ETF":      etf_str,
+                    "저항지지":     sr_str,
                     "PER":          detail["per"],
                     "PBR":          detail["pbr"],
                     "ROE":          detail["roe"],
@@ -392,11 +466,12 @@ def build_text(indices, trading, candidates, mkt_ctx):
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
             pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
-            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/5점]")
+            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점]")
             lines.append(f"    현재가: {c['현재가']:,}원")
             lines.append(f"    MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}")
             lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 외국인5일: {c['외국인5일']} ({c['외국인순매수']:+,}주)")
             lines.append(f"    코스피MA60: {c['코스피MA60']} | VIX20이하: {c['VIX20이하']}")
+            lines.append(f"    섹터ETF60MA: {c['섹터ETF']} | 저항→지지: {c['저항지지']}")
             lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
     else:
