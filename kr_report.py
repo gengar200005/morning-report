@@ -102,37 +102,29 @@ def get_index(token):
 def get_trading(token):
     result = {"외국인": 0, "기관": 0, "개인": 0}
     try:
-        # 투자자별 매매동향 조회
+        # 투자자별 거래실적 (일별) — FHKST03020100은 시장 전체 수급용
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
-            "FHKST01010900",
+            "FHKST03020100",
             {
                 "FID_COND_MRKT_DIV_CODE": "J",
                 "FID_INPUT_ISCD": "0001",  # 코스피
+                "FID_INPUT_DATE_1": NOW.strftime("%Y%m%d"),
             }
         )
         print(f"  수급 API 응답 키: {list(data.keys())}")
-        out = data.get("output", [])
+        out = data.get("output1", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
             print(f"  수급 첫 번째 row 키: {list(row.keys())[:10]}")
-            # 외국인
-            for key in ["frgn_ntby_qty", "frgn_ntby_tr_pbmn"]:
-                if key in row:
-                    result["외국인"] = int(row[key])
-                    break
-            # 기관
-            for key in ["orgn_ntby_qty", "orgn_ntby_tr_pbmn"]:
-                if key in row:
-                    result["기관"] = int(row[key])
-                    break
-            # 개인
-            for key in ["indv_ntby_qty", "indv_ntby_tr_pbmn"]:
-                if key in row:
-                    result["개인"] = int(row[key])
-                    break
+            result["외국인"] = int(row.get("frgn_ntby_qty", 0))
+            result["기관"]   = int(row.get("orgn_ntby_qty", 0))
+            result["개인"]   = int(row.get("indv_ntby_qty", 0))
         elif isinstance(out, dict):
             print(f"  수급 dict 키: {list(out.keys())[:10]}")
+            result["외국인"] = int(out.get("frgn_ntby_qty", 0))
+            result["기관"]   = int(out.get("orgn_ntby_qty", 0))
+            result["개인"]   = int(out.get("indv_ntby_qty", 0))
     except Exception as e:
         print(f"  수급 오류: {e}")
     return result
@@ -183,29 +175,24 @@ def get_ohlcv(token, code):
 # ── 4. 외국인 5일 순매수 (종목별) ─────────────────
 def get_foreign_5d(token, code):
     try:
+        # FHKST01010900: 주식 현재가 투자자 — 종목별 일별 투자자 데이터
         data = kis_get(token,
-            "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
-            "FHKST03010100",
+            "/uapi/domestic-stock/v1/quotations/inquire-investor",
+            "FHKST01010900",
             {
                 "FID_COND_MRKT_DIV_CODE": "J",
                 "FID_INPUT_ISCD": code,
-                "FID_INPUT_DATE_1": (NOW - timedelta(days=14)).strftime("%Y%m%d"),
-                "FID_INPUT_DATE_2": NOW.strftime("%Y%m%d"),
-                "FID_PERIOD_DIV_CODE": "D",
-                "FID_ORG_ADJ_PRC": "0",
             }
         )
-        items = data.get("output2", [])[:5]
+        out = data.get("output1", [])
+        if isinstance(out, dict):
+            out = [out]
         total = 0
-        for item in items:
-            # 외국인 순매수량 필드 탐색
-            for key in ["frgn_ntby_qty", "frgn_vol"]:
-                if key in item:
-                    try:
-                        total += int(item[key])
-                    except:
-                        pass
-                    break
+        for item in out[:5]:  # 최근 5 거래일
+            try:
+                total += int(item.get("frgn_ntby_qty", 0))
+            except:
+                pass
         return total
     except:
         return 0
