@@ -19,6 +19,13 @@ KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
+def prev_trading_day():
+    """전 거래일 날짜 반환 (06:00 실행 시 당일 장 전이므로 전날 기준)"""
+    d = NOW.date() - timedelta(days=1)
+    while d.weekday() >= 5:   # 토(5)·일(6) 건너뜀
+        d -= timedelta(days=1)
+    return d.strftime("%Y%m%d")
+
 # FCF 흑자 확인된 유니버스 (분기별 수동 업데이트)
 FCF_UNIVERSE = [
     ("005930", "삼성전자"),
@@ -109,7 +116,7 @@ def get_trading(token):
             {
                 "FID_COND_MRKT_DIV_CODE": "J",
                 "FID_INPUT_ISCD": "0001",  # 코스피
-                "FID_INPUT_DATE_1": NOW.strftime("%Y%m%d"),
+                "FID_INPUT_DATE_1": prev_trading_day(),  # 전 거래일 기준
             }
         )
         print(f"  수급 API 응답 키: {list(data.keys())}")
@@ -187,12 +194,18 @@ def get_foreign_5d(token, code):
         out = data.get("output1", [])
         if isinstance(out, dict):
             out = [out]
-        total = 0
-        for item in out[:5]:  # 최근 5 거래일
+        today_str = NOW.strftime("%Y%m%d")
+        total, count = 0, 0
+        for item in out:
+            if item.get("stck_bsop_date") == today_str:
+                continue  # 당일 미체결 데이터 제외
             try:
                 total += int(item.get("frgn_ntby_qty", 0))
+                count += 1
             except:
                 pass
+            if count >= 5:
+                break
         return total
     except:
         return 0
