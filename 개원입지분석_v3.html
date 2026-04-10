@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소화기내과 개원입지 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f6f5f0;--white:#fff;--card:#fff;
+  --ink:#1a1a1a;--ink2:#444;--ink3:#888;--ink4:#bbb;
+  --line:#e0ddd6;--line2:#eee;
+  --blue:#2563eb;--blue-bg:#eef3ff;--blue-light:#dbeafe;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --green:#059669;--green-bg:#ecfdf5;
+  --amber:#d97706;--amber-bg:#fffbeb;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+  --shadow2:0 4px 12px rgba(0,0,0,.08);
+  --radius:10px;
+}
+html{font-size:14px}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;padding-env:safe-area-inset-top safe-area-inset-right safe-area-inset-bottom safe-area-inset-left}
+
+/* Header */
+header{background:var(--white);border-bottom:1px solid var(--line);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:baseline;gap:10px}
+.logo h1{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);letter-spacing:-0.5px}
+.logo .badge{font-size:10px;background:var(--blue);color:#fff;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.3px}
+.header-meta{font-size:11px;color:var(--ink3)}
+
+/* Tabs */
+nav{background:var(--white);border-bottom:1px solid var(--line);padding:0 32px;display:flex;gap:0}
+nav button{background:none;border:none;padding:12px 20px;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;transition:.15s}
+nav button:hover{color:var(--ink2)}
+nav button.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+
+/* Main */
+main{max-width:1200px;margin:0 auto;padding:24px 32px 80px}
+.panel{display:none}
+.panel.on{display:block}
+
+/* Stat cards row */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.stat-card .label{font-size:11px;color:var(--ink3);font-weight:500;margin-bottom:4px}
+.stat-card .val{font-size:26px;font-weight:900;color:var(--ink);letter-spacing:-1px}
+.stat-card .sub{font-size:11px;color:var(--ink4);margin-top:2px}
+
+/* Table */
+.tbl-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.tbl-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line2)}
+.tbl-bar h2{font-size:15px;font-weight:700}
+.tbl-bar .ctrls{display:flex;gap:8px}
+.tbl-bar input,.tbl-bar select{border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--ink)}
+.tbl-bar input{width:160px;max-width:100%}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;white-space:nowrap;min-width:640px}
+th{text-align:left;padding:8px 14px;font-size:11px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;position:sticky;top:0;background:var(--card)}
+th:hover{color:var(--ink)}
+th.asc::after{content:' ↑';color:var(--blue)}
+th.desc::after{content:' ↓';color:var(--blue)}
+td{padding:9px 14px;font-size:13px;border-bottom:1px solid var(--line2)}
+tr:hover td{background:#fafaf7}
+tr{cursor:pointer}
+tr td{-webkit-tap-highlight-color:rgba(37,99,235,.08)}
+.rk{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-size:11px;font-weight:700}
+.rk-1{background:var(--amber-bg);color:var(--amber)}
+.rk-2{background:#f0f0f0;color:#666}
+.rk-3{background:#fdf4e8;color:#b45309}
+.rk-n{background:transparent;color:var(--ink3)}
+
+/* Score pill */
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.pill-hi{background:var(--green-bg);color:var(--green)}
+.pill-mid{background:var(--blue-bg);color:var(--blue)}
+.pill-lo{background:var(--red-bg);color:var(--red)}
+
+/* Mini bar */
+.mbar{display:flex;align-items:center;gap:6px}
+.mbar-track{width:60px;height:5px;background:var(--line2);border-radius:3px;overflow:hidden}
+.mbar-fill{height:100%;border-radius:3px}
+
+/* Detail panel */
+.detail{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-top:16px;box-shadow:var(--shadow2);display:none;overflow:hidden}
+.detail.open{display:block}
+.detail-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line2)}
+.detail-head h3{font-size:18px;font-weight:800}
+.close-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink3)}
+.close-btn:hover{background:var(--line2)}
+.detail-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.detail-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dm{background:var(--bg);border-radius:8px;padding:12px;text-align:center}
+.dm .dl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.3px}
+.dm .dv{font-size:20px;font-weight:900;margin-top:2px}
+.dm .ds{font-size:10px;color:var(--ink4)}
+.chart-box{background:var(--bg);border-radius:8px;padding:16px}
+.chart-box h4{font-size:12px;font-weight:700;margin-bottom:12px;color:var(--ink2)}
+
+/* Horizontal bar */
+.hbar{margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.hbar-label{width:60px;text-align:right;font-size:11px;color:var(--ink3);flex-shrink:0}
+.hbar-track{flex:1;height:18px;background:var(--line2);border-radius:4px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#fff;min-width:fit-content}
+.hbar-val{width:55px;font-size:11px;color:var(--ink2);text-align:right;flex-shrink:0}
+
+/* Today's pick */
+.today-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow2);overflow:hidden;margin-bottom:24px}
+.today-top{padding:28px 28px 20px;background:linear-gradient(135deg,var(--blue-bg),var(--green-bg));border-bottom:1px solid var(--line2)}
+.today-tag{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blue);font-weight:700;margin-bottom:6px}
+.today-name{font-family:'DM Serif Display',serif;font-size:28px;color:var(--ink)}
+.today-score-line{font-size:13px;color:var(--ink2);margin-top:4px;font-weight:500}
+.today-body{padding:24px 28px}
+.today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.ts{background:var(--bg);border-radius:8px;padding:12px;text-align:center;border:1px solid var(--line)}
+.ts .tv{font-size:22px;font-weight:900;color:var(--ink)}
+.ts .tl{font-size:10px;color:var(--ink3);margin-top:2px}
+.section-block{margin-bottom:18px}
+.section-title{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;padding-left:10px;border-left:3px solid var(--blue)}
+.section-text{font-size:13px;line-height:1.85;color:var(--ink2);padding-left:13px}
+.hl{color:var(--green);font-weight:700}
+.warn{color:var(--red);font-weight:600}
+.nav-btns{display:flex;gap:10px;margin-top:4px}
+.nav-btns button{padding:8px 18px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600;border:1px solid var(--line)}
+.btn-prev{background:var(--card);color:var(--ink2)}
+.btn-next{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-jump{background:var(--bg);color:var(--ink3)}
+
+/* Compare */
+.cmp-bar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.cmp-bar select{border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:13px;font-family:inherit;background:var(--card);min-width:0;flex:1;max-width:100%}
+.cmp-bar .vs{font-weight:800;color:var(--ink4);font-size:16px}
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cmp-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.cmp-card h3{font-size:17px;font-weight:800;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.cmp-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.cmp-row .cl{color:var(--ink3)}
+.cmp-row .cv{font-weight:700}
+.win{color:var(--green)}
+
+/* Responsive - Tablet */
+@media(max-width:900px){
+  header{padding:14px 16px;flex-direction:column;align-items:flex-start;gap:4px}
+  .logo h1{font-size:18px}
+  .header-meta{font-size:10px}
+  nav{padding:0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{padding:10px 14px;font-size:12px;flex-shrink:0}
+  main{padding:14px 16px 60px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat-card{padding:12px 14px}
+  .stat-card .val{font-size:22px}
+  .tbl-bar{flex-direction:column;align-items:stretch;gap:8px;padding:12px 14px}
+  .tbl-bar .ctrls{width:100%}
+  .tbl-bar input{flex:1;width:auto}
+  .tbl-bar select{flex-shrink:0}
+  .detail-body{grid-template-columns:1fr}
+  .today-top{padding:20px 18px 16px}
+  .today-name{font-size:22px}
+  .today-body{padding:16px 18px}
+  .today-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .ts .tv{font-size:18px}
+  .cmp-grid{grid-template-columns:1fr}
+  .cmp-bar select{min-width:0;flex:1}
+  .cmp-bar{gap:8px}
+  .cmp-card{padding:16px}
+  .cmp-card h3{font-size:15px}
+  .section-text{font-size:12px;line-height:1.75}
+  .nav-btns{flex-wrap:wrap}
+  .nav-btns button{padding:8px 14px;font-size:12px}
+}
+/* Responsive - Phone */
+@media(max-width:480px){
+  html{font-size:13px}
+  header{padding:12px 14px}
+  .logo h1{font-size:16px}
+  .logo .badge{font-size:9px;padding:2px 6px}
+  nav button{padding:9px 12px;font-size:11px}
+  main{padding:10px 12px 50px}
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-card{padding:10px 12px}
+  .stat-card .val{font-size:18px}
+  .stat-card .label,.stat-card .sub{font-size:10px}
+  /* Table: hide less-important cols on phone */
+  th:nth-child(7),td:nth-child(7),
+  th:nth-child(8),td:nth-child(8){display:none}
+  th,td{padding:6px 8px;font-size:11px}
+  .rk{width:20px;height:20px;font-size:10px;border-radius:4px}
+  .pill{font-size:11px;padding:2px 8px}
+  .tbl-bar h2{font-size:13px}
+  .detail-head h3{font-size:15px}
+  .detail-body{padding:14px}
+  .detail-metrics{grid-template-columns:repeat(2,1fr);gap:8px}
+  .dm{padding:10px}
+  .dm .dv{font-size:16px}
+  .today-top{padding:16px 14px 12px}
+  .today-tag{font-size:9px}
+  .today-name{font-size:18px}
+  .today-score-line{font-size:11px}
+  .today-body{padding:14px}
+  .today-stats{gap:6px}
+  .ts{padding:8px}
+  .ts .tv{font-size:16px}
+  .ts .tl{font-size:9px}
+  .section-title{font-size:12px}
+  .section-text{font-size:11px;padding-left:10px}
+  .hbar{gap:4px;margin-bottom:4px}
+  .hbar-label{width:44px;font-size:10px}
+  .hbar-track{height:16px}
+  .hbar-fill{font-size:9px;padding-left:4px}
+  .hbar-val{width:44px;font-size:10px}
+  .chart-box{padding:12px}
+  .chart-box h4{font-size:11px;margin-bottom:8px}
+  .cmp-bar select{font-size:12px;padding:6px 10px}
+  .cmp-bar .vs{font-size:14px}
+  .cmp-card h3{font-size:14px;flex-wrap:wrap;gap:4px}
+  .cmp-row{font-size:12px;padding:6px 0}
+  .nav-btns button{padding:7px 12px;font-size:11px;flex:1}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <h1>개원입지 분석</h1>
+    <span class="badge">소화기내과</span>
+  </div>
+  <div class="header-meta">이촌동 기준 45분 이내 · 서울 25구 + 경기 생활권 33개 · 심평원 25.12 / 행안부 26.02</div>
+</header>
+
+<nav>
+  <button class="on" data-p="today">오늘의 분석</button>
+  <button data-p="rank">전체 랭킹</button>
+  <button data-p="compare">비교분석</button>
+</nav>
+
+<main>
+<!-- TODAY -->
+<div class="panel on" id="p-today"></div>
+
+<!-- RANKING -->
+<div class="panel" id="p-rank">
+  <div class="stats" id="sumCards"></div>
+  <div class="tbl-wrap">
+    <div class="tbl-bar">
+      <h2>58개 생활권 종합 순위</h2>
+      <div class="ctrls">
+        <input type="text" id="qSearch" placeholder="생활권 검색…">
+        <select id="qRegion"><option value="all">전체</option><option value="서울">서울</option><option value="경기">경기</option></select>
+      </div>
+    </div>
+    <div class="tbl-scroll" style="max-height:70vh;overflow-y:auto">
+      <table><thead><tr>
+        <th data-s="rank">순위</th>
+        <th data-s="zone">생활권</th>
+        <th data-s="population">인구</th>
+        <th data-s="naegwa_clinics">내과</th>
+        <th data-s="pop_per_naegwa">인구/내과</th>
+        <th data-s="elderly_ratio">고령%</th>
+        <th data-s="middle_aged_ratio">중장년%</th>
+        <th data-s="clinic_density">밀도</th>
+        <th data-s="composite_score">종합</th>
+      </tr></thead><tbody id="tBody"></tbody></table>
+    </div>
+  </div>
+  <div class="detail" id="detailPanel"></div>
+</div>
+
+<!-- COMPARE -->
+<div class="panel" id="p-compare">
+  <div class="cmp-bar">
+    <select id="cA"></select>
+    <span class="vs">VS</span>
+    <select id="cB"></select>
+  </div>
+  <div class="cmp-grid" id="cmpGrid"></div>
+</div>
+</main>
+
+<script>
+const D=[{"zone":"김포 통진·외곽 생활권","region":"경기","population":56350,"age_0_14":4049,"age_15_34":9659,"age_35_54":14261,"age_55_64":11676,"age_65_plus":16684,"total_clinics":15,"naegwa_clinics":13,"hospitals_count":2,"total_doctors":76,"specialists":34,"pop_per_naegwa":4335,"elderly_ratio":29.6,"middle_aged_ratio":46.0,"clinic_density":2.3,"score_competition":94.5,"score_elderly":100.0,"score_population":0.0,"score_middle_aged":63.3,"composite_score":70.7,"rank":1},{"zone":"광주 초월·곤지암 생활권","region":"경기","population":100927,"age_0_14":9009,"age_15_34":19386,"age_35_54":29193,"age_55_64":19226,"age_65_plus":24100,"total_clinics":31,"naegwa_clinics":24,"hospitals_count":1,"total_doctors":118,"specialists":55,"pop_per_naegwa":4205,"elderly_ratio":23.9,"middle_aged_ratio":48.0,"clinic_density":2.4,"score_competition":90.9,"score_elderly":66.9,"score_population":7.5,"score_middle_aged":81.7,"composite_score":66.4,"rank":2},{"zone":"경기 고양시 일산동구","region":"경기","population":297383,"age_0_14":29204,"age_15_34":71064,"age_35_54":89898,"age_55_64":53453,"age_65_plus":53718,"total_clinics":187,"naegwa_clinics":76,"hospitals_count":14,"total_doctors":1508,"specialists":996,"pop_per_naegwa":3913,"elderly_ratio":18.1,"middle_aged_ratio":48.2,"clinic_density":2.6,"score_competition":83.0,"score_elderly":33.1,"score_population":40.7,"score_middle_aged":83.5,"composite_score":62.2,"rank":3},{"zone":"광주 경안 시내권","region":"경기","population":175444,"age_0_14":20644,"age_15_34":37429,"age_35_54":56507,"age_55_64":29667,"age_65_plus":31174,"total_clinics":72,"naegwa_clinics":42,"hospitals_count":3,"total_doctors":297,"specialists":183,"pop_per_naegwa":4177,"elderly_ratio":17.8,"middle_aged_ratio":49.1,"clinic_density":2.4,"score_competition":90.2,"score_elderly":31.4,"score_population":20.1,"score_middle_aged":91.7,"composite_score":61.8,"rank":4},{"zone":"군포 당동·당정 생활권","region":"경기","population":99828,"age_0_14":10013,"age_15_34":23403,"age_35_54":29526,"age_55_64":18156,"age_65_plus":18718,"total_clinics":33,"naegwa_clinics":22,"hospitals_count":2,"total_doctors":183,"specialists":130,"pop_per_naegwa":4538,"elderly_ratio":18.8,"middle_aged_ratio":47.8,"clinic_density":2.2,"score_competition":100.0,"score_elderly":37.2,"score_population":7.3,"score_middle_aged":79.8,"composite_score":61.7,"rank":5},{"zone":"남양주 와부·화도 생활권","region":"경기","population":202932,"age_0_14":19192,"age_15_34":42203,"age_35_54":59004,"age_55_64":37084,"age_65_plus":45405,"total_clinics":94,"naegwa_clinics":57,"hospitals_count":3,"total_doctors":291,"specialists":159,"pop_per_naegwa":3560,"elderly_ratio":22.4,"middle_aged_ratio":47.3,"clinic_density":2.8,"score_competition":73.3,"score_elderly":58.1,"score_population":24.7,"score_middle_aged":75.2,"composite_score":60.2,"rank":6},{"zone":"경기 고양시 덕양구","region":"경기","population":484682,"age_0_14":51186,"age_15_34":107530,"age_35_54":149874,"age_55_64":81818,"age_65_plus":94193,"total_clinics":302,"naegwa_clinics":172,"hospitals_count":11,"total_doctors":1146,"specialists":693,"pop_per_naegwa":2818,"elderly_ratio":19.4,"middle_aged_ratio":47.8,"clinic_density":3.5,"score_competition":53.1,"score_elderly":40.7,"score_population":72.3,"score_middle_aged":79.8,"composite_score":59.2,"rank":7},{"zone":"김포 고촌·양촌 생활권","region":"경기","population":82269,"age_0_14":11929,"age_15_34":15892,"age_35_54":28270,"age_55_64":11278,"age_65_plus":14891,"total_clinics":29,"naegwa_clinics":19,"hospitals_count":1,"total_doctors":87,"specialists":43,"pop_per_naegwa":4330,"elderly_ratio":18.1,"middle_aged_ratio":48.1,"clinic_density":2.3,"score_competition":94.3,"score_elderly":33.1,"score_population":4.4,"score_middle_aged":82.6,"composite_score":58.7,"rank":8},{"zone":"서울 도봉구","region":"서울","population":299295,"age_0_14":21464,"age_15_34":64540,"age_35_54":80948,"age_55_64":53280,"age_65_plus":78991,"total_clinics":176,"naegwa_clinics":109,"hospitals_count":5,"total_doctors":678,"specialists":384,"pop_per_naegwa":2746,"elderly_ratio":26.4,"middle_aged_ratio":44.8,"clinic_density":3.6,"score_competition":51.1,"score_elderly":81.4,"score_population":41.0,"score_middle_aged":52.3,"composite_score":56.9,"rank":9},{"zone":"서울 노원구","region":"서울","population":482293,"age_0_14":42834,"age_15_34":116556,"age_35_54":139643,"age_55_64":77641,"age_65_plus":105534,"total_clinics":401,"naegwa_clinics":187,"hospitals_count":8,"total_doctors":1624,"specialists":964,"pop_per_naegwa":2579,"elderly_ratio":21.9,"middle_aged_ratio":45.1,"clinic_density":3.9,"score_competition":46.6,"score_elderly":55.2,"score_population":71.9,"score_middle_aged":55.0,"composite_score":55.5,"rank":10},{"zone":"서울 양천구","region":"서울","population":424499,"age_0_14":45513,"age_15_34":96748,"age_35_54":130681,"age_55_64":66325,"age_65_plus":85165,"total_clinics":333,"naegwa_clinics":155,"hospitals_count":7,"total_doctors":1471,"specialists":778,"pop_per_naegwa":2739,"elderly_ratio":20.1,"middle_aged_ratio":46.4,"clinic_density":3.7,"score_competition":50.9,"score_elderly":44.8,"score_population":62.1,"score_middle_aged":67.0,"composite_score":54.8,"rank":11},{"zone":"서울 은평구","region":"서울","population":454341,"age_0_14":35539,"age_15_34":110404,"age_35_54":132227,"age_55_64":72951,"age_65_plus":103143,"total_clinics":339,"naegwa_clinics":204,"hospitals_count":12,"total_doctors":1332,"specialists":777,"pop_per_naegwa":2227,"elderly_ratio":22.7,"middle_aged_ratio":45.2,"clinic_density":4.5,"score_competition":37.0,"score_elderly":59.9,"score_population":67.1,"score_middle_aged":56.0,"composite_score":52.5,"rank":12},{"zone":"경기 고양시 일산서구","region":"경기","population":277365,"age_0_14":27378,"age_15_34":64767,"age_35_54":81594,"age_55_64":51667,"age_65_plus":51909,"total_clinics":191,"naegwa_clinics":96,"hospitals_count":6,"total_doctors":814,"specialists":464,"pop_per_naegwa":2889,"elderly_ratio":18.7,"middle_aged_ratio":48.0,"clinic_density":3.5,"score_competition":55.0,"score_elderly":36.6,"score_population":37.3,"score_middle_aged":81.7,"composite_score":52.2,"rank":13},{"zone":"서울 중랑구","region":"서울","population":376884,"age_0_14":27382,"age_15_34":89978,"age_35_54":105030,"age_55_64":65535,"age_65_plus":88899,"total_clinics":269,"naegwa_clinics":164,"hospitals_count":16,"total_doctors":1069,"specialists":637,"pop_per_naegwa":2298,"elderly_ratio":23.6,"middle_aged_ratio":45.3,"clinic_density":4.4,"score_competition":38.9,"score_elderly":65.1,"score_population":54.1,"score_middle_aged":56.9,"composite_score":52.1,"rank":14},{"zone":"서울 강동구","region":"서울","population":500063,"age_0_14":54589,"age_15_34":117097,"age_35_54":156725,"age_55_64":72705,"age_65_plus":98877,"total_clinics":476,"naegwa_clinics":217,"hospitals_count":20,"total_doctors":2319,"specialists":1301,"pop_per_naegwa":2304,"elderly_ratio":19.8,"middle_aged_ratio":45.9,"clinic_density":4.3,"score_competition":39.1,"score_elderly":43.0,"score_population":74.9,"score_middle_aged":62.4,"composite_score":51.9,"rank":15},{"zone":"서울 송파구","region":"서울","population":649042,"age_0_14":69131,"age_15_34":160720,"age_35_54":205618,"age_55_64":92824,"age_65_plus":120659,"total_clinics":661,"naegwa_clinics":339,"hospitals_count":25,"total_doctors":3553,"specialists":2184,"pop_per_naegwa":1915,"elderly_ratio":18.6,"middle_aged_ratio":46.0,"clinic_density":5.2,"score_competition":28.5,"score_elderly":36.0,"score_population":100.0,"score_middle_aged":63.3,"composite_score":51.6,"rank":16},{"zone":"경기 안양시 만안구","region":"경기","population":233578,"age_0_14":19864,"age_15_34":54232,"age_35_54":65876,"age_55_64":41660,"age_65_plus":51912,"total_clinics":140,"naegwa_clinics":83,"hospitals_count":3,"total_doctors":539,"specialists":318,"pop_per_naegwa":2814,"elderly_ratio":22.2,"middle_aged_ratio":46.0,"clinic_density":3.6,"score_competition":53.0,"score_elderly":57.0,"score_population":29.9,"score_middle_aged":63.3,"composite_score":51.4,"rank":17},{"zone":"서울 성북구","region":"서울","population":422542,"age_0_14":36977,"age_15_34":111008,"age_35_54":121927,"age_55_64":64600,"age_65_plus":87961,"total_clinics":272,"naegwa_clinics":157,"hospitals_count":7,"total_doctors":1343,"specialists":787,"pop_per_naegwa":2691,"elderly_ratio":20.8,"middle_aged_ratio":44.1,"clinic_density":3.7,"score_competition":49.6,"score_elderly":48.8,"score_population":61.8,"score_middle_aged":45.9,"composite_score":51.1,"rank":18},{"zone":"남양주 진접·오남 생활권","region":"경기","population":189095,"age_0_14":17913,"age_15_34":42235,"age_35_54":54745,"age_55_64":34102,"age_65_plus":40064,"total_clinics":95,"naegwa_clinics":66,"hospitals_count":8,"total_doctors":434,"specialists":300,"pop_per_naegwa":2865,"elderly_ratio":21.2,"middle_aged_ratio":47.0,"clinic_density":3.5,"score_competition":54.4,"score_elderly":51.2,"score_population":22.4,"score_middle_aged":72.5,"composite_score":50.8,"rank":19},{"zone":"경기 부천시 원미구","region":"경기","population":383544,"age_0_14":34620,"age_15_34":90951,"age_35_54":114432,"age_55_64":68236,"age_65_plus":75247,"total_clinics":339,"naegwa_clinics":169,"hospitals_count":16,"total_doctors":1767,"specialists":1030,"pop_per_naegwa":2269,"elderly_ratio":19.6,"middle_aged_ratio":47.6,"clinic_density":4.4,"score_competition":38.1,"score_elderly":41.9,"score_population":55.2,"score_middle_aged":78.0,"composite_score":50.4,"rank":20},{"zone":"의왕 내손·청계 생활권","region":"경기","population":84186,"age_0_14":9126,"age_15_34":19185,"age_35_54":24257,"age_55_64":15694,"age_65_plus":15906,"total_clinics":41,"naegwa_clinics":25,"hospitals_count":0,"total_doctors":105,"specialists":52,"pop_per_naegwa":3367,"elderly_ratio":18.9,"middle_aged_ratio":47.5,"clinic_density":3.0,"score_competition":68.1,"score_elderly":37.8,"score_population":4.7,"score_middle_aged":77.1,"composite_score":49.6,"rank":21},{"zone":"경기 부천시 소사구","region":"경기","population":225010,"age_0_14":22752,"age_15_34":47779,"age_35_54":68119,"age_55_64":37816,"age_65_plus":48505,"total_clinics":135,"naegwa_clinics":89,"hospitals_count":7,"total_doctors":529,"specialists":319,"pop_per_naegwa":2528,"elderly_ratio":21.6,"middle_aged_ratio":47.1,"clinic_density":4.0,"score_competition":45.2,"score_elderly":53.5,"score_population":28.5,"score_middle_aged":73.4,"composite_score":49.6,"rank":22},{"zone":"광주 오포·태전 생활권","region":"경기","population":120803,"age_0_14":15356,"age_15_34":24402,"age_35_54":42014,"age_55_64":18424,"age_65_plus":20586,"total_clinics":62,"naegwa_clinics":40,"hospitals_count":0,"total_doctors":155,"specialists":83,"pop_per_naegwa":3020,"elderly_ratio":17.0,"middle_aged_ratio":50.0,"clinic_density":3.3,"score_competition":58.6,"score_elderly":26.7,"score_population":10.9,"score_middle_aged":100.0,"composite_score":49.4,"rank":23},{"zone":"서울 강서구","region":"서울","population":549050,"age_0_14":45801,"age_15_34":145335,"age_35_54":165502,"age_55_64":78172,"age_65_plus":114141,"total_clinics":491,"naegwa_clinics":275,"hospitals_count":24,"total_doctors":1936,"specialists":1235,"pop_per_naegwa":1997,"elderly_ratio":20.8,"middle_aged_ratio":44.4,"clinic_density":5.0,"score_competition":30.7,"score_elderly":48.8,"score_population":83.1,"score_middle_aged":48.6,"composite_score":49.3,"rank":24},{"zone":"김포 김포구도심 생활권","region":"경기","population":137317,"age_0_14":16501,"age_15_34":30837,"age_35_54":43472,"age_55_64":22073,"age_65_plus":24415,"total_clinics":85,"naegwa_clinics":43,"hospitals_count":7,"total_doctors":428,"specialists":273,"pop_per_naegwa":3193,"elderly_ratio":17.8,"middle_aged_ratio":47.7,"clinic_density":3.1,"score_competition":63.3,"score_elderly":31.4,"score_population":13.7,"score_middle_aged":78.9,"composite_score":48.5,"rank":25},{"zone":"경기 부천시 오정구","region":"경기","population":148890,"age_0_14":10395,"age_15_34":33349,"age_35_54":40368,"age_55_64":31355,"age_65_plus":33403,"total_clinics":89,"naegwa_clinics":65,"hospitals_count":4,"total_doctors":294,"specialists":161,"pop_per_naegwa":2291,"elderly_ratio":22.4,"middle_aged_ratio":48.2,"clinic_density":4.4,"score_competition":38.7,"score_elderly":58.1,"score_population":15.6,"score_middle_aged":83.5,"composite_score":47.9,"rank":26},{"zone":"남양주 호평·평내 생활권","region":"경기","population":111938,"age_0_14":12582,"age_15_34":24708,"age_35_54":35484,"age_55_64":18060,"age_65_plus":21089,"total_clinics":68,"naegwa_clinics":37,"hospitals_count":4,"total_doctors":247,"specialists":137,"pop_per_naegwa":3025,"elderly_ratio":18.8,"middle_aged_ratio":47.8,"clinic_density":3.3,"score_competition":58.7,"score_elderly":37.2,"score_population":9.4,"score_middle_aged":79.8,"composite_score":47.7,"rank":27},{"zone":"경기 성남시 분당구","region":"경기","population":469435,"age_0_14":56867,"age_15_34":113283,"age_35_54":152000,"age_55_64":68716,"age_65_plus":78485,"total_clinics":566,"naegwa_clinics":210,"hospitals_count":13,"total_doctors":3226,"specialists":2064,"pop_per_naegwa":2235,"elderly_ratio":16.7,"middle_aged_ratio":47.0,"clinic_density":4.5,"score_competition":37.2,"score_elderly":25.0,"score_population":69.7,"score_middle_aged":72.5,"composite_score":47.7,"rank":28},{"zone":"서울 구로구","region":"서울","population":382800,"age_0_14":32078,"age_15_34":92915,"age_35_54":112374,"age_55_64":58765,"age_65_plus":86623,"total_clinics":305,"naegwa_clinics":184,"hospitals_count":11,"total_doctors":1489,"specialists":891,"pop_per_naegwa":2080,"elderly_ratio":22.6,"middle_aged_ratio":44.7,"clinic_density":4.8,"score_competition":33.0,"score_elderly":59.3,"score_population":55.1,"score_middle_aged":51.4,"composite_score":47.7,"rank":29},{"zone":"서울 강북구","region":"서울","population":278786,"age_0_14":17532,"age_15_34":62989,"age_35_54":74687,"age_55_64":48767,"age_65_plus":74767,"total_clinics":244,"naegwa_clinics":159,"hospitals_count":10,"total_doctors":779,"specialists":453,"pop_per_naegwa":1753,"elderly_ratio":26.8,"middle_aged_ratio":44.3,"clinic_density":5.7,"score_competition":24.1,"score_elderly":83.7,"score_population":37.5,"score_middle_aged":47.7,"composite_score":46.4,"rank":30},{"zone":"김포 한강신도시 생활권","region":"경기","population":208678,"age_0_14":35156,"age_15_34":45501,"age_35_54":78551,"age_55_64":22763,"age_65_plus":26691,"total_clinics":106,"naegwa_clinics":65,"hospitals_count":4,"total_doctors":367,"specialists":231,"pop_per_naegwa":3210,"elderly_ratio":12.8,"middle_aged_ratio":48.6,"clinic_density":3.1,"score_competition":63.8,"score_elderly":2.3,"score_population":25.7,"score_middle_aged":87.2,"composite_score":45.5,"rank":31},{"zone":"서울 서대문구","region":"서울","population":300175,"age_0_14":25419,"age_15_34":80685,"age_35_54":86180,"age_55_64":45376,"age_65_plus":62460,"total_clinics":214,"naegwa_clinics":116,"hospitals_count":5,"total_doctors":2104,"specialists":1178,"pop_per_naegwa":2588,"elderly_ratio":20.8,"middle_aged_ratio":43.8,"clinic_density":3.9,"score_competition":46.8,"score_elderly":48.8,"score_population":41.1,"score_middle_aged":43.1,"composite_score":45.4,"rank":32},{"zone":"경기 성남시 중원구","region":"경기","population":202679,"age_0_14":16496,"age_15_34":47894,"age_35_54":58956,"age_55_64":34810,"age_65_plus":44482,"total_clinics":159,"naegwa_clinics":92,"hospitals_count":3,"total_doctors":455,"specialists":230,"pop_per_naegwa":2203,"elderly_ratio":21.9,"middle_aged_ratio":46.3,"clinic_density":4.5,"score_competition":36.3,"score_elderly":55.2,"score_population":24.7,"score_middle_aged":66.1,"composite_score":44.7,"rank":33},{"zone":"경기 안양시 동안구","region":"경기","population":329815,"age_0_14":39361,"age_15_34":79473,"age_35_54":104944,"age_55_64":51574,"age_65_plus":54428,"total_clinics":302,"naegwa_clinics":141,"hospitals_count":11,"total_doctors":1296,"specialists":727,"pop_per_naegwa":2339,"elderly_ratio":16.5,"middle_aged_ratio":47.5,"clinic_density":4.3,"score_competition":40.0,"score_elderly":23.8,"score_population":46.1,"score_middle_aged":77.1,"composite_score":44.6,"rank":34},{"zone":"군포 산본 생활권","region":"경기","population":150873,"age_0_14":12418,"age_15_34":36617,"age_35_54":43239,"age_55_64":26747,"age_65_plus":31825,"total_clinics":115,"naegwa_clinics":61,"hospitals_count":4,"total_doctors":460,"specialists":249,"pop_per_naegwa":2473,"elderly_ratio":21.1,"middle_aged_ratio":46.4,"clinic_density":4.0,"score_competition":43.7,"score_elderly":50.6,"score_population":15.9,"score_middle_aged":67.0,"composite_score":44.5,"rank":35},{"zone":"하남 미사·감일 생활권","region":"경기","population":208482,"age_0_14":33345,"age_15_34":48089,"age_35_54":76348,"age_55_64":24880,"age_65_plus":25800,"total_clinics":134,"naegwa_clinics":66,"hospitals_count":3,"total_doctors":409,"specialists":238,"pop_per_naegwa":3159,"elderly_ratio":12.4,"middle_aged_ratio":48.6,"clinic_density":3.2,"score_competition":62.4,"score_elderly":0.0,"score_population":25.7,"score_middle_aged":87.2,"composite_score":44.4,"rank":36},{"zone":"구리 교문·수택 생활권","region":"경기","population":96988,"age_0_14":7452,"age_15_34":23051,"age_35_54":27472,"age_55_64":18305,"age_65_plus":20691,"total_clinics":80,"naegwa_clinics":41,"hospitals_count":4,"total_doctors":459,"specialists":283,"pop_per_naegwa":2366,"elderly_ratio":21.3,"middle_aged_ratio":47.2,"clinic_density":4.2,"score_competition":40.8,"score_elderly":51.7,"score_population":6.9,"score_middle_aged":74.3,"composite_score":43.4,"rank":37},{"zone":"광명 광명·하안·소하 생활권","region":"경기","population":193610,"age_0_14":18170,"age_15_34":44323,"age_35_54":57867,"age_55_64":31971,"age_65_plus":41241,"total_clinics":159,"naegwa_clinics":90,"hospitals_count":5,"total_doctors":491,"specialists":294,"pop_per_naegwa":2151,"elderly_ratio":21.3,"middle_aged_ratio":46.4,"clinic_density":4.6,"score_competition":34.9,"score_elderly":51.7,"score_population":23.2,"score_middle_aged":67.0,"composite_score":43.2,"rank":38},{"zone":"남양주 다산·별내 생활권","region":"경기","population":225177,"age_0_14":34843,"age_15_34":50121,"age_35_54":78538,"age_55_64":28712,"age_65_plus":32938,"total_clinics":143,"naegwa_clinics":80,"hospitals_count":4,"total_doctors":402,"specialists":220,"pop_per_naegwa":2815,"elderly_ratio":14.6,"middle_aged_ratio":47.6,"clinic_density":3.6,"score_competition":53.0,"score_elderly":12.8,"score_population":28.5,"score_middle_aged":78.0,"composite_score":43.0,"rank":39},{"zone":"하남 하남구도심 생활권","region":"경기","population":119258,"age_0_14":10816,"age_15_34":24589,"age_35_54":34427,"age_55_64":20203,"age_65_plus":29198,"total_clinics":104,"naegwa_clinics":61,"hospitals_count":5,"total_doctors":283,"specialists":152,"pop_per_naegwa":1955,"elderly_ratio":24.5,"middle_aged_ratio":45.8,"clinic_density":5.1,"score_competition":29.6,"score_elderly":70.3,"score_population":10.6,"score_middle_aged":61.5,"composite_score":42.4,"rank":40},{"zone":"서울 동작구","region":"서울","population":371746,"age_0_14":28776,"age_15_34":107832,"age_35_54":105745,"age_55_64":53192,"age_65_plus":76146,"total_clinics":297,"naegwa_clinics":168,"hospitals_count":7,"total_doctors":1444,"specialists":885,"pop_per_naegwa":2213,"elderly_ratio":20.5,"middle_aged_ratio":42.8,"clinic_density":4.5,"score_competition":36.6,"score_elderly":47.1,"score_population":53.2,"score_middle_aged":33.9,"composite_score":42.0,"rank":41},{"zone":"의왕 오전·부곡 생활권","region":"경기","population":76997,"age_0_14":8442,"age_15_34":17766,"age_35_54":22619,"age_55_64":12427,"age_65_plus":15727,"total_clinics":31,"naegwa_clinics":28,"hospitals_count":1,"total_doctors":118,"specialists":62,"pop_per_naegwa":2750,"elderly_ratio":20.4,"middle_aged_ratio":45.5,"clinic_density":3.6,"score_competition":51.2,"score_elderly":46.5,"score_population":3.5,"score_middle_aged":58.7,"composite_score":42.0,"rank":42},{"zone":"서울 금천구","region":"서울","population":222809,"age_0_14":13733,"age_15_34":61668,"age_35_54":59514,"age_55_64":37761,"age_65_plus":50108,"total_clinics":175,"naegwa_clinics":102,"hospitals_count":6,"total_doctors":587,"specialists":333,"pop_per_naegwa":2184,"elderly_ratio":22.5,"middle_aged_ratio":43.7,"clinic_density":4.6,"score_competition":35.8,"score_elderly":58.7,"score_population":28.1,"score_middle_aged":42.2,"composite_score":41.3,"rank":43},{"zone":"서울 동대문구","region":"서울","population":350393,"age_0_14":28557,"age_15_34":97951,"age_35_54":99345,"age_55_64":51171,"age_65_plus":73317,"total_clinics":288,"naegwa_clinics":166,"hospitals_count":16,"total_doctors":1794,"specialists":902,"pop_per_naegwa":2111,"elderly_ratio":20.9,"middle_aged_ratio":43.0,"clinic_density":4.7,"score_competition":33.8,"score_elderly":49.4,"score_population":49.6,"score_middle_aged":35.8,"composite_score":41.3,"rank":44},{"zone":"경기 성남시 수정구","region":"경기","population":234087,"age_0_14":20765,"age_15_34":55210,"age_35_54":69607,"age_55_64":38779,"age_65_plus":49701,"total_clinics":252,"naegwa_clinics":131,"hospitals_count":9,"total_doctors":819,"specialists":478,"pop_per_naegwa":1787,"elderly_ratio":21.2,"middle_aged_ratio":46.3,"clinic_density":5.6,"score_competition":25.0,"score_elderly":51.2,"score_population":30.0,"score_middle_aged":66.1,"composite_score":40.8,"rank":45},{"zone":"서울 강남구","region":"서울","population":555502,"age_0_14":64008,"age_15_34":136149,"age_35_54":187226,"age_55_64":71898,"age_65_plus":96133,"total_clinics":2118,"naegwa_clinics":486,"hospitals_count":39,"total_doctors":7361,"specialists":4823,"pop_per_naegwa":1143,"elderly_ratio":17.3,"middle_aged_ratio":46.6,"clinic_density":8.7,"score_competition":7.4,"score_elderly":28.5,"score_population":84.2,"score_middle_aged":68.8,"composite_score":40.3,"rank":46},{"zone":"서울 용산구","region":"서울","population":201494,"age_0_14":15806,"age_15_34":53499,"age_35_54":61241,"age_55_64":30820,"age_65_plus":40075,"total_clinics":168,"naegwa_clinics":95,"hospitals_count":2,"total_doctors":784,"specialists":445,"pop_per_naegwa":2121,"elderly_ratio":19.9,"middle_aged_ratio":45.7,"clinic_density":4.7,"score_competition":34.1,"score_elderly":43.6,"score_population":24.5,"score_middle_aged":60.6,"composite_score":39.9,"rank":47},{"zone":"서울 성동구","region":"서울","population":274854,"age_0_14":23725,"age_15_34":72351,"age_35_54":83252,"age_55_64":41723,"age_65_plus":53772,"total_clinics":253,"naegwa_clinics":144,"hospitals_count":6,"total_doctors":1002,"specialists":555,"pop_per_naegwa":1909,"elderly_ratio":19.6,"middle_aged_ratio":45.5,"clinic_density":5.2,"score_competition":28.3,"score_elderly":41.9,"score_population":36.9,"score_middle_aged":58.7,"composite_score":39.5,"rank":48},{"zone":"구리 갈매·인창 생활권","region":"경기","population":88958,"age_0_14":10440,"age_15_34":20096,"age_35_54":28003,"age_55_64":15010,"age_65_plus":15402,"total_clinics":90,"naegwa_clinics":38,"hospitals_count":5,"total_doctors":278,"specialists":159,"pop_per_naegwa":2341,"elderly_ratio":17.3,"middle_aged_ratio":48.4,"clinic_density":4.3,"score_competition":40.1,"score_elderly":28.5,"score_population":5.5,"score_middle_aged":85.3,"composite_score":39.3,"rank":49},{"zone":"서울 서초구","region":"서울","population":415691,"age_0_14":49338,"age_15_34":100364,"age_35_54":136893,"age_55_64":56279,"age_65_plus":72747,"total_clinics":955,"naegwa_clinics":289,"hospitals_count":16,"total_doctors":3727,"specialists":2217,"pop_per_naegwa":1438,"elderly_ratio":17.5,"middle_aged_ratio":46.5,"clinic_density":7.0,"score_competition":15.5,"score_elderly":29.7,"score_population":60.6,"score_middle_aged":67.9,"composite_score":38.6,"rank":50},{"zone":"서울 관악구","region":"서울","population":478195,"age_0_14":23967,"age_15_34":174566,"age_35_54":124528,"age_55_64":62299,"age_65_plus":92791,"total_clinics":361,"naegwa_clinics":205,"hospitals_count":12,"total_doctors":1118,"specialists":618,"pop_per_naegwa":2333,"elderly_ratio":19.4,"middle_aged_ratio":39.1,"clinic_density":4.3,"score_competition":39.9,"score_elderly":40.7,"score_population":71.2,"score_middle_aged":0.0,"composite_score":38.4,"rank":51},{"zone":"서울 마포구","region":"서울","population":357136,"age_0_14":30330,"age_15_34":103686,"age_35_54":112169,"age_55_64":48835,"age_65_plus":62071,"total_clinics":434,"naegwa_clinics":191,"hospitals_count":6,"total_doctors":1194,"specialists":608,"pop_per_naegwa":1870,"elderly_ratio":17.4,"middle_aged_ratio":45.1,"clinic_density":5.3,"score_competition":27.2,"score_elderly":29.1,"score_population":50.7,"score_middle_aged":55.0,"composite_score":37.9,"rank":52},{"zone":"서울 영등포구","region":"서울","population":371055,"age_0_14":30460,"age_15_34":106076,"age_35_54":110531,"age_55_64":52085,"age_65_plus":71848,"total_clinics":432,"naegwa_clinics":213,"hospitals_count":16,"total_doctors":1974,"specialists":1235,"pop_per_naegwa":1742,"elderly_ratio":19.4,"middle_aged_ratio":43.8,"clinic_density":5.7,"score_competition":23.8,"score_elderly":40.7,"score_population":53.1,"score_middle_aged":43.1,"composite_score":37.7,"rank":53},{"zone":"서울 광진구","region":"서울","population":331095,"age_0_14":24107,"age_15_34":99958,"age_35_54":94596,"age_55_64":49504,"age_65_plus":62883,"total_clinics":314,"naegwa_clinics":178,"hospitals_count":6,"total_doctors":1271,"specialists":748,"pop_per_naegwa":1860,"elderly_ratio":19.0,"middle_aged_ratio":43.5,"clinic_density":5.4,"score_competition":27.0,"score_elderly":38.4,"score_population":46.4,"score_middle_aged":40.4,"composite_score":36.4,"rank":54},{"zone":"과천 과천시 전체","region":"경기","population":80098,"age_0_14":12609,"age_15_34":17556,"age_35_54":25305,"age_55_64":11738,"age_65_plus":12875,"total_clinics":61,"naegwa_clinics":30,"hospitals_count":0,"total_doctors":135,"specialists":66,"pop_per_naegwa":2670,"elderly_ratio":16.1,"middle_aged_ratio":46.2,"clinic_density":3.7,"score_competition":49.1,"score_elderly":21.5,"score_population":4.0,"score_middle_aged":65.1,"composite_score":36.4,"rank":55},{"zone":"광명 철산·일직 생활권","region":"경기","population":107216,"age_0_14":14258,"age_15_34":26475,"age_35_54":36548,"age_55_64":15483,"age_65_plus":14444,"total_clinics":86,"naegwa_clinics":43,"hospitals_count":3,"total_doctors":528,"specialists":362,"pop_per_naegwa":2493,"elderly_ratio":13.5,"middle_aged_ratio":48.5,"clinic_density":4.0,"score_competition":44.2,"score_elderly":6.4,"score_population":8.6,"score_middle_aged":86.2,"composite_score":36.0,"rank":56},{"zone":"서울 종로구","region":"서울","population":136764,"age_0_14":9154,"age_15_34":36474,"age_35_54":37505,"age_55_64":22687,"age_65_plus":30909,"total_clinics":204,"naegwa_clinics":93,"hospitals_count":7,"total_doctors":2857,"specialists":1524,"pop_per_naegwa":1471,"elderly_ratio":22.6,"middle_aged_ratio":44.0,"clinic_density":6.8,"score_competition":16.4,"score_elderly":59.3,"score_population":13.6,"score_middle_aged":45.0,"composite_score":32.3,"rank":57},{"zone":"서울 중구","region":"서울","population":117625,"age_0_14":7543,"age_15_34":30488,"age_35_54":33985,"age_55_64":18228,"age_65_plus":27359,"total_clinics":311,"naegwa_clinics":135,"hospitals_count":4,"total_doctors":1306,"specialists":693,"pop_per_naegwa":871,"elderly_ratio":23.3,"middle_aged_ratio":44.4,"clinic_density":11.5,"score_competition":0.0,"score_elderly":63.4,"score_population":10.3,"score_middle_aged":48.6,"composite_score":27.6,"rank":58}];
+
+const fmt=n=>n?.toLocaleString()??'-';
+function pillClass(s){return s>=55?'pill-hi':s>=40?'pill-mid':'pill-lo'}
+function barColor(s){return s>=55?'var(--green)':s>=40?'var(--blue)':'var(--red)'}
+
+// === TABS ===
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('p-'+b.dataset.p).classList.add('on');
+  };
+});
+
+// === TODAY ===
+function renderToday(){
+  let day=parseInt(localStorage.getItem('zDay')||'1');
+  const d=D[day-1];
+  const analysis=genAnalysis(d);
+  const sec=document.getElementById('p-today');
+  sec.innerHTML=`
+  <div class="today-card">
+    <div class="today-top">
+      <div class="today-tag">Day ${day} / ${D.length}</div>
+      <div class="today-name">${d.zone}</div>
+      <div class="today-score-line">종합점수 <strong>${d.composite_score}</strong>점 · 전체 ${d.rank}위 / ${D.length}</div>
+    </div>
+    <div class="today-body">
+      <div class="today-stats">
+        <div class="ts"><div class="tv">${fmt(d.population)}</div><div class="tl">인구</div></div>
+        <div class="ts"><div class="tv">${d.naegwa_clinics}</div><div class="tl">내과의원</div></div>
+        <div class="ts"><div class="tv">${fmt(d.pop_per_naegwa)}</div><div class="tl">내과 1개당 인구</div></div>
+        <div class="ts"><div class="tv">${d.elderly_ratio}%</div><div class="tl">65세 이상</div></div>
+      </div>
+      <div class="section-block"><div class="section-title">분석 선정 이유</div><div class="section-text">${analysis.reason}</div></div>
+      <div class="section-block"><div class="section-title">추천 포인트</div><div class="section-text">${analysis.rec}</div></div>
+      <div class="section-block"><div class="section-title">유의사항</div><div class="section-text">${analysis.warn}</div></div>
+      <div class="section-block"><div class="section-title">4대 지표</div>${renderBars(d)}</div>
+      <div class="section-block"><div class="section-title">연령 구조</div>${renderAge(d)}</div>
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-prev" onclick="go(-1)">← 이전</button>
+    <button class="btn-next" onclick="go(1)">다음 →</button>
+    <button class="btn-jump" onclick="jump()">지역 이동</button>
+  </div>`;
+}
+function go(dir){
+  let day=parseInt(localStorage.getItem('zDay')||'1')+dir;
+  day=Math.max(1,Math.min(D.length,day));
+  localStorage.setItem('zDay',day);
+  renderToday();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function jump(){
+  const q=prompt('생활권 이름 입력 (예: 도봉, 일산, 오포):');
+  if(!q)return;
+  const i=D.findIndex(d=>d.zone.includes(q));
+  if(i>=0){localStorage.setItem('zDay',i+1);renderToday();}
+  else alert('찾을 수 없습니다.');
+}
+
+function genAnalysis(d){
+  const avgPPN=Math.round(D.reduce((s,x)=>s+x.pop_per_naegwa,0)/D.length);
+  const avgEld=(D.reduce((s,x)=>s+x.elderly_ratio,0)/D.length).toFixed(1);
+  let reason=`종합점수 ${d.composite_score}점(${d.rank}위). `;
+  if(d.pop_per_naegwa>avgPPN) reason+=`내과 1개당 인구 ${fmt(d.pop_per_naegwa)}명으로 평균(${fmt(avgPPN)}명)보다 높아 <span class="hl">경쟁이 낮습니다</span>. `;
+  else reason+=`내과 1개당 인구 ${fmt(d.pop_per_naegwa)}명으로 경쟁이 있으나 다른 강점이 있습니다. `;
+  if(d.population>300000) reason+=`인구 ${fmt(d.population)}명의 대규모 배후 인구 보유.`;
+  else if(d.population>100000) reason+=`인구 ${fmt(d.population)}명의 중규모 생활권.`;
+
+  let rec=`인구 ${fmt(d.population)}명, 내과 ${d.naegwa_clinics}개. `;
+  rec+=`65세 이상 ${d.elderly_ratio}%(${d.elderly_ratio>parseFloat(avgEld)?'평균 이상':'평균 수준'}), `;
+  rec+=`35~64세 중장년 ${d.middle_aged_ratio}%. `;
+  if(d.score_competition>60) rec+=`<span class="hl">경쟁 강도 점수 ${d.score_competition.toFixed(0)}점 — 진입 여건 양호.</span> `;
+  if(d.hospitals_count>=5) rec+=`종합병원급 ${d.hospitals_count}개로 협진 체계 구축 용이. `;
+  if(d.clinic_density<3.5) rec+=`<span class="hl">만명당 내과 ${d.clinic_density}개로 공급 부족 지역.</span> `;
+
+  let warn='';
+  if(d.region==='경기') warn+='이촌동에서 출퇴근 거리를 감안하세요. ';
+  if(d.clinic_density>5) warn+=`<span class="warn">만명당 내과 ${d.clinic_density}개로 포화 수준. 내시경 전문 등 차별화 필수.</span> `;
+  if(d.elderly_ratio>23) warn+='고령화율이 높아 건보 수가 중심 진료가 될 가능성. 비급여 모델 병행 검토. ';
+  if(d.pop_per_naegwa<1500) warn+=`<span class="warn">인구/내과 ${fmt(d.pop_per_naegwa)}명 — 매우 포화된 지역.</span> `;
+  if(d.population<80000) warn+='배후 인구가 8만 미만으로 소규모. 인근 생활권 환자 유입 가능성도 검토. ';
+  warn+='동 단위 현장 답사(상권, 유동인구, 임대료)를 반드시 병행하세요.';
+  return{reason,rec,warn};
+}
+
+function renderBars(d){
+  const items=[
+    {label:'경쟁↓',val:d.score_competition},
+    {label:'고령인구',val:d.score_elderly},
+    {label:'총인구',val:d.score_population},
+    {label:'중장년',val:d.score_middle_aged}
+  ];
+  return '<div style="margin-top:8px">'+items.map(m=>`
+    <div class="hbar">
+      <div class="hbar-label">${m.label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${m.val}%;background:${barColor(m.val)}">${m.val.toFixed(0)}</div></div>
+    </div>`).join('')+'</div>';
+}
+
+function renderAge(d){
+  const ages=[
+    {label:'0~14',val:d.age_0_14,color:'var(--blue)'},
+    {label:'15~34',val:d.age_15_34,color:'var(--green)'},
+    {label:'35~54',val:d.age_35_54,color:'var(--amber)'},
+    {label:'55~64',val:d.age_55_64,color:'var(--red)'},
+    {label:'65+',val:d.age_65_plus,color:'#7c3aed'}
+  ];
+  const mx=Math.max(...ages.map(a=>a.val));
+  return '<div style="margin-top:8px">'+ages.map(a=>`
+    <div class="hbar">
+      <div class="hbar-label">${a.label}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${a.val/mx*100}%;background:${a.color}">${(a.val/d.population*100).toFixed(1)}%</div></div>
+      <div class="hbar-val">${fmt(a.val)}</div>
+    </div>`).join('')+'</div>';
+}
+
+// === RANKING ===
+let sortK='composite_score',sortD='desc',fReg='all',fQ='';
+
+function renderRank(){
+  const tPop=D.reduce((s,d)=>s+d.population,0);
+  const tN=D.reduce((s,d)=>s+d.naegwa_clinics,0);
+  document.getElementById('sumCards').innerHTML=`
+    <div class="stat-card"><div class="label">분석 대상</div><div class="val">${D.length}개</div><div class="sub">생활권</div></div>
+    <div class="stat-card"><div class="label">총 배후 인구</div><div class="val">${(tPop/10000).toFixed(0)}만</div><div class="sub">${fmt(tPop)}명</div></div>
+    <div class="stat-card"><div class="label">내과의원 합계</div><div class="val">${fmt(tN)}</div><div class="sub">평균 ${Math.round(tN/D.length)}개</div></div>
+    <div class="stat-card"><div class="label">1위</div><div class="val" style="font-size:18px">${D[0].zone}</div><div class="sub">${D[0].composite_score}점</div></div>`;
+  renderTbl();
+}
+
+function renderTbl(){
+  let f=[...D];
+  if(fReg!=='all') f=f.filter(d=>d.region===fReg);
+  if(fQ) f=f.filter(d=>d.zone.includes(fQ));
+  f.sort((a,b)=>sortD==='asc'?(a[sortK]>b[sortK]?1:-1):(a[sortK]<b[sortK]?1:-1));
+  document.querySelectorAll('th').forEach(h=>{h.classList.remove('asc','desc');if(h.dataset.s===sortK)h.classList.add(sortD);});
+  document.getElementById('tBody').innerHTML=f.map(d=>{
+    const rc=d.rank<=1?'rk-1':d.rank<=2?'rk-2':d.rank<=3?'rk-3':'rk-n';
+    const pc=pillClass(d.composite_score);
+    const ppnColor=d.pop_per_naegwa>2500?'var(--green)':d.pop_per_naegwa<1500?'var(--red)':'var(--ink)';
+    return`<tr onclick="showDetail(${D.indexOf(d)})">
+      <td><span class="rk ${rc}">${d.rank}</span></td>
+      <td style="font-weight:600">${d.zone}</td>
+      <td>${fmt(d.population)}</td>
+      <td>${d.naegwa_clinics}</td>
+      <td style="font-weight:700;color:${ppnColor}">${fmt(d.pop_per_naegwa)}</td>
+      <td>${d.elderly_ratio}%</td>
+      <td>${d.middle_aged_ratio}%</td>
+      <td>${d.clinic_density}</td>
+      <td><span class="pill ${pc}">${d.composite_score}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('th[data-s]').forEach(h=>{
+  h.onclick=()=>{
+    const k=h.dataset.s;
+    if(sortK===k) sortD=sortD==='asc'?'desc':'asc';
+    else{sortK=k;sortD=k==='zone'?'asc':'desc';}
+    renderTbl();
+  };
+});
+document.getElementById('qSearch').oninput=e=>{fQ=e.target.value;renderTbl();};
+document.getElementById('qRegion').onchange=e=>{fReg=e.target.value;renderTbl();};
+
+function showDetail(i){
+  const d=D[i],p=document.getElementById('detailPanel');
+  const a=genAnalysis(d);
+  p.classList.add('open');
+  p.innerHTML=`
+    <div class="detail-head"><h3>${d.zone}</h3><div class="close-btn" onclick="document.getElementById('detailPanel').classList.remove('open')">✕</div></div>
+    <div class="detail-body">
+      <div>
+        <div class="detail-metrics">
+          <div class="dm"><div class="dl">인구</div><div class="dv">${fmt(d.population)}</div></div>
+          <div class="dm"><div class="dl">내과의원</div><div class="dv">${d.naegwa_clinics}</div></div>
+          <div class="dm"><div class="dl">인구/내과</div><div class="dv">${fmt(d.pop_per_naegwa)}</div></div>
+          <div class="dm"><div class="dl">고령비율</div><div class="dv">${d.elderly_ratio}%</div></div>
+          <div class="dm"><div class="dl">중장년</div><div class="dv">${d.middle_aged_ratio}%</div></div>
+          <div class="dm"><div class="dl">종합병원</div><div class="dv">${d.hospitals_count}</div></div>
+        </div>
+        <div class="chart-box" style="margin-top:14px"><h4>연령 구조</h4>${renderAge(d)}</div>
+      </div>
+      <div>
+        <div class="chart-box"><h4>4대 지표 점수</h4>${renderBars(d)}</div>
+        <div class="chart-box" style="margin-top:14px"><h4>종합 평가</h4><div style="font-size:12px;line-height:1.7;color:var(--ink2)">${a.rec}</div></div>
+      </div>
+    </div>`;
+  p.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// === COMPARE ===
+function initCmp(){
+  const sA=document.getElementById('cA'),sB=document.getElementById('cB');
+  D.forEach((d,i)=>{
+    const o=`<option value="${i}">${d.rank}위 ${d.zone}</option>`;
+    sA.innerHTML+=o; sB.innerHTML+=o;
+  });
+  sB.value='1';
+  sA.onchange=sB.onchange=renderCmp;
+  renderCmp();
+}
+
+function renderCmp(){
+  const a=D[document.getElementById('cA').value];
+  const b=D[document.getElementById('cB').value];
+  const metrics=[
+    {l:'인구',k:'population',f:fmt,hi:true},
+    {l:'내과의원',k:'naegwa_clinics',f:v=>v+'개',hi:false},
+    {l:'인구/내과',k:'pop_per_naegwa',f:fmt,hi:true},
+    {l:'고령비율',k:'elderly_ratio',f:v=>v+'%',hi:true},
+    {l:'중장년비율',k:'middle_aged_ratio',f:v=>v+'%',hi:true},
+    {l:'내과밀도(만명당)',k:'clinic_density',f:v=>v,hi:false},
+    {l:'종합병원',k:'hospitals_count',f:v=>v+'개',hi:null},
+    {l:'종합점수',k:'composite_score',f:v=>v+'점',hi:true}
+  ];
+  document.getElementById('cmpGrid').innerHTML=[a,b].map(d=>{
+    const other=d===a?b:a;
+    return`<div class="cmp-card">
+      <h3>${d.zone}<span class="pill ${pillClass(d.composite_score)}">${d.composite_score}점</span></h3>
+      ${metrics.map(m=>{
+        const w=m.hi===null?false:m.hi?(d[m.k]>other[m.k]):(d[m.k]<other[m.k]);
+        return`<div class="cmp-row"><span class="cl">${m.l}</span><span class="cv${w?' win':''}">${m.f(d[m.k])}${w?' ✓':''}</span></div>`;
+      }).join('')}
+      <div style="margin-top:14px"><div style="font-size:12px;font-weight:700;margin-bottom:8px">연령 구조</div>${renderAge(d)}</div>
+    </div>`;
+  }).join('');
+}
+
+// INIT
+renderToday();
+renderRank();
+initCmp();
+</script>
+</body>
+</html>
