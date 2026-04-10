@@ -1,282 +1,242 @@
 import os
 import smtplib
+import requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 
 import yfinance as yf
-from pykrx import stock
-import anthropic
 
 # ── 설정 ──────────────────────────────────────────
 GMAIL_USER     = "sieun8475@gmail.com"
 GMAIL_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]
-ANTHROPIC_KEY  = os.environ["ANTHROPIC_API_KEY"]
 SEND_TO        = "sieun8475@gmail.com"
 
 KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
-TODAY_STR = NOW.strftime("%Y년 %m월 %d일")
-
-def prev_trading_day(d):
-    d = d - timedelta(days=1)
-    while d.weekday() >= 5:
-        d = d - timedelta(days=1)
-    return d
-
-PREV_KR = prev_trading_day(NOW).strftime("%Y%m%d")
+TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
 # ── 헬퍼 ──────────────────────────────────────────
-def get_ma(series, n):
-    if len(series) < n:
-        return None
-    return round(float(series.iloc[-n:].mean()), 0)
-
-def yf_quote(sym):
-    """yfinance로 종가·등락률 반환"""
+def q(sym, period="5d"):
+    """종가·등락률·등락폭 반환"""
     try:
-        hist = yf.Ticker(sym).history(period="5d")
+        hist = yf.Ticker(sym).history(period=period)
         if len(hist) >= 2:
             prev  = float(hist["Close"].iloc[-2])
             close = float(hist["Close"].iloc[-1])
-            pct   = (close - prev) / prev * 100
-            return {"close": round(close, 2), "pct": round(pct, 2)}
+            chg   = close - prev
+            pct   = chg / prev * 100
+            return {
+                "close": round(close, 2),
+                "chg":   round(chg, 2),
+                "pct":   round(pct, 2),
+            }
     except:
         pass
-    return {"close": None, "pct": None}
+    return {"close": None, "chg": None, "pct": None}
 
-def pykrx_col(df, keyword):
-    """pykrx DataFrame에서 키워드 포함 컬럼명 반환"""
-    df.columns = [c.strip() for c in df.columns]
-    cols = [c for c in df.columns if keyword in c]
-    return cols[0] if cols else None
+def arrow(pct):
+    if pct is None: return "–"
+    return "▲" if pct >= 0 else "▼"
 
-# ── 1. 미장 데이터 (yfinance 전용) ────────────────
-def get_us_data():
-    symbols = {
-        "S&P500":  "^GSPC",
-        "나스닥":  "^IXIC",
-        "다우":    "^DJI",
-        "VIX":     "^VIX",
-        "달러/원": "KRW=X",
-        "WTI":     "CL=F",
-        "금":      "GC=F",
+def fmt_pct(pct):
+    if pct is None: return "N/A"
+    sign = "+" if pct >= 0 else ""
+    return f"{sign}{pct:.2f}%"
+
+def fmt_price(val, decimals=2):
+    if val is None: return "N/A"
+    return f"{val:,.{decimals}f}"
+
+# ── 1. 주요 지수 ───────────────────────────────────
+def get_indices():
+    return {
+        "S&P500":  q("^GSPC"),
+        "나스닥":  q("^IXIC"),
+        "다우":    q("^DJI"),
+        "러셀2000": q("^RUT"),
     }
-    result = {k: yf_quote(v) for k, v in symbols.items()}
 
-    sectors = {
-        "반도체": "SOXX",
-        "테크":   "XLK",
-        "에너지": "XLE",
-        "금융":   "XLF",
-        "헬스케어": "XLV",
-    }
-    result["섹터"] = {k: yf_quote(v)["pct"] for k, v in sectors.items()}
-    return result
-
-# ── 2. 국장 데이터 (pykrx + yfinance 혼용) ────────
-def get_kr_data():
-    result = {}
+# ── 2. 공포탐욕지수 ────────────────────────────────
+def get_fear_greed():
     try:
-        # 코스피·코스닥 — yfinance (pykrx 지수 API 불안정)
-        kospi_q  = yf_quote("^KS11")
-        kosdaq_q = yf_quote("^KQ11")
-        result["코스피"]       = kospi_q["close"]
-        result["코스피_등락"]  = kospi_q["pct"]
-        result["코스닥"]       = kosdaq_q["close"]
-        result["코스닥_등락"]  = kosdaq_q["pct"]
+        r = requests.get(
+            "https://production.dataviz.cnn.io/index/fearandgreed/graphdata",
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=10
+        )
+        data = r.json()
+        score = round(float(data["fear_and_greed"]["score"]), 1)
+        rating = data["fear_and_greed"]["rating"]
+        rating_kr = {
+            "Extreme Fear": "극단적 공포",
+            "Fear": "공포",
+            "Neutral": "중립",
+            "Greed": "탐욕",
+            "Extreme Greed": "극단적 탐욕",
+        }.get(rating, rating)
+        return {"score": score, "rating": rating_kr}
+    except:
+        return {"score": None, "rating": "N/A"}
 
-        # 수급 — pykrx (거래소 공식)
-        trading = stock.get_market_trading_volume_by_date(PREV_KR, PREV_KR, "KOSPI")
-        if not trading.empty:
-            trading.columns = [c.strip() for c in trading.columns]
-            row = trading.iloc[-1]
-            for key in ["외국인", "기관합계", "기관", "개인"]:
-                if key in row:
-                    result[key] = int(row[key])
-    except Exception as e:
-        result["error"] = str(e)
-    return result
+# ── 3. 금리·달러 ───────────────────────────────────
+def get_rates():
+    return {
+        "미국채10년": q("^TNX"),
+        "미국채2년":  q("^IRX"),
+        "달러인덱스": q("DX-Y.NYB"),
+        "달러/원":    q("KRW=X"),
+        "달러/엔":    q("JPY=X"),
+    }
 
-# ── 3. 체크리스트 스크리닝 ────────────────────────
-FCF_UNIVERSE = [
-    "005930",  # 삼성전자
-    "000660",  # SK하이닉스
-    "005380",  # 현대차
-    "035420",  # NAVER
-    "051910",  # LG화학
-    "068270",  # 셀트리온
-    "028260",  # 삼성물산
-    "105560",  # KB금융
-    "055550",  # 신한지주
-    "012330",  # 현대모비스
-]
+# ── 4. 원자재 ──────────────────────────────────────
+def get_commodities():
+    return {
+        "WTI":   q("CL=F"),
+        "브렌트": q("BZ=F"),
+        "금":    q("GC=F"),
+        "은":    q("SI=F"),
+    }
 
-def screen_stocks():
-    result    = []
-    start200  = (NOW - timedelta(days=280)).strftime("%Y%m%d")
-    start10   = (NOW - timedelta(days=14)).strftime("%Y%m%d")
+# ── 5. VIX ────────────────────────────────────────
+def get_vix():
+    return q("^VIX")
 
-    # 코스피 추세 — yfinance로 대체 (pykrx 지수 API 버그 회피)
-    ks11 = yf.Ticker("^KS11").history(period="200d")
-    if not ks11.empty:
-        ks_close    = ks11["Close"]
-        ks_ma60     = get_ma(ks_close, 60)
-        ks_ma120    = get_ma(ks_close, 120)
-        ks_now      = float(ks_close.iloc[-1])
-        kospi_trend = bool(ks_ma60 and ks_ma120 and ks_now > ks_ma60 and ks_now > ks_ma120)
-    else:
-        kospi_trend = False
+# ── 6. 반도체·M7 개별주 ───────────────────────────
+def get_tech_stocks():
+    semis = {
+        "엔비디아":    "NVDA",
+        "TSMC":        "TSM",
+        "ASML":        "ASML",
+        "AMD":         "AMD",
+        "인텔":        "INTC",
+        "삼성ADR":     "SSNLF",
+        "SK하이닉스ADR": "HXSCL",
+    }
+    m7 = {
+        "애플":     "AAPL",
+        "마이크로소프트": "MSFT",
+        "아마존":   "AMZN",
+        "알파벳":   "GOOGL",
+        "메타":     "META",
+        "테슬라":   "TSLA",
+        "엔비디아": "NVDA",
+    }
+    return {
+        "반도체": {k: q(v) for k, v in semis.items()},
+        "M7":     {k: q(v) for k, v in m7.items()},
+    }
+
+# ── 7. 섹터 ETF ────────────────────────────────────
+def get_sectors():
+    sectors = {
+        "반도체(SOXX)":  "SOXX",
+        "테크(XLK)":     "XLK",
+        "에너지(XLE)":   "XLE",
+        "금융(XLF)":     "XLF",
+        "헬스케어(XLV)": "XLV",
+        "소비재(XLY)":   "XLY",
+        "유틸리티(XLU)": "XLU",
+    }
+    return {k: q(v) for k, v in sectors.items()}
+
+# ── 이메일 본문 생성 ───────────────────────────────
+def build_body(indices, fg, rates, comms, vix, tech, sectors):
+    lines = []
+    lines.append(f"{'='*50}")
+    lines.append(f"  미장 데이터 브리핑 — {TODAY_STR}")
+    lines.append(f"  (뉴욕 전일 마감 기준)")
+    lines.append(f"{'='*50}")
+
+    # 공포탐욕
+    fg_score = fg['score']
+    fg_bar   = ""
+    if fg_score:
+        filled = int(fg_score / 10)
+        fg_bar = "█" * filled + "░" * (10 - filled)
+        fg_emoji = "😱" if fg_score < 25 else "😰" if fg_score < 45 else "😐" if fg_score < 55 else "😏" if fg_score < 75 else "🤑"
+    lines.append(f"\n【 공포탐욕지수 】")
+    lines.append(f"  {fg_emoji} {fg_score} / 100  [{fg_bar}]  {fg['rating']}")
+    lines.append(f"  ※ 25이하=매수기회 / 75이상=과열주의")
+
+    # 3대지수
+    lines.append(f"\n【 주요 지수 】")
+    for name, d in indices.items():
+        a = arrow(d['pct'])
+        lines.append(f"  {name:<10} {fmt_price(d['close']):>12}  {a} {fmt_pct(d['pct'])}")
 
     # VIX
-    vix_hist = yf.Ticker("^VIX").history(period="2d")
-    vix_val  = float(vix_hist["Close"].iloc[-1]) if not vix_hist.empty else 99
-    vix_ok   = vix_val < 20
+    vix_comment = "안정" if vix['close'] and vix['close'] < 20 else "주의" if vix['close'] and vix['close'] < 30 else "위험"
+    lines.append(f"\n【 VIX (변동성) 】")
+    lines.append(f"  {fmt_price(vix['close'])}  [{vix_comment}]  ※ 20이하=안정 / 30이상=위험")
 
-    for code in FCF_UNIVERSE:
-        try:
-            name  = stock.get_market_ticker_name(code)
-            ohlcv = stock.get_market_ohlcv_by_date(start200, PREV_KR, code)
-            if ohlcv.empty or len(ohlcv) < 60:
-                continue
+    # 금리·달러
+    lines.append(f"\n【 금리·달러 】")
+    for name, d in rates.items():
+        a = arrow(d['pct'])
+        lines.append(f"  {name:<12} {fmt_price(d['close']):>10}  {a} {fmt_pct(d['pct'])}")
 
-            ohlcv.columns = [c.strip() for c in ohlcv.columns]
-            close_col = pykrx_col(ohlcv, "종가")
-            vol_col   = pykrx_col(ohlcv, "거래량")
-            if not close_col or not vol_col:
-                continue
+    # 장단기 금리차
+    t10 = rates.get("미국채10년", {}).get("close")
+    t2  = rates.get("미국채2년",  {}).get("close")
+    if t10 and t2:
+        spread = round(t10 - t2, 3)
+        spread_comment = "정상" if spread > 0 else "역전 (경기침체 신호)"
+        lines.append(f"  → 장단기 금리차(10Y-2Y): {spread:+.3f}%  [{spread_comment}]")
 
-            close_s   = ohlcv[close_col]
-            vol_s     = ohlcv[vol_col]
-            close_now = float(close_s.iloc[-1])
+    # 원자재
+    lines.append(f"\n【 원자재 】")
+    for name, d in comms.items():
+        a = arrow(d['pct'])
+        lines.append(f"  {name:<8} {fmt_price(d['close']):>10}  {a} {fmt_pct(d['pct'])}")
 
-            ma20  = get_ma(close_s, 20)
-            ma60  = get_ma(close_s, 60)
-            ma120 = get_ma(close_s, 120)
-            aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
-
-            vol_now = float(vol_s.iloc[-1])
-            vol_avg = float(vol_s.iloc[-21:-1].mean()) if len(vol_s) > 20 else vol_now
-            vol_ok  = vol_now >= vol_avg * 1.5
-
-            trading = stock.get_market_trading_volume_by_date(start10, PREV_KR, code)
-            foreign_5d, foreign_ok = 0, False
-            if not trading.empty:
-                trading.columns = [c.strip() for c in trading.columns]
-                fcol = pykrx_col(trading, "외국인")
-                if fcol:
-                    foreign_5d = int(trading[fcol].iloc[-5:].sum())
-                    foreign_ok = foreign_5d > 0
-
-            stop   = round(close_now * 0.93, 0)
-            target = round(close_now * 1.18, 0)
-
-            score = sum([aligned, vol_ok, foreign_ok, kospi_trend, vix_ok])
-            if score >= 4 and aligned:
-                grade = "A"
-            elif score >= 3:
-                grade = "B"
-            else:
-                continue
-
-            result.append({
-                "종목명":       name,
-                "종목코드":     code,
-                "현재가":       int(close_now),
-                "등급":         grade,
-                "MA20":         int(ma20) if ma20 else 0,
-                "MA60":         int(ma60) if ma60 else 0,
-                "MA120":        int(ma120) if ma120 else 0,
-                "이평선정배열": aligned,
-                "거래량":       vol_ok,
-                "외국인5일":    foreign_ok,
-                "외국인순매수": foreign_5d,
-                "코스피추세":   kospi_trend,
-                "VIX안정":      vix_ok,
-                "VIX":          round(vix_val, 2),
-                "손절가":       int(stop),
-                "목표가":       int(target),
-            })
-        except Exception as e:
-            print(f"  {code} 스킵: {e}")
-            continue
-
-    result.sort(key=lambda x: (x["등급"], -x["현재가"]))
-    return result, kospi_trend, round(vix_val, 2)
-
-# ── 4. Claude API 분석 ────────────────────────────
-def get_claude_analysis(us, kr, candidates):
-    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
-
-    def fmt(d, k):
-        v = d.get(k, {})
-        if isinstance(v, dict):
-            c, p = v.get("close"), v.get("pct")
-            sign = "+" if p and p > 0 else ""
-            return f"{c:,.2f} ({sign}{p:.2f}%)" if c else "N/A"
-        return str(v) if v else "N/A"
-
-    cand_text = ""
-    for c in candidates:
-        cand_text += f"""
-▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급]
-  현재가 {c['현재가']:,}원 | MA20 {c['MA20']:,} | MA60 {c['MA60']:,} | MA120 {c['MA120']:,}
-  이평선정배열 {'✓' if c['이평선정배열'] else '✗'} | 거래량1.5배 {'✓' if c['거래량'] else '✗'} | 외국인5일순매수 {'✓' if c['외국인5일'] else '✗'} ({c['외국인순매수']:+,}주)
-  손절가 {c['손절가']:,}원 (-7%) | 1차목표 {c['목표가']:,}원 (+18%)
-"""
-    if not cand_text:
-        cand_text = "오늘 조건 충족 종목 없음 — 진입 보류"
-
-    prompt = f"""오늘은 {TODAY_STR}입니다. 아래 데이터로 모닝 리포트를 작성해주세요.
-
-【미장 — 뉴욕 전일 마감】
-S&P500: {fmt(us,'S&P500')} | 나스닥: {fmt(us,'나스닥')} | 다우: {fmt(us,'다우')}
-VIX: {us.get('VIX',{}).get('close')} | 달러/원: {us.get('달러/원',{}).get('close')} | WTI: {fmt(us,'WTI')} | 금: {fmt(us,'금')}
-섹터: {us.get('섹터')}
-
-【국내 시장 — 전일 마감】
-코스피: {kr.get('코스피')} ({kr.get('코스피_등락')}%) | 코스닥: {kr.get('코스닥')} ({kr.get('코스닥_등락')}%)
-외국인: {kr.get('외국인','N/A')} | 기관: {kr.get('기관합계', kr.get('기관','N/A'))} | 개인: {kr.get('개인','N/A')}
-
-【스크리닝 결과】
-{cand_text}
-
-아래 순서로 작성해주세요 (출근길 5분 안에 읽을 수 있게 간결하게):
-
-1. 📊 시황 요약 (3줄)
-2. 🇺🇸 미장 핵심 포인트
-3. 🇰🇷 국내 시장 분석
-4. 📰 핵심 뉴스 3개 (①개원/부동산 ②의료정책 ③자산관리)
-5. 📈 오늘 스크리닝 결과 및 진입 전략
-6. 💡 오늘의 한 줄 인사이트
-"""
-
-    msg = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=2000,
-        messages=[{"role": "user", "content": prompt}]
+    # 섹터
+    lines.append(f"\n【 섹터별 등락 】")
+    sorted_sectors = sorted(
+        [(k, v) for k, v in sectors.items() if v['pct'] is not None],
+        key=lambda x: x[1]['pct'], reverse=True
     )
-    return msg.content[0].text
+    for name, d in sorted_sectors:
+        bar_len = min(abs(int(d['pct'] * 2)), 10)
+        bar = ("▲" * bar_len) if d['pct'] >= 0 else ("▼" * bar_len)
+        lines.append(f"  {name:<16} {fmt_pct(d['pct']):>8}  {bar}")
 
-# ── 5. Gmail 발송 ─────────────────────────────────
+    # 반도체 개별주
+    lines.append(f"\n【 반도체 개별주 】")
+    for name, d in tech["반도체"].items():
+        a = arrow(d['pct'])
+        lines.append(f"  {name:<14} {fmt_price(d['close']):>10}  {a} {fmt_pct(d['pct'])}")
+
+    # M7
+    lines.append(f"\n【 빅테크 M7 】")
+    for name, d in tech["M7"].items():
+        a = arrow(d['pct'])
+        lines.append(f"  {name:<14} {fmt_price(d['close']):>10}  {a} {fmt_pct(d['pct'])}")
+
+    lines.append(f"\n{'='*50}")
+    lines.append(f"  ※ 이 데이터를 Claude에게 붙여넣으면")
+    lines.append(f"     풀퀄리티 모닝리포트가 생성됩니다.")
+    lines.append(f"{'='*50}")
+
+    return "\n".join(lines)
+
+# ── 이메일 발송 ────────────────────────────────────
 def send_email(subject, body):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"]    = GMAIL_USER
     msg["To"]      = SEND_TO
 
-    html = f"""<html><body style="font-family:sans-serif;max-width:680px;margin:0 auto;padding:20px;color:#1A2033;">
+    html = f"""<html><body style="font-family:monospace;max-width:680px;margin:0 auto;padding:20px;background:#f5f7fa;">
 <div style="background:#1A3A5C;color:white;padding:16px 20px;border-radius:10px 10px 0 0;">
-  <h2 style="margin:0;font-size:18px;">📊 추세추종 모닝 리포트</h2>
-  <p style="margin:4px 0 0;font-size:12px;color:#A0B0C8;">{TODAY_STR}</p>
+  <h2 style="margin:0;font-size:18px;">🌏 미장 데이터 브리핑</h2>
+  <p style="margin:4px 0 0;font-size:12px;color:#A0B0C8;">{TODAY_STR} — 뉴욕 전일 마감 기준</p>
 </div>
 <div style="background:#fff;border:1px solid #D8DEE9;border-top:none;border-radius:0 0 10px 10px;padding:20px;">
-  <pre style="white-space:pre-wrap;font-size:13px;line-height:1.8;color:#1A2033;">{body}</pre>
+  <pre style="white-space:pre-wrap;font-size:13px;line-height:1.9;color:#1A2033;font-family:monospace;">{body}</pre>
 </div>
-<p style="font-size:10px;color:#8B95B0;text-align:center;margin-top:12px;">
-본 리포트는 개인 투자 학습 목적입니다. 투자 판단의 최종 책임은 본인에게 있습니다.
-</p></body></html>"""
+</body></html>"""
 
     msg.attach(MIMEText(body, "plain", "utf-8"))
     msg.attach(MIMEText(html,  "html",  "utf-8"))
@@ -289,18 +249,19 @@ def send_email(subject, body):
 # ── 메인 ──────────────────────────────────────────
 if __name__ == "__main__":
     print("📡 미장 데이터 수집 중...")
-    us_data = get_us_data()
 
-    print("📡 국장 데이터 수집 중...")
-    kr_data = get_kr_data()
+    indices  = get_indices()
+    fg       = get_fear_greed()
+    rates    = get_rates()
+    comms    = get_commodities()
+    vix      = get_vix()
+    tech     = get_tech_stocks()
+    sectors  = get_sectors()
 
-    print("📡 스크리닝 중...")
-    candidates, kospi_trend, vix = screen_stocks()
-    print(f"  → 후보 종목 {len(candidates)}개 | 코스피추세 {'✓' if kospi_trend else '✗'} | VIX {vix}")
+    print("📝 리포트 생성 중...")
+    body    = build_body(indices, fg, rates, comms, vix, tech, sectors)
+    subject = f"[미장브리핑] {TODAY_STR}"
 
-    print("🤖 Claude 분석 중...")
-    report = get_claude_analysis(us_data, kr_data, candidates)
-
-    subject = f"[모닝리포트] {TODAY_STR} — 후보 {len(candidates)}종목"
-    send_email(subject, report)
+    print(body)
+    send_email(subject, body)
     print("🎉 완료!")
