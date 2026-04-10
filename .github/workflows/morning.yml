@@ -18,10 +18,9 @@ jobs:
 
       - name: 라이브러리 설치
         run: |
-          pip install yfinance pykrx anthropic pytz
+          pip install yfinance pytz requests
 
       - name: 리포트 실행
         env:
-          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         run: python morning_report.py
