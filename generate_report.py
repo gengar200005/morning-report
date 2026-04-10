@@ -228,8 +228,8 @@ def build_table_block(rows_raw):
             "table_width": num_cols,
             "has_column_header": has_header,
             "has_row_header": False,
+            "children": table_rows,
         },
-        "children": table_rows,
     }
 
 
