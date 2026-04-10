@@ -2,6 +2,7 @@ import os
 import json
 import base64
 import requests
+import time
 from datetime import datetime, timedelta
 import pytz
 
@@ -42,7 +43,10 @@ def get_token():
         "appsecret": KIS_APP_SECRET,
     }
     r = requests.post(url, headers=headers, json=body, timeout=10)
-    return r.json()["access_token"]
+    data = r.json()
+    if "access_token" not in data:
+        raise Exception(f"토큰 발급 실패: {data}")
+    return data["access_token"]
 
 # ── KIS API 헬퍼 ──────────────────────────────────
 def kis_get(token, path, tr_id, params):
@@ -52,12 +56,13 @@ def kis_get(token, path, tr_id, params):
         "appkey": KIS_APP_KEY,
         "appsecret": KIS_APP_SECRET,
         "tr_id": tr_id,
+        "custtype": "P",
     }
     r = requests.get(
         f"{KIS_BASE_URL}{path}",
         headers=headers,
         params=params,
-        timeout=10,
+        timeout=15,
     )
     return r.json()
 
@@ -83,87 +88,140 @@ def get_index(token):
             )
             out = data.get("output", {})
             close = float(out.get("bstp_nmix_prpr", 0))
-            prev  = float(out.get("bstp_nmix_prdy_vrss", 0))
+            chg   = float(out.get("bstp_nmix_prdy_vrss", 0))
             pct   = float(out.get("bstp_nmix_prdy_ctrt", 0))
-            result[name] = {
-                "close": round(close, 2),
-                "chg":   round(prev, 2),
-                "pct":   round(pct, 2),
-            }
+            result[name] = {"close": round(close, 2), "chg": round(chg, 2), "pct": round(pct, 2)}
+            print(f"  {name}: {close:,.2f} ({pct:+.2f}%)")
         except Exception as e:
             print(f"  {name} 지수 오류: {e}")
             result[name] = {"close": None, "chg": None, "pct": None}
+        time.sleep(0.3)
     return result
 
-# ── 2. 외국인·기관·개인 수급 ──────────────────────
+# ── 2. 외국인·기관·개인 수급 (코스피 전체) ────────
 def get_trading(token):
-    result = {}
+    result = {"외국인": 0, "기관": 0, "개인": 0}
     try:
+        # 투자자별 매매동향 조회
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
-            "FHPTJ04010000",
-            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "0001"}
+            "FHKST01010900",
+            {
+                "FID_COND_MRKT_DIV_CODE": "J",
+                "FID_INPUT_ISCD": "0001",  # 코스피
+            }
         )
-        out = data.get("output", [{}])[0]
-        result["외국인"] = int(out.get("frgn_ntby_qty", 0))
-        result["기관"]   = int(out.get("orgn_ntby_qty", 0))
-        result["개인"]   = int(out.get("indv_ntby_qty", 0))
+        print(f"  수급 API 응답 키: {list(data.keys())}")
+        out = data.get("output", [])
+        if isinstance(out, list) and len(out) > 0:
+            row = out[0]
+            print(f"  수급 첫 번째 row 키: {list(row.keys())[:10]}")
+            # 외국인
+            for key in ["frgn_ntby_qty", "frgn_ntby_tr_pbmn"]:
+                if key in row:
+                    result["외국인"] = int(row[key])
+                    break
+            # 기관
+            for key in ["orgn_ntby_qty", "orgn_ntby_tr_pbmn"]:
+                if key in row:
+                    result["기관"] = int(row[key])
+                    break
+            # 개인
+            for key in ["indv_ntby_qty", "indv_ntby_tr_pbmn"]:
+                if key in row:
+                    result["개인"] = int(row[key])
+                    break
+        elif isinstance(out, dict):
+            print(f"  수급 dict 키: {list(out.keys())[:10]}")
     except Exception as e:
         print(f"  수급 오류: {e}")
     return result
 
-# ── 3. 종목 일봉 데이터 ───────────────────────────
-def get_ohlcv(token, code, days=130):
+# ── 3. 종목 일봉 데이터 (100건씩 2회 호출) ────────
+def get_ohlcv(token, code):
+    closes  = []
+    volumes = []
     try:
         end   = NOW.strftime("%Y%m%d")
-        start = (NOW - timedelta(days=days * 2)).strftime("%Y%m%d")
-        data  = kis_get(token,
-            "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
-            "FHKST01010400",
-            {
-                "FID_COND_MRKT_DIV_CODE": "J",
-                "FID_INPUT_ISCD": code,
-                "FID_PERIOD_DIV_CODE": "D",
-                "FID_ORG_ADJ_PRC": "0",
-                "FID_INPUT_DATE_1": start,
-                "FID_INPUT_DATE_2": end,
-            }
-        )
-        items = data.get("output2", []) or data.get("output", [])
-        closes = []
-        volumes = []
-        for item in reversed(items):
-            try:
-                closes.append(float(item.get("stck_clpr", 0)))
-                volumes.append(int(item.get("acml_vol", 0)))
-            except:
-                continue
-        return closes, volumes
+        # 1차: 최근 100일
+        mid = (NOW - timedelta(days=105)).strftime("%Y%m%d")
+        # 2차: 그 이전 100일
+        start = (NOW - timedelta(days=210)).strftime("%Y%m%d")
+
+        for s, e in [(start, mid), (mid, end)]:
+            data = kis_get(token,
+                "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+                "FHKST03010100",
+                {
+                    "FID_COND_MRKT_DIV_CODE": "J",
+                    "FID_INPUT_ISCD": code,
+                    "FID_INPUT_DATE_1": s,
+                    "FID_INPUT_DATE_2": e,
+                    "FID_PERIOD_DIV_CODE": "D",
+                    "FID_ORG_ADJ_PRC": "0",
+                }
+            )
+            items = data.get("output2", [])
+            if not items:
+                items = data.get("output1", [])
+            for item in reversed(items):
+                try:
+                    c = float(item.get("stck_clpr", 0))
+                    v = int(item.get("acml_vol", 0))
+                    if c > 0:
+                        closes.append(c)
+                        volumes.append(v)
+                except:
+                    continue
+            time.sleep(0.3)
+
     except Exception as e:
         print(f"  {code} 일봉 오류: {e}")
-        return [], []
 
-# ── 4. 외국인 5일 순매수 ──────────────────────────
+    return closes, volumes
+
+# ── 4. 외국인 5일 순매수 (종목별) ─────────────────
 def get_foreign_5d(token, code):
     try:
         data = kis_get(token,
-            "/uapi/domestic-stock/v1/quotations/inquire-investor",
-            "FHPTJ04010000",
-            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": code}
+            "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+            "FHKST03010100",
+            {
+                "FID_COND_MRKT_DIV_CODE": "J",
+                "FID_INPUT_ISCD": code,
+                "FID_INPUT_DATE_1": (NOW - timedelta(days=14)).strftime("%Y%m%d"),
+                "FID_INPUT_DATE_2": NOW.strftime("%Y%m%d"),
+                "FID_PERIOD_DIV_CODE": "D",
+                "FID_ORG_ADJ_PRC": "0",
+            }
         )
-        items = data.get("output", [])[:5]
-        total = sum(int(i.get("frgn_ntby_qty", 0)) for i in items)
+        items = data.get("output2", [])[:5]
+        total = 0
+        for item in items:
+            # 외국인 순매수량 필드 탐색
+            for key in ["frgn_ntby_qty", "frgn_vol"]:
+                if key in item:
+                    try:
+                        total += int(item[key])
+                    except:
+                        pass
+                    break
         return total
     except:
         return 0
 
 # ── 5. 체크리스트 스크리닝 ────────────────────────
-def screen_stocks(token, kospi_trend):
+def screen_stocks(token, kospi_close):
     results = []
+
+    # 코스피 추세 판단 (간단 기준: 2400 이상)
+    kospi_trend = kospi_close > 2400 if kospi_close else False
 
     for code, name in FCF_UNIVERSE:
         try:
             closes, volumes = get_ohlcv(token, code)
+            print(f"  {name} 데이터: 종가 {len(closes)}개, 거래량 {len(volumes)}개")
+
             if len(closes) < 120 or len(volumes) < 21:
                 print(f"  {name} 데이터 부족 스킵")
                 continue
@@ -173,23 +231,18 @@ def screen_stocks(token, kospi_trend):
             ma60  = calc_ma(closes, 60)
             ma120 = calc_ma(closes, 120)
 
-            # 이평선 정배열
             aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
 
-            # 거래량 1.5배
             vol_now = volumes[-1]
             vol_avg = sum(volumes[-21:-1]) / 20
             vol_ok  = vol_now >= vol_avg * 1.5
 
-            # 외국인 5일 순매수
             foreign_5d = get_foreign_5d(token, code)
             foreign_ok = foreign_5d > 0
 
-            # 손절가·목표가
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            # 등급 판정
             score = sum([aligned, vol_ok, foreign_ok, kospi_trend])
             if score >= 3 and aligned:
                 grade = "A"
@@ -215,24 +268,23 @@ def screen_stocks(token, kospi_trend):
                     "손절가":       int(stop),
                     "목표가":       int(target),
                 })
-            print(f"  {name} [{grade}] 처리 완료")
+            print(f"  {name} [{grade}] ─ MA정배열:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok}")
 
         except Exception as e:
             print(f"  {name} 오류: {e}")
             continue
 
     results.sort(key=lambda x: (x["등급"], -x["현재가"]))
-    return results
+    return results, kospi_trend
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(indices, trading, candidates):
+def build_text(indices, trading, candidates, kospi_trend):
     lines = []
     lines.append(f"{'='*52}")
     lines.append(f"  국장 데이터 브리핑 — {TODAY_STR}")
     lines.append(f"  전일 마감 기준")
     lines.append(f"{'='*52}")
 
-    # 지수
     lines.append(f"\n【 주요 지수 】")
     for name, d in indices.items():
         if d["close"]:
@@ -240,14 +292,15 @@ def build_text(indices, trading, candidates):
             pct  = f"{'+' if d['pct'] >= 0 else ''}{d['pct']:.2f}%"
             lines.append(f"  {name:<8} {d['close']:>10,.2f}  {sign} {pct}")
 
-    # 수급
     lines.append(f"\n【 수급 (코스피) 】")
     for key in ["외국인", "기관", "개인"]:
-        val = trading.get(key, 0)
+        val  = trading.get(key, 0)
         sign = "+" if val >= 0 else ""
         lines.append(f"  {key:<6} {sign}{val:,}주")
 
-    # 체크리스트 결과
+    lines.append(f"\n【 코스피 추세 】")
+    lines.append(f"  {'✓ 상승추세 유지' if kospi_trend else '✗ 추세 이탈 — 진입 보류'}")
+
     lines.append(f"\n【 체크리스트 스크리닝 결과 】")
     if candidates:
         for c in candidates:
@@ -255,7 +308,6 @@ def build_text(indices, trading, candidates):
             lines.append(f"    현재가: {c['현재가']:,}원")
             lines.append(f"    MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}")
             lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 외국인5일: {c['외국인5일']} ({c['외국인순매수']:+,}주)")
-            lines.append(f"    코스피추세: {c['코스피추세']}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
     else:
         lines.append("  오늘 조건 충족 종목 없음 — 진입 보류")
@@ -292,26 +344,25 @@ def save_to_github(content):
 if __name__ == "__main__":
     print("🔑 KIS 토큰 발급 중...")
     token = get_token()
+    print("✅ 토큰 발급 완료")
 
     print("📡 코스피·코스닥 지수 수집 중...")
     indices = get_index(token)
 
     print("📡 수급 데이터 수집 중...")
     trading = get_trading(token)
+    print(f"  외국인: {trading['외국인']:,} | 기관: {trading['기관']:,} | 개인: {trading['개인']:,}")
 
-    # 코스피 추세 판단
-    kospi_close = indices.get("코스피", {}).get("close", 0)
-    kospi_trend = kospi_close > 2400  # 간단 기준, 추후 MA 계산으로 고도화
+    kospi_close = indices.get("코스피", {}).get("close", 0) or 0
 
     print("📡 체크리스트 스크리닝 중...")
-    candidates = screen_stocks(token, kospi_trend)
+    candidates, kospi_trend = screen_stocks(token, kospi_close)
     print(f"  → A/B등급 종목 {len(candidates)}개")
 
     print("📝 텍스트 생성 중...")
-    text = build_text(indices, trading, candidates)
+    text = build_text(indices, trading, candidates, kospi_trend)
     print(text)
 
     print("💾 GitHub 저장 중...")
     save_to_github(text)
-
     print("🎉 완료!")
