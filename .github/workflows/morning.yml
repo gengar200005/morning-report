@@ -22,7 +22,14 @@ jobs:
         run: |
           pip install yfinance pytz requests
 
-      - name: 리포트 실행
+      - name: 미장 데이터 수집
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python morning_report.py
+
+      - name: 국장 데이터 수집
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python kr_report.py
