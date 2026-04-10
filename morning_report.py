@@ -8,7 +8,7 @@ import pytz
 import yfinance as yf
 
 # ── 설정 ──────────────────────────────────────────
-GITHUB_TOKEN = os.environ["MY_GITHUB_TOKEN"]
+GITHUB_TOKEN = os.environ["MORNINGREPOT"]
 GITHUB_REPO  = "gengar200005/morning-report"
 GITHUB_FILE  = "us_data.txt"
 
