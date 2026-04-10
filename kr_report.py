@@ -108,32 +108,74 @@ def get_index(token):
 # ── 2. 외국인·기관·개인 수급 (코스피 전체) ────────
 def get_trading(token):
     result = {"외국인": 0, "기관": 0, "개인": 0}
+    prev_day = prev_trading_day()
+
+    # ── 방법 1: 투자자별 거래실적 일별 (날짜 범위 필수) ──
     try:
-        # 투자자별 거래실적 (일별) — FHKST03020100은 시장 전체 수급용
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
             "FHKST03020100",
             {
                 "FID_COND_MRKT_DIV_CODE": "J",
-                "FID_INPUT_ISCD": "0001",  # 코스피
-                "FID_INPUT_DATE_1": prev_trading_day(),  # 전 거래일 기준
+                "FID_INPUT_ISCD": "0001",
+                "FID_INPUT_DATE_1": prev_day,
+                "FID_INPUT_DATE_2": prev_day,   # 시작일 = 종료일 (당일 기준)
             }
         )
-        print(f"  수급 API 응답 키: {list(data.keys())}")
-        out = data.get("output1", [])
+        rt = data.get("rt_cd", "?")
+        msg = data.get("msg1", "")
+        print(f"  수급(방법1) rt_cd={rt} msg={msg} 키={list(data.keys())}")
+        out = data.get("output1") or data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
-            print(f"  수급 첫 번째 row 키: {list(row.keys())[:10]}")
+            print(f"  수급(방법1) row 키: {list(row.keys())[:10]}")
             result["외국인"] = int(row.get("frgn_ntby_qty", 0))
             result["기관"]   = int(row.get("orgn_ntby_qty", 0))
             result["개인"]   = int(row.get("indv_ntby_qty", 0))
+            print(f"  수급(방법1) 성공: 외국인={result['외국인']:,} 기관={result['기관']:,}")
+            return result
         elif isinstance(out, dict):
-            print(f"  수급 dict 키: {list(out.keys())[:10]}")
             result["외국인"] = int(out.get("frgn_ntby_qty", 0))
             result["기관"]   = int(out.get("orgn_ntby_qty", 0))
             result["개인"]   = int(out.get("indv_ntby_qty", 0))
+            print(f"  수급(방법1 dict) 성공: 외국인={result['외국인']:,}")
+            return result
     except Exception as e:
-        print(f"  수급 오류: {e}")
+        print(f"  수급(방법1) 오류: {e}")
+
+    # ── 방법 2: 시장별 투자자 시간대 매매동향 ──
+    try:
+        data = kis_get(token,
+            "/uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market",
+            "FHPTJ04010000",
+            {
+                "FID_COND_MRKT_DIV_CODE": "J",
+                "FID_INPUT_DATE_1": prev_day,
+            }
+        )
+        rt = data.get("rt_cd", "?")
+        msg = data.get("msg1", "")
+        print(f"  수급(방법2) rt_cd={rt} msg={msg} 키={list(data.keys())}")
+        out = data.get("output1") or data.get("output", [])
+        if isinstance(out, list) and len(out) > 0:
+            # 전체 합산
+            frgn, orgn, indv = 0, 0, 0
+            for row in out:
+                try:
+                    frgn += int(row.get("frgn_ntby_qty", 0))
+                    orgn += int(row.get("orgn_ntby_qty", 0))
+                    indv += int(row.get("indv_ntby_qty", 0))
+                except:
+                    pass
+            result["외국인"] = frgn
+            result["기관"]   = orgn
+            result["개인"]   = indv
+            print(f"  수급(방법2) 성공: 외국인={frgn:,} 기관={orgn:,}")
+            return result
+    except Exception as e:
+        print(f"  수급(방법2) 오류: {e}")
+
+    print("  ⚠️ 수급 데이터 수집 실패 — 0으로 처리")
     return result
 
 # ── 3. 종목 일봉 데이터 (100건씩 2회 호출) ────────
