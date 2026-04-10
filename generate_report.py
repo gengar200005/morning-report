@@ -136,7 +136,9 @@ def call_claude(us_data, kr_data, loc_data=""):
 
 ## 🔍 ⑤ 스크리닝 결과
 
-A/B등급 종목이 없으면 아래 한 줄만 작성:
+⚠️ 스크리닝 규칙: 국장 데이터 【체크리스트 스크리닝 결과】에 A/B등급 종목이 있으면 반드시 전부 포함할 것. 등급 재평가·생략·추가 금지.
+
+A/B등급 종목이 없을 때만 아래 한 줄 작성:
 ✋ **오늘 진입 보류** — A/B등급 조건 미충족
 
 A/B등급 종목이 있으면 종목별로 아래 형식 반복:
@@ -234,7 +236,6 @@ A/B등급 종목이 있으면 종목별로 아래 형식 반복:
 
 # ── Markdown → Notion 블록 변환 ──────────────────────
 def parse_rich_text(text):
-    """**bold** 파싱 → Notion rich_text 포맷"""
     if "**" not in text:
         return [{"type": "text", "text": {"content": text}}]
     parts = []
