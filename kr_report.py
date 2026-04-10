@@ -130,12 +130,53 @@ def get_index(token):
         time.sleep(0.3)
     return result
 
-# ── 2. 외국인·기관·개인 수급 (코스피 전체) ────────
+# ── 2. 외국인·기관·개인 수급 (KRX 공공 데이터) ───
 def get_trading(token):
     result   = {"외국인": 0, "기관": 0, "개인": 0}
-    prev_day = prev_trading_day()
+    prev_day = prev_trading_day()  # YYYYMMDD
 
-    # 방법 1: 투자자별 거래실적 일별 (날짜 범위 필수)
+    # ── 방법 1: KRX 투자자별 거래실적 (API 키 불필요) ──
+    try:
+        r = requests.post(
+            "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd",
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "Referer": "http://data.krx.co.kr/",
+                "User-Agent": "Mozilla/5.0",
+            },
+            data={
+                "bld":         "dbms/MDC/STAT/standard/MDCSTAT02303",
+                "locale":      "ko_KR",
+                "trdDd":       prev_day,
+                "mktId":       "STK",   # 코스피
+                "money":       "1",     # 단위: 백만원
+                "csvxls_isNo": "false",
+            },
+            timeout=10,
+        )
+        rows = r.json().get("output", [])
+        print(f"  수급(KRX) rows={len(rows)}")
+        for row in rows:
+            name = row.get("INVST_NM", "")
+            qty  = row.get("NETBUY_TRDVOL", "0").replace(",", "")
+            try:
+                val = int(qty)
+            except:
+                val = 0
+            if "외국인" in name:
+                result["외국인"] = val
+            elif "기관" in name and "합계" in name:
+                result["기관"] = val
+            elif "개인" in name:
+                result["개인"] = val
+        if any(v != 0 for v in result.values()):
+            print(f"  수급(KRX) 성공: 외국인={result['외국인']:,} 기관={result['기관']:,}")
+            return result
+        print("  수급(KRX) 값 모두 0 — 방법2 시도")
+    except Exception as e:
+        print(f"  수급(KRX) 오류: {e}")
+
+    # ── 방법 2: KIS API 백업 ──────────────────────
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
@@ -149,54 +190,17 @@ def get_trading(token):
         )
         rt  = data.get("rt_cd", "?")
         msg = data.get("msg1", "")
-        print(f"  수급(방법1) rt_cd={rt} msg={msg}")
+        print(f"  수급(KIS) rt_cd={rt} msg={msg}")
         out = data.get("output1") or data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
             result["외국인"] = int(row.get("frgn_ntby_qty", 0))
             result["기관"]   = int(row.get("orgn_ntby_qty", 0))
             result["개인"]   = int(row.get("indv_ntby_qty", 0))
-            print(f"  수급(방법1) 성공: 외국인={result['외국인']:,}")
-            return result
-        elif isinstance(out, dict):
-            result["외국인"] = int(out.get("frgn_ntby_qty", 0))
-            result["기관"]   = int(out.get("orgn_ntby_qty", 0))
-            result["개인"]   = int(out.get("indv_ntby_qty", 0))
-            print(f"  수급(방법1 dict) 성공: 외국인={result['외국인']:,}")
+            print(f"  수급(KIS) 성공: 외국인={result['외국인']:,}")
             return result
     except Exception as e:
-        print(f"  수급(방법1) 오류: {e}")
-
-    # 방법 2: 시장별 투자자 시간대 매매동향
-    try:
-        data = kis_get(token,
-            "/uapi/domestic-stock/v1/quotations/inquire-investor-time-by-market",
-            "FHPTJ04010000",
-            {
-                "FID_COND_MRKT_DIV_CODE": "J",
-                "FID_INPUT_DATE_1": prev_day,
-            }
-        )
-        rt  = data.get("rt_cd", "?")
-        msg = data.get("msg1", "")
-        print(f"  수급(방법2) rt_cd={rt} msg={msg}")
-        out = data.get("output1") or data.get("output", [])
-        if isinstance(out, list) and len(out) > 0:
-            frgn, orgn, indv = 0, 0, 0
-            for row in out:
-                try:
-                    frgn += int(row.get("frgn_ntby_qty", 0))
-                    orgn += int(row.get("orgn_ntby_qty", 0))
-                    indv += int(row.get("indv_ntby_qty", 0))
-                except:
-                    pass
-            result["외국인"] = frgn
-            result["기관"]   = orgn
-            result["개인"]   = indv
-            print(f"  수급(방법2) 성공: 외국인={frgn:,}")
-            return result
-    except Exception as e:
-        print(f"  수급(방법2) 오류: {e}")
+        print(f"  수급(KIS) 오류: {e}")
 
     print("  ⚠️ 수급 데이터 수집 실패 — 0으로 처리")
     return result
@@ -287,11 +291,13 @@ def get_price_detail(token, code):
                 return round(f, 2) if f != 0 else None
             except:
                 return None
-        return {
-            "per": sf(out.get("per")),
-            "pbr": sf(out.get("pbr")),
-            "roe": sf(out.get("roe")),
-        }
+        per = sf(out.get("per"))
+        pbr = sf(out.get("pbr"))
+        # ROE = EPS / BPS × 100 (inquire-price에 직접 roe 필드 없음)
+        eps = sf(out.get("eps"))
+        bps = sf(out.get("bps"))
+        roe = round(eps / bps * 100, 2) if eps and bps else None
+        return {"per": per, "pbr": pbr, "roe": roe}
     except Exception as e:
         print(f"  {code} 가격상세 오류: {e}")
         return {"per": None, "pbr": None, "roe": None}
