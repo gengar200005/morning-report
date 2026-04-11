@@ -190,6 +190,7 @@ def get_trading(token):
     # - KRX 직접 / pykrx 는 해외 IP 차단 → GitHub Actions 불가
     # - KIS 서버는 해외 IP 허용 → Actions·로컬 모두 동작
     # - FID_INPUT_ISCD_2 는 업종분류코드(필수). KOSPI 전체는 "0001".
+    # - 응답 단위: 백만원 → ÷100 하여 억원으로 변환
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market",
@@ -200,7 +201,7 @@ def get_trading(token):
                 "FID_INPUT_DATE_1":       prev_day,
                 "FID_INPUT_ISCD_1":       "KSP",    # 코스피 시장 식별
                 "FID_INPUT_DATE_2":       prev_day,
-                "FID_INPUT_ISCD_2":       "0001",   # 업종분류코드(필수)
+                "FID_INPUT_ISCD_2":       "0001",   # 업종분류코드(필수, 빈 값이면 0 반환)
             }
         )
         rt  = data.get("rt_cd", "?")
@@ -209,7 +210,6 @@ def get_trading(token):
         out = data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
-            print(f"  수급(KIS) 날짜={row.get('stck_bsop_date','?')}")
 
             def _raw(key):
                 try:
@@ -217,34 +217,10 @@ def get_trading(token):
                 except:
                     return 0
 
-            frgn_pbmn = _raw("frgn_ntby_tr_pbmn")
-            orgn_pbmn = _raw("orgn_ntby_tr_pbmn")
-            prsn_pbmn = _raw("prsn_ntby_tr_pbmn")
-            frgn_qty  = _raw("frgn_ntby_qty")
-            orgn_qty  = _raw("orgn_ntby_qty")
-            prsn_qty  = _raw("prsn_ntby_qty")
-            print(f"  수급(KIS) pbmn raw: 외국인={frgn_pbmn:+,} 기관={orgn_pbmn:+,} 개인={prsn_pbmn:+,}")
-            print(f"  수급(KIS) qty  raw: 외국인={frgn_qty:+,} 기관={orgn_qty:+,} 개인={prsn_qty:+,}")
-
-            # 단위 판정: 가장 큰 절댓값 기준
-            max_pbmn = max(abs(frgn_pbmn), abs(orgn_pbmn), abs(prsn_pbmn))
-            if max_pbmn >= 100_000_000:
-                # 원 단위 → 억원 변환
-                divisor = 100_000_000
-                unit_label = "원→억원"
-            elif max_pbmn >= 1_000_000:
-                # 백만원 단위 → 억원 변환 (÷100)
-                divisor = 100
-                unit_label = "백만원→억원"
-            else:
-                # 이미 억원
-                divisor = 1
-                unit_label = "억원"
-            print(f"  수급(KIS) 단위 추정: {unit_label} (divisor={divisor})")
-
-            result["외국인"] = frgn_pbmn // divisor if divisor > 1 else frgn_pbmn
-            result["기관"]   = orgn_pbmn // divisor if divisor > 1 else orgn_pbmn
-            result["개인"]   = prsn_pbmn // divisor if divisor > 1 else prsn_pbmn
+            # API 반환 단위: 백만원 → 100으로 나눠 억원으로 변환
+            result["외국인"] = _raw("frgn_ntby_tr_pbmn") // 100
+            result["기관"]   = _raw("orgn_ntby_tr_pbmn") // 100
+            result["개인"]   = _raw("prsn_ntby_tr_pbmn") // 100
             print(f"  수급(KIS) 외국인={result['외국인']:+,}억 기관={result['기관']:+,}억 개인={result['개인']:+,}억")
 
             if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
@@ -261,6 +237,7 @@ def get_trading(token):
         if df.empty:
             raise ValueError("빈 DataFrame")
 
+        # 순매수 컬럼 탐색 ─ MultiIndex·단순 인덱스 모두 대응
         net_col = None
         cols = list(df.columns)
         for col in cols:
