@@ -211,17 +211,40 @@ def get_trading(token):
             row = out[0]
             print(f"  수급(KIS) 날짜={row.get('stck_bsop_date','?')}")
 
-            def _parse_pbmn(key):
-                """거래대금(원) → 억원 변환"""
+            def _raw(key):
                 try:
-                    raw = int(str(row.get(key, "0")).replace(",", "").strip() or "0")
-                    return raw // 100_000_000
+                    return int(str(row.get(key, "0")).replace(",", "").strip() or "0")
                 except:
                     return 0
 
-            result["외국인"] = _parse_pbmn("frgn_ntby_tr_pbmn")
-            result["기관"]   = _parse_pbmn("orgn_ntby_tr_pbmn")
-            result["개인"]   = _parse_pbmn("prsn_ntby_tr_pbmn")
+            frgn_pbmn = _raw("frgn_ntby_tr_pbmn")
+            orgn_pbmn = _raw("orgn_ntby_tr_pbmn")
+            prsn_pbmn = _raw("prsn_ntby_tr_pbmn")
+            frgn_qty  = _raw("frgn_ntby_qty")
+            orgn_qty  = _raw("orgn_ntby_qty")
+            prsn_qty  = _raw("prsn_ntby_qty")
+            print(f"  수급(KIS) pbmn raw: 외국인={frgn_pbmn:+,} 기관={orgn_pbmn:+,} 개인={prsn_pbmn:+,}")
+            print(f"  수급(KIS) qty  raw: 외국인={frgn_qty:+,} 기관={orgn_qty:+,} 개인={prsn_qty:+,}")
+
+            # 단위 판정: 가장 큰 절댓값 기준
+            max_pbmn = max(abs(frgn_pbmn), abs(orgn_pbmn), abs(prsn_pbmn))
+            if max_pbmn >= 100_000_000:
+                # 원 단위 → 억원 변환
+                divisor = 100_000_000
+                unit_label = "원→억원"
+            elif max_pbmn >= 1_000_000:
+                # 백만원 단위 → 억원 변환 (÷100)
+                divisor = 100
+                unit_label = "백만원→억원"
+            else:
+                # 이미 억원
+                divisor = 1
+                unit_label = "억원"
+            print(f"  수급(KIS) 단위 추정: {unit_label} (divisor={divisor})")
+
+            result["외국인"] = frgn_pbmn // divisor if divisor > 1 else frgn_pbmn
+            result["기관"]   = orgn_pbmn // divisor if divisor > 1 else orgn_pbmn
+            result["개인"]   = prsn_pbmn // divisor if divisor > 1 else prsn_pbmn
             print(f"  수급(KIS) 외국인={result['외국인']:+,}억 기관={result['기관']:+,}억 개인={result['개인']:+,}억")
 
             if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
