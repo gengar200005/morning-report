@@ -208,11 +208,15 @@ def get_trading(token):
         out = data.get("output", [])
         if isinstance(out, list) and len(out) > 0:
             row = out[0]
-            print(f"  수급(KIS) row keys={list(row.keys())[:10]}")
+            # 디버그: 투자자 관련 전체 필드·값 출력
+            inv_fields = {k: v for k, v in row.items()
+                          if any(x in k for x in ("frgn", "orgn", "prsn", "ntby", "pbmn", "qty"))}
+            print(f"  수급(KIS) 투자자 필드: {inv_fields}")
             def _parse(key_pbmn, key_qty):
-                v = row.get(key_pbmn) or row.get(key_qty, "0")
+                raw_str = row.get(key_pbmn, "") or row.get(key_qty, "0")
                 try:
-                    raw = int(str(v).replace(",", "") or "0")
+                    raw = int(str(raw_str).replace(",", "").replace(" ", "") or "0")
+                    # KIS는 거래대금을 원 단위로 반환 → 100_000_000으로 나눠 억원
                     if key_pbmn in row and abs(raw) >= 100_000_000:
                         return raw // 100_000_000
                     return raw
