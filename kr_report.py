@@ -181,48 +181,56 @@ def get_index(token):
         time.sleep(0.3)
     return result
 
-# ── 2. 수급 (KRX 직접 → pykrx 백업) ───────────────────
+# ── 2. 수급 (KIS 시장별 투자자 → pykrx 백업) ──────────────────
 def get_trading(token):
     result   = {"외국인": 0, "기관": 0, "개인": 0, "단위": "억원"}
     prev_day = prev_trading_day()
 
-    # 1순위: KRX 데이터포털 직접 HTTP POST
+    # 1순위: KIS 시장별 투자자매매동향 (FHPTJ04040000)
+    # - KRX direct / pykrx 는 해외 IP 차단으로 GitHub Actions 에서 불가
+    # - 이 endpoint 는 KIS 서버에서 직접 제공 → 해외 IP 무관
     try:
-        url = "https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"
-        params = {
-            "bld":    "dbms/MDC/STAT/standard/MDCSTAT02201",
-            "mktId":  "STK",
-            "strtDd": prev_day,
-            "endDd":  prev_day,
-        }
-        headers = {
-            "Referer":    "https://data.krx.co.kr/",
-            "User-Agent": "Mozilla/5.0",
-        }
-        resp = requests.post(url, data=params, headers=headers, timeout=10)
-        resp.raise_for_status()
-        rows = resp.json().get("OutBlock_1", [])
-        print(f"  수급(KRX) rows={len(rows)}")
-        label_map = {
-            "외국인합계": "외국인",
-            "기관합계":   "기관",
-            "개인":       "개인",
-        }
-        for row in rows:
-            name = row.get("INVST_TP_NM", "").strip()
-            if name in label_map:
-                key = label_map[name]
-                raw = int(str(row.get("NETBID_TRDVAL", "0")).replace(",", "") or "0")
-                result[key] = raw // 100_000_000  # 원 → 억원
-                print(f"  raw KRX [{name}] = {raw:,} → {result[key]:,}억원")
-        if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
-            print(f"  수급(KRX) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
-            return result
-        print("  수급(KRX) 값 모두 0 — pykrx 백업 시도")
+        data = kis_get(token,
+            "/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market",
+            "FHPTJ04040000",
+            {
+                "FID_COND_MRKT_DIV_CODE": "U",
+                "FID_INPUT_ISCD":         "0001",
+                "FID_INPUT_DATE_1":       prev_day,
+                "FID_INPUT_DATE_2":       prev_day,
+                "FID_INPUT_ISCD_1":       "KSP",
+                "FID_INPUT_ISCD_2":       "",
+            }
+        )
+        rt  = data.get("rt_cd", "?")
+        msg = data.get("msg1", "")
+        print(f"  수급(KIS) rt_cd={rt} msg={msg}")
+        out = data.get("output", [])
+        if isinstance(out, list) and len(out) > 0:
+            row = out[0]
+            print(f"  수급(KIS) row keys={list(row.keys())[:10]}")
+            def _parse(key_pbmn, key_qty):
+                v = row.get(key_pbmn) or row.get(key_qty, "0")
+                try:
+                    raw = int(str(v).replace(",", "") or "0")
+                    # pbmn(거래대금)은 원 단위 → 억원 변환; qty(수량)는 그대로
+                    if key_pbmn in row and abs(raw) >= 100_000_000:
+                        return raw // 100_000_000
+                    return raw
+                except:
+                    return 0
+            result["외국인"] = _parse("frgn_ntby_tr_pbmn", "frgn_ntby_qty")
+            result["기관"]   = _parse("orgn_ntby_tr_pbmn", "orgn_ntby_qty")
+            result["개인"]   = _parse("prsn_ntby_tr_pbmn", "prsn_ntby_qty")
+            print(f"  수급(KIS) raw: 외국인={result['외국인']:,} 기관={result['기관']:,} 개인={result['개인']:,}")
+            if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
+                print(f"  수급(KIS) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
+                return result
+        print("  수급(KIS) 값 모두 0 — pykrx 백업 시도")
     except Exception as e:
-        print(f"  수급(KRX) 오류: {e}")
+        print(f"  수급(KIS) 오류: {e}")
 
-    # 2순위: pykrx
+    # 2순위: pykrx (로컬 전용 — GitHub Actions 에서는 KRX IP 차단으로 실패)
     try:
         df = krx.get_market_trading_value_by_investor(prev_day, prev_day, "KOSPI")
         print(f"  수급(pykrx) shape={df.shape} index={list(df.index)} cols={list(df.columns)}")
