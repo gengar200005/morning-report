@@ -39,6 +39,27 @@ def q(sym, period="5d"):
         pass
     return {"close": None, "chg": None, "pct": None}
 
+def q_ma(sym):
+    """당일 등락 + MA20·MA60 추세 포함"""
+    try:
+        hist   = yf.Ticker(sym).history(period="100d")
+        closes = hist["Close"].dropna()
+        if len(closes) < 2:
+            return {"close": None, "chg": None, "pct": None}
+        prev  = float(closes.iloc[-2])
+        close = float(closes.iloc[-1])
+        chg   = close - prev
+        pct   = chg / prev * 100
+        result = {"close": round(close, 2), "chg": round(chg, 2), "pct": round(pct, 2)}
+        for n in [20, 60]:
+            if len(closes) >= n:
+                ma = round(float(closes.tail(n).mean()), 2)
+                result[f"ma{n}"]       = ma
+                result[f"above_ma{n}"] = close > ma
+        return result
+    except:
+        return {"close": None, "chg": None, "pct": None}
+
 def arrow(pct):
     if pct is None: return "–"
     return "▲" if pct >= 0 else "▼"
@@ -93,10 +114,10 @@ def get_all_data():
 
     print("📡 주요 지수 수집 중...")
     indices = {
-        "S&P500":   q("^GSPC"),
-        "나스닥":   q("^IXIC"),
-        "다우":     q("^DJI"),
-        "러셀2000": q("^RUT"),
+        "S&P500":   q_ma("^GSPC"),
+        "나스닥":   q_ma("^IXIC"),
+        "다우":     q_ma("^DJI"),
+        "러셀2000": q_ma("^RUT"),
     }
 
     print("📡 공포탐욕지수 수집 중...")
@@ -159,13 +180,13 @@ def get_all_data():
 
     print("📡 섹터 ETF 수집 중...")
     sectors = {
-        "반도체(SOXX)":  q("SOXX"),
-        "테크(XLK)":     q("XLK"),
-        "에너지(XLE)":   q("XLE"),
-        "금융(XLF)":     q("XLF"),
-        "헬스케어(XLV)": q("XLV"),
-        "소비재(XLY)":   q("XLY"),
-        "유틸리티(XLU)": q("XLU"),
+        "반도체(SOXX)":  q_ma("SOXX"),
+        "테크(XLK)":     q_ma("XLK"),
+        "에너지(XLE)":   q_ma("XLE"),
+        "금융(XLF)":     q_ma("XLF"),
+        "헬스케어(XLV)": q_ma("XLV"),
+        "소비재(XLY)":   q_ma("XLY"),
+        "유틸리티(XLU)": q_ma("XLU"),
     }
 
     return weather, indices, fg, rates, comms, vix, semis, m7, sectors
@@ -198,7 +219,13 @@ def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
     # 주요 지수
     lines.append(f"\n【 주요 지수 】")
     for name, d in indices.items():
-        lines.append(f"  {name:<10} {fmt_price(d['close']):>12}  {arrow(d['pct'])} {fmt_pct(d['pct'])}")
+        ma_parts = []
+        for n in [20, 60]:
+            if d.get(f"ma{n}"):
+                sign = "✓위" if d.get(f"above_ma{n}") else "✗아래"
+                ma_parts.append(f"MA{n}{sign}")
+        ma_str = "  |  " + " / ".join(ma_parts) if ma_parts else ""
+        lines.append(f"  {name:<10} {fmt_price(d['close']):>12}  {arrow(d['pct'])} {fmt_pct(d['pct'])}{ma_str}")
 
     # VIX
     vix_comment = "안정" if vix['close'] and vix['close'] < 20 else "주의" if vix['close'] and vix['close'] < 30 else "위험"
@@ -230,7 +257,13 @@ def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
     for name, d in sorted_s:
         bar_len = min(abs(int(d['pct'] * 2)), 10)
         bar = ("▲" * bar_len) if d['pct'] >= 0 else ("▼" * bar_len)
-        lines.append(f"  {name:<18} {fmt_pct(d['pct']):>8}  {bar}")
+        ma_parts = []
+        for n in [20, 60]:
+            if d.get(f"ma{n}"):
+                sign = "✓" if d.get(f"above_ma{n}") else "✗"
+                ma_parts.append(f"MA{n}{sign}")
+        ma_str = "  " + "/".join(ma_parts) if ma_parts else ""
+        lines.append(f"  {name:<18} {fmt_pct(d['pct']):>8}  {bar}{ma_str}")
 
     # 반도체
     lines.append(f"\n【 반도체 개별주 】")
