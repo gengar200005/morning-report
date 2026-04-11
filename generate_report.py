@@ -29,6 +29,21 @@ def read_github_file(filename):
 
 # ── Claude API 호출 ───────────────────────────────────
 def call_claude(us_data, kr_data, loc_data=""):
+    # kr_data에서 A/B등급 종목 추출 → 프롬프트에 직접 명시해 생략 방지
+    must_include = []
+    for line in kr_data.split("\n"):
+        m = re.search(r"▶\s+(\S+)\s+\(\d+\)\s+\[([AB])등급", line)
+        if m:
+            must_include.append(f"{m.group(1)}({m.group(2)}등급)")
+    if must_include:
+        must_warning = (
+            f"\n🚨 ⑤ 스크리닝 섹션 필수 포함 종목 {len(must_include)}개: "
+            + ", ".join(must_include)
+            + "\n   → 위 종목 전부를 빠짐없이 작성할 것. 한 종목이라도 누락 시 잘못된 리포트.\n"
+        )
+    else:
+        must_warning = ""
+
     prompt = f"""당신은 서울 이촌동 거주 소화기내과 봉직의의 전담 모닝리포트 작성 AI입니다.
 오늘({TODAY_STR}) 데이터를 분석해 노션 모바일 앱에서 한눈에 보기 좋은 모닝리포트를 작성하세요.
 
@@ -135,8 +150,9 @@ def call_claude(us_data, kr_data, loc_data=""):
 ---
 
 ## 🔍 ⑤ 스크리닝 결과
-
+{must_warning}
 ⚠️ 스크리닝 규칙: 국장 데이터 【체크리스트 스크리닝 결과】에 A/B등급 종목이 있으면 반드시 전부 포함할 것. 등급 재평가·생략·추가 금지.
+⚠️ B등급 종목도 A등급과 동일하게 반드시 포함할 것. 등급이 낮다는 이유로 생략하는 것은 절대 금지.
 
 A/B등급 종목이 없을 때만 아래 한 줄 작성:
 ✋ **오늘 진입 보류** — A/B등급 조건 미충족
