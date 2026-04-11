@@ -115,21 +115,14 @@ def get_etf_ma60(etf_info):
         print(f"    ETF {etf_name} 오류: {e}")
     return None, etf_name
 
-# ── 저항→지지 전환 체크 ───────────────────────────
-def check_sr(closes, window=5, tolerance=0.04):
-    if len(closes) < 40:
+# ── 60일 고점 근접 체크 (보조 조건 ⑤) ───────────────
+def check_60d_high(closes):
+    """최근 60거래일 고점 대비 현재가 -2% 이내 또는 돌파"""
+    if len(closes) < 60:
         return False, None
-    current = closes[-1]
-    search  = closes[-80:-10] if len(closes) >= 90 else closes[:-10]
-    swing_highs = []
-    for i in range(window, len(search) - window):
-        if (all(search[i] >= search[i-j] for j in range(1, window+1)) and
-                all(search[i] >= search[i+j] for j in range(1, window+1))):
-            swing_highs.append(search[i])
-    for high in sorted(swing_highs, key=lambda x: abs(x - current)):
-        if high * (1 - tolerance) <= current <= high * (1 + tolerance):
-            return True, int(high)
-    return False, None
+    high_60d = max(closes[-60:])
+    current  = closes[-1]
+    return current >= high_60d * 0.98, int(high_60d)
 
 # ── 0. VIX & 코스피 60MA ──────────────────────────
 def get_market_context():
@@ -141,8 +134,8 @@ def get_market_context():
         hist = yf.Ticker("^VIX").history(period="5d")
         if not hist.empty:
             ctx["vix"]    = round(float(hist["Close"].iloc[-1]), 2)
-            ctx["vix_ok"] = ctx["vix"] < 20
-            print(f"  VIX: {ctx['vix']} ({'✓' if ctx['vix_ok'] else '✗'})")
+            ctx["vix_ok"] = ctx["vix"] < 35
+            print(f"  VIX: {ctx['vix']} ({'✓' if ctx['vix_ok'] else '✗'} 35이하)")
     except Exception as e:
         print(f"  VIX 오류: {e}")
 
@@ -317,8 +310,9 @@ def get_ohlcv(token, code):
 
     return closes, volumes
 
-# ── 4. 외국인 5일 순매수 ──────────────────────────
-def get_foreign_5d(token, code):
+# ── 4. 외국인+기관 20거래일 누적 순매수 (보조 조건 ⑥) ──
+def get_supply_20d(token, code):
+    """외국인+기관 최근 20거래일 누적 순매수 수량 합산"""
     try:
         data = kis_get(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
@@ -338,10 +332,11 @@ def get_foreign_5d(token, code):
                 continue
             try:
                 total += int(item.get("frgn_ntby_qty", 0))
+                total += int(item.get("orgn_ntby_qty", 0))
                 count += 1
             except:
                 pass
-            if count >= 5:
+            if count >= 20:
                 break
         return total
     except:
@@ -400,35 +395,34 @@ def screen_stocks(token, mkt_ctx):
             vol_avg = sum(volumes[-21:-1]) / 20
             vol_ok  = vol_now >= vol_avg * 1.5
 
-            foreign_5d = get_foreign_5d(token, code)
-            foreign_ok = foreign_5d > 0
+            supply_20d = get_supply_20d(token, code)
+            supply_ok  = supply_20d > 0
 
             detail = get_price_detail(token, code)
             time.sleep(0.2)
 
-            etf_ok, etf_name = get_etf_ma60(SECTOR_ETF.get(code))
-            sr_ok, sr_level  = check_sr(closes)
+            near_high, high_60d = check_60d_high(closes)
 
             stop   = round(close_now * 0.93, 0)
             target = round(close_now * 1.18, 0)
 
-            score     = sum([aligned, vol_ok, foreign_ok, kospi_ok, vix_ok])
-            if etf_ok is True:  score += 1
-            if sr_ok:           score += 1
-            max_score = 5 + (1 if etf_ok is not None else 0) + 1
+            # 코어(①②) + 게이트(③④) 모두 충족이 전제 — 하나라도 미충족 시 D
+            core_ok = aligned and vol_ok
+            gate_ok = kospi_ok and vix_ok
+            max_score = 6
 
-            if score >= max_score - 1 and aligned:
-                grade = "A"
-            elif score >= max_score - 2:
-                grade = "B"
+            if not (core_ok and gate_ok):
+                grade = "D"
+                score = sum([aligned, vol_ok, kospi_ok, vix_ok, near_high, supply_ok])
             else:
-                grade = "C"
+                aux = sum([near_high, supply_ok])
+                score = 4 + aux
+                grade = "A" if aux == 2 else ("B" if aux == 1 else "C")
 
-            etf_str = f"✓ {etf_name}" if etf_ok is True else (f"✗ {etf_name}" if etf_ok is False else "N/A")
-            sr_str  = f"✓ {sr_level:,}원" if sr_ok else "✗"
-            print(f"  {name} [{grade}] {score}/{max_score}점 — MA:{aligned} 거래량:{vol_ok} 외국인:{foreign_ok} 코스피:{kospi_ok} VIX:{vix_ok} ETF:{etf_str} SR:{sr_str}")
+            high_str = f"✓ {high_60d:,}원" if near_high else "✗"
+            print(f"  {name} [{grade}] {score}/{max_score}점 — MA:{aligned} 거래량:{vol_ok} 코스피:{kospi_ok} VIX:{vix_ok} 60D고점:{near_high} 수급20일:{supply_ok}({supply_20d:+,})")
 
-            if grade in ("A", "B"):
+            if grade in ("A", "B", "C"):
                 results.append({
                     "종목명":       name,
                     "종목코드":     code,
@@ -441,12 +435,11 @@ def screen_stocks(token, mkt_ctx):
                     "MA120":        int(ma120) if ma120 else 0,
                     "이평선정배열": "✓" if aligned else "✗",
                     "거래량":       "✓" if vol_ok else "✗",
-                    "외국인5일":    "✓" if foreign_ok else "✗",
-                    "외국인순매수": foreign_5d,
+                    "수급20일":     "✓" if supply_ok else "✗",
+                    "수급누적":     supply_20d,
                     "코스피MA60":   "✓" if kospi_ok else "✗",
-                    "VIX20이하":    "✓" if vix_ok else "✗",
-                    "섹터ETF":      etf_str,
-                    "저항지지":     sr_str,
+                    "VIX35이하":    "✓" if vix_ok else "✗",
+                    "60일고점":     high_str,
                     "PER":          detail["per"],
                     "PBR":          detail["pbr"],
                     "ROE":          detail["roe"],
@@ -458,7 +451,7 @@ def screen_stocks(token, mkt_ctx):
             print(f"  {name} 오류: {e}")
             continue
 
-    results.sort(key=lambda x: (x["등급"], -x["점수"]))
+    results.sort(key=lambda x: ({"A": 0, "B": 1, "C": 2}.get(x["등급"], 3), -x["점수"]))
     return results
 
 # ── 텍스트 포맷 ────────────────────────────────────
@@ -488,7 +481,7 @@ def build_text(indices, trading, candidates, mkt_ctx):
     ma60 = mkt_ctx.get("kospi_ma60")
     vix_str  = f"{vix:.2f}"    if vix  else "N/A"
     ma60_str = f"{ma60:,.2f}"  if ma60 else "N/A"
-    lines.append(f"  VIX         {vix_str:>8}  {'✓ 20이하 — 변동성 안정' if mkt_ctx['vix_ok'] else '✗ 20초과 — 변동성 경계'}")
+    lines.append(f"  VIX         {vix_str:>8}  {'✓ 35이하 — 패닉 환경 아님' if mkt_ctx['vix_ok'] else '✗ 35초과 — 패닉 환경, 진입 불가'}")
     lines.append(f"  코스피 MA60 {ma60_str:>10}  {'✓ MA60 위 — 상승추세 유지' if mkt_ctx['kospi_above_ma60'] else '✗ MA60 아래 — 진입 보류'}")
 
     lines.append(f"\n【 체크리스트 스크리닝 결과 】")
@@ -500,9 +493,8 @@ def build_text(indices, trading, candidates, mkt_ctx):
             lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점]")
             lines.append(f"    현재가: {c['현재가']:,}원")
             lines.append(f"    MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}")
-            lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 외국인5일: {c['외국인5일']} ({c['외국인순매수']:+,}주)")
-            lines.append(f"    코스피MA60: {c['코스피MA60']} | VIX20이하: {c['VIX20이하']}")
-            lines.append(f"    섹터ETF60MA: {c['섹터ETF']} | 저항→지지: {c['저항지지']}")
+            lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 코스피MA60: {c['코스피MA60']} | VIX35이하: {c['VIX35이하']}")
+            lines.append(f"    수급20일(외국인+기관): {c['수급20일']} ({c['수급누적']:+,}주) | 60일고점근접: {c['60일고점']}")
             lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
     else:
