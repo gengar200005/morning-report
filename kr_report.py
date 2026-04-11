@@ -190,21 +190,52 @@ def get_trading(token):
         df = krx.get_market_trading_value_by_investor(prev_day, prev_day, "KOSPI")
         print(f"  수급(pykrx) shape={df.shape} index={list(df.index)} cols={list(df.columns)}")
 
-        # 순매수 컬럼 탐색 (pykrx 버전별 컬럼명 차이 대응)
-        net_col = next((c for c in ["순매수", "순매수금액", "net", "Net"] if c in df.columns), None)
-        if net_col is None and len(df.columns) >= 3:
-            net_col = df.columns[-1]
-            print(f"  순매수 컬럼 추정: '{net_col}'")
+        if df.empty:
+            raise ValueError("빈 DataFrame")
 
-        if net_col:
+        # 순매수 컬럼 탐색 ─ MultiIndex·단순 인덱스 모두 대응
+        # str(col)로 변환해 '순매수' 포함 여부 체크 → 버전별 차이 무관
+        net_col = None
+        cols = list(df.columns)
+        # 1순위: '순매수'+'거래대금' 둘 다 포함 (MultiIndex 거래대금 기반)
+        for col in cols:
+            s = str(col)
+            if "순매수" in s and "거래대금" in s:
+                net_col = col
+                break
+        # 2순위: '순매수' 포함 (단순 문자열 컬럼)
+        if net_col is None:
+            for col in cols:
+                if "순매수" in str(col):
+                    net_col = col
+                    break
+        # 3순위: 알려진 대체 컬럼명
+        if net_col is None:
+            for col in cols:
+                if col in ("순매수금액", "net", "Net"):
+                    net_col = col
+                    break
+        # 최후 폴백: 마지막 컬럼
+        if net_col is None and len(cols) >= 3:
+            net_col = cols[-1]
+            print(f"  순매수 컬럼 최후 추정: '{net_col}'")
+
+        print(f"  사용 순매수 컬럼: '{net_col}'")
+
+        if net_col is not None:
             for label, key in [
                 ("외국인합계", "외국인"), ("외국인",  "외국인"),
                 ("기관합계",   "기관"),   ("기관",    "기관"),
                 ("개인",       "개인"),
             ]:
                 if label in df.index and result[key] == 0:
-                    val = int(df.loc[label, net_col]) // 100_000_000
-                    result[key] = val
+                    raw_val = int(df.loc[label, net_col])
+                    print(f"  raw [{label}] = {raw_val:,}")
+                    # 단위 자동 판별: 절댓값 1억 미만 → 이미 억원 단위
+                    if abs(raw_val) < 100_000_000:
+                        result[key] = raw_val          # 이미 억원
+                    else:
+                        result[key] = raw_val // 100_000_000  # 원 → 억원
             if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
                 print(f"  수급(pykrx) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
                 return result
