@@ -181,11 +181,55 @@ def get_index(token):
         time.sleep(0.3)
     return result
 
-# ── 2. 수급 (pykrx → KIS 백업) ───────────────────
+# ── 2. 수급 (KIS 시장별 투자자 → pykrx 백업) ──────────────────
 def get_trading(token):
     result   = {"외국인": 0, "기관": 0, "개인": 0, "단위": "억원"}
     prev_day = prev_trading_day()
 
+    # 1순위: KIS 시장별 투자자매매동향 (FHPTJ04040000)
+    # - KRX direct / pykrx 는 해외 IP 차단으로 GitHub Actions 에서 불가
+    # - 이 endpoint 는 KIS 서버에서 직접 제공 → 해외 IP 무관
+    try:
+        data = kis_get(token,
+            "/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market",
+            "FHPTJ04040000",
+            {
+                "FID_COND_MRKT_DIV_CODE": "U",
+                "FID_INPUT_ISCD":         "0001",
+                "FID_INPUT_DATE_1":       prev_day,
+                "FID_INPUT_DATE_2":       prev_day,
+                "FID_INPUT_ISCD_1":       "KSP",
+                "FID_INPUT_ISCD_2":       "",
+            }
+        )
+        rt  = data.get("rt_cd", "?")
+        msg = data.get("msg1", "")
+        print(f"  수급(KIS) rt_cd={rt} msg={msg}")
+        out = data.get("output", [])
+        if isinstance(out, list) and len(out) > 0:
+            row = out[0]
+            print(f"  수급(KIS) row keys={list(row.keys())[:10]}")
+            def _parse(key_pbmn, key_qty):
+                v = row.get(key_pbmn) or row.get(key_qty, "0")
+                try:
+                    raw = int(str(v).replace(",", "") or "0")
+                    if key_pbmn in row and abs(raw) >= 100_000_000:
+                        return raw // 100_000_000
+                    return raw
+                except:
+                    return 0
+            result["외국인"] = _parse("frgn_ntby_tr_pbmn", "frgn_ntby_qty")
+            result["기관"]   = _parse("orgn_ntby_tr_pbmn", "orgn_ntby_qty")
+            result["개인"]   = _parse("prsn_ntby_tr_pbmn", "prsn_ntby_qty")
+            print(f"  수급(KIS) raw: 외국인={result['외국인']:,} 기관={result['기관']:,} 개인={result['개인']:,}")
+            if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
+                print(f"  수급(KIS) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
+                return result
+        print("  수급(KIS) 값 모두 0 — pykrx 백업 시도")
+    except Exception as e:
+        print(f"  수급(KIS) 오류: {e}")
+
+    # 2순위: pykrx (로컬 전용 — GitHub Actions 에서는 KRX IP 차단으로 실패)
     try:
         df = krx.get_market_trading_value_by_investor(prev_day, prev_day, "KOSPI")
         print(f"  수급(pykrx) shape={df.shape} index={list(df.index)} cols={list(df.columns)}")
@@ -193,29 +237,18 @@ def get_trading(token):
         if df.empty:
             raise ValueError("빈 DataFrame")
 
-        # 순매수 컬럼 탐색 ─ MultiIndex·단순 인덱스 모두 대응
-        # str(col)로 변환해 '순매수' 포함 여부 체크 → 버전별 차이 무관
         net_col = None
         cols = list(df.columns)
-        # 1순위: '순매수'+'거래대금' 둘 다 포함 (MultiIndex 거래대금 기반)
         for col in cols:
             s = str(col)
             if "순매수" in s and "거래대금" in s:
-                net_col = col
-                break
-        # 2순위: '순매수' 포함 (단순 문자열 컬럼)
+                net_col = col; break
         if net_col is None:
             for col in cols:
-                if "순매수" in str(col):
-                    net_col = col
-                    break
-        # 3순위: 알려진 대체 컬럼명
+                if "순매수" in str(col): net_col = col; break
         if net_col is None:
             for col in cols:
-                if col in ("순매수금액", "net", "Net"):
-                    net_col = col
-                    break
-        # 최후 폴백: 마지막 컬럼
+                if col in ("순매수금액", "net", "Net"): net_col = col; break
         if net_col is None and len(cols) >= 3:
             net_col = cols[-1]
             print(f"  순매수 컬럼 최후 추정: '{net_col}'")
@@ -231,43 +264,16 @@ def get_trading(token):
                 if label in df.index and result[key] == 0:
                     raw_val = int(df.loc[label, net_col])
                     print(f"  raw [{label}] = {raw_val:,}")
-                    # 단위 자동 판별: 절댓값 1억 미만 → 이미 억원 단위
                     if abs(raw_val) < 100_000_000:
-                        result[key] = raw_val          # 이미 억원
+                        result[key] = raw_val
                     else:
-                        result[key] = raw_val // 100_000_000  # 원 → 억원
+                        result[key] = raw_val // 100_000_000
             if any(result[k] != 0 for k in ["외국인", "기관", "개인"]):
                 print(f"  수급(pykrx) 성공: 외국인={result['외국인']:,}억 기관={result['기관']:,}억")
                 return result
-        print("  수급(pykrx) 값 모두 0 — KIS 백업 시도")
+        print("  수급(pykrx) 값 모두 0")
     except Exception as e:
         print(f"  수급(pykrx) 오류: {e}")
-
-    try:
-        data = kis_get(token,
-            "/uapi/domestic-stock/v1/quotations/inquire-investor",
-            "FHKST03020100",
-            {
-                "FID_COND_MRKT_DIV_CODE": "J",
-                "FID_INPUT_ISCD":   "0001",
-                "FID_INPUT_DATE_1": prev_day,
-                "FID_INPUT_DATE_2": prev_day,
-            }
-        )
-        rt  = data.get("rt_cd", "?")
-        msg = data.get("msg1", "")
-        print(f"  수급(KIS) rt_cd={rt} msg={msg}")
-        out = data.get("output1") or data.get("output", [])
-        if isinstance(out, list) and len(out) > 0:
-            row = out[0]
-            result["외국인"] = int(row.get("frgn_ntby_qty", 0))
-            result["기관"]   = int(row.get("orgn_ntby_qty", 0))
-            result["개인"]   = int(row.get("indv_ntby_qty", 0))
-            result["단위"]   = "주"
-            print(f"  수급(KIS) 성공: 외국인={result['외국인']:,}")
-            return result
-    except Exception as e:
-        print(f"  수급(KIS) 오류: {e}")
 
     print("  ⚠️ 수급 데이터 수집 실패 — 0으로 처리")
     return result
