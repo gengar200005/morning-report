@@ -197,13 +197,13 @@ def get_trading(token):
         # str(col)로 변환해 '순매수' 포함 여부 체크 → 버전별 차이 무관
         net_col = None
         cols = list(df.columns)
-        # 1순위: '순매수'+'거래대금' 둘 다 포함(MultiIndex 거래대금 기반)
+        # 1순위: '순매수'+'거래대금' 둘 다 포함 (MultiIndex 거래대금 기반)
         for col in cols:
             s = str(col)
             if "순매수" in s and "거래대금" in s:
                 net_col = col
                 break
-        # 2순위: '순매수' 포함 (단순 문자열 컬럼 포함)
+        # 2순위: '순매수' 포함 (단순 문자열 컬럼)
         if net_col is None:
             for col in cols:
                 if "순매수" in str(col):
@@ -215,7 +215,7 @@ def get_trading(token):
                 if col in ("순매수금액", "net", "Net"):
                     net_col = col
                     break
-        # 최후 폴백: 마지막 컬럼 (기존 동작 유지)
+        # 최후 폴백: 마지막 컬럼
         if net_col is None and len(cols) >= 3:
             net_col = cols[-1]
             print(f"  순매수 컬럼 최후 추정: '{net_col}'")
