@@ -243,7 +243,7 @@ A/B등급 종목이 있으면 종목별로 아래 형식 반복:
         "https://api.anthropic.com/v1/messages",
         headers=headers,
         json=body,
-        timeout=60,
+        timeout=180,
     )
     if r.status_code != 200:
         raise Exception(f"Claude API 오류: {r.status_code} {r.text}")
