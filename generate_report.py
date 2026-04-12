@@ -12,7 +12,7 @@ TODAY_ISO = NOW.strftime("%Y-%m-%d")
 ANTHROPIC_API_KEY     = os.environ["ANTHROPIC_API_KEY"]
 NOTION_API_KEY        = os.environ["NOTION_API_KEY"]
 NOTION_PARENT_PAGE_ID = os.environ.get(
-    "NOTION_PARENT_PAGE_ID", "33e14f343a568158a76fcf91d4bb4de8"
+    "NOTION_PARENT_PAGE_ID", "33f14f343a5681a0bf2dd9920d69303f"
 )
 GITHUB_REPO  = "gengar200005/morning-report"
 GITHUB_TOKEN = os.environ["MORNINGREPOT"]
@@ -21,7 +21,7 @@ GITHUB_TOKEN = os.environ["MORNINGREPOT"]
 # ── GitHub 데이터 읽기 ────────────────────────────────
 def read_github_file(filename):
     url = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{filename}"
-    r = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"}, timeout=10)
+    r = requests.get(url, timeout=10)
     if r.status_code == 200:
         return r.text
     raise Exception(f"{filename} 읽기 실패: {r.status_code}")
