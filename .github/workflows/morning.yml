@@ -18,7 +18,7 @@ jobs:
 
       - name: 라이브러리 설치
         run: |
-          pip install yfinance pytz requests anthropic pykrx
+          pip install yfinance pytz requests anthropic pykrx numpy
 
       - name: 미장 데이터 수집
         env:
@@ -31,6 +31,11 @@ jobs:
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python kr_report.py
+
+      - name: 섹터 ETF 주도 분석
+        env:
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python sector_report.py
 
       - name: 개원입지 데이터 수집
         env:
