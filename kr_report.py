@@ -139,16 +139,38 @@ def get_market_context():
     except Exception as e:
         print(f"  VIX 오류: {e}")
 
-    try:
-        hist = yf.Ticker("^KS11").history(period="100d")
-        if len(hist) >= 60:
-            ma60 = round(float(hist["Close"].tail(60).mean()), 2)
-            cur  = round(float(hist["Close"].iloc[-1]), 2)
-            ctx["kospi_ma60"]       = ma60
-            ctx["kospi_above_ma60"] = cur > ma60
-            print(f"  코스피 {cur:,.2f} vs MA60 {ma60:,.2f} ({'✓' if ctx['kospi_above_ma60'] else '✗'})")
-    except Exception as e:
-        print(f"  코스피 MA60 오류: {e}")
+    for ticker, prefix in [("^KS11", "kospi"), ("^KQ11", "kosdaq")]:
+        try:
+            hist   = yf.Ticker(ticker).history(period="200d")
+            closes = hist["Close"].dropna()
+            if len(closes) >= 2:
+                cur = round(float(closes.iloc[-1]), 2)
+                ctx[f"{prefix}_cur"] = cur
+                for n in [20, 60, 120]:
+                    if len(closes) >= n:
+                        ma = round(float(closes.tail(n).mean()), 2)
+                        ctx[f"{prefix}_ma{n}"]       = ma
+                        ctx[f"{prefix}_above_ma{n}"] = cur > ma
+                # 스크리닝 게이트 조건은 코스피 MA60 기준 유지
+                if prefix == "kospi":
+                    ctx["kospi_ma60"]       = ctx.get("kospi_ma60", ctx.get("kospi_ma60"))
+                    ctx["kospi_above_ma60"] = ctx.get("kospi_above_ma60", False)
+                    if "kospi_ma60" in ctx:
+                        ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
+                ma_info = " / ".join([f"MA{n}={'✓' if ctx.get(f'{prefix}_above_ma{n}') else '✗'}" for n in [20,60,120] if f"{prefix}_ma{n}" in ctx])
+                print(f"  {ticker}: {cur:,.2f}  {ma_info}")
+        except Exception as e:
+            print(f"  {ticker} MA 오류: {e}")
+
+    # 스크리닝 게이트용 kospi_ma60 / kospi_above_ma60 보장
+    if "kospi_ma60" not in ctx and "kospi_ma60" in ctx:
+        pass
+    ctx.setdefault("kospi_ma60", ctx.get("kospi_ma60"))
+    ctx.setdefault("kospi_above_ma60", ctx.get("kospi_above_ma60", False))
+    # kospi_ma60 / kospi_above_ma60 는 kospi_ma60 키로 통일
+    if "kospi_ma60" not in ctx:
+        ctx["kospi_ma60"]       = ctx.get("kospi_ma60")
+        ctx["kospi_above_ma60"] = ctx.get("kospi_above_ma60", False)
 
     return ctx
 
@@ -481,7 +503,19 @@ def build_text(indices, trading, candidates, mkt_ctx):
     vix_str  = f"{vix:.2f}"    if vix  else "N/A"
     ma60_str = f"{ma60:,.2f}"  if ma60 else "N/A"
     lines.append(f"  VIX         {vix_str:>8}  {'✓ 35이하 — 패닉 환경 아님' if mkt_ctx['vix_ok'] else '✗ 35초과 — 패닉 환경, 진입 불가'}")
-    lines.append(f"  코스피 MA60 {ma60_str:>10}  {'✓ MA60 위 — 상승추세 유지' if mkt_ctx['kospi_above_ma60'] else '✗ MA60 아래 — 진입 보류'}")
+    for n in [20, 60, 120]:
+        key = f"kospi_ma{n}"
+        if key in mkt_ctx and mkt_ctx[key]:
+            val = f"{mkt_ctx[key]:,.2f}"
+            above = mkt_ctx.get(f"kospi_above_ma{n}", False)
+            gate  = " ← 게이트 조건" if n == 60 else ""
+            lines.append(f"  코스피 MA{n:<3} {val:>10}  {'✓ 위' if above else '✗ 아래'}{gate}")
+    for n in [20, 60, 120]:
+        key = f"kosdaq_ma{n}"
+        if key in mkt_ctx and mkt_ctx[key]:
+            val = f"{mkt_ctx[key]:,.2f}"
+            above = mkt_ctx.get(f"kosdaq_above_ma{n}", False)
+            lines.append(f"  코스닥 MA{n:<3} {val:>10}  {'✓ 위' if above else '✗ 아래'}")
 
     lines.append(f"\n【 체크리스트 스크리닝 결과 】")
     if candidates:
