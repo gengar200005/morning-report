@@ -1,8 +1,6 @@
 name: 모닝 리포트
 
 on:
-  schedule:
-    - cron: '40 19 * * 0-4'
   workflow_dispatch:
 
 jobs:
