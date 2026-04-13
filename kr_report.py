@@ -152,26 +152,25 @@ def get_market_context():
 
     return ctx
 
-# ── 1. 코스피·코스닥 지수 ─────────────────────────
+# ── 1. 코스피·코스닥 지수 (yfinance — 장 시작 전에도 전일 등락 정확) ──
 def get_index(token):
     result = {}
-    for code, name in [("0001", "코스피"), ("1001", "코스닥")]:
+    for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
         try:
-            data  = kis_get(token,
-                "/uapi/domestic-stock/v1/quotations/inquire-index-price",
-                "FHPUP02100000",
-                {"FID_COND_MRKT_DIV_CODE": "U", "FID_INPUT_ISCD": code}
-            )
-            out   = data.get("output", {})
-            close = float(out.get("bstp_nmix_prpr", 0))
-            chg   = float(out.get("bstp_nmix_prdy_vrss", 0))
-            pct   = float(out.get("bstp_nmix_prdy_ctrt", 0))
-            result[name] = {"close": round(close, 2), "chg": round(chg, 2), "pct": round(pct, 2)}
+            import yfinance as yf
+            hist = yf.Ticker(ticker).history(period="5d")
+            if len(hist) >= 2:
+                prev  = float(hist["Close"].iloc[-2])
+                close = float(hist["Close"].iloc[-1])
+                chg   = round(close - prev, 2)
+                pct   = round((close - prev) / prev * 100, 2)
+            else:
+                close = chg = pct = 0
+            result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
             print(f"  {name}: {close:,.2f} ({pct:+.2f}%)")
         except Exception as e:
             print(f"  {name} 지수 오류: {e}")
             result[name] = {"close": None, "chg": None, "pct": None}
-        time.sleep(0.3)
     return result
 
 # ── 2. 수급 (KIS 시장별 투자자 → pykrx 백업) ──────────────────
