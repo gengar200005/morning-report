@@ -40,9 +40,9 @@ def q(sym, period="5d"):
     return {"close": None, "chg": None, "pct": None}
 
 def q_ma(sym):
-    """당일 등락 + MA20·MA60 추세 포함"""
+    """당일 등락 + MA20·MA60·MA120 추세 포함"""
     try:
-        hist   = yf.Ticker(sym).history(period="100d")
+        hist   = yf.Ticker(sym).history(period="200d")
         closes = hist["Close"].dropna()
         if len(closes) < 2:
             return {"close": None, "chg": None, "pct": None}
@@ -51,7 +51,7 @@ def q_ma(sym):
         chg   = close - prev
         pct   = chg / prev * 100
         result = {"close": round(close, 2), "chg": round(chg, 2), "pct": round(pct, 2)}
-        for n in [20, 60]:
+        for n in [20, 60, 120]:
             if len(closes) >= n:
                 ma = round(float(closes.tail(n).mean()), 2)
                 result[f"ma{n}"]       = ma
@@ -220,7 +220,7 @@ def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
     lines.append(f"\n【 주요 지수 】")
     for name, d in indices.items():
         ma_parts = []
-        for n in [20, 60]:
+        for n in [20, 60, 120]:
             if d.get(f"ma{n}"):
                 sign = "✓위" if d.get(f"above_ma{n}") else "✗아래"
                 ma_parts.append(f"MA{n}{sign}")
@@ -258,7 +258,7 @@ def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
         bar_len = min(abs(int(d['pct'] * 2)), 10)
         bar = ("▲" * bar_len) if d['pct'] >= 0 else ("▼" * bar_len)
         ma_parts = []
-        for n in [20, 60]:
+        for n in [20, 60, 120]:
             if d.get(f"ma{n}"):
                 sign = "✓" if d.get(f"above_ma{n}") else "✗"
                 ma_parts.append(f"MA{n}{sign}")
