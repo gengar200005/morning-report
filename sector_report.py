@@ -64,6 +64,12 @@ def fetch_data():
         except Exception as e:
             print(f"  {name} ({ticker}): 오류 — {e}")
 
+    if len(etf_data) < 5:
+        raise Exception(
+            f"섹터 ETF 데이터 수집 실패: {len(etf_data)}개만 수집됨 (최소 5개 필요).\n"
+            "yfinance .KS 티커 접속 장애로 판단합니다."
+        )
+
     return kospi, etf_data
 
 
@@ -315,6 +321,12 @@ if __name__ == "__main__":
 
     print("📊 점수 계산 중...")
     scores = calc_scores(kospi, etf_data)
+
+    if not scores or max(s["total"] for s in scores.values()) == 0:
+        raise Exception(
+            "섹터 ETF 점수 계산 실패: 모든 ETF 점수가 0.\n"
+            "KOSPI 기준 데이터 또는 RS 계산에 오류가 있습니다."
+        )
 
     print("📂 이전 상태 로드...")
     prev_state, state_sha = load_state()
