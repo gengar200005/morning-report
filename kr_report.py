@@ -180,10 +180,13 @@ def get_index(token):
     for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
         try:
             import yfinance as yf
-            hist = yf.Ticker(ticker).history(period="5d")
-            if len(hist) >= 2:
-                prev  = float(hist["Close"].iloc[-2])
-                close = float(hist["Close"].iloc[-1])
+            # period="5d"는 UTC 기준 당일 데이터를 제외해 전전일 비교가 되는 버그 있음
+            # period="30d" + dropna()로 항상 가장 최근 거래일 종가 보장
+            hist   = yf.Ticker(ticker).history(period="30d")
+            closes = hist["Close"].dropna()
+            if len(closes) >= 2:
+                prev  = float(closes.iloc[-2])
+                close = float(closes.iloc[-1])
                 chg   = round(close - prev, 2)
                 pct   = round((close - prev) / prev * 100, 2)
             else:
