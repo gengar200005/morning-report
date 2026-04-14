@@ -37,11 +37,6 @@ jobs:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
 
-      - name: 개원입지 데이터 수집
-        env:
-          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
-        run: python location_report.py
-
       - name: Claude 리포트 생성 + 노션 저장
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
