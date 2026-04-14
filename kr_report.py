@@ -290,8 +290,10 @@ def get_trading(token):
     except Exception as e:
         print(f"  수급(pykrx) 오류: {e}")
 
-    print("  ⚠️ 수급 데이터 수집 실패 — 0으로 처리")
-    return result
+    raise Exception(
+        "수급 데이터 수집 완전 실패: KIS API + pykrx 모두 0 반환.\n"
+        "잘못된 데이터로 리포트 생성을 차단합니다."
+    )
 
 # ── 3. 종목 일봉 데이터 ───────────────────────────
 def get_ohlcv(token, code):
