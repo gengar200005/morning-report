@@ -174,28 +174,70 @@ def get_market_context():
 
     return ctx
 
-# ── 1. 코스피·코스닥 지수 (yfinance — 장 시작 전에도 전일 등락 정확) ──
+# ── 1. 코스피·코스닥 지수 (KIS 업종 일봉 — 전거래일 시가/종가 직접 조회) ──
 def get_index(token):
-    result = {}
-    for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
+    result   = {}
+    prev_day = prev_trading_day()
+    yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
+
+    for iscd, name in [("0001", "코스피"), ("1001", "코스닥")]:
         try:
-            import yfinance as yf
-            # period="5d"는 UTC 기준 당일 데이터를 제외해 전전일 비교가 되는 버그 있음
-            # period="30d" + dropna()로 항상 가장 최근 거래일 종가 보장
-            hist   = yf.Ticker(ticker).history(period="30d")
-            closes = hist["Close"].dropna()
-            if len(closes) >= 2:
-                prev  = float(closes.iloc[-2])
-                close = float(closes.iloc[-1])
-                chg   = round(close - prev, 2)
-                pct   = round((close - prev) / prev * 100, 2)
+            data = kis_get(token,
+                "/uapi/domestic-stock/v1/quotations/inquire-index-daily-chartprice",
+                "FHKUP03500100",
+                {
+                    "FID_COND_MRKT_DIV_CODE": "U",
+                    "FID_INPUT_ISCD":         iscd,
+                    "FID_INPUT_DATE_1":        prev_day,
+                    "FID_INPUT_DATE_2":        prev_day,
+                    "FID_PERIOD_DIV_CODE":     "D",
+                    "FID_ORG_ADJ_PRC":        "0",
+                }
+            )
+            rows = data.get("output2") or data.get("output1") or []
+            if isinstance(rows, dict):
+                rows = [rows]
+            if not rows:
+                raise ValueError(f"빈 응답 rt_cd={data.get('rt_cd')} msg={data.get('msg1')}")
+
+            row   = rows[0]
+            close = float(row.get("bstp_nmix_prpr") or row.get("stck_clpr") or 0)
+            open_ = float(row.get("bstp_nmix_oprc") or row.get("stck_oprc") or 0)
+            if close <= 0:
+                raise ValueError("종가 0 또는 누락")
+
+            # 전일대비율이 있으면 우선(close-to-close), 없으면 시가 대비
+            pct_raw = str(row.get("bstp_nmix_prdy_ctrt") or row.get("prdy_ctrt") or "")
+            if pct_raw and pct_raw not in ("", "0", "0.00"):
+                pct = round(float(pct_raw), 2)
+                chg = round(close * pct / 100, 2)
+            elif open_ > 0:
+                chg = round(close - open_, 2)
+                pct = round(chg / open_ * 100, 2)
             else:
-                close = chg = pct = 0
+                chg = pct = 0
+
             result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
-            print(f"  {name}: {close:,.2f} ({pct:+.2f}%)")
+            print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [KIS {prev_day}]")
+
         except Exception as e:
-            print(f"  {name} 지수 오류: {e}")
-            result[name] = {"close": None, "chg": None, "pct": None}
+            print(f"  {name} KIS 지수 오류: {e} — yfinance 백업")
+            try:
+                import yfinance as yf
+                hist   = yf.Ticker(yf_map[name]).history(period="30d")
+                closes = hist["Close"].dropna()
+                if len(closes) >= 2:
+                    prev  = float(closes.iloc[-2])
+                    close = float(closes.iloc[-1])
+                    chg   = round(close - prev, 2)
+                    pct   = round((close - prev) / prev * 100, 2)
+                else:
+                    close = chg = pct = 0
+                result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
+                print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [yfinance 백업]")
+            except Exception as e2:
+                print(f"  {name} yfinance도 실패: {e2}")
+                result[name] = {"close": None, "chg": None, "pct": None}
     return result
 
 # ── 2. 수급 (KIS 시장별 투자자 → pykrx 백업) ──────────────────
