@@ -5,6 +5,7 @@ from datetime import datetime, date
 import pytz
 
 GITHUB_TOKEN  = os.environ["MORNINGREPOT"]
+MORNING_PAT   = os.environ.get("MORNING_PAT", GITHUB_TOKEN)  # public 레포 쓰기용 PAT
 GITHUB_REPO   = "gengar200005/morning-report"
 PUBLIC_REPO   = "gengar200005/morning-data"
 GITHUB_FILE   = "morning_data.txt"
@@ -92,9 +93,13 @@ else:
     print(f"❌ 레포 저장 실패: {r.status_code} {r.text}")
 
 # ── 2. public 레포(morning-data)에도 저장 ─────────────
+pub_headers = {
+    "Authorization": f"token {MORNING_PAT}",
+    "Accept": "application/vnd.github.v3+json",
+}
 pub_url = f"https://api.github.com/repos/{PUBLIC_REPO}/contents/{GITHUB_FILE}"
 sha2 = None
-r2 = requests.get(pub_url, headers=headers)
+r2 = requests.get(pub_url, headers=pub_headers)
 if r2.status_code == 200:
     sha2 = r2.json().get("sha")
 
@@ -105,7 +110,7 @@ payload2 = {
 if sha2:
     payload2["sha"] = sha2
 
-r2 = requests.put(pub_url, headers=headers, json=payload2)
+r2 = requests.put(pub_url, headers=pub_headers, json=payload2)
 if r2.status_code in (200, 201):
     raw_url = f"https://raw.githubusercontent.com/{PUBLIC_REPO}/main/{GITHUB_FILE}"
     print(f"✅ public 레포 저장 완료")
