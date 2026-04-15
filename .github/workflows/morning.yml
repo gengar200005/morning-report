@@ -38,3 +38,8 @@ jobs:
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
+
+      - name: 데이터 통합 (morning_data.txt)
+        env:
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python combine_data.py
