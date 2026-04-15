@@ -124,7 +124,46 @@ def check_60d_high(closes):
     current  = closes[-1]
     return current >= high_60d * 0.98, int(high_60d)
 
-# ── 0. VIX & 코스피 60MA ──────────────────────────
+# ── 지수 추세 분석 (1순위/2순위) ─────────────────────
+def get_index_trend():
+    """KOSPI/KOSDAQ 5일·20일 수익률 + 52주 고저점 대비 위치 + 20일 신고가 여부"""
+    result = {}
+    for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
+        try:
+            hist   = yf.Ticker(ticker).history(period="400d")
+            closes = hist["Close"].dropna().values
+            if len(closes) < 21:
+                continue
+            cur = float(closes[-1])
+
+            ret5d  = (cur / float(closes[-6])  - 1) * 100 if len(closes) > 5  else None
+            ret20d = (cur / float(closes[-21]) - 1) * 100 if len(closes) > 20 else None
+
+            # 52주 고저 (거래일 기준 252일)
+            hi52 = float(closes[-252:].max()) if len(closes) >= 252 else float(closes.max())
+            lo52 = float(closes[-252:].min()) if len(closes) >= 252 else float(closes.min())
+
+            # 20일 신고가: 오늘 종가 > 직전 20거래일 최고가
+            hi20_prev = float(closes[-21:-1].max())
+            new_hi20  = cur > hi20_prev
+
+            result[name] = {
+                "ret5d":    round(ret5d, 1)  if ret5d  is not None else None,
+                "ret20d":   round(ret20d, 1) if ret20d is not None else None,
+                "hi52":     round(hi52, 2),
+                "lo52":     round(lo52, 2),
+                "pct_hi52": round((cur / hi52 - 1) * 100, 1),
+                "pct_lo52": round((cur / lo52 - 1) * 100, 1),
+                "new_hi20": new_hi20,
+            }
+            s5  = f"{'+' if ret5d  >= 0 else ''}{ret5d:.1f}%"  if ret5d  is not None else "N/A"
+            s20 = f"{'+' if ret20d >= 0 else ''}{ret20d:.1f}%" if ret20d is not None else "N/A"
+            print(f"  {name}: 5D {s5}  20D {s20}  52W고 대비 {cur/hi52*100-100:+.1f}%  {'★신고가' if new_hi20 else ''}")
+        except Exception as e:
+            print(f"  {name} 추세 오류: {e}")
+    return result
+
+
 def get_market_context():
     ctx = {
         "vix": None, "vix_ok": False,
@@ -522,7 +561,7 @@ def screen_stocks(token, mkt_ctx):
     return results
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(indices, trading, candidates, mkt_ctx):
+def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     lines = []
     lines.append(f"{'='*52}")
     lines.append(f"  국장 데이터 브리핑 — {TODAY_STR}")
@@ -562,6 +601,16 @@ def build_text(indices, trading, candidates, mkt_ctx):
             val = f"{mkt_ctx[key]:,.2f}"
             above = mkt_ctx.get(f"kosdaq_above_ma{n}", False)
             lines.append(f"  코스닥 MA{n:<3} {val:>10}  {'✓ 위' if above else '✗ 아래'}")
+
+    if trend:
+        lines.append(f"\n【 지수 추세 분석 】")
+        for name, t in trend.items():
+            s5  = f"{'+' if t['ret5d']  >= 0 else ''}{t['ret5d']:.1f}%"  if t['ret5d']  is not None else "N/A"
+            s20 = f"{'+' if t['ret20d'] >= 0 else ''}{t['ret20d']:.1f}%" if t['ret20d'] is not None else "N/A"
+            hi_flag = "  ★ 20일 신고가" if t['new_hi20'] else ""
+            lines.append(f"  {name}  |  5일 {s5}  /  20일 {s20}{hi_flag}")
+            lines.append(f"    52주 고점 {t['hi52']:,.0f}  대비 {t['pct_hi52']:+.1f}%")
+            lines.append(f"    52주 저점 {t['lo52']:,.0f}  대비 +{t['pct_lo52']:.1f}%")
 
     passing  = [c for c in candidates if c["등급"] in ("A", "B", "C")]
     watching = [c for c in candidates if c["등급"] == "D"]
@@ -634,6 +683,9 @@ if __name__ == "__main__":
     print("📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
     mkt_ctx = get_market_context()
 
+    print("📡 지수 추세 분석 중 (5일·20일 수익률 / 52주 고저)...")
+    trend = get_index_trend()
+
     print("📡 코스피·코스닥 지수 수집 중...")
     indices = get_index(token)
 
@@ -646,7 +698,7 @@ if __name__ == "__main__":
     print(f"  → A/B등급 종목 {len(candidates)}개")
 
     print("📝 텍스트 생성 중...")
-    text = build_text(indices, trading, candidates, mkt_ctx)
+    text = build_text(indices, trading, candidates, mkt_ctx, trend)
     print(text)
 
     print("💾 GitHub 저장 중...")
