@@ -42,4 +42,5 @@ jobs:
       - name: 데이터 통합 (morning_data.txt)
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+          MORNING_PAT: ${{ secrets.MORNING_PAT }}
         run: python combine_data.py
