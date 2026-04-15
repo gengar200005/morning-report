@@ -1,18 +1,58 @@
 import os
 import base64
 import requests
-from datetime import datetime
+from datetime import datetime, date
 import pytz
 
 GITHUB_TOKEN  = os.environ["MORNINGREPOT"]
 GITHUB_REPO   = "gengar200005/morning-report"
-PUBLIC_REPO   = "gengar200005/morning-data"   # public repo — raw URL로 Claude.ai에서 읽기
+PUBLIC_REPO   = "gengar200005/morning-data"
 GITHUB_FILE   = "morning_data.txt"
 
 KST      = pytz.timezone("Asia/Seoul")
 NOW      = datetime.now(KST)
 DATE_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
+TODAY    = NOW.date()
 
+# ── 3순위: 매크로 캘린더 ────────────────────────────
+# 발표일 기준 (FOMC: 성명서 공개일, CPI/NFP: 발표일)
+# ※ 아래 날짜는 2026년 예정 일정 — 변경 시 직접 수정
+MACRO_EVENTS = {
+    "FOMC":    [date(2026,1,28), date(2026,3,18), date(2026,5,6),
+                date(2026,6,17), date(2026,7,29), date(2026,9,16),
+                date(2026,11,4), date(2026,12,16)],
+    "CPI(미)": [date(2026,1,14), date(2026,2,11), date(2026,3,11),
+                date(2026,4,10), date(2026,5,13), date(2026,6,10),
+                date(2026,7,15), date(2026,8,12), date(2026,9,9),
+                date(2026,10,14), date(2026,11,11), date(2026,12,9)],
+    "NFP(고용)":[date(2026,1,9),  date(2026,2,6),  date(2026,3,6),
+                date(2026,4,3),  date(2026,5,8),  date(2026,6,5),
+                date(2026,7,10), date(2026,8,7),  date(2026,9,4),
+                date(2026,10,2), date(2026,11,6), date(2026,12,4)],
+}
+
+# 어닝시즌 월 (1월·4월·7월·10월 시작 후 약 6주)
+EARNING_MONTHS = {1,2,4,5,7,8,10,11}
+
+def build_macro_section():
+    lines = ["【 매크로 캘린더 】"]
+    for event, dates in MACRO_EVENTS.items():
+        upcoming = sorted(d for d in dates if d >= TODAY)
+        if not upcoming:
+            continue
+        nxt  = upcoming[0]
+        days = (nxt - TODAY).days
+        if   days == 0: tag = "오늘 ⚠️"
+        elif days <= 3: tag = f"D-{days} ⚠️"
+        elif days <= 7: tag = f"D-{days} (이번 주)"
+        else:           tag = f"D-{days}"
+        lines.append(f"  {event:<10} {nxt.strftime('%m/%d')}  {tag}")
+
+    season = "진행 중 ⚠️  개별 변동성 주의" if TODAY.month in EARNING_MONTHS else "비수기"
+    lines.append(f"  어닝시즌   {season}")
+    return "\n".join(lines)
+
+# ── 데이터 파일 합치기 ──────────────────────────────
 FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt"]
 
 parts = [f"[ 모닝 데이터 통합본 — {DATE_STR} ]\n"]
@@ -23,14 +63,16 @@ for fname in FILES:
     else:
         parts.append(f"[{fname} 없음]\n")
 
+parts.append("\n" + build_macro_section())
+
 content = "\n".join(parts)
 
-# ── 1. GitHub 레포에 morning_data.txt 저장 ─────────────────────
-repo_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
-headers  = {
+# ── 1. GitHub 레포에 morning_data.txt 저장 ─────────────
+headers = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
 }
+repo_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_FILE}"
 sha = None
 r = requests.get(repo_url, headers=headers)
 if r.status_code == 200:
@@ -49,7 +91,7 @@ if r.status_code in (200, 201):
 else:
     print(f"❌ 레포 저장 실패: {r.status_code} {r.text}")
 
-# ── 2. public 레포(morning-data)에도 동일 파일 저장 ────────────
+# ── 2. public 레포(morning-data)에도 저장 ─────────────
 pub_url = f"https://api.github.com/repos/{PUBLIC_REPO}/contents/{GITHUB_FILE}"
 sha2 = None
 r2 = requests.get(pub_url, headers=headers)
