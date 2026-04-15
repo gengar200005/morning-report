@@ -2,7 +2,7 @@
   "date": "2026년 04월 15일 (Wed)",
   "scores": {
     "KODEX 반도체": {
-      "total": 74.3,
+      "total": 75.0,
       "grade": "강세"
     },
     "TIGER 반도체TOP10": {
@@ -22,7 +22,7 @@
       "grade": "약세"
     },
     "KODEX 바이오": {
-      "total": 12.3,
+      "total": 17.3,
       "grade": "약세"
     },
     "KODEX 금융": {
@@ -30,7 +30,7 @@
       "grade": "중립"
     },
     "KODEX 은행": {
-      "total": 62.0,
+      "total": 61.3,
       "grade": "중립"
     },
     "KODEX 증권": {
