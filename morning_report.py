@@ -208,13 +208,15 @@ def build_text(weather, indices, fg, rates, comms, vix, semis, m7, sectors):
 
     # 공포탐욕
     score = fg["score"]
+    lines.append(f"\n【 공포탐욕지수 (CNN F&G) 】")
     if score:
         filled = int(score / 10)
         bar    = "█" * filled + "░" * (10 - filled)
         emoji  = "😱" if score < 25 else "😰" if score < 45 else "😐" if score < 55 else "😏" if score < 75 else "🤑"
-        lines.append(f"\n【 공포탐욕지수 】")
         lines.append(f"  {emoji} {score} / 100  [{bar}]  {fg['rating']}")
         lines.append(f"  ※ 25이하=매수기회 / 75이상=과열주의")
+    else:
+        lines.append(f"  데이터 없음 (CNN API 무응답)")
 
     # 주요 지수
     lines.append(f"\n【 주요 지수 】")
