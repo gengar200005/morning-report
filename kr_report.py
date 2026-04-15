@@ -636,11 +636,12 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
         lines.append(f"  {'종목명':<10} {'점수':>4}  정배열  거래량  수급20일  60일고점  현재가")
         lines.append(f"  {'-'*62}")
         for c in watching:
-            high_col = c['60일고점'].replace("✓ ", "✓").replace(",원", "") if "✓" in c['60일고점'] else "✗"
+            hi = "✓" if "✓" in c['60일고점'] else "✗"
             lines.append(
-                f"  {c['종목명']:<10} {c['점수']}/{c['최대점수']}점"
-                f"    {c['이평선정배열']}      {c['거래량']}      {c['수급20일']}"
-                f"        {high_col:<12}  {c['현재가']:,}원"
+                f"  {c['종목명']:<8}  {c['점수']}/{c['최대점수']}점"
+                f"  정배열{c['이평선정배열']}  거래량{c['거래량']}"
+                f"  수급{c['수급20일']}  60일고점{hi}"
+                f"  {c['현재가']:,}원"
             )
             lines.append(
                 f"    └ MA20 {c['MA20']:,} / MA60 {c['MA60']:,} / MA120 {c['MA120']:,}"
