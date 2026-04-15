@@ -39,8 +39,7 @@ jobs:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
 
-      - name: 데이터 통합 (morning_data.txt + Gist)
+      - name: 데이터 통합 (morning_data.txt)
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
-          MORNING_GIST_TOKEN: ${{ secrets.MORNING_GIST_TOKEN }}
         run: python combine_data.py
