@@ -490,30 +490,29 @@ def screen_stocks(token, mkt_ctx):
             high_str = f"✓ {high_60d:,}원" if near_high else "✗"
             print(f"  {name} [{grade}] {score}/{max_score}점 — MA:{aligned} 거래량:{vol_ok} 코스피:{kospi_ok} VIX:{vix_ok} 60D고점:{near_high} 수급20일:{supply_ok}({supply_20d:+,})")
 
-            if grade in ("A", "B", "C"):
-                results.append({
-                    "종목명":       name,
-                    "종목코드":     code,
-                    "현재가":       int(close_now),
-                    "등급":         grade,
-                    "점수":         score,
-                    "최대점수":     max_score,
-                    "MA20":         int(ma20) if ma20 else 0,
-                    "MA60":         int(ma60) if ma60 else 0,
-                    "MA120":        int(ma120) if ma120 else 0,
-                    "이평선정배열": "✓" if aligned else "✗",
-                    "거래량":       "✓" if vol_ok else "✗",
-                    "수급20일":     "✓" if supply_ok else "✗",
-                    "수급누적":     supply_20d,
-                    "코스피MA60":   "✓" if kospi_ok else "✗",
-                    "VIX35이하":    "✓" if vix_ok else "✗",
-                    "60일고점":     high_str,
-                    "PER":          detail["per"],
-                    "PBR":          detail["pbr"],
-                    "ROE":          detail["roe"],
-                    "손절가":       int(stop),
-                    "목표가":       int(target),
-                })
+            results.append({
+                "종목명":       name,
+                "종목코드":     code,
+                "현재가":       int(close_now),
+                "등급":         grade,
+                "점수":         score,
+                "최대점수":     max_score,
+                "MA20":         int(ma20) if ma20 else 0,
+                "MA60":         int(ma60) if ma60 else 0,
+                "MA120":        int(ma120) if ma120 else 0,
+                "이평선정배열": "✓" if aligned else "✗",
+                "거래량":       "✓" if vol_ok else "✗",
+                "수급20일":     "✓" if supply_ok else "✗",
+                "수급누적":     supply_20d,
+                "코스피MA60":   "✓" if kospi_ok else "✗",
+                "VIX35이하":    "✓" if vix_ok else "✗",
+                "60일고점":     high_str,
+                "PER":          detail["per"],
+                "PBR":          detail["pbr"],
+                "ROE":          detail["roe"],
+                "손절가":       int(stop),
+                "목표가":       int(target),
+            })
 
         except Exception as e:
             print(f"  {name} 오류: {e}")
@@ -564,9 +563,12 @@ def build_text(indices, trading, candidates, mkt_ctx):
             above = mkt_ctx.get(f"kosdaq_above_ma{n}", False)
             lines.append(f"  코스닥 MA{n:<3} {val:>10}  {'✓ 위' if above else '✗ 아래'}")
 
+    passing  = [c for c in candidates if c["등급"] in ("A", "B", "C")]
+    watching = [c for c in candidates if c["등급"] == "D"]
+
     lines.append(f"\n【 체크리스트 스크리닝 결과 】")
-    if candidates:
-        for c in candidates:
+    if passing:
+        for c in passing:
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
             pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
@@ -578,7 +580,22 @@ def build_text(indices, trading, candidates, mkt_ctx):
             lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
     else:
-        lines.append("  오늘 조건 충족 종목 없음 — 진입 보류")
+        lines.append("  진입 신호 없음")
+
+    if watching:
+        lines.append(f"\n【 종목별 조건 현황 (D등급 — {len(watching)}개) 】")
+        lines.append(f"  {'종목명':<10} {'점수':>4}  정배열  거래량  수급20일  60일고점  현재가")
+        lines.append(f"  {'-'*62}")
+        for c in watching:
+            high_col = c['60일고점'].replace("✓ ", "✓").replace(",원", "") if "✓" in c['60일고점'] else "✗"
+            lines.append(
+                f"  {c['종목명']:<10} {c['점수']}/{c['최대점수']}점"
+                f"    {c['이평선정배열']}      {c['거래량']}      {c['수급20일']}"
+                f"        {high_col:<12}  {c['현재가']:,}원"
+            )
+            lines.append(
+                f"    └ MA20 {c['MA20']:,} / MA60 {c['MA60']:,} / MA120 {c['MA120']:,}"
+            )
 
     lines.append(f"\n{'='*52}")
     return "\n".join(lines)
