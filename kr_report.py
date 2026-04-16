@@ -20,11 +20,20 @@ KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
-def prev_trading_day():
-    d = NOW.date() - timedelta(days=1)
-    while d.weekday() >= 5:
-        d -= timedelta(days=1)
+def latest_trading_day():
+    """장 마감(15:30) 이후면 오늘, 이전이면 전 거래일 반환"""
+    market_close = NOW.replace(hour=15, minute=30, second=0, microsecond=0)
+    if NOW >= market_close and NOW.weekday() < 5:
+        d = NOW.date()
+    else:
+        d = NOW.date() - timedelta(days=1)
+        while d.weekday() >= 5:
+            d -= timedelta(days=1)
     return d.strftime("%Y%m%d")
+
+# 하위 호환
+def prev_trading_day():
+    return latest_trading_day()
 
 UNIVERSE = [
     ("005930", "삼성전자"),      ("000660", "SK하이닉스"),
