@@ -429,7 +429,7 @@ def get_supply_20d(token, code):
                 "FID_INPUT_ISCD": code,
             }
         )
-        out = data.get("output1", [])
+        out = data.get("output") or data.get("output1") or []
         if isinstance(out, dict):
             out = [out]
         today_str = NOW.strftime("%Y%m%d")
@@ -437,16 +437,19 @@ def get_supply_20d(token, code):
         for item in out:
             if item.get("stck_bsop_date") == today_str:
                 continue
+            frgn = item.get("frgn_ntby_qty", "0") or "0"
+            orgn = item.get("orgn_ntby_qty", "0") or "0"
             try:
-                total += int(item.get("frgn_ntby_qty", 0))
-                total += int(item.get("orgn_ntby_qty", 0))
+                total += int(frgn) + int(orgn)
                 count += 1
-            except:
-                pass
+            except ValueError:
+                continue
             if count >= 20:
                 break
+        print(f"    수급20일({code}): {total:+,}주 ({count}일)")
         return total
-    except:
+    except Exception as e:
+        print(f"    수급20일({code}) 오류: {e}")
         return 0
 
 # ── 4-A. 종목 가격상세 (PER/PBR/ROE) ─────────────
