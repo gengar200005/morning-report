@@ -806,22 +806,32 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     lines.append(f"\n【 Minervini 스크리닝 결과 】")
     lines.append(f"  전체 {len(candidates)}종목 — A:{len([c for c in candidates if c['등급']=='A'])} B:{len(ab_grade) - len([c for c in candidates if c['등급']=='A'])} C:{len(c_grade)} D:{len(d_grade)}")
 
-    if ab_grade:
-        for c in ab_grade:
+    a_grade = [c for c in ab_grade if c["등급"] == "A"]
+    b_grade = [c for c in ab_grade if c["등급"] == "B"]
+
+    if a_grade:
+        lines.append(f"\n  ── A등급 ({len(a_grade)}개) — 진입 검토 ──")
+        for c in a_grade:
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
             pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
             sig = c.get("신호일수", 0)
-            sig_tag = "🆕 신규" if sig <= 1 else f"{sig}일차"
-            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점] {sig_tag}")
-            lines.append(f"    현재가: {c['현재가']:,}원")
-            lines.append(f"    MA50: {c['MA50']:,} | MA150: {c['MA150']:,} | MA200: {c['MA200']:,} ({c['MA200상승']}상승)")
-            lines.append(f"    MA정배열: {c['MA정배열']} | 52주고점 대비 {c['52주고점대비']:+.1f}% | 52주저점 대비 +{c['52주저점대비']:.1f}%")
-            lines.append(f"    RS: {c['RS']:.0f}% | 수급20일(외국인+기관): {c['수급20일']} ({c['수급누적']:+,}주)")
-            lines.append(f"    코스피MA60: {c['코스피MA60']} | VIX35이하: {c['VIX35이하']}")
-            lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
-            lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 익절: 트레일링 스탑 (고점 대비 -10%)")
-    else:
+            sig_tag = "🆕" if sig <= 1 else f"{sig}일"
+            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [A {c['점수']}/{c['최대점수']}] {sig_tag}")
+            lines.append(f"    {c['현재가']:,}원 | MA50 {c['MA50']:,} / MA150 {c['MA150']:,} / MA200 {c['MA200']:,}")
+            lines.append(f"    RS {c['RS']:.0f}% | 수급 {c['수급20일']}({c['수급누적']:+,}주) | 52주고점 {c['52주고점대비']:+.1f}%")
+            lines.append(f"    PER {per_str} PBR {pbr_str} ROE {roe_str}")
+            lines.append(f"    손절 {c['손절가']:,}원(-7%) | 트레일링(고점-10%)")
+
+    if b_grade:
+        lines.append(f"\n  ── B등급 ({len(b_grade)}개) — 조건부 대기 ──")
+        lines.append(f"  {'종목명':<10} {'현재가':>10}  RS   수급  신호")
+        for c in b_grade:
+            sig = c.get("신호일수", 0)
+            sig_tag = "🆕" if sig <= 1 else f"{sig}일"
+            lines.append(f"  {c['종목명']:<8} {c['현재가']:>10,}원  {c['RS']:.0f}%  {c['수급20일']}  {sig_tag}")
+
+    if not a_grade and not b_grade:
         lines.append("  진입 신호 없음 (A/B등급 0개)")
 
     if c_grade:
