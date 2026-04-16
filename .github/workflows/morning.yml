@@ -41,8 +41,10 @@ jobs:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
 
-      - name: 데이터 통합 (morning_data.txt)
+      - name: 데이터 통합 (morning_data.txt + 날짜 스냅샷)
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
           MORNING_PAT: ${{ secrets.MORNING_PAT }}
+        # morning_data.txt (최신판) + morning_data_YYYYMMDD.txt (CDN 캐시 우회) + YYYY/MM/ 아카이브
+        # 날짜는 Asia/Seoul 기준
         run: python combine_data.py

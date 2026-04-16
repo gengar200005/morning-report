@@ -14,6 +14,9 @@ KST      = pytz.timezone("Asia/Seoul")
 NOW      = datetime.now(KST)
 DATE_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 TODAY    = NOW.date()
+YMD      = NOW.strftime("%Y%m%d")
+YEAR     = NOW.strftime("%Y")
+MONTH    = NOW.strftime("%m")
 
 # ── 3순위: 매크로 캘린더 ────────────────────────────
 # 발표일 기준 (FOMC: 성명서 공개일, CPI/NFP: 발표일)
@@ -117,3 +120,29 @@ if r2.status_code in (200, 201):
     print(f"   Raw URL: {raw_url}")
 else:
     print(f"❌ public 레포 저장 실패: {r2.status_code} {r2.text}")
+
+# ── 3. 날짜 포함 파일 업로드 (CDN 캐시 우회용) ─────────
+def put_public(path, commit_msg):
+    url = f"https://api.github.com/repos/{PUBLIC_REPO}/contents/{path}"
+    cur_sha = None
+    g = requests.get(url, headers=pub_headers)
+    if g.status_code == 200:
+        cur_sha = g.json().get("sha")
+    body = {
+        "message": commit_msg,
+        "content": base64.b64encode(content.encode("utf-8")).decode("utf-8"),
+    }
+    if cur_sha:
+        body["sha"] = cur_sha
+    resp = requests.put(url, headers=pub_headers, json=body)
+    if resp.status_code in (200, 201):
+        print(f"✅ {path} 저장 완료")
+        print(f"   Raw URL: https://raw.githubusercontent.com/{PUBLIC_REPO}/main/{path}")
+    else:
+        print(f"❌ {path} 저장 실패: {resp.status_code} {resp.text}")
+
+dated_name    = f"morning_data_{YMD}.txt"
+archive_path  = f"{YEAR}/{MONTH}/{dated_name}"
+
+put_public(dated_name,   f"모닝 데이터 {YMD} (최신 날짜 스냅샷)")
+put_public(archive_path, f"모닝 데이터 아카이브 — {DATE_STR}")
