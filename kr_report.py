@@ -190,26 +190,12 @@ def get_market_context():
                         ma = round(float(closes.tail(n).mean()), 2)
                         ctx[f"{prefix}_ma{n}"]       = ma
                         ctx[f"{prefix}_above_ma{n}"] = cur > ma
-                # 스크리닝 게이트 조건은 코스피 MA60 기준 유지
-                if prefix == "kospi":
-                    ctx["kospi_ma60"]       = ctx.get("kospi_ma60", ctx.get("kospi_ma60"))
-                    ctx["kospi_above_ma60"] = ctx.get("kospi_above_ma60", False)
-                    if "kospi_ma60" in ctx:
-                        ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
+                if prefix == "kospi" and "kospi_ma60" in ctx:
+                    ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
                 ma_info = " / ".join([f"MA{n}={'✓' if ctx.get(f'{prefix}_above_ma{n}') else '✗'}" for n in [20,60,120] if f"{prefix}_ma{n}" in ctx])
                 print(f"  {ticker}: {cur:,.2f}  {ma_info}")
         except Exception as e:
             print(f"  {ticker} MA 오류: {e}")
-
-    # 스크리닝 게이트용 kospi_ma60 / kospi_above_ma60 보장
-    if "kospi_ma60" not in ctx and "kospi_ma60" in ctx:
-        pass
-    ctx.setdefault("kospi_ma60", ctx.get("kospi_ma60"))
-    ctx.setdefault("kospi_above_ma60", ctx.get("kospi_above_ma60", False))
-    # kospi_ma60 / kospi_above_ma60 는 kospi_ma60 키로 통일
-    if "kospi_ma60" not in ctx:
-        ctx["kospi_ma60"]       = ctx.get("kospi_ma60")
-        ctx["kospi_above_ma60"] = ctx.get("kospi_above_ma60", False)
 
     return ctx
 
@@ -385,10 +371,12 @@ def get_ohlcv(token, code):
     volumes = []
     try:
         end   = NOW.strftime("%Y%m%d")
-        mid   = (NOW - timedelta(days=105)).strftime("%Y%m%d")
-        start = (NOW - timedelta(days=210)).strftime("%Y%m%d")
+        p1    = (NOW - timedelta(days=100)).strftime("%Y%m%d")
+        p2    = (NOW - timedelta(days=200)).strftime("%Y%m%d")
+        p3    = (NOW - timedelta(days=300)).strftime("%Y%m%d")
+        start = (NOW - timedelta(days=400)).strftime("%Y%m%d")
 
-        for s, e in [(start, mid), (mid, end)]:
+        for s, e in [(start, p3), (p3, p2), (p2, p1), (p1, end)]:
             data = kis_get(token,
                 "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
                 "FHKST03010100",
@@ -480,80 +468,129 @@ def get_price_detail(token, code):
         print(f"  {code} 가격상세 오류: {e}")
         return {"per": None, "pbr": None, "roe": None}
 
-# ── 5. 스크리닝 ───────────────────────────────────
+# ── 5. 스크리닝 (Minervini Trend Template) ────────
 def screen_stocks(token, mkt_ctx):
     results  = []
     kospi_ok = mkt_ctx["kospi_above_ma60"]
     vix_ok   = mkt_ctx["vix_ok"]
 
+    # 1단계: 전 종목 OHLCV 수집 + 52주 수익률 (RS 계산용)
+    stock_data  = {}   # code -> (name, closes, volumes)
+    returns_52w = {}   # code -> 52주 수익률
+
     for code, name in FCF_UNIVERSE:
         try:
             closes, volumes = get_ohlcv(token, code)
-            print(f"  {name} 데이터: 종가 {len(closes)}개, 거래량 {len(volumes)}개")
-
-            if len(closes) < 120 or len(volumes) < 21:
-                print(f"  {name} 데이터 부족 스킵")
+            print(f"  {name} 데이터: 종가 {len(closes)}개")
+            if len(closes) < 200:
+                print(f"  {name} 데이터 부족 스킵 (최소 200개 필요)")
                 continue
+            stock_data[code] = (name, closes, volumes)
+            if len(closes) >= 252:
+                returns_52w[code] = closes[-1] / closes[-252] - 1
+            else:
+                returns_52w[code] = closes[-1] / closes[0] - 1
+        except Exception as e:
+            print(f"  {name} 데이터 수집 오류: {e}")
 
+    # 2단계: RS percentile 계산
+    rs_map = {}
+    if returns_52w:
+        sorted_rets = sorted(returns_52w.values())
+        n = len(sorted_rets)
+        for code, ret in returns_52w.items():
+            rs_map[code] = sum(1 for v in sorted_rets if v <= ret) / n * 100
+        print(f"  RS 계산 완료: {n}종목")
+
+    # 3단계: Minervini 스크리닝
+    for code, (name, closes, volumes) in stock_data.items():
+        try:
             close_now = closes[-1]
-            ma20  = calc_ma(closes, 20)
-            ma60  = calc_ma(closes, 60)
-            ma120 = calc_ma(closes, 120)
-            aligned = bool(ma20 and ma60 and ma120 and ma20 > ma60 > ma120)
 
-            vol_now = volumes[-1]
-            vol_avg = sum(volumes[-21:-1]) / 20
-            vol_ok  = vol_now >= vol_avg * 1.5
+            ma50  = calc_ma(closes, 50)
+            ma150 = calc_ma(closes, 150)
+            ma200 = calc_ma(closes, 200)
 
+            # MA200 1개월 전 (22거래일)
+            ma200_1m = None
+            if len(closes) >= 222:
+                ma200_1m = round(sum(closes[-222:-22]) / 200, 0)
+
+            # 52주 고저
+            window = closes[-252:] if len(closes) >= 252 else closes
+            hi52 = max(window)
+            lo52 = min(window)
+
+            rs_pct = rs_map.get(code, 0)
+
+            # ── Minervini 코어 8조건 ──
+            c1 = bool(ma50  and close_now > ma50)      # ① 현재가 > MA50
+            c2 = bool(ma150 and close_now > ma150)     # ② 현재가 > MA150
+            c3 = bool(ma200 and close_now > ma200)     # ③ 현재가 > MA200
+            c4 = bool(ma50 and ma150 and ma50 > ma150) # ④ MA50 > MA150
+            c5 = bool(ma150 and ma200 and ma150 > ma200) # ⑤ MA150 > MA200
+            c6 = bool(ma200 and ma200_1m and ma200 > ma200_1m) # ⑥ MA200 상승
+            c7 = close_now >= lo52 * 1.25              # ⑦ 52주 저점 +25%
+            c8 = close_now >= hi52 * 0.75              # ⑧ 52주 고점 -25% 이내
+
+            core_list = [c1, c2, c3, c4, c5, c6, c7, c8]
+            core_ok   = all(core_list)
+            aligned   = all([c1, c2, c3, c4, c5])  # MA 정배열 요약
+
+            # ── 게이트 ──
+            gate_ok = kospi_ok and vix_ok
+
+            # ── 보조 조건 ──
+            rs_ok = rs_pct >= 70
             supply_20d = get_supply_20d(token, code)
             supply_ok  = supply_20d > 0
 
             detail = get_price_detail(token, code)
             time.sleep(0.2)
 
-            near_high, high_60d = check_60d_high(closes)
+            # ── 손절가 ──
+            stop = round(close_now * 0.93, 0)   # -7%
 
-            stop   = round(close_now * 0.93, 0)
-            target = round(close_now * 1.18, 0)
-
-            # 코어(①②) + 게이트(③④) 모두 충족이 전제 — 하나라도 미충족 시 D
-            core_ok = aligned and vol_ok
-            gate_ok = kospi_ok and vix_ok
-            max_score = 6
+            # ── 등급 산정 ──
+            max_score = 12  # 코어8 + 게이트2 + 보조2
+            score = sum(core_list) + sum([kospi_ok, vix_ok]) + sum([rs_ok, supply_ok])
 
             if not (core_ok and gate_ok):
                 grade = "D"
-                score = sum([aligned, vol_ok, kospi_ok, vix_ok, near_high, supply_ok])
             else:
-                aux = sum([near_high, supply_ok])
-                score = 4 + aux
+                aux = sum([rs_ok, supply_ok])
                 grade = "A" if aux == 2 else ("B" if aux == 1 else "C")
 
-            high_str = f"✓ {high_60d:,}원" if near_high else "✗"
-            print(f"  {name} [{grade}] {score}/{max_score}점 — MA:{aligned} 거래량:{vol_ok} 코스피:{kospi_ok} VIX:{vix_ok} 60D고점:{near_high} 수급20일:{supply_ok}({supply_20d:+,})")
+            print(f"  {name} [{grade}] {score}/{max_score}점 — "
+                  f"MA정배열:{'✓' if aligned else '✗'} MA200상승:{'✓' if c6 else '✗'} "
+                  f"52주:{'✓' if (c7 and c8) else '✗'} RS:{rs_pct:.0f}% "
+                  f"수급:{'✓' if supply_ok else '✗'}({supply_20d:+,})")
 
             results.append({
-                "종목명":       name,
-                "종목코드":     code,
-                "현재가":       int(close_now),
-                "등급":         grade,
-                "점수":         score,
-                "최대점수":     max_score,
-                "MA20":         int(ma20) if ma20 else 0,
-                "MA60":         int(ma60) if ma60 else 0,
-                "MA120":        int(ma120) if ma120 else 0,
-                "이평선정배열": "✓" if aligned else "✗",
-                "거래량":       "✓" if vol_ok else "✗",
-                "수급20일":     "✓" if supply_ok else "✗",
-                "수급누적":     supply_20d,
-                "코스피MA60":   "✓" if kospi_ok else "✗",
-                "VIX35이하":    "✓" if vix_ok else "✗",
-                "60일고점":     high_str,
-                "PER":          detail["per"],
-                "PBR":          detail["pbr"],
-                "ROE":          detail["roe"],
-                "손절가":       int(stop),
-                "목표가":       int(target),
+                "종목명":     name,
+                "종목코드":   code,
+                "현재가":     int(close_now),
+                "등급":       grade,
+                "점수":       score,
+                "최대점수":   max_score,
+                "MA50":       int(ma50) if ma50 else 0,
+                "MA150":      int(ma150) if ma150 else 0,
+                "MA200":      int(ma200) if ma200 else 0,
+                "MA정배열":   "✓" if aligned else "✗",
+                "MA200상승":  "✓" if c6 else "✗",
+                "52주고점":   int(hi52),
+                "52주저점":   int(lo52),
+                "52주고점대비": round((close_now / hi52 - 1) * 100, 1),
+                "52주저점대비": round((close_now / lo52 - 1) * 100, 1),
+                "RS":         round(rs_pct, 0),
+                "수급20일":   "✓" if supply_ok else "✗",
+                "수급누적":   supply_20d,
+                "코스피MA60": "✓" if kospi_ok else "✗",
+                "VIX35이하":  "✓" if vix_ok else "✗",
+                "PER":        detail["per"],
+                "PBR":        detail["pbr"],
+                "ROE":        detail["roe"],
+                "손절가":     int(stop),
             })
 
         except Exception as e:
@@ -618,7 +655,7 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     passing  = [c for c in candidates if c["등급"] in ("A", "B", "C")]
     watching = [c for c in candidates if c["등급"] == "D"]
 
-    lines.append(f"\n【 체크리스트 스크리닝 결과 】")
+    lines.append(f"\n【 Minervini 스크리닝 결과 】")
     if passing:
         for c in passing:
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
@@ -626,28 +663,30 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
             lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점]")
             lines.append(f"    현재가: {c['현재가']:,}원")
-            lines.append(f"    MA20: {c['MA20']:,} | MA60: {c['MA60']:,} | MA120: {c['MA120']:,}")
-            lines.append(f"    이평선정배열: {c['이평선정배열']} | 거래량1.5배: {c['거래량']} | 코스피MA60: {c['코스피MA60']} | VIX35이하: {c['VIX35이하']}")
-            lines.append(f"    수급20일(외국인+기관): {c['수급20일']} ({c['수급누적']:+,}주) | 60일고점근접: {c['60일고점']}")
+            lines.append(f"    MA50: {c['MA50']:,} | MA150: {c['MA150']:,} | MA200: {c['MA200']:,} ({c['MA200상승']}상승)")
+            lines.append(f"    MA정배열: {c['MA정배열']} | 52주고점 대비 {c['52주고점대비']:+.1f}% | 52주저점 대비 +{c['52주저점대비']:.1f}%")
+            lines.append(f"    RS: {c['RS']:.0f}% | 수급20일(외국인+기관): {c['수급20일']} ({c['수급누적']:+,}주)")
+            lines.append(f"    코스피MA60: {c['코스피MA60']} | VIX35이하: {c['VIX35이하']}")
             lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
-            lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 1차목표: {c['목표가']:,}원 (+18%)")
+            lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 익절: 트레일링 스탑 (고점 대비 -10%)")
     else:
         lines.append("  진입 신호 없음")
 
     if watching:
         lines.append(f"\n【 종목별 조건 현황 (D등급 — {len(watching)}개) 】")
-        lines.append(f"  {'종목명':<10} {'점수':>4}  정배열  거래량  수급20일  60일고점  현재가")
-        lines.append(f"  {'-'*62}")
+        lines.append(f"  {'종목명':<10} {'점수':>4}  MA정배열  MA200↑  52주범위  RS    수급  현재가")
+        lines.append(f"  {'-'*68}")
         for c in watching:
-            hi = "✓" if "✓" in c['60일고점'] else "✗"
             lines.append(
                 f"  {c['종목명']:<8}  {c['점수']}/{c['최대점수']}점"
-                f"  정배열{c['이평선정배열']}  거래량{c['거래량']}"
-                f"  수급{c['수급20일']}  60일고점{hi}"
+                f"  정배열{c['MA정배열']}  MA200{c['MA200상승']}"
+                f"  52주{c['52주고점대비']:+.0f}%"
+                f"  RS{c['RS']:.0f}%"
+                f"  수급{c['수급20일']}"
                 f"  {c['현재가']:,}원"
             )
             lines.append(
-                f"    └ MA20 {c['MA20']:,} / MA60 {c['MA60']:,} / MA120 {c['MA120']:,}"
+                f"    └ MA50 {c['MA50']:,} / MA150 {c['MA150']:,} / MA200 {c['MA200']:,}"
             )
 
     lines.append(f"\n{'='*52}")
