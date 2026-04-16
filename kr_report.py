@@ -750,12 +750,15 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             lines.append(f"    52주 고점 {t['hi52']:,.0f}  대비 {t['pct_hi52']:+.1f}%")
             lines.append(f"    52주 저점 {t['lo52']:,.0f}  대비 +{t['pct_lo52']:.1f}%")
 
-    passing  = [c for c in candidates if c["등급"] in ("A", "B", "C")]
-    watching = [c for c in candidates if c["등급"] == "D"]
+    ab_grade  = [c for c in candidates if c["등급"] in ("A", "B")]
+    c_grade   = [c for c in candidates if c["등급"] == "C"]
+    d_grade   = [c for c in candidates if c["등급"] == "D"]
 
     lines.append(f"\n【 Minervini 스크리닝 결과 】")
-    if passing:
-        for c in passing:
+    lines.append(f"  전체 {len(candidates)}종목 — A:{len([c for c in candidates if c['등급']=='A'])} B:{len(ab_grade) - len([c for c in candidates if c['등급']=='A'])} C:{len(c_grade)} D:{len(d_grade)}")
+
+    if ab_grade:
+        for c in ab_grade:
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
             pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
@@ -768,26 +771,13 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             lines.append(f"    PER: {per_str} | PBR: {pbr_str} | ROE: {roe_str}")
             lines.append(f"    손절가: {c['손절가']:,}원 (-7%) | 익절: 트레일링 스탑 (고점 대비 -10%)")
     else:
-        lines.append("  진입 신호 없음")
+        lines.append("  진입 신호 없음 (A/B등급 0개)")
 
-    if watching:
-        # D등급 중 점수 상위 15개만 표시 (승격 근접 종목)
-        watching.sort(key=lambda x: -x["점수"])
-        top_d = watching[:15]
-        lines.append(f"\n【 D등급 상위 — 승격 근접 {len(top_d)}개 / 전체 {len(watching)}개 】")
-        lines.append(f"  {'종목명':<10} {'점수':>4}  MA정배열  MA200↑  52주범위  RS    현재가")
-        lines.append(f"  {'-'*64}")
-        for c in top_d:
-            lines.append(
-                f"  {c['종목명']:<8}  {c['점수']}/{c['최대점수']}점"
-                f"  정배열{c['MA정배열']}  MA200{c['MA200상승']}"
-                f"  52주{c['52주고점대비']:+.0f}%"
-                f"  RS{c['RS']:.0f}%"
-                f"  {c['현재가']:,}원"
-            )
-            lines.append(
-                f"    └ MA50 {c['MA50']:,} / MA150 {c['MA150']:,} / MA200 {c['MA200']:,}"
-            )
+    # C/D등급은 요약만
+    if c_grade:
+        lines.append(f"\n  C등급 {len(c_grade)}개 (코어+게이트 통과, 보조 미충족): "
+                      + ", ".join(c["종목명"] for c in c_grade[:10])
+                      + (f" 외 {len(c_grade)-10}개" if len(c_grade) > 10 else ""))
 
     lines.append(f"\n{'='*52}")
     return "\n".join(lines)
