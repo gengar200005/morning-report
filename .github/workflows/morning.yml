@@ -2,7 +2,7 @@ name: 모닝 리포트
 
 on:
   schedule:
-    - cron: '0 21 * * 0-4'  # KST 오전 6시 (월~금)
+    - cron: '5 21 * * 0-4'  # KST 오전 6:05 (월~금)
   workflow_dispatch:
 
 jobs:
