@@ -857,6 +857,9 @@ if __name__ == "__main__":
     text = build_text(indices, trading, candidates, mkt_ctx, trend)
     print(text)
 
-    print("💾 GitHub 저장 중...")
+    print("💾 저장 중...")
+    with open(GITHUB_FILE, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"  로컬 저장 완료 → {GITHUB_FILE}")
     save_to_github(text)
     print("🎉 완료!")

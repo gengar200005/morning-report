@@ -407,5 +407,8 @@ if __name__ == "__main__":
         },
     }
     save_state(new_state, state_sha)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"  로컬 저장 완료 → {OUTPUT_FILE}")
     save_to_github(OUTPUT_FILE, text)
     print("🎉 섹터 분석 완료!")
