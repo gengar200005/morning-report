@@ -840,18 +840,6 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
                       + (f" 외 {len(c_grade)-10}개" if len(c_grade) > 10 else ""))
 
     lines.append(f"\n{'='*52}")
-    lines.append(f"\n【 투자 전략 체크리스트 — Minervini Trend Template 】")
-    lines.append(f"  ■ 코어 (①~⑧ 모두 충족 필수)")
-    lines.append(f"    ① 현재가>MA50  ② 현재가>MA150  ③ 현재가>MA200")
-    lines.append(f"    ④ MA50>MA150   ⑤ MA150>MA200   ⑥ MA200 상승 중")
-    lines.append(f"    ⑦ 52주 저점 +25%↑  ⑧ 52주 고점 -25% 이내")
-    lines.append(f"  ■ 게이트 (⑨⑩ 모두 충족 필수)")
-    lines.append(f"    ⑨ 코스피 > 60MA  ⑩ VIX < 35")
-    lines.append(f"  ■ 보조 (등급 결정)")
-    lines.append(f"    ⑪ RS ≥ 70%  ⑫ 외국인+기관 20일 순매수 양(+)")
-    lines.append(f"  ■ 등급: A=12/12 B=11/12 C=10/12 D=미충족")
-    lines.append(f"  ■ 손절 -7% | 익절 트레일링 스탑 (고점 -10%)")
-    lines.append(f"{'='*52}")
     return "\n".join(lines)
 
 # ── GitHub 저장 ────────────────────────────────────
