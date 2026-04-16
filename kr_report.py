@@ -125,6 +125,30 @@ SECTOR_ETF = {
     "012330": ("091180", "KODEX자동차"),
 }
 
+# ── KIS API 재시도 래퍼 ───────────────────────────
+def kis_get_safe(token, path, tr_id, params, retries=3):
+    """kis_get + 429/5xx 자동 재시도 (exponential backoff)"""
+    for attempt in range(retries):
+        try:
+            data = kis_get(token, path, tr_id, params)
+            # KIS는 JSON 안에 에러를 넣기도 함
+            if isinstance(data, dict) and data.get("rt_cd") == "1":
+                msg = data.get("msg1", "")
+                if "초과" in msg or "limit" in msg.lower():
+                    wait = 2 ** (attempt + 1)
+                    print(f"    Rate limit — {wait}초 대기 후 재시도 ({attempt+1}/{retries})")
+                    time.sleep(wait)
+                    continue
+            return data
+        except Exception as e:
+            if attempt < retries - 1:
+                wait = 2 ** (attempt + 1)
+                print(f"    API 오류: {e} — {wait}초 대기 후 재시도")
+                time.sleep(wait)
+            else:
+                raise
+    return {}
+
 # ── KIS API 토큰 발급 ──────────────────────────────
 def get_token():
     url = f"{KIS_BASE_URL}/oauth2/tokenP"
@@ -450,7 +474,7 @@ def get_ohlcv(token, code):
         start = (NOW - timedelta(days=400)).strftime("%Y%m%d")
 
         for s, e in [(start, p3), (p3, p2), (p2, p1), (p1, end)]:
-            data = kis_get(token,
+            data = kis_get_safe(token,
                 "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
                 "FHKST03010100",
                 {
@@ -482,7 +506,7 @@ def get_ohlcv(token, code):
 def get_supply_20d(token, code):
     """외국인+기관 최근 20거래일 누적 순매수 수량 합산"""
     try:
-        data = kis_get(token,
+        data = kis_get_safe(token,
             "/uapi/domestic-stock/v1/quotations/inquire-investor",
             "FHKST01010900",
             {
@@ -516,7 +540,7 @@ def get_supply_20d(token, code):
 # ── 4-A. 종목 가격상세 (PER/PBR/ROE) ─────────────
 def get_price_detail(token, code):
     try:
-        data = kis_get(token,
+        data = kis_get_safe(token,
             "/uapi/domestic-stock/v1/quotations/inquire-price",
             "FHKST01010100",
             {
