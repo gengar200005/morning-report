@@ -197,6 +197,38 @@ def calc_ma(prices, n):
         return None
     return round(sum(prices[-n:]) / n, 0)
 
+# ── Minervini 코어 8조건 체크 (특정 시점 i 기준) ──────
+def check_core_at(closes, i):
+    """closes[i] 시점에서 코어 8조건 충족 여부"""
+    if i < 200 or i >= len(closes):
+        return False
+    c = closes[i]
+    ma50  = sum(closes[i-50:i]) / 50
+    ma150 = sum(closes[i-150:i]) / 150
+    ma200 = sum(closes[i-200:i]) / 200
+    ma200_1m = sum(closes[i-222:i-22]) / 200 if i >= 222 else None
+    window = closes[max(0,i-252):i]
+    hi52, lo52 = max(window), min(window)
+    return all([
+        c > ma50, c > ma150, c > ma200,
+        ma50 > ma150, ma150 > ma200,
+        ma200_1m is not None and ma200 > ma200_1m,
+        c >= lo52 * 1.25, c >= hi52 * 0.75,
+    ])
+
+def calc_signal_age(closes):
+    """오늘부터 역산하여 코어 통과 연속일수 반환 (최대 20일)"""
+    n = len(closes)
+    if n < 201:
+        return 0
+    days = 0
+    for d in range(n - 1, max(n - 21, 200), -1):
+        if check_core_at(closes, d):
+            days += 1
+        else:
+            break
+    return days
+
 # ── 섹터 ETF 60MA 체크 ────────────────────────────
 def get_etf_ma60(etf_info):
     if not etf_info:
@@ -668,7 +700,11 @@ def screen_stocks(token, mkt_ctx):
                 aux = sum([rs_ok, supply_ok])
                 grade = "A" if aux == 2 else ("B" if aux == 1 else "C")
 
-            print(f"  {name} [{grade}] {score}/{max_score}점 — "
+            # ── 신호 연속일수 (코어 기준) ──
+            sig_age = calc_signal_age(closes) if core_ok else 0
+            sig_tag = "🆕 신규" if sig_age <= 1 else f"{sig_age}일차"
+
+            print(f"  {name} [{grade}] {score}/{max_score}점 [{sig_tag}] — "
                   f"MA정배열:{'✓' if aligned else '✗'} MA200상승:{'✓' if c6 else '✗'} "
                   f"52주:{'✓' if (c7 and c8) else '✗'} RS:{rs_pct:.0f}% "
                   f"수급:{'✓' if supply_ok else '✗'}({supply_20d:+,})")
@@ -676,6 +712,7 @@ def screen_stocks(token, mkt_ctx):
             results.append({
                 "종목명":     name,
                 "종목코드":   code,
+                "신호일수":   sig_age,
                 "현재가":     int(close_now),
                 "등급":       grade,
                 "점수":       score,
@@ -774,7 +811,9 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             per_str = f"{c['PER']:.1f}x" if c['PER'] else "N/A"
             pbr_str = f"{c['PBR']:.2f}x" if c['PBR'] else "N/A"
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
-            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점]")
+            sig = c.get("신호일수", 0)
+            sig_tag = "🆕 신규" if sig <= 1 else f"{sig}일차"
+            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [{c['등급']}등급 {c['점수']}/{c['최대점수']}점] {sig_tag}")
             lines.append(f"    현재가: {c['현재가']:,}원")
             lines.append(f"    MA50: {c['MA50']:,} | MA150: {c['MA150']:,} | MA200: {c['MA200']:,} ({c['MA200상승']}상승)")
             lines.append(f"    MA정배열: {c['MA정배열']} | 52주고점 대비 {c['52주고점대비']:+.1f}% | 52주저점 대비 +{c['52주저점대비']:.1f}%")
