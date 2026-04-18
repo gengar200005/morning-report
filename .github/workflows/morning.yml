@@ -42,6 +42,14 @@ jobs:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
 
+      - name: 보유 종목 현황 (노션 DB)
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python holdings_report.py
+
       - name: 데이터 통합 (morning_data.txt + 날짜 스냅샷 + Drive 업로드)
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}

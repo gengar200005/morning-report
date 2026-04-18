@@ -57,7 +57,7 @@ def build_macro_section():
     return "\n".join(lines)
 
 # ── 데이터 파일 합치기 ──────────────────────────────
-FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt"]
+FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt", "holdings_data.txt"]
 
 parts = [f"[ 모닝 데이터 통합본 — {DATE_STR} ]\n"]
 for fname in FILES:
