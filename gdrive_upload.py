@@ -20,7 +20,7 @@ import time
 from typing import Optional
 
 
-SCOPES = ["https://www.googleapis.com/auth/drive"]
+SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 MIME_TEXT = "text/plain"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 
