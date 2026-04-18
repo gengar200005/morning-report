@@ -1,8 +1,10 @@
 import os
 import base64
+import json
 import requests
 import time
 import yfinance as yf
+from pathlib import Path
 from pykrx import stock as krx
 from datetime import datetime, timedelta
 import pytz
@@ -158,20 +160,57 @@ def kis_get_safe(token, path, tr_id, params, retries=3):
                 raise
     return {}
 
-# ── KIS API 토큰 발급 ──────────────────────────────
+# ── KIS API 토큰 발급 (파일 캐시 + rate limit 재시도) ───
+KIS_TOKEN_CACHE    = Path("/tmp/kis_token.json")
+KIS_TOKEN_TTL_SEC  = 23 * 3600  # 24h 유효 중 23h만 사용 (만료 여유)
+
 def get_token():
+    """KIS 토큰 발급. /tmp/kis_token.json에 캐싱해 동일 runner 내 step들이 공유.
+    rate limit(EGW00133, 1분당 1회) 감지 시 65초 대기 후 1회 재시도."""
+    # 1) 캐시 우선
+    if KIS_TOKEN_CACHE.exists():
+        try:
+            cached = json.loads(KIS_TOKEN_CACHE.read_text())
+            age = time.time() - float(cached.get("ts", 0))
+            if age < KIS_TOKEN_TTL_SEC and cached.get("token"):
+                print(f"  ♻️  캐시된 KIS 토큰 재사용 (age={age:.0f}s)")
+                return cached["token"]
+        except Exception as e:
+            print(f"  토큰 캐시 읽기 오류: {e}")
+
+    # 2) 신규 발급 (rate limit 시 65초 대기 후 1회 재시도)
     url = f"{KIS_BASE_URL}/oauth2/tokenP"
-    headers = {"Content-Type": "application/json"}
     body = {
         "grant_type": "client_credentials",
         "appkey": KIS_APP_KEY,
         "appsecret": KIS_APP_SECRET,
     }
-    r = requests.post(url, headers=headers, json=body, timeout=10)
-    data = r.json()
-    if "access_token" not in data:
+    for attempt in range(2):
+        r = requests.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            json=body,
+            timeout=10,
+        )
+        data = r.json()
+        if "access_token" in data:
+            token = data["access_token"]
+            try:
+                KIS_TOKEN_CACHE.write_text(
+                    json.dumps({"token": token, "ts": time.time()})
+                )
+            except Exception as e:
+                print(f"  토큰 캐시 저장 오류: {e}")
+            return token
+
+        if attempt == 0 and data.get("error_code") == "EGW00133":
+            print("  ⏳ KIS 토큰 rate limit — 65초 대기 후 재시도")
+            time.sleep(65)
+            continue
+
         raise Exception(f"토큰 발급 실패: {data}")
-    return data["access_token"]
+
+    raise Exception("토큰 발급 실패 (재시도 소진)")
 
 # ── KIS API 헬퍼 ──────────────────────────────────
 def kis_get(token, path, tr_id, params):

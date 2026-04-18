@@ -57,7 +57,7 @@ def build_macro_section():
     return "\n".join(lines)
 
 # ── 데이터 파일 합치기 ──────────────────────────────
-FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt"]
+FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt", "holdings_data.txt"]
 
 parts = [f"[ 모닝 데이터 통합본 — {DATE_STR} ]\n"]
 for fname in FILES:
@@ -146,3 +146,37 @@ archive_path  = f"{YEAR}/{MONTH}/{dated_name}"
 
 put_public(dated_name,   f"모닝 데이터 {YMD} (최신 날짜 스냅샷)")
 put_public(archive_path, f"모닝 데이터 아카이브 — {DATE_STR}")
+
+# ── 4. Google Drive 업로드 (Claude 커넥터용, OAuth 사용자 위임) ─
+# 실패해도 GitHub 커밋 파이프라인과 독립. Secrets 누락 시 조용히 스킵.
+GDRIVE_FOLDER_ID     = os.environ.get("GDRIVE_FOLDER_ID")
+GDRIVE_CLIENT_ID     = os.environ.get("GDRIVE_OAUTH_CLIENT_ID")
+GDRIVE_CLIENT_SECRET = os.environ.get("GDRIVE_OAUTH_CLIENT_SECRET")
+GDRIVE_REFRESH_TOKEN = os.environ.get("GDRIVE_OAUTH_REFRESH_TOKEN")
+
+_gdrive_ready = all([
+    GDRIVE_FOLDER_ID, GDRIVE_CLIENT_ID,
+    GDRIVE_CLIENT_SECRET, GDRIVE_REFRESH_TOKEN,
+])
+
+if _gdrive_ready:
+    try:
+        from gdrive_upload import upload_text
+
+        fid_latest = upload_text(
+            GITHUB_FILE, content, GDRIVE_FOLDER_ID,
+            GDRIVE_CLIENT_ID, GDRIVE_CLIENT_SECRET, GDRIVE_REFRESH_TOKEN,
+        )
+        if fid_latest:
+            print(f"✅ Drive 업로드 완료: {GITHUB_FILE} (id={fid_latest})")
+
+        fid_dated = upload_text(
+            dated_name, content, GDRIVE_FOLDER_ID,
+            GDRIVE_CLIENT_ID, GDRIVE_CLIENT_SECRET, GDRIVE_REFRESH_TOKEN,
+        )
+        if fid_dated:
+            print(f"✅ Drive 업로드 완료: {dated_name} (id={fid_dated})")
+    except Exception as e:
+        print(f"❌ Drive 업로드 중 예외: {e}")
+else:
+    print("⚠️  GDRIVE_* OAuth Secrets 누락 — Drive 업로드 스킵")

@@ -20,7 +20,8 @@ jobs:
 
       - name: 라이브러리 설치
         run: |
-          pip install yfinance pytz requests pykrx numpy
+          pip install yfinance pytz requests pykrx numpy \
+                      google-api-python-client google-auth
 
       - name: 미장 데이터 수집
         env:
@@ -41,10 +42,23 @@ jobs:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
         run: python sector_report.py
 
-      - name: 데이터 통합 (morning_data.txt + 날짜 스냅샷)
+      - name: 보유 종목 현황 (노션 DB)
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+        run: python holdings_report.py
+
+      - name: 데이터 통합 (morning_data.txt + 날짜 스냅샷 + Drive 업로드)
         env:
           MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
           MORNING_PAT: ${{ secrets.MORNING_PAT }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
+          GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
+          GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
         # morning_data.txt (최신판) + morning_data_YYYYMMDD.txt (CDN 캐시 우회) + YYYY/MM/ 아카이브
+        # 추가로 Google Drive(ClaudeMorningData 폴더)에 최신본 + 날짜본 업로드 → Claude 커넥터용
         # 날짜는 Asia/Seoul 기준
         run: python combine_data.py
