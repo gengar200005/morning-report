@@ -146,3 +146,28 @@ archive_path  = f"{YEAR}/{MONTH}/{dated_name}"
 
 put_public(dated_name,   f"모닝 데이터 {YMD} (최신 날짜 스냅샷)")
 put_public(archive_path, f"모닝 데이터 아카이브 — {DATE_STR}")
+
+# ── 4. Google Drive 업로드 (Claude 커넥터용) ───────────
+# 실패해도 GitHub 커밋 파이프라인과 독립. Secrets 누락 시 조용히 스킵.
+GDRIVE_FOLDER_ID = os.environ.get("GDRIVE_FOLDER_ID")
+GDRIVE_SA_JSON   = os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON")
+
+if GDRIVE_FOLDER_ID and GDRIVE_SA_JSON:
+    try:
+        from gdrive_upload import upload_text
+
+        fid_latest = upload_text(
+            GITHUB_FILE, content, GDRIVE_FOLDER_ID, GDRIVE_SA_JSON
+        )
+        if fid_latest:
+            print(f"✅ Drive 업로드 완료: {GITHUB_FILE} (id={fid_latest})")
+
+        fid_dated = upload_text(
+            dated_name, content, GDRIVE_FOLDER_ID, GDRIVE_SA_JSON
+        )
+        if fid_dated:
+            print(f"✅ Drive 업로드 완료: {dated_name} (id={fid_dated})")
+    except Exception as e:
+        print(f"❌ Drive 업로드 중 예외: {e}")
+else:
+    print("⚠️  GDRIVE_FOLDER_ID 또는 GDRIVE_SERVICE_ACCOUNT_JSON 미설정 — Drive 업로드 스킵")
