@@ -1,12 +1,12 @@
 {
-  "date": "2026년 04월 18일 (Sat)",
+  "date": "2026년 04월 20일 (Mon)",
   "scores": {
     "KODEX 반도체": {
-      "total": 74.3,
+      "total": 75.0,
       "grade": "강세"
     },
     "TIGER 반도체TOP10": {
-      "total": 42.0,
+      "total": 38.7,
       "grade": "약세"
     },
     "KODEX 2차전지산업": {
@@ -22,23 +22,23 @@
       "grade": "약세"
     },
     "KODEX 바이오": {
-      "total": 17.3,
+      "total": 18.7,
       "grade": "약세"
     },
     "KODEX 금융": {
-      "total": 62.7,
+      "total": 61.3,
       "grade": "중립"
     },
     "KODEX 은행": {
-      "total": 60.7,
+      "total": 63.3,
       "grade": "중립"
     },
     "KODEX 증권": {
-      "total": 61.0,
+      "total": 60.3,
       "grade": "중립"
     },
     "KODEX 보험": {
-      "total": 34.0,
+      "total": 34.7,
       "grade": "약세"
     },
     "KODEX IT": {
@@ -46,11 +46,11 @@
       "grade": "주도"
     },
     "KODEX 에너지화학": {
-      "total": 61.0,
+      "total": 62.3,
       "grade": "중립"
     },
     "KODEX K-방산": {
-      "total": 21.3,
+      "total": 20.7,
       "grade": "약세"
     },
     "TIGER 미디어컨텐츠": {
@@ -58,7 +58,7 @@
       "grade": "중립"
     },
     "KODEX 게임산업": {
-      "total": 38.3,
+      "total": 37.7,
       "grade": "약세"
     }
   }
