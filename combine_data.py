@@ -71,6 +71,10 @@ parts.append("\n" + build_macro_section())
 
 content = "\n".join(parts)
 
+# 로컬 workspace에도 저장 — Phase 2 렌더 파이프라인이 같은 워크플로우 내에서 읽음
+with open(GITHUB_FILE, "w", encoding="utf-8") as f:
+    f.write(content)
+
 # ── 1. GitHub 레포에 morning_data.txt 저장 ─────────────
 headers = {
     "Authorization": f"token {GITHUB_TOKEN}",
