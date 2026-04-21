@@ -1,0 +1,10 @@
+# Phase 3 backtest-only requirements.
+# Keep root requirements.txt untouched (GitHub Actions env).
+#
+# Install:  pip install -r backtest/requirements.txt
+#
+# Already installed in root env (pandas/numpy/pykrx/matplotlib) are omitted.
+
+pyarrow>=15.0
+tqdm>=4.66
+scipy>=1.11
