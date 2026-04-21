@@ -1,6 +1,9 @@
 name: 모닝 리포트
 
 on:
+  schedule:
+    # UTC 21:00 평일(일–금) = KST 06:00 (월–토). 주말 전 금요일 밤엔 실행 안 함.
+    - cron: '0 21 * * 0-5'
   workflow_dispatch:
 
 jobs:
@@ -9,17 +12,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Python 세팅
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: pip
 
-      - name: 라이브러리 설치
-        run: |
-          pip install yfinance pytz requests pykrx numpy \
-                      google-api-python-client google-auth
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
 
       - name: 미장 데이터 수집
         env:
@@ -57,6 +59,27 @@ jobs:
           GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
           GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
         # morning_data.txt (최신판) + morning_data_YYYYMMDD.txt (CDN 캐시 우회) + YYYY/MM/ 아카이브
-        # 추가로 Google Drive(ClaudeMorningData 폴더)에 최신본 + 날짜본 업로드 → Claude 커넥터용
-        # 날짜는 Asia/Seoul 기준
+        # Google Drive(ClaudeMorningData 폴더)에도 최신본 + 날짜본 업로드 → Claude 커넥터용
+        # 동시에 workspace에 morning_data.txt 로컬 저장 → 아래 렌더 단계가 읽음
         run: python combine_data.py
+
+      # ─────────────────────────────────────────────────────────
+      # Phase 2: v6.2 HTML 리포트 자동 렌더링 + GitHub Pages 배포
+      # ─────────────────────────────────────────────────────────
+
+      - name: v6.2 리포트 HTML 렌더링
+        run: python -m reports.render_report --input morning_data.txt --output-dir docs
+
+      - name: GitHub Pages 배포 (docs/ 커밋 & 푸시)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin "$GITHUB_REF_NAME" || true
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "docs/ 변경 없음 — 커밋 스킵"
+          else
+            TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
+            git commit -m "Daily report ${TODAY} (auto)"
+            git push
+          fi
