@@ -37,6 +37,82 @@ def latest_trading_day():
 def prev_trading_day():
     return latest_trading_day()
 
+# ── 전략 파라미터 (백테 확정: T15/CD120, 2026-04-22) ────
+STRATEGY_STOP_LOSS   = 0.07     # 진입가 대비 -7%
+STRATEGY_TRAIL_STOP  = 0.15     # 최고가 대비 -15%
+STRATEGY_COOLDOWN_D  = 170      # 쿨다운 거래일 120일 ≈ 달력 170일
+STRATEGY_MAX_HOLD    = 252      # 최대 보유 1년
+STRATEGY_MAX_POS     = 5        # 동시 포지션 상한
+
+# ── 스크리닝 state (쿨다운 추적) ────────────────────
+STATE_DIR  = Path("reports/state")
+STATE_PATH = STATE_DIR / "screening_history.json"
+
+def load_screening_state():
+    """이전 실행들의 A/B 등급 이력을 로드.
+    Format: {ticker: {"last_high_grade_date": "YYYY-MM-DD",
+                        "last_exit_date": "YYYY-MM-DD" or None}}
+    """
+    if STATE_PATH.exists():
+        try:
+            with open(STATE_PATH, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"  [warn] screening state 로드 실패: {e}")
+    return {}
+
+
+def save_screening_state(state):
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    with open(STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
+
+
+def update_screening_state(state, high_grade_today, today_str):
+    """오늘 A/B 등급 상태를 기반으로 state 갱신.
+
+    Rules:
+    - (A/B→out) 이전에 A/B였으나 오늘 빠진 종목: last_exit_date = today
+    - (A/B 유지) 오늘 A/B 종목: last_high_grade_date = today
+    """
+    for tk, info in list(state.items()):
+        if tk in high_grade_today:
+            continue
+        last_hg = info.get("last_high_grade_date")
+        last_ex = info.get("last_exit_date")
+        # 마지막 A/B 이후 exit 기록이 없으면 오늘을 exit으로 기록
+        if last_hg and (not last_ex or last_hg > last_ex):
+            state[tk]["last_exit_date"] = today_str
+
+    for tk in high_grade_today:
+        state.setdefault(tk, {})
+        state[tk]["last_high_grade_date"] = today_str
+
+    return state
+
+
+def compute_cooldown_remaining(state, ticker, today_date,
+                                threshold=STRATEGY_COOLDOWN_D):
+    """쿨다운 잔여 거래일 근사값. 쿨다운 없음이면 None."""
+    info = state.get(ticker, {})
+    exit_str = info.get("last_exit_date")
+    if not exit_str:
+        return None
+    try:
+        exit_date = datetime.strptime(exit_str, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+    # 청산 이후 다시 A/B 복귀한 적 있으면 쿨다운 해제
+    last_hg = info.get("last_high_grade_date")
+    if last_hg and last_hg > exit_str:
+        return None
+    days_since = (today_date - exit_date).days
+    if days_since >= threshold:
+        return None
+    # 잔여 거래일 근사 (달력일 × 252/365)
+    remaining_cal = threshold - days_since
+    return max(1, int(round(remaining_cal * 252 / 365)))
+
 UNIVERSE = [
     ("005930", "삼성전자"),      ("000660", "SK하이닉스"),
     ("373220", "LG에너지솔루션"),("207940", "삼성바이오로직스"),
@@ -651,6 +727,11 @@ def screen_stocks(token, mkt_ctx):
     kospi_ok = mkt_ctx["kospi_above_ma60"]
     vix_ok   = mkt_ctx["vix_ok"]
 
+    # 쿨다운 state 로드 (백테 확정 T15/CD120 기준)
+    state = load_screening_state()
+    today_str  = NOW.strftime("%Y-%m-%d")
+    today_date = NOW.date()
+
     # 1단계: 전 종목 OHLCV 수집 + 52주 수익률 (RS 계산용)
     stock_data  = {}   # code -> (name, closes, volumes)
     returns_52w = {}   # code -> 52주 수익률
@@ -743,10 +824,14 @@ def screen_stocks(token, mkt_ctx):
             sig_age = calc_signal_age(closes) if core_ok else 0
             sig_tag = "🆕 신규" if sig_age <= 1 else f"{sig_age}일차"
 
+            # ── 쿨다운 잔여 (백테 확정 120거래일) ──
+            cooldown_rem = compute_cooldown_remaining(state, code, today_date)
+
             print(f"  {name} [{grade}] {score}/{max_score}점 [{sig_tag}] — "
                   f"MA정배열:{'✓' if aligned else '✗'} MA200상승:{'✓' if c6 else '✗'} "
                   f"52주:{'✓' if (c7 and c8) else '✗'} RS:{rs_pct:.0f}% "
-                  f"수급:{'✓' if supply_ok else '✗'}({supply_20d:+,})")
+                  f"수급:{'✓' if supply_ok else '✗'}({supply_20d:+,})"
+                  + (f" 쿨다운:⚠ {cooldown_rem}일 남음" if cooldown_rem else ""))
 
             results.append({
                 "종목명":     name,
@@ -774,6 +859,7 @@ def screen_stocks(token, mkt_ctx):
                 "PBR":        detail["pbr"],
                 "ROE":        detail["roe"],
                 "손절가":     int(stop),
+                "쿨다운잔여":  cooldown_rem,   # 거래일 수 (None이면 없음)
             })
 
         except Exception as e:
@@ -781,6 +867,13 @@ def screen_stocks(token, mkt_ctx):
             continue
 
     results.sort(key=lambda x: ({"A": 0, "B": 1, "C": 2}.get(x["등급"], 3), -x["점수"]))
+
+    # state 업데이트 + 저장 (쿨다운 추적용)
+    high_grade_today = {r["종목코드"] for r in results if r["등급"] in ("A", "B")}
+    state = update_screening_state(state, high_grade_today, today_str)
+    save_screening_state(state)
+    print(f"  screening state 저장: {STATE_PATH}")
+
     return results
 
 # ── 텍스트 포맷 ────────────────────────────────────
@@ -843,6 +936,9 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     d_grade   = [c for c in candidates if c["등급"] == "D"]
 
     lines.append(f"\n【 Minervini 스크리닝 결과 】")
+    lines.append(f"  전략: Minervini + 수급 + KOSPI MA60 게이트 + 쿨다운 120거래일")
+    lines.append(f"  리스크: 손절 -{int(STRATEGY_STOP_LOSS*100)}% / 트레일링 -{int(STRATEGY_TRAIL_STOP*100)}% / 최대 {STRATEGY_MAX_POS}종목 / 최대 보유 {STRATEGY_MAX_HOLD}일")
+    lines.append(f"  백테(2015~2026, 103종목) CAGR +20.7%, MDD -26.2%, PF 2.22 (실전 기댓값 10-13%)")
     lines.append(f"  전체 {len(candidates)}종목 — A:{len([c for c in candidates if c['등급']=='A'])} B:{len(ab_grade) - len([c for c in candidates if c['등급']=='A'])} C:{len(c_grade)} D:{len(d_grade)}")
 
     a_grade = [c for c in ab_grade if c["등급"] == "A"]
@@ -856,19 +952,23 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             roe_str = f"{c['ROE']:.1f}%" if c['ROE'] else "N/A"
             sig = c.get("신호일수", 0)
             sig_tag = "🆕" if sig <= 1 else f"{sig}일"
-            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [A {c['점수']}/{c['최대점수']}] {sig_tag}")
+            cd_rem = c.get("쿨다운잔여")
+            cd_tag = f" ⚠ 쿨다운 잔여 {cd_rem}거래일" if cd_rem else ""
+            lines.append(f"\n  ▶ {c['종목명']} ({c['종목코드']}) [A {c['점수']}/{c['최대점수']}] {sig_tag}{cd_tag}")
             lines.append(f"    {c['현재가']:,}원 | MA50 {c['MA50']:,} / MA150 {c['MA150']:,} / MA200 {c['MA200']:,}")
             lines.append(f"    RS {c['RS']:.0f}% | 수급 {c['수급20일']}({c['수급누적']:+,}주) | 52주고점 {c['52주고점대비']:+.1f}%")
             lines.append(f"    PER {per_str} PBR {pbr_str} ROE {roe_str}")
-            lines.append(f"    손절 {c['손절가']:,}원(-7%) | 트레일링(고점-10%)")
+            lines.append(f"    손절 {c['손절가']:,}원(-7%) | 트레일링(고점-15%)")
 
     if b_grade:
         lines.append(f"\n  ── B등급 ({len(b_grade)}개) — 조건부 대기 ──")
-        lines.append(f"  {'종목명':<10} {'현재가':>10}  RS   수급  신호")
+        lines.append(f"  {'종목명':<10} {'현재가':>10}  RS   수급  신호  쿨다운")
         for c in b_grade:
             sig = c.get("신호일수", 0)
             sig_tag = "🆕" if sig <= 1 else f"{sig}일"
-            lines.append(f"  {c['종목명']:<8} {c['현재가']:>10,}원  {c['RS']:.0f}%  {c['수급20일']}  {sig_tag}")
+            cd_rem = c.get("쿨다운잔여")
+            cd_tag = f"⚠ {cd_rem}일" if cd_rem else "—"
+            lines.append(f"  {c['종목명']:<8} {c['현재가']:>10,}원  {c['RS']:.0f}%  {c['수급20일']}  {sig_tag}  {cd_tag}")
 
     if not a_grade and not b_grade:
         lines.append("  진입 신호 없음 (A/B등급 0개)")

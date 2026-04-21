@@ -151,6 +151,30 @@ archive_path  = f"{YEAR}/{MONTH}/{dated_name}"
 put_public(dated_name,   f"모닝 데이터 {YMD} (최신 날짜 스냅샷)")
 put_public(archive_path, f"모닝 데이터 아카이브 — {DATE_STR}")
 
+# ── 3.5. 스크리닝 state 푸시 (쿨다운 추적 — private repo에만) ──
+STATE_PATH = "reports/state/screening_history.json"
+if os.path.exists(STATE_PATH):
+    with open(STATE_PATH, encoding="utf-8") as _f:
+        _state_content = _f.read()
+    _state_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{STATE_PATH}"
+    _state_sha = None
+    _rs = requests.get(_state_url, headers=headers)
+    if _rs.status_code == 200:
+        _state_sha = _rs.json().get("sha")
+    _state_payload = {
+        "message": f"스크리닝 state 업데이트 — {DATE_STR}",
+        "content": base64.b64encode(_state_content.encode("utf-8")).decode("utf-8"),
+    }
+    if _state_sha:
+        _state_payload["sha"] = _state_sha
+    _rs = requests.put(_state_url, headers=headers, json=_state_payload)
+    if _rs.status_code in (200, 201):
+        print(f"✅ {STATE_PATH} 저장 완료")
+    else:
+        print(f"❌ state 저장 실패: {_rs.status_code} {_rs.text}")
+else:
+    print(f"⚠️ {STATE_PATH} 로컬에 없음 — state push 스킵")
+
 # ── 4. Google Drive 업로드 (Claude 커넥터용, OAuth 사용자 위임) ─
 # 실패해도 GitHub 커밋 파이프라인과 독립. Secrets 누락 시 조용히 스킵.
 GDRIVE_FOLDER_ID     = os.environ.get("GDRIVE_FOLDER_ID")
