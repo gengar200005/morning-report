@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Report — 2026-04-21</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --bg-elevated: #FFFFFF;
+    --ink: #0A0A0A;
+    --ink-soft: #2C2C2C;
+    --ink-muted: #5A5A5A;
+    --ink-faint: #8F8F8F;
+    --rule: #1A1A1A;
+    --rule-soft: #E3E3DC;
+    --rule-faint: #EEEEE8;
+
+    --bull: #058C4A;
+    --bull-strong: #016B38;
+    --bull-bg: #D9F2E4;
+    --bull-bg-soft: #EDF9F2;
+
+    --bear: #D01E1E;
+    --bear-strong: #A01414;
+    --bear-bg: #FCDEDE;
+    --bear-bg-soft: #FEEFEF;
+
+    --neutral: #6B6B6B;
+    --accent: #A07B3E;
+    --accent-bg: #F5EDD8;
+    --warn: #B8740A;
+    --warn-bg: #FBF1DB;
+
+    --serif: 'Fraunces', 'Noto Serif KR', Georgia, serif;
+    --sans: 'Inter', -apple-system, 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 20px 80px;
+  }
+
+  .report {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--bg-elevated);
+    padding: 56px 64px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.04), 0 0 0 1px var(--rule-soft);
+    position: relative;
+  }
+
+  .report::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--ink);
+  }
+
+  .up { color: var(--bull) !important; font-weight: 600; }
+  .down { color: var(--bear) !important; font-weight: 600; }
+  .flat { color: var(--neutral); }
+
+  .pill-up {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bull-bg);
+    color: var(--bull-strong);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  .pill-down {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bear-bg);
+    color: var(--bear-strong);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+
+  /* ========== MASTHEAD ========== */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+
+  .masthead-left .kicker {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .masthead-left h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .masthead-left h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .masthead-left .subtitle {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .masthead-right {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+
+  .masthead-right .date {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+    font-style: italic;
+  }
+
+  .vol-line {
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 6px;
+    margin-top: 6px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ========== EXECUTIVE SUMMARY — TONED DOWN ========== */
+  .exec {
+    background: var(--ink);
+    color: #F5F5F0;
+    padding: 28px 36px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .exec::before {
+    content: 'EXECUTIVE SUMMARY';
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: rgba(245,245,240,0.3);
+  }
+
+  .exec-rating {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .rating-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+
+  .gate-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--bull);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .exec h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.4;
+    color: #F5F5F0;
+    margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+
+  .exec h2 strong { font-weight: 700; color: #fff; }
+  .exec h2 .up { color: #4ADE8F !important; }
+  .exec h2 .down { color: #FF7B7B !important; }
+
+  .exec-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(245,245,240,0.15);
+  }
+
+  .exec-fact {
+    padding: 0 20px;
+    border-left: 1px solid rgba(245,245,240,0.12);
+  }
+  .exec-fact:first-child { border-left: none; padding-left: 0; }
+
+  .exec-fact .fact-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .exec-fact .fact-text {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(245,245,240,0.92);
+  }
+
+  .exec-fact .fact-text strong {
+    color: #fff;
+  }
+
+  .exec-action {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(245,245,240,0.2);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: rgba(245,245,240,0.88);
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  .exec-action .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ========== SECTIONS ========== */
+  section { margin-bottom: 44px; }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .section-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 44px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 0.9;
+  }
+
+  .section-title h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .section-title .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .section-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  /* ========== INDEX GRID ========== */
+  .idx-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule-soft);
+  }
+
+  .idx-cell {
+    padding: 16px 18px;
+    border-right: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+  .idx-cell:nth-child(4n) { border-right: none; }
+  .idx-cell:nth-last-child(-n+4) { border-bottom: none; }
+
+  .idx-cell.up-cell { background: linear-gradient(180deg, var(--bull-bg-soft) 0%, #fff 100%); border-left: 3px solid var(--bull); }
+  .idx-cell.down-cell { background: linear-gradient(180deg, var(--bear-bg-soft) 0%, #fff 100%); border-left: 3px solid var(--bear); }
+
+  .idx-name {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .idx-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .idx-change {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .idx-ma {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 5px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== DATA TABLE ========== */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 13px;
+  }
+
+  .data-table thead { border-bottom: 2px solid var(--ink); }
+
+  .data-table th {
+    text-align: left;
+    padding: 9px 12px 9px 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .data-table th.num, .data-table td.num {
+    text-align: right;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .data-table td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--rule-faint);
+    color: var(--ink-soft);
+  }
+
+  .data-table tbody tr:hover { background: var(--bg); }
+
+  .ticker {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-left: 6px;
+  }
+
+  .name-cell strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ========== TWO COL ========== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .two-col-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-weight: 600;
+  }
+
+  /* ========== STRIP ========== */
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .strip-item {
+    padding: 0 16px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .strip-item:last-child { border-right: none; }
+  .strip-item.up-item { background: linear-gradient(180deg, var(--bull-bg-soft) 0%, transparent 100%); }
+  .strip-item.down-item { background: linear-gradient(180deg, var(--bear-bg-soft) 0%, transparent 100%); }
+
+  .strip-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .strip-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .strip-change {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ========== SECTOR CARDS ========== */
+  .sector-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule-soft);
+    border: 1px solid var(--rule-soft);
+  }
+
+  .sector-card {
+    background: var(--bg-elevated);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 90px;
+  }
+
+  .sector-card.bull { background: linear-gradient(135deg, var(--bull-bg) 0%, #fff 70%); border-left: 3px solid var(--bull); }
+  .sector-card.bear { background: linear-gradient(135deg, var(--bear-bg) 0%, #fff 70%); border-left: 3px solid var(--bear); }
+
+  .sector-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .sector-name {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .sector-score {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .sector-card.bull .sector-score { color: var(--bull-strong); }
+  .sector-card.bear .sector-score { color: var(--bear-strong); }
+
+  .sector-perf {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+
+  .sector-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: auto;
+    font-weight: 600;
+  }
+  .sector-card.bull .sector-label { color: var(--bull); }
+  .sector-card.bear .sector-label { color: var(--bear); }
+
+  .sector-group-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 20px 0 10px;
+  }
+  .sector-group-title:first-child { margin-top: 0; }
+
+  .sector-group-title .count {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-style: normal;
+    color: var(--ink-faint);
+    margin-left: 8px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  /* ========== ENTRY READINESS CARDS (NEW) ========== */
+  .readiness-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--rule-soft);
+    border-left: 4px solid var(--ink);
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .readiness-card.held {
+    border-left-color: var(--accent);
+  }
+
+  .readiness-header {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 16px;
+    padding: 16px 20px 14px;
+    align-items: center;
+    background: linear-gradient(90deg, #FAFAF5 0%, #fff 40%);
+    border-bottom: 1px dashed var(--rule-soft);
+  }
+
+  .readiness-card.held .readiness-header {
+    background: linear-gradient(90deg, var(--accent-bg) 0%, #fff 40%);
+  }
+
+  .rank {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    text-align: center;
+  }
+
+  .readiness-title .name {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+
+  .readiness-title .name .ticker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    margin-left: 8px;
+  }
+
+  .readiness-title .name .held-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    vertical-align: middle;
+  }
+
+  .readiness-title .meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+  .readiness-title .meta span { margin-right: 12px; }
+
+  .readiness-price {
+    text-align: right;
+    font-family: var(--mono);
+  }
+  .readiness-price .price {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .readiness-price .stop {
+    font-size: 10px;
+    color: var(--bear);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .readiness-price .rs {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  /* Checkpoint body */
+  .readiness-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .check-col {
+    padding: 16px 20px;
+  }
+
+  .check-col.auto-col {
+    background: var(--bull-bg-soft);
+    border-right: 1px solid var(--rule-soft);
+  }
+
+  .check-col.manual-col {
+    background: var(--warn-bg);
+  }
+
+  .check-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .check-head .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    padding: 2px 7px;
+    color: #fff;
+  }
+  .auto-col .check-head .tag { background: var(--bull); }
+  .manual-col .check-head .tag { background: var(--warn); }
+
+  .check-head .label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .auto-col .check-head .label { color: var(--bull-strong); }
+  .manual-col .check-head .label { color: var(--warn); }
+
+  .check-list {
+    list-style: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .check-list li {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 6px;
+    padding: 4px 0;
+    color: var(--ink-soft);
+    align-items: baseline;
+  }
+
+  .check-mark {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .auto-col .check-mark { color: var(--bull); }
+  .manual-col .check-mark { color: var(--warn); }
+
+  .check-val {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .readiness-footer {
+    padding: 12px 20px;
+    background: var(--ink);
+    color: rgba(245,245,240,0.9);
+    font-family: var(--sans);
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+
+  .readiness-footer .verdict-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+
+  .readiness-footer strong {
+    color: #fff;
+  }
+
+  /* ========== A-GRADE TABLE ========== */
+  .agrade-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .agrade-table thead {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .agrade-table th {
+    padding: 9px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-align: left;
+    color: rgba(255,255,255,0.75);
+    font-weight: 600;
+  }
+
+  .agrade-table th.num { text-align: right; }
+  .agrade-table tbody tr { border-bottom: 1px solid var(--rule-faint); }
+  .agrade-table tbody tr:hover { background: var(--bg); }
+
+  .agrade-table td {
+    padding: 9px 12px;
+    font-family: var(--sans);
+    color: var(--ink-soft);
+  }
+
+  .agrade-table td.num {
+    font-family: var(--mono);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .agrade-table td.name {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .rs-bar {
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+
+  .rs-90 { background: var(--bull); color: #fff; }
+  .rs-80 { background: var(--bull-bg); color: var(--bull-strong); }
+  .rs-70 { background: var(--rule-soft); color: var(--ink-soft); }
+
+  .nh-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  /* ========== PORTFOLIO ========== */
+  .portfolio-main {
+    background: linear-gradient(135deg, var(--accent-bg) 0%, #fff 50%);
+    padding: 28px 32px;
+    border: 1px solid var(--rule-soft);
+    border-top: 4px solid var(--accent);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--ink-faint);
+  }
+
+  .portfolio-name {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .portfolio-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    background: var(--accent);
+    color: #0A0A0A;
+    letter-spacing: 0.15em;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 24px;
+    margin-bottom: 18px;
+  }
+
+  .pg-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .pg-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pg-value.big {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .portfolio-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-top: 14px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .stat {
+    padding-right: 14px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .stat:last-child { border-right: none; padding-right: 0; padding-left: 14px; }
+  .stat:nth-child(2) { padding-left: 14px; }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .portfolio-action {
+    padding: 20px;
+    background: var(--ink);
+    color: #F5F5F0;
+  }
+  .portfolio-action .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .portfolio-action .verdict {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .portfolio-action .detail {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(245,245,240,0.85);
+  }
+  .portfolio-action .detail strong { color: #fff; }
+
+  /* ========== MACRO CALENDAR ========== */
+  .macro-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 140px 110px;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-faint);
+    align-items: center;
+  }
+  .macro-row:last-child { border-bottom: none; }
+
+  .dday {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--bear);
+  }
+  .dday.far { color: var(--ink-muted); }
+
+  .macro-event {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .macro-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .macro-impact {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    padding: 4px 9px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .impact-high { background: var(--bear-bg); color: var(--bear-strong); }
+
+  /* ========== MARKET CONTEXT ========== */
+  .context-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--rule-soft);
+  }
+
+  .context-col {
+    padding: 24px 28px;
+  }
+
+  .context-col.plus-col {
+    background: linear-gradient(180deg, var(--bull-bg) 0%, var(--bull-bg-soft) 100%);
+    border-right: 1px solid var(--rule-soft);
+  }
+  .context-col.minus-col {
+    background: linear-gradient(180deg, var(--bear-bg) 0%, var(--bear-bg-soft) 100%);
+  }
+
+  .context-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .context-head h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .plus-col h3 { color: var(--bull-strong); }
+  .minus-col h3 { color: var(--bear-strong); }
+
+  .context-head .subtag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+  }
+
+  .context-list {
+    list-style: none;
+  }
+  .context-list li {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    padding: 8px 0 8px 16px;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+  .context-list li:last-child { border-bottom: none; }
+
+  .context-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 7px;
+    height: 2px;
+  }
+  .plus-col .context-list li::before { background: var(--bull); }
+  .minus-col .context-list li::before { background: var(--bear); }
+
+  .context-list strong { color: var(--ink); }
+  .context-list .num { font-family: var(--mono); font-weight: 700; }
+
+  /* ========== FOOTER ========== */
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: end;
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .footer-brand strong {
+    color: var(--ink);
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  .disclosures {
+    margin-top: 28px;
+    padding: 18px 22px;
+    background: var(--bg);
+    border-left: 3px solid var(--ink-muted);
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+  .disclosures strong { color: var(--ink-soft); }
+  .disclosures p { margin-bottom: 8px; }
+  .disclosures p:last-child { margin-bottom: 0; }
+
+  hr.decorative {
+    border: none;
+    text-align: center;
+    margin: 32px 0;
+    color: var(--ink-faint);
+  }
+  hr.decorative::after {
+    content: '§ § §';
+    font-family: var(--serif);
+    font-size: 13px;
+    letter-spacing: 1em;
+  }
+
+  @media print {
+    body { padding: 0; background: #fff; }
+    .report { box-shadow: none; padding: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="report">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="masthead">
+    <div class="masthead-left">
+      <div class="kicker">Daily Market Brief</div>
+      <h1>Morning <em>Report</em></h1>
+      <div class="subtitle">Minervini trend-following · 국내 주식 스크리닝</div>
+    </div>
+    <div class="masthead-right">
+      <div class="date">{{ data.date | format_date_long }}</div>
+      <div>06:00 KST</div>
+      <div class="vol-line">v6.2</div>
+    </div>
+  </header>
+
+  <!-- ========== EXECUTIVE SUMMARY — TONED DOWN ========== -->
+  {% set kospi = data.kr_indices | selectattr("name", "equalto", "KOSPI") | first %}
+  {% set kosdaq = data.kr_indices | selectattr("name", "equalto", "KOSDAQ") | first %}
+  {% set holding = data.holdings[0] if data.holdings else None %}
+  <div class="exec">
+    <div class="exec-rating">
+      <span class="rating-badge">BUY-WATCH</span>
+      <span class="gate-badge">{{ '✓' if data.market_context.vix_ok and data.market_context.kospi_ma60_ok else '✗' }} 시장 게이트 {{ '통과' if data.market_context.vix_ok and data.market_context.kospi_ma60_ok else '미달' }}</span>
+    </div>
+    <h2>
+      KOSPI <span class="{{ 'up' if kospi.change_pct >= 0 else 'down' }}">{{ data.kospi_state }}</span> · KOSDAQ <span class="{{ 'up' if kosdaq.change_pct >= 0 or kosdaq.is_20d_new_high else 'down' }}">{{ data.kosdaq_state }}</span>. A등급 <strong>{{ data.minervini.counts.A }}종목</strong>.
+    </h2>
+
+    <div class="exec-facts">
+      <div class="exec-fact">
+        <div class="fact-label">MARKET</div>
+        <div class="fact-text">미국 3대 지수 <strong>{{ data.us_state }}</strong>, VIX <strong>{{ data.vix.value }}</strong> {{ data.vix.status }}권.{% if kosdaq.is_20d_new_high %} 코스닥 20일 신고가 <strong>{{ kosdaq.trend_20d | format_pct_signed(1) }}</strong>.{% else %} 코스닥 <strong>{{ kosdaq.change_pct | format_pct_signed(2) }}</strong>.{% endif %}</div>
+      </div>
+      <div class="exec-fact">
+        <div class="fact-label">SCREENER</div>
+        <div class="fact-text">A등급 <strong>{{ data.minervini.counts.A }}종목</strong>{% if data.top_leader %}, 주도 섹터 {{ data.top_leader.name }} <strong>{{ data.top_leader.score | round(0) | int }}점</strong>{% endif %}. B/C/D {{ data.minervini.bcd_total }}종목.</div>
+      </div>
+      <div class="exec-fact">
+        <div class="fact-label">PORTFOLIO</div>
+        {% if holding %}
+        <div class="fact-text">{{ holding.name }} <span class="{{ 'up' if holding.change_pct >= 0 else 'down' }}">{{ holding.change_pct | format_pct_signed(2) }}</span>, 추매 기준(+5%) <strong>{{ '미달' if holding.change_pct < 5 else '도달' }}</strong>. HOLD.</div>
+        {% else %}
+        <div class="fact-text">보유 종목 없음.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if holding and data.next_high_impact %}
+    <div class="exec-action">
+      <span class="tag">ACTION</span>
+      <span>{{ holding.name }} <strong>{{ holding.add_threshold | format_number }}원</strong> 도달 전 관망. <strong>{{ data.next_high_impact.event }} D−{{ data.next_high_impact.dday }}</strong> 이전 신규 진입 보수적.</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ========== SECTION 1: US MARKETS ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-title">
+        <div class="eyebrow">New York · Prior Close</div>
+        <h2>U.S. Markets</h2>
+      </div>
+      <div class="section-meta">04/20 CLOSE</div>
+    </div>
+
+    <div class="idx-grid">
+      {% for idx in data.us_indices %}
+      {% set dir = 'up' if idx.change_pct >= 0 else 'down' %}
+      <div class="idx-cell {{ dir }}-cell">
+        <div class="idx-name">{% if idx.name == 'S&P 500' %}S&amp;P 500{% else %}{{ idx.name }}{% endif %}</div>
+        <div class="idx-value">{{ idx.value | format_number(2) }}</div>
+        <div class="idx-change {{ dir }}">{{ idx.change_pct | format_change_arrow }} {{ idx.change_pct | format_pct_signed(2) }}</div>
+        <div class="idx-ma">MA 20 / 60 / 120 {{ '✓' if idx.ma20 and idx.ma60 and idx.ma120 else '⚠' }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="strip" style="margin-top: 20px;">
+      <div class="strip-item">
+        <div class="strip-label">VIX</div>
+        <div class="strip-value">{{ data.vix.value }}</div>
+        <div class="strip-change flat">{{ data.vix.status }}</div>
+      </div>
+      {% set t10 = data.rates_fx.us10y %}
+      <div class="strip-item {{ 'up' if t10.change_pct >= 0 else 'down' }}-item">
+        <div class="strip-label">US 10Y</div>
+        <div class="strip-value">{{ t10.value }}</div>
+        <div class="strip-change {{ 'up' if t10.change_pct >= 0 else 'down' }}">{{ t10.change_pct | format_change_arrow }} {{ t10.change_pct | format_pct_signed(2) | replace('%', '') }}</div>
+      </div>
+      {% set dxy = data.rates_fx.dxy %}
+      <div class="strip-item {{ 'up' if dxy.change_pct >= 0 else 'down' }}-item">
+        <div class="strip-label">DXY</div>
+        <div class="strip-value">{{ dxy.value }}</div>
+        <div class="strip-change {{ 'up' if dxy.change_pct >= 0 else 'down' }}">{{ dxy.change_pct | format_change_arrow }} {{ dxy.change_pct | format_pct_signed(2) | replace('%', '') }}</div>
+      </div>
+      {% set fx = data.rates_fx.usd_krw %}
+      <div class="strip-item {{ 'up' if fx.change_pct >= 0 else 'down' }}-item">
+        <div class="strip-label">USD/KRW</div>
+        <div class="strip-value">{{ fx.value | format_number(2) }}</div>
+        <div class="strip-change {{ 'up' if fx.change_pct >= 0 else 'down' }}">{{ fx.change_pct | format_change_arrow }} {{ fx.change_pct | format_pct_signed(2) | replace('%', '') }}</div>
+      </div>
+      {% set wti = data.commodities.wti %}
+      <div class="strip-item {{ 'up' if wti.change_pct >= 0 else 'down' }}-item">
+        <div class="strip-label">WTI</div>
+        <div class="strip-value">{{ wti.value }}</div>
+        <div class="strip-change {{ 'up' if wti.change_pct >= 0 else 'down' }}">{{ wti.change_pct | format_change_arrow }} {{ wti.change_pct | format_pct_signed(2) }}</div>
+      </div>
+      {% set gold = data.commodities.gold %}
+      <div class="strip-item {{ 'up' if gold.change_pct >= 0 else 'down' }}-item">
+        <div class="strip-label">GOLD</div>
+        <div class="strip-value">{{ gold.value | format_number(0) }}</div>
+        <div class="strip-change {{ 'up' if gold.change_pct >= 0 else 'down' }}">{{ gold.change_pct | format_change_arrow }} {{ gold.change_pct | format_pct_signed(2) }}</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 28px;">
+      <div>
+        <div class="two-col-title">US Sectors</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Sector</th><th class="num">Change</th><th class="num">MA</th></tr>
+          </thead>
+          <tbody>
+            {% for s in data.us_sectors %}
+            {% set pill = 'pill-up' if s.change_pct >= 0 else 'pill-down' %}
+            <tr><td class="name-cell"><strong>{{ s.name }}</strong> <span class="ticker">{{ s.ticker }}</span></td><td class="num"><span class="{{ pill }}">{{ s.change_pct | format_change_arrow }} {{ s.change_pct | format_pct_signed(2) }}</span></td><td class="num">{{ '✓' if s.ma20 else '✗' }}/{{ '✓' if s.ma60 else '✗' }}/{{ '✓' if s.ma120 else '✗' }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="two-col-title">Big Tech &amp; Semi</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Name</th><th class="num">Close</th><th class="num">Chg</th></tr>
+          </thead>
+          <tbody>
+            {% for t in data.tech_merged %}
+            {% set pill = 'pill-up' if t.change_pct >= 0 else 'pill-down' %}
+            <tr><td class="name-cell"><strong>{% if t.name == '마이크로소프트' %}MS{% else %}{{ t.name }}{% endif %}</strong></td><td class="num">{{ t.value | format_number(2) }}</td><td class="num"><span class="{{ pill }}">{{ t.change_pct | format_change_arrow }} {{ t.change_pct | format_pct_signed(2) }}</span></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 2: KOREA MARKETS ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-title">
+        <div class="eyebrow">Seoul · Prior Close</div>
+        <h2>Korea Markets</h2>
+      </div>
+      <div class="section-meta">04/20 CLOSE</div>
+    </div>
+
+    <div class="idx-grid" style="grid-template-columns: 1fr 1fr;">
+      {% for idx in data.kr_indices %}
+      {% set dir = 'up' if idx.change_pct >= 0 else 'down' %}
+      <div class="idx-cell {{ dir }}-cell">
+        <div class="idx-name">{{ idx.name }}</div>
+        <div class="idx-value">{{ idx.value | format_number(2) }}</div>
+        <div class="idx-change {{ dir }}">{{ idx.change_pct | format_change_arrow }} {{ idx.change_pct | format_pct_signed(2) }}{% if idx.is_20d_new_high %} <span class="nh-badge" style="margin-left: 8px;">20D NH</span>{% endif %}</div>
+        <div class="idx-ma">5D {{ idx.trend_5d | format_pct_signed(1) }} · 20D {{ idx.trend_20d | format_pct_signed(1) }} · 52W HIGH {{ idx.pct_from_52w_high | format_pct_signed(1) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="two-col" style="margin-top: 24px;">
+      <div>
+        <div class="two-col-title">KOSPI Flow{% if data.kospi_flow.basis_md %} · {{ data.kospi_flow.basis_md }}{% endif %} (억원)</div>
+        <table class="data-table">
+          <tbody>
+            {% set flow = data.kospi_flow %}
+            <tr><td class="name-cell"><strong>외국인</strong></td><td class="num"><span class="{{ 'pill-up' if flow.foreign >= 0 else 'pill-down' }}" style="font-size: 13px; padding: 3px 10px;">{{ flow.foreign | format_signed_int }}</span></td></tr>
+            <tr><td class="name-cell"><strong>기관</strong></td><td class="num"><span class="{{ 'pill-up' if flow.institution >= 0 else 'pill-down' }}" style="font-size: 13px; padding: 3px 10px;">{{ flow.institution | format_signed_int }}</span></td></tr>
+            <tr><td class="name-cell"><strong>개인</strong></td><td class="num"><span class="{{ 'pill-up' if flow.retail >= 0 else 'pill-down' }}" style="font-size: 13px; padding: 3px 10px;">{{ flow.retail | format_signed_int }}</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="two-col-title">Market Gate · Minervini</div>
+        <div style="padding: 4px 0;">
+          {% set ctx = data.market_context %}
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>VIX ≤ 35</span>
+            <span class="{{ 'up' if ctx.vix_ok else 'down' }}" style="font-family: var(--mono);">{{ '✓' if ctx.vix_ok else '✗' }} {{ ctx.vix }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>KOSPI &gt; MA60</span>
+            <span class="{{ 'up' if ctx.kospi_ma60_ok else 'down' }}" style="font-family: var(--mono);">{{ '✓' if ctx.kospi_ma60_ok else '✗' }} {{ data.kospi_above_ma60_pct | format_pct_signed(1) }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>KOSPI MA20/60/120</span>
+            {% set kospi_aligned = ctx.kospi_ma20_ok and ctx.kospi_ma60_ok and ctx.kospi_ma120_ok %}
+            <span class="{{ 'up' if kospi_aligned else 'down' }}" style="font-family: var(--mono);">{{ '✓ 정배열' if kospi_aligned else '✗ 미정렬' }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+            <span>KOSDAQ MA20/60/120</span>
+            {% set kosdaq_aligned = ctx.kosdaq_ma20_ok and ctx.kosdaq_ma60_ok and ctx.kosdaq_ma120_ok %}
+            <span class="{{ 'up' if kosdaq_aligned else 'down' }}" style="font-family: var(--mono);">{{ '✓ 정배열' if kosdaq_aligned else '✗ 미정렬' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 3: SECTOR LEADERSHIP ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-title">
+        <div class="eyebrow">ETF Scoring · RS + Trend + Flow</div>
+        <h2>Sector Leadership</h2>
+      </div>
+      <div class="section-meta">16 ETFs</div>
+    </div>
+
+    <div class="sector-group-title">Leaders <span class="count">80 PTS+</span></div>
+    <div class="sector-grid" style="grid-template-columns: 1fr;">
+      {% for etf in data.sector_etf.leaders %}
+      <div class="sector-card bull">
+        <div class="sector-head">
+          <div class="sector-name">{{ etf.name }}</div>
+          <div class="sector-score">{{ etf.score | format_number(1) }}</div>
+        </div>
+        {% if etf.perf_1m is defined %}
+        <div class="sector-perf">1M <span class="{{ 'up' if etf.perf_1m >= 0 else 'down' }}">{{ etf.perf_1m | format_pct_signed(1) }}</span> · 3M <span class="{{ 'up' if etf.perf_3m >= 0 else 'down' }}">{{ etf.perf_3m | format_pct_signed(1) }}</span> · 6M <span class="{{ 'up' if etf.perf_6m >= 0 else 'down' }}">{{ etf.perf_6m | format_pct_signed(1) }}</span>{% if etf.ma20 is defined %} · MA {{ '✓' if etf.ma20 else '✗' }}/{{ '✓' if etf.ma60 else '✗' }}/{{ '✓' if etf.ma120 else '✗' }}{% endif %}</div>
+        {% endif %}
+        <div class="sector-label">● Dominant leader</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="sector-group-title">Strong <span class="count">65–79 PTS</span></div>
+    <div class="sector-grid">
+      {% for etf in data.sector_etf.strong %}
+      <div class="sector-card bull"><div class="sector-head"><div class="sector-name">{{ etf.name }}</div><div class="sector-score">{{ etf.score | format_number(1) }}</div></div>{% if etf.perf_6m is defined %}<div class="sector-perf">6M <span class="{{ 'up' if etf.perf_6m >= 0 else 'down' }}">{{ etf.perf_6m | format_pct_signed(1) }}</span>{% if etf.ma20 is defined %} · MA {{ '✓' if etf.ma20 else '✗' }}/{{ '✓' if etf.ma60 else '✗' }}/{{ '✓' if etf.ma120 else '✗' }}{% endif %}</div>{% endif %}<div class="sector-label">● Strong</div></div>
+      {% endfor %}
+    </div>
+
+    <div class="sector-group-title">Neutral <span class="count">50–64 PTS</span></div>
+    <div class="sector-grid">
+      {% for etf in data.sector_etf.neutral %}
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">{{ etf.name }}</div><div class="sector-score">{{ etf.score | format_number(1) }}</div></div><div class="sector-label">〰 Sideways</div></div>
+      {% endfor %}
+    </div>
+
+    <div class="sector-group-title">Weak <span class="count">&lt; 50 PTS</span></div>
+    <div class="sector-grid">
+      {% for etf in data.sector_etf.weak %}
+      {% set _weekly_matches = data.sector_etf.weekly_changes | selectattr("name", "equalto", etf.name) | list %}
+      {% set weekly_entry = _weekly_matches[0] if _weekly_matches else None %}
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">{{ etf.name }}</div><div class="sector-score">{{ etf.score | format_number(1) }}</div></div>{% if weekly_entry %}<div class="sector-perf">주간 <span class="{{ 'up' if weekly_entry.delta >= 0 else 'down' }}">{{ weekly_entry.delta | format_pct_signed(1) | replace('%', '') }}</span></div>{% endif %}<div class="sector-label">Weakening</div></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <hr class="decorative">
+
+  <!-- ========== SECTION 4: ENTRY READINESS (NEW) ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-title">
+        <div class="eyebrow">Minervini · Top 5 Entry Readiness</div>
+        <h2>Grade A · Top 5</h2>
+      </div>
+      <div class="section-meta">A:{{ data.minervini.counts.A }} B:{{ data.minervini.counts.B }} C:{{ data.minervini.counts.C }} D:{{ data.minervini.counts.D }}</div>
+    </div>
+
+    <p style="font-family: var(--sans); font-size: 12px; color: var(--ink-muted); margin-bottom: 18px; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--accent); line-height: 1.5;">
+      <strong style="color: var(--ink);">판독 기준</strong> · 좌측(자동)은 스크리너로 검증된 트렌드 템플릿 조건, 우측(수동)은 차트에서 직접 확인해야 하는 Minervini 진입 트리거(VCP 수축·피벗 돌파·거래량 확장). <strong style="color: var(--ink);">우측 4개가 모두 확인되어야 실제 진입</strong>, 아니면 관망.
+    </p>
+
+    {% for stock in data.top5 %}
+    <div class="readiness-card{% if stock.is_held %} held{% endif %}">
+      <div class="readiness-header">
+        <div class="rank">{{ stock.rank_roman }}</div>
+        <div class="readiness-title">
+          <div class="name">{{ stock.name | replace('&', '&amp;') }} <span class="ticker">{{ stock.code }} · {{ stock.signal_days }}일차</span>{% if stock.is_held %}<span class="held-tag">HELD</span>{% endif %}</div>
+          <div class="meta">
+            <span>MA50 {{ stock.ma50 | format_number }}</span>
+            <span>MA150 {{ stock.ma150 | format_number }}</span>
+            {% if stock.per < 0 %}
+            <span>PBR {{ stock.pbr | format_number(2) }}×</span>
+            {% else %}
+            <span>PER {{ stock.per | format_number(1) }}×</span>
+            {% endif %}
+            <span>ROE {% if stock.roe >= 0 %}{{ stock.roe | format_pct_unsigned(1) }}{% else %}<span class="down">{{ stock.roe | format_pct_signed(1) }}</span>{% endif %}</span>
+            <span>52W 고점 <span class="{{ 'up' if stock.pct_from_52w_high >= 0 else 'down' }}">{{ stock.pct_from_52w_high | format_pct_signed(1) }}</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">{{ stock.price | format_number }}</div>
+          <div class="stop">손절 · {{ stock.stop_price | format_number }}</div>
+          <div class="rs">RS {{ stock.rs }}</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template{% if loop.first %} (자동 검증){% endif %}</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">{{ '✓' if stock.core == stock.core_max else '✗' }}</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">{{ '✓' if stock.rs >= 70 else '✗' }}</span>RS ≥ 70<span class="check-val">{{ stock.rs }}</span></li>
+            <li><span class="check-mark">{{ stock.leading_check }}</span>주도 섹터 소속<span class="check-val">{{ stock.leading_detail }}</span></li>
+            <li><span class="check-mark">{{ '✓' if data.market_context.vix_ok and data.market_context.kospi_ma60_ok else '✗' }}</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">{{ stock.trigger_label }}{% if loop.first %} (차트 확인){% endif %}</span></div>
+          <ul class="check-list">
+            {% if stock.is_held %}
+            {% set _holding_matches = data.holdings | selectattr("code", "equalto", stock.code) | list %}
+            {% set holding_match = _holding_matches[0] if _holding_matches else None %}
+            <li><span class="check-mark">⚠</span>추매 가격 도달<span class="check-val">{{ holding_match.add_threshold | format_number if holding_match else '차트 확인' }} 대기</span></li>
+            <li><span class="check-mark">⚠</span>추매 시점 거래량 확장<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>손절선 이탈 여부<span class="check-val">{{ holding_match.stop_price | format_number if holding_match else stock.stop_price | format_number }} 유지</span></li>
+            <li><span class="check-mark">⚠</span>시장 게이트 유지<span class="check-val">매일 재확인</span></li>
+            {% else %}
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W {{ stock.pct_from_52w_high | format_pct_signed(1) }}</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">{{ stock.verdict_tag }}</span>
+        <span>{{ stock.verdict_text | safe }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <!-- ========== SECTION 4B: A-GRADE REMAINING ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">04<span style="font-size: 22px;">·b</span></div>
+      <div class="section-title">
+        <div class="eyebrow">A-Grade · Complete Universe</div>
+        <h2>Remaining {{ data.remaining_a | length }} Tickers</h2>
+      </div>
+      <div class="section-meta">SORTED BY RS</div>
+    </div>
+
+    <table class="agrade-table">
+      <thead>
+        <tr>
+          <th>#</th><th>종목</th><th>코드</th>
+          <th class="num">현재가</th><th class="num">RS</th>
+          <th class="num">52W 고점</th><th class="num">일수</th>
+          <th class="num">손절</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stock in data.remaining_a %}
+        <tr><td class="num">{{ stock.rank_num }}</td><td class="name">{{ stock.name | replace('&', '&amp;') }}</td><td>{{ stock.code }}</td><td class="num">{{ stock.price | format_number }}</td><td class="num"><span class="rs-bar {{ stock.rs_bar_class }}">{{ stock.rs }}</span></td><td class="num{% if stock.pct_from_52w_high < 0 %} down{% endif %}">{% if stock.pct_from_52w_high >= -0.5 %}<span class="nh-badge">NH</span>{% else %}{{ stock.pct_from_52w_high | format_pct_signed(1) }}{% endif %}</td><td class="num">{{ stock.signal_days }}D</td><td class="num down">{{ stock.stop_price | format_number }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div style="margin-top: 18px; padding: 12px 16px; background: var(--bg); font-family: var(--mono); font-size: 11px; color: var(--ink-muted); border-left: 2px solid var(--ink-muted);">
+      <strong style="color: var(--ink);">C-GRADE ({{ data.minervini.counts.C }}):</strong> {{ data.minervini.grade_c | join(' · ') }}
+      <span style="margin: 0 10px; color: var(--ink-faint);">|</span>
+      <strong style="color: var(--ink);">B-GRADE:</strong> {{ data.minervini.counts.B }}종목 (노션 DB 참조)
+    </div>
+  </section>
+
+  <!-- ========== SECTION 5: PORTFOLIO ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">
+        <div class="eyebrow">Portfolio · 1 Position</div>
+        <h2>Holdings</h2>
+      </div>
+      <div class="section-meta">HOLD</div>
+    </div>
+
+    {% for h in data.holdings %}
+    <div class="portfolio-main">
+      <div>
+        <div class="portfolio-header">
+          <div class="portfolio-name">{{ h.name }} <span class="ticker" style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint);">{{ h.code }}</span></div>
+          <div class="portfolio-status">HOLD</div>
+        </div>
+
+        <div class="portfolio-grid">
+          <div class="pg-label">매수가</div>
+          <div class="pg-value">{{ h.buy_price | format_number }} 원</div>
+          <div class="pg-label">현재가</div>
+          <div class="pg-value big">{{ h.current_price | format_number }} 원 <span class="{{ 'pill-up' if h.change_pct >= 0 else 'pill-down' }}" style="margin-left: 6px; font-size: 12px; vertical-align: middle;">{{ h.change_pct | format_change_arrow }} {{ h.change_pct | format_pct_signed(2) }}</span></div>
+          <div class="pg-label">52주 고점</div>
+          <div class="pg-value">{{ h.high_52w | format_number }}{% if h.pct_from_52w_high >= -0.5 %} <span class="nh-badge" style="margin-left: 5px;">NEW HIGH</span>{% endif %}</div>
+          <div class="pg-label">손절가</div>
+          <div class="pg-value" style="color: var(--bear);">{{ h.stop_price | format_number }} 원</div>
+        </div>
+
+        <div class="portfolio-stats">
+          <div class="stat"><div class="stat-label">정배열</div><div class="stat-value {{ 'up' if h.align else 'down' }}">{{ '✓' if h.align else '✗' }}</div></div>
+          <div class="stat"><div class="stat-label">MA200 상승</div><div class="stat-value {{ 'up' if h.ma200_up else 'down' }}">{{ '✓' if h.ma200_up else '✗' }}</div></div>
+          <div class="stat"><div class="stat-label">코어</div><div class="stat-value">{{ h.core }} / {{ h.core_max }}</div></div>
+        </div>
+      </div>
+
+      <div class="portfolio-action">
+        <div class="label">Action</div>
+        <div class="verdict">{{ h.action_label }}</div>
+        <div class="detail">매수가 +5% 기준 <strong>{{ h.add_threshold | format_number }}원</strong> {{ '미달' if h.change_pct < 5 else '도달' }} (현재 {{ h.change_pct | format_pct_signed(2) }}). 도달 시 거래량 확장 동반 여부 확인 후 1차 추매. <strong>{{ h.stop_price | format_number }}원</strong> 하회 시 전량 손절.</div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div class="section-title">
+        <div class="eyebrow">Upcoming Events · Next 30 Days</div>
+        <h2>Macro Calendar</h2>
+      </div>
+      {% set high_events = data.macro_calendar | selectattr("impact", "equalto", "high") | list %}
+      <div class="section-meta">HIGH IMPACT · {{ high_events | length }}</div>
+    </div>
+
+    <div>
+      {% for ev in data.macro_calendar %}
+      {% if ev.dday is not none %}
+      <div class="macro-row">
+        <div class="dday{% if ev.dday >= 20 %} far{% endif %}">D−{{ ev.dday }}</div>
+        <div class="macro-event">{{ ev.event_full }}</div>
+        <div class="macro-date">{{ ev.date }}{% if ev.weekday %} ({{ ev.weekday }}){% endif %}</div>
+        <div class="macro-impact impact-{{ ev.impact }}">{{ ev.impact | upper }} IMPACT</div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <p style="margin-top: 16px; font-family: var(--sans); font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--ink-muted);">
+      {% if data.next_high_impact %}5월 초까지 매크로 이벤트 집중. {{ data.next_high_impact.event }} 전 포지션 사이징 보수적 관리, 이벤트 직전 신규 진입 자제.{% else %}당분간 주요 매크로 이벤트 없음.{% endif %}
+    </p>
+  </section>
+
+  <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div class="section-title">
+        <div class="eyebrow">Market-Wide Data Points</div>
+        <h2>Market Context</h2>
+      </div>
+      <div class="section-meta">4 / 4</div>
+    </div>
+
+    {# Market Context v1: 수치 바인딩 중심, 문구 템플릿은 고정.
+       규칙 엔진은 Phase 2 후반/3에서 도입 예정. #}
+    {% set top_weekly_up = data.sector_etf.weekly_changes | selectattr("delta", "gt", 0) | list %}
+    {% set top_weekly_down = data.sector_etf.weekly_changes | selectattr("delta", "lt", 0) | list %}
+    {% set big_tech_down = data.tech_merged | selectattr("change_pct", "lt", 0) | sort(attribute="change_pct") %}
+    {% set us_sector_down = data.us_sectors | selectattr("change_pct", "lt", 0) | sort(attribute="change_pct") %}
+    <div class="context-grid">
+      <div class="context-col plus-col">
+        <div class="context-head">
+          <h3>Catalysts</h3>
+          <span class="subtag">시장 우호 데이터</span>
+        </div>
+        <ul class="context-list">
+          {% if data.top_leader %}<li>주도 섹터 <strong>{{ data.top_leader.name }}</strong> <span class="num up">{{ data.top_leader.score | round(0) | int }}점</span> 유지{% if top_weekly_up %}, {{ top_weekly_up[0].name | replace('KODEX ', '') | replace('TIGER ', '') }} 테마 주간 <span class="num up">{{ top_weekly_up[0].delta | format_pct_signed(1) | replace('%', '점') }}</span>{% endif %}</li>{% endif %}
+          {% if kosdaq.is_20d_new_high %}<li>KOSDAQ <strong>20일 신고가</strong> <span class="num up">{{ kosdaq.change_pct | format_pct_signed(2) }}</span>, 52주 고점 대비 <span class="num down">{{ kosdaq.pct_from_52w_high | format_pct_signed(1) }}</span> 근접</li>{% endif %}
+          <li>A등급 <strong>{{ data.minervini.counts.A }}종목 중 {{ data.grade_a_at_high }}종목</strong>이 52주 고점 돌파 중 (신고가 클러스터링)</li>
+          {% if data.kospi_flow.institution > 0 %}<li>기관 <span class="num up">{{ data.kospi_flow.institution | format_signed_int }}억</span> 순매수{% if data.market_context.kospi_ma20_ok and data.market_context.kospi_ma60_ok and data.market_context.kospi_ma120_ok %}, KOSPI MA20/60/120 정배열 유지{% endif %}</li>{% endif %}
+        </ul>
+      </div>
+
+      <div class="context-col minus-col">
+        <div class="context-head">
+          <h3>Headwinds</h3>
+          <span class="subtag">시장 역풍 데이터</span>
+        </div>
+        <ul class="context-list">
+          {% if data.kospi_flow.foreign < 0 %}<li>외국인 KOSPI <strong><span class="num down">{{ data.kospi_flow.foreign | format_signed_int }}억</span></strong> 순매도{% if data.kospi_flow.retail < 0 %}, 개인 <span class="num down">{{ data.kospi_flow.retail | format_signed_int }}억</span> 동반 매도{% endif %}</li>{% endif %}
+          {% if big_tech_down %}<li>빅테크 약세: {% for t in big_tech_down[:3] %}{{ t.name }} <span class="num down">{{ t.change_pct | format_pct_signed(2) }}</span>{% if not loop.last %}, {% endif %}{% endfor %}</li>{% endif %}
+          {% if us_sector_down %}{% set worst = us_sector_down | first %}<li>{{ worst.name }} {{ worst.ticker }} <span class="num down">{{ worst.change_pct | format_pct_signed(2) }}</span>{% if not worst.ma60 or not worst.ma120 %} + MA60/120 하향 이탈, 섹터 리더십 일부 약화{% endif %}</li>{% endif %}
+          <li>USD/KRW <strong>{{ data.rates_fx.usd_krw.value | format_number(2) }}</strong> 고레벨{% if data.commodities.wti.change_pct > 0 %}, WTI <span class="num up">{{ data.commodities.wti.change_pct | format_pct_signed(2) }}</span> — 원화 자본유출·수입물가 상승 압력 병존{% endif %}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DISCLOSURES ========== -->
+  <div class="disclosures">
+    <p><strong>METHODOLOGY.</strong> Minervini Trend Template — 코어 조건 (8): 현재가 &gt; MA150, MA200 / MA150 &gt; MA200 / MA200 상승 추세 / MA50 &gt; MA150, MA200 / 현재가 &gt; MA50 / 현재가 ≥ 52주 저점 × 1.3 / 현재가 ≥ 52주 고점 × 0.75 / RS ≥ 70. Entry Trigger (VCP + 피벗 돌파 + 거래량 확장)는 현재 자동화 미적용 구간 — 일봉 차트 수동 검증 필요.</p>
+    <p><strong>DATA.</strong> Google Drive <code style="font-family: var(--mono);">morning_data_{{ data.date | replace('-', '') }}.txt</code> · GitHub Actions 06:00 KST · 전일 마감 기준.</p>
+    <p><strong>SCOPE.</strong> 본 리포트는 진입 후보 스크리닝과 시장 컨텍스트 요약. 종목별 스토리(Bull/Bear)는 Minervini 트렌드 추종 원칙에 부합하지 않아 의도적으로 제외.</p>
+    <p><strong>DISCLAIMER.</strong> 개인 투자 판단 보조 자료. 투자 권유가 아니며 모든 결정과 결과는 본인 책임.</p>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="footer-brand">
+      <strong>MORNING REPORT</strong> · Daily Brief
+    </div>
+    <div class="footer-meta">
+      v6.2 · Minervini-Aligned Entry Readiness · 06:00 KST
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

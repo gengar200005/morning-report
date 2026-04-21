@@ -1,0 +1,22 @@
+# Morning Report Phase 2 — Python dependencies
+
+# Core pipeline
+Jinja2>=3.1
+requests>=2.31
+
+# Data sources (kept for screener/collectors)
+pandas>=2.0
+yfinance>=0.2
+FinanceDataReader>=0.9.66
+
+# Google Drive upload
+google-api-python-client>=2.0
+google-auth>=2.0
+google-auth-httplib2>=0.2
+google-auth-oauthlib>=1.0
+
+# Notion (Phase 2 Step 6 예정)
+notion-client>=2.0
+
+# Dev · test
+pytest>=7.0
