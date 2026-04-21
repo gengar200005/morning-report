@@ -95,8 +95,9 @@ UNIVERSE: list[tuple[str, str]] = [
     ("079960", "동양생명"),
 ]
 
-# 지수 (pykrx 인덱스 코드)
+# 지수 (yfinance 티커)
+# pykrx 지수 스크레이퍼가 KRX 응답 변경으로 (0,0) 반환하는 버그가 있어 yfinance로 전환.
 INDICES: dict[str, str] = {
-    "kospi": "1001",
-    "kosdaq": "2001",
+    "kospi": "^KS11",
+    "kosdaq": "^KQ11",
 }

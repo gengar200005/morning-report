@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+import yfinance as yf
 from pykrx import stock
 from tqdm import tqdm
 
@@ -81,28 +82,63 @@ def fetch_ohlcv(ticker: str, start: str, end: str) -> pd.DataFrame:
     raise RuntimeError(f"fetch_ohlcv failed for {ticker}: {last_err}")
 
 
-def fetch_index(index_code: str, start: str, end: str) -> pd.DataFrame:
-    """지수 OHLCV (KOSPI/KOSDAQ). 재시도 포함."""
+def fetch_index(yf_ticker: str, start: str, end: str) -> pd.DataFrame:
+    """지수 OHLCV (KOSPI/KOSDAQ). yfinance 사용. 재시도 포함.
+
+    pykrx 1.2.4/1.2.7 양쪽에서 KRX 지수 스크레이퍼가 (0,0) 반환하는 버그가
+    있어 yfinance 로 전환. 티커: ^KS11(KOSPI), ^KQ11(KOSDAQ).
+
+    반환 컬럼: open, high, low, close, volume, change_pct
+    인덱스: tz-naive DatetimeIndex, name='date', 자정 normalize.
+    """
+    # yfinance.download 는 end 를 exclusive 로 취급하므로 하루 더함
+    end_dt = pd.to_datetime(end) + pd.Timedelta(days=1)
+    end_inclusive = end_dt.strftime("%Y-%m-%d")
+
     last_err: Optional[Exception] = None
     for attempt in range(MAX_RETRY):
         try:
-            df = stock.get_index_ohlcv_by_date(_fmt(start), _fmt(end), index_code)
-            df = df.rename(columns={
-                "시가": "open",
-                "고가": "high",
-                "저가": "low",
-                "종가": "close",
-                "거래량": "volume",
-                "거래대금": "value",
-                "상장시가총액": "market_cap",
-            })
+            df = yf.download(
+                yf_ticker,
+                start=start,
+                end=end_inclusive,
+                auto_adjust=False,
+                progress=False,
+                threads=False,
+            )
+
+            if df is None or df.empty:
+                raise RuntimeError(f"yfinance returned empty for {yf_ticker}")
+
+            # 단일 티커여도 최신 yfinance 는 MultiIndex 컬럼 반환 가능 → 평탄화
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+
+            # 컬럼 소문자 통일 + 필요 컬럼만 선택
+            df = df.rename(columns=str.lower)
+            needed = ["open", "high", "low", "close", "volume"]
+            missing = [c for c in needed if c not in df.columns]
+            if missing:
+                raise RuntimeError(
+                    f"yfinance missing columns for {yf_ticker}: {missing}"
+                )
+            df = df[needed].copy()
+
+            # 인덱스: tz 제거 + 자정 normalize + 이름 통일
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
+            df.index = df.index.normalize()
             df.index.name = "date"
+
+            # change_pct 파생 (pykrx 스펙과 맞추기, 첫 행은 0)
+            df["change_pct"] = df["close"].pct_change().fillna(0.0) * 100.0
+
             return df
         except Exception as e:
             last_err = e
             if attempt < MAX_RETRY - 1:
                 time.sleep(RETRY_SLEEP * (attempt + 1))
-    raise RuntimeError(f"fetch_index failed for {index_code}: {last_err}")
+    raise RuntimeError(f"fetch_index failed for {yf_ticker}: {last_err}")
 
 
 def save_parquet(df: pd.DataFrame, path: Path) -> None:
