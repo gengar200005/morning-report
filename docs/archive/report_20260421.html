@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Report — 2026-04-21</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --bg-elevated: #FFFFFF;
+    --ink: #0A0A0A;
+    --ink-soft: #2C2C2C;
+    --ink-muted: #5A5A5A;
+    --ink-faint: #8F8F8F;
+    --rule: #1A1A1A;
+    --rule-soft: #E3E3DC;
+    --rule-faint: #EEEEE8;
+
+    --bull: #058C4A;
+    --bull-strong: #016B38;
+    --bull-bg: #D9F2E4;
+    --bull-bg-soft: #EDF9F2;
+
+    --bear: #D01E1E;
+    --bear-strong: #A01414;
+    --bear-bg: #FCDEDE;
+    --bear-bg-soft: #FEEFEF;
+
+    --neutral: #6B6B6B;
+    --accent: #A07B3E;
+    --accent-bg: #F5EDD8;
+    --warn: #B8740A;
+    --warn-bg: #FBF1DB;
+
+    --serif: 'Fraunces', 'Noto Serif KR', Georgia, serif;
+    --sans: 'Inter', -apple-system, 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 20px 80px;
+  }
+
+  .report {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--bg-elevated);
+    padding: 56px 64px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.04), 0 0 0 1px var(--rule-soft);
+    position: relative;
+  }
+
+  .report::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--ink);
+  }
+
+  .up { color: var(--bull) !important; font-weight: 600; }
+  .down { color: var(--bear) !important; font-weight: 600; }
+  .flat { color: var(--neutral); }
+
+  .pill-up {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bull-bg);
+    color: var(--bull-strong);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+  .pill-down {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bear-bg);
+    color: var(--bear-strong);
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+
+  /* ========== MASTHEAD ========== */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+
+  .masthead-left .kicker {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .masthead-left h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .masthead-left h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .masthead-left .subtitle {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .masthead-right {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.8;
+  }
+
+  .masthead-right .date {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+    font-style: italic;
+  }
+
+  .vol-line {
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 6px;
+    margin-top: 6px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ========== EXECUTIVE SUMMARY — TONED DOWN ========== */
+  .exec {
+    background: var(--ink);
+    color: #F5F5F0;
+    padding: 28px 36px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .exec::before {
+    content: 'EXECUTIVE SUMMARY';
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: rgba(245,245,240,0.3);
+  }
+
+  .exec-rating {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .rating-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+
+  .gate-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--bull);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .exec h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.4;
+    color: #F5F5F0;
+    margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+
+  .exec h2 strong { font-weight: 700; color: #fff; }
+  .exec h2 .up { color: #4ADE8F !important; }
+  .exec h2 .down { color: #FF7B7B !important; }
+
+  .exec-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(245,245,240,0.15);
+  }
+
+  .exec-fact {
+    padding: 0 20px;
+    border-left: 1px solid rgba(245,245,240,0.12);
+  }
+  .exec-fact:first-child { border-left: none; padding-left: 0; }
+
+  .exec-fact .fact-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .exec-fact .fact-text {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(245,245,240,0.92);
+  }
+
+  .exec-fact .fact-text strong {
+    color: #fff;
+  }
+
+  .exec-action {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(245,245,240,0.2);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: rgba(245,245,240,0.88);
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  .exec-action .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ========== SECTIONS ========== */
+  section { margin-bottom: 44px; }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .section-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 44px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 0.9;
+  }
+
+  .section-title h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .section-title .eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .section-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  /* ========== INDEX GRID ========== */
+  .idx-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule-soft);
+  }
+
+  .idx-cell {
+    padding: 16px 18px;
+    border-right: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+  }
+  .idx-cell:nth-child(4n) { border-right: none; }
+  .idx-cell:nth-last-child(-n+4) { border-bottom: none; }
+
+  .idx-cell.up-cell { background: linear-gradient(180deg, var(--bull-bg-soft) 0%, #fff 100%); border-left: 3px solid var(--bull); }
+  .idx-cell.down-cell { background: linear-gradient(180deg, var(--bear-bg-soft) 0%, #fff 100%); border-left: 3px solid var(--bear); }
+
+  .idx-name {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .idx-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+
+  .idx-change {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .idx-ma {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 5px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ========== DATA TABLE ========== */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 13px;
+  }
+
+  .data-table thead { border-bottom: 2px solid var(--ink); }
+
+  .data-table th {
+    text-align: left;
+    padding: 9px 12px 9px 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .data-table th.num, .data-table td.num {
+    text-align: right;
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .data-table td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--rule-faint);
+    color: var(--ink-soft);
+  }
+
+  .data-table tbody tr:hover { background: var(--bg); }
+
+  .ticker {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-left: 6px;
+  }
+
+  .name-cell strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ========== TWO COL ========== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .two-col-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-weight: 600;
+  }
+
+  /* ========== STRIP ========== */
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .strip-item {
+    padding: 0 16px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .strip-item:last-child { border-right: none; }
+  .strip-item.up-item { background: linear-gradient(180deg, var(--bull-bg-soft) 0%, transparent 100%); }
+  .strip-item.down-item { background: linear-gradient(180deg, var(--bear-bg-soft) 0%, transparent 100%); }
+
+  .strip-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .strip-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .strip-change {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* ========== SECTOR CARDS ========== */
+  .sector-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule-soft);
+    border: 1px solid var(--rule-soft);
+  }
+
+  .sector-card {
+    background: var(--bg-elevated);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 90px;
+  }
+
+  .sector-card.bull { background: linear-gradient(135deg, var(--bull-bg) 0%, #fff 70%); border-left: 3px solid var(--bull); }
+  .sector-card.bear { background: linear-gradient(135deg, var(--bear-bg) 0%, #fff 70%); border-left: 3px solid var(--bear); }
+
+  .sector-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .sector-name {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .sector-score {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .sector-card.bull .sector-score { color: var(--bull-strong); }
+  .sector-card.bear .sector-score { color: var(--bear-strong); }
+
+  .sector-perf {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+
+  .sector-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: auto;
+    font-weight: 600;
+  }
+  .sector-card.bull .sector-label { color: var(--bull); }
+  .sector-card.bear .sector-label { color: var(--bear); }
+
+  .sector-group-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 20px 0 10px;
+  }
+  .sector-group-title:first-child { margin-top: 0; }
+
+  .sector-group-title .count {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-style: normal;
+    color: var(--ink-faint);
+    margin-left: 8px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  /* ========== ENTRY READINESS CARDS (NEW) ========== */
+  .readiness-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--rule-soft);
+    border-left: 4px solid var(--ink);
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .readiness-card.held {
+    border-left-color: var(--accent);
+  }
+
+  .readiness-header {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 16px;
+    padding: 16px 20px 14px;
+    align-items: center;
+    background: linear-gradient(90deg, #FAFAF5 0%, #fff 40%);
+    border-bottom: 1px dashed var(--rule-soft);
+  }
+
+  .readiness-card.held .readiness-header {
+    background: linear-gradient(90deg, var(--accent-bg) 0%, #fff 40%);
+  }
+
+  .rank {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    text-align: center;
+  }
+
+  .readiness-title .name {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+
+  .readiness-title .name .ticker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    margin-left: 8px;
+  }
+
+  .readiness-title .name .held-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    vertical-align: middle;
+  }
+
+  .readiness-title .meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+  .readiness-title .meta span { margin-right: 12px; }
+
+  .readiness-price {
+    text-align: right;
+    font-family: var(--mono);
+  }
+  .readiness-price .price {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .readiness-price .stop {
+    font-size: 10px;
+    color: var(--bear);
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .readiness-price .rs {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  /* Checkpoint body */
+  .readiness-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .check-col {
+    padding: 16px 20px;
+  }
+
+  .check-col.auto-col {
+    background: var(--bull-bg-soft);
+    border-right: 1px solid var(--rule-soft);
+  }
+
+  .check-col.manual-col {
+    background: var(--warn-bg);
+  }
+
+  .check-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .check-head .tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    padding: 2px 7px;
+    color: #fff;
+  }
+  .auto-col .check-head .tag { background: var(--bull); }
+  .manual-col .check-head .tag { background: var(--warn); }
+
+  .check-head .label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .auto-col .check-head .label { color: var(--bull-strong); }
+  .manual-col .check-head .label { color: var(--warn); }
+
+  .check-list {
+    list-style: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .check-list li {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 6px;
+    padding: 4px 0;
+    color: var(--ink-soft);
+    align-items: baseline;
+  }
+
+  .check-mark {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .auto-col .check-mark { color: var(--bull); }
+  .manual-col .check-mark { color: var(--warn); }
+
+  .check-val {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .readiness-footer {
+    padding: 12px 20px;
+    background: var(--ink);
+    color: rgba(245,245,240,0.9);
+    font-family: var(--sans);
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+
+  .readiness-footer .verdict-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+
+  .readiness-footer strong {
+    color: #fff;
+  }
+
+  /* ========== A-GRADE TABLE ========== */
+  .agrade-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .agrade-table thead {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .agrade-table th {
+    padding: 9px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-align: left;
+    color: rgba(255,255,255,0.75);
+    font-weight: 600;
+  }
+
+  .agrade-table th.num { text-align: right; }
+  .agrade-table tbody tr { border-bottom: 1px solid var(--rule-faint); }
+  .agrade-table tbody tr:hover { background: var(--bg); }
+
+  .agrade-table td {
+    padding: 9px 12px;
+    font-family: var(--sans);
+    color: var(--ink-soft);
+  }
+
+  .agrade-table td.num {
+    font-family: var(--mono);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .agrade-table td.name {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .rs-bar {
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+
+  .rs-90 { background: var(--bull); color: #fff; }
+  .rs-80 { background: var(--bull-bg); color: var(--bull-strong); }
+  .rs-70 { background: var(--rule-soft); color: var(--ink-soft); }
+
+  .nh-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--accent);
+    color: #0A0A0A;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  /* ========== PORTFOLIO ========== */
+  .portfolio-main {
+    background: linear-gradient(135deg, var(--accent-bg) 0%, #fff 50%);
+    padding: 28px 32px;
+    border: 1px solid var(--rule-soft);
+    border-top: 4px solid var(--accent);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--ink-faint);
+  }
+
+  .portfolio-name {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .portfolio-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    background: var(--accent);
+    color: #0A0A0A;
+    letter-spacing: 0.15em;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px 24px;
+    margin-bottom: 18px;
+  }
+
+  .pg-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .pg-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .pg-value.big {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .portfolio-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding-top: 14px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .stat {
+    padding-right: 14px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .stat:last-child { border-right: none; padding-right: 0; padding-left: 14px; }
+  .stat:nth-child(2) { padding-left: 14px; }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .portfolio-action {
+    padding: 20px;
+    background: var(--ink);
+    color: #F5F5F0;
+  }
+  .portfolio-action .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .portfolio-action .verdict {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .portfolio-action .detail {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(245,245,240,0.85);
+  }
+  .portfolio-action .detail strong { color: #fff; }
+
+  /* ========== MACRO CALENDAR ========== */
+  .macro-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 140px 110px;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-faint);
+    align-items: center;
+  }
+  .macro-row:last-child { border-bottom: none; }
+
+  .dday {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--bear);
+  }
+  .dday.far { color: var(--ink-muted); }
+
+  .macro-event {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .macro-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .macro-impact {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    padding: 4px 9px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .impact-high { background: var(--bear-bg); color: var(--bear-strong); }
+
+  /* ========== MARKET CONTEXT ========== */
+  .context-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--rule-soft);
+  }
+
+  .context-col {
+    padding: 24px 28px;
+  }
+
+  .context-col.plus-col {
+    background: linear-gradient(180deg, var(--bull-bg) 0%, var(--bull-bg-soft) 100%);
+    border-right: 1px solid var(--rule-soft);
+  }
+  .context-col.minus-col {
+    background: linear-gradient(180deg, var(--bear-bg) 0%, var(--bear-bg-soft) 100%);
+  }
+
+  .context-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .context-head h3 {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .plus-col h3 { color: var(--bull-strong); }
+  .minus-col h3 { color: var(--bear-strong); }
+
+  .context-head .subtag {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+  }
+
+  .context-list {
+    list-style: none;
+  }
+  .context-list li {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    padding: 8px 0 8px 16px;
+    position: relative;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+  .context-list li:last-child { border-bottom: none; }
+
+  .context-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 7px;
+    height: 2px;
+  }
+  .plus-col .context-list li::before { background: var(--bull); }
+  .minus-col .context-list li::before { background: var(--bear); }
+
+  .context-list strong { color: var(--ink); }
+  .context-list .num { font-family: var(--mono); font-weight: 700; }
+
+  /* ========== FOOTER ========== */
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: end;
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .footer-brand strong {
+    color: var(--ink);
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  .disclosures {
+    margin-top: 28px;
+    padding: 18px 22px;
+    background: var(--bg);
+    border-left: 3px solid var(--ink-muted);
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+  .disclosures strong { color: var(--ink-soft); }
+  .disclosures p { margin-bottom: 8px; }
+  .disclosures p:last-child { margin-bottom: 0; }
+
+  hr.decorative {
+    border: none;
+    text-align: center;
+    margin: 32px 0;
+    color: var(--ink-faint);
+  }
+  hr.decorative::after {
+    content: '§ § §';
+    font-family: var(--serif);
+    font-size: 13px;
+    letter-spacing: 1em;
+  }
+
+  @media print {
+    body { padding: 0; background: #fff; }
+    .report { box-shadow: none; padding: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="report">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="masthead">
+    <div class="masthead-left">
+      <div class="kicker">Daily Market Brief</div>
+      <h1>Morning <em>Report</em></h1>
+      <div class="subtitle">Minervini trend-following · 국내 주식 스크리닝</div>
+    </div>
+    <div class="masthead-right">
+      <div class="date">21 April 2026 · Tue</div>
+      <div>06:00 KST</div>
+      <div class="vol-line">v6.2</div>
+    </div>
+  </header>
+
+  <!-- ========== EXECUTIVE SUMMARY — TONED DOWN ========== -->
+  <div class="exec">
+    <div class="exec-rating">
+      <span class="rating-badge">BUY-WATCH</span>
+      <span class="gate-badge">✓ 시장 게이트 통과</span>
+    </div>
+    <h2>
+      KOSPI <span class="down">조정</span> · KOSDAQ <span class="up">신고가</span>. A등급 <strong>24종목</strong>.
+    </h2>
+
+    <div class="exec-facts">
+      <div class="exec-fact">
+        <div class="fact-label">MARKET</div>
+        <div class="fact-text">미국 3대 지수 <strong>소폭 하락</strong>, VIX <strong>18.87</strong> 안정권. 코스닥 20일 신고가 <strong>+0.7%</strong>.</div>
+      </div>
+      <div class="exec-fact">
+        <div class="fact-label">SCREENER</div>
+        <div class="fact-text">A등급 <strong>24종목</strong>, 주도 섹터 KODEX IT <strong>99점</strong>. B/C/D 138종목.</div>
+      </div>
+      <div class="exec-fact">
+        <div class="fact-label">PORTFOLIO</div>
+        <div class="fact-text">두산에너빌리티 <span class="up">+1.83%</span>, 추매 기준(+5%) <strong>미달</strong>. HOLD.</div>
+      </div>
+    </div>
+
+    <div class="exec-action">
+      <span class="tag">ACTION</span>
+      <span>두산에너빌리티 <strong>114,450원</strong> 도달 전 관망. <strong>FOMC D−15</strong> 이전 신규 진입 보수적.</span>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 1: US MARKETS ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-title">
+        <div class="eyebrow">New York · Prior Close</div>
+        <h2>U.S. Markets</h2>
+      </div>
+      <div class="section-meta">04/20 CLOSE</div>
+    </div>
+
+    <div class="idx-grid">
+      <div class="idx-cell down-cell">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-value">7,109.14</div>
+        <div class="idx-change down">▼ −0.24%</div>
+        <div class="idx-ma">MA 20 / 60 / 120 ✓</div>
+      </div>
+      <div class="idx-cell down-cell">
+        <div class="idx-name">Nasdaq</div>
+        <div class="idx-value">24,404.39</div>
+        <div class="idx-change down">▼ −0.26%</div>
+        <div class="idx-ma">MA 20 / 60 / 120 ✓</div>
+      </div>
+      <div class="idx-cell down-cell">
+        <div class="idx-name">Dow Jones</div>
+        <div class="idx-value">49,442.56</div>
+        <div class="idx-change down">▼ −0.01%</div>
+        <div class="idx-ma">MA 20 / 60 / 120 ✓</div>
+      </div>
+      <div class="idx-cell up-cell">
+        <div class="idx-name">Russell 2000</div>
+        <div class="idx-value">2,792.96</div>
+        <div class="idx-change up">▲ +0.58%</div>
+        <div class="idx-ma">MA 20 / 60 / 120 ✓</div>
+      </div>
+    </div>
+
+    <div class="strip" style="margin-top: 20px;">
+      <div class="strip-item">
+        <div class="strip-label">VIX</div>
+        <div class="strip-value">18.87</div>
+        <div class="strip-change flat">안정</div>
+      </div>
+      <div class="strip-item up-item">
+        <div class="strip-label">US 10Y</div>
+        <div class="strip-value">4.25</div>
+        <div class="strip-change up">▲ +0.09</div>
+      </div>
+      <div class="strip-item down-item">
+        <div class="strip-label">DXY</div>
+        <div class="strip-value">98.05</div>
+        <div class="strip-change down">▼ −0.05</div>
+      </div>
+      <div class="strip-item down-item">
+        <div class="strip-label">USD/KRW</div>
+        <div class="strip-value">1,470.56</div>
+        <div class="strip-change down">▼ −0.50</div>
+      </div>
+      <div class="strip-item up-item">
+        <div class="strip-label">WTI</div>
+        <div class="strip-value">85.89</div>
+        <div class="strip-change up">▲ +2.43%</div>
+      </div>
+      <div class="strip-item down-item">
+        <div class="strip-label">GOLD</div>
+        <div class="strip-value">4,841</div>
+        <div class="strip-change down">▼ −0.34%</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 28px;">
+      <div>
+        <div class="two-col-title">US Sectors</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Sector</th><th class="num">Change</th><th class="num">MA</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="name-cell"><strong>반도체</strong> <span class="ticker">SOXX</span></td><td class="num"><span class="pill-up">▲ +0.44%</span></td><td class="num">✓/✓/✓</td></tr>
+            <tr><td class="name-cell"><strong>금융</strong> <span class="ticker">XLF</span></td><td class="num"><span class="pill-up">▲ +0.38%</span></td><td class="num">✓/✓/✓</td></tr>
+            <tr><td class="name-cell"><strong>테크</strong> <span class="ticker">XLK</span></td><td class="num"><span class="pill-up">▲ +0.14%</span></td><td class="num">✓/✓/✓</td></tr>
+            <tr><td class="name-cell"><strong>에너지</strong> <span class="ticker">XLE</span></td><td class="num"><span class="pill-up">▲ +0.09%</span></td><td class="num">✗/✗/✓</td></tr>
+            <tr><td class="name-cell"><strong>소비재</strong> <span class="ticker">XLY</span></td><td class="num"><span class="pill-down">▼ −0.45%</span></td><td class="num">✓/✓/✓</td></tr>
+            <tr><td class="name-cell"><strong>유틸리티</strong> <span class="ticker">XLU</span></td><td class="num"><span class="pill-down">▼ −0.89%</span></td><td class="num">✗/✓/✓</td></tr>
+            <tr><td class="name-cell"><strong>헬스케어</strong> <span class="ticker">XLV</span></td><td class="num"><span class="pill-down">▼ −0.93%</span></td><td class="num">✓/✗/✗</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="two-col-title">Big Tech &amp; Semi</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Name</th><th class="num">Close</th><th class="num">Chg</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="name-cell"><strong>애플</strong></td><td class="num">273.05</td><td class="num"><span class="pill-up">▲ +1.04%</span></td></tr>
+            <tr><td class="name-cell"><strong>엔비디아</strong></td><td class="num">202.06</td><td class="num"><span class="pill-up">▲ +0.19%</span></td></tr>
+            <tr><td class="name-cell"><strong>ASML</strong></td><td class="num">1,476.50</td><td class="num"><span class="pill-up">▲ +1.14%</span></td></tr>
+            <tr><td class="name-cell"><strong>MS</strong></td><td class="num">418.07</td><td class="num"><span class="pill-down">▼ −1.12%</span></td></tr>
+            <tr><td class="name-cell"><strong>AMD</strong></td><td class="num">274.95</td><td class="num"><span class="pill-down">▼ −1.24%</span></td></tr>
+            <tr><td class="name-cell"><strong>테슬라</strong></td><td class="num">392.50</td><td class="num"><span class="pill-down">▼ −2.03%</span></td></tr>
+            <tr><td class="name-cell"><strong>메타</strong></td><td class="num">670.91</td><td class="num"><span class="pill-down">▼ −2.56%</span></td></tr>
+            <tr><td class="name-cell"><strong>인텔</strong></td><td class="num">65.70</td><td class="num"><span class="pill-down">▼ −4.09%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 2: KOREA MARKETS ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-title">
+        <div class="eyebrow">Seoul · Prior Close</div>
+        <h2>Korea Markets</h2>
+      </div>
+      <div class="section-meta">04/20 CLOSE</div>
+    </div>
+
+    <div class="idx-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="idx-cell down-cell">
+        <div class="idx-name">KOSPI</div>
+        <div class="idx-value">6,191.92</div>
+        <div class="idx-change down">▼ −0.55%</div>
+        <div class="idx-ma">5D +5.7% · 20D +7.1% · 52W HIGH −1.8%</div>
+      </div>
+      <div class="idx-cell up-cell">
+        <div class="idx-name">KOSDAQ</div>
+        <div class="idx-value">1,170.04</div>
+        <div class="idx-change up">▲ +0.61% <span class="nh-badge" style="margin-left: 8px;">20D NH</span></div>
+        <div class="idx-ma">5D +7.0% · 20D +0.7% · 52W HIGH −1.9%</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 24px;">
+      <div>
+        <div class="two-col-title">KOSPI Flow · 04/20 (억원)</div>
+        <table class="data-table">
+          <tbody>
+            <tr><td class="name-cell"><strong>외국인</strong></td><td class="num"><span class="pill-down" style="font-size: 13px; padding: 3px 10px;">−2,338</span></td></tr>
+            <tr><td class="name-cell"><strong>기관</strong></td><td class="num"><span class="pill-up" style="font-size: 13px; padding: 3px 10px;">+2,937</span></td></tr>
+            <tr><td class="name-cell"><strong>개인</strong></td><td class="num"><span class="pill-down" style="font-size: 13px; padding: 3px 10px;">−3,159</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="two-col-title">Market Gate · Minervini</div>
+        <div style="padding: 4px 0;">
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>VIX ≤ 35</span>
+            <span class="up" style="font-family: var(--mono);">✓ 18.87</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>KOSPI &gt; MA60</span>
+            <span class="up" style="font-family: var(--mono);">✓ +12.2%</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--rule-soft);">
+            <span>KOSPI MA20/60/120</span>
+            <span class="up" style="font-family: var(--mono);">✓ 정배열</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+            <span>KOSDAQ MA20/60/120</span>
+            <span class="up" style="font-family: var(--mono);">✓ 정배열</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 3: SECTOR LEADERSHIP ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-title">
+        <div class="eyebrow">ETF Scoring · RS + Trend + Flow</div>
+        <h2>Sector Leadership</h2>
+      </div>
+      <div class="section-meta">16 ETFs</div>
+    </div>
+
+    <div class="sector-group-title">Leaders <span class="count">80 PTS+</span></div>
+    <div class="sector-grid" style="grid-template-columns: 1fr;">
+      <div class="sector-card bull">
+        <div class="sector-head">
+          <div class="sector-name">KODEX IT</div>
+          <div class="sector-score">99.0</div>
+        </div>
+        <div class="sector-perf">1M <span class="up">+27.4%</span> · 3M <span class="up">+69.2%</span> · 6M <span class="up">+126.8%</span> · MA ✓/✓/✓</div>
+        <div class="sector-label">● Dominant leader</div>
+      </div>
+    </div>
+
+    <div class="sector-group-title">Strong <span class="count">65–79 PTS</span></div>
+    <div class="sector-grid">
+      <div class="sector-card bull"><div class="sector-head"><div class="sector-name">KODEX 반도체</div><div class="sector-score">76.3</div></div><div class="sector-perf">6M <span class="up">+202.8%</span> · MA ✓/✓/✓</div><div class="sector-label">● Strong</div></div>
+      <div class="sector-card bull"><div class="sector-head"><div class="sector-name">TIGER 2차전지테마</div><div class="sector-score">72.0</div></div><div class="sector-perf">6M <span class="up">+50.8%</span> · MA ✓/✓/✓</div><div class="sector-label">● Strong</div></div>
+      <div class="sector-card bull"><div class="sector-head"><div class="sector-name">KODEX 2차전지산업</div><div class="sector-score">68.7</div></div><div class="sector-perf">6M <span class="up">+50.6%</span> · MA ✓/✓/✓</div><div class="sector-label">● Strong</div></div>
+    </div>
+
+    <div class="sector-group-title">Neutral <span class="count">50–64 PTS</span></div>
+    <div class="sector-grid">
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">TIGER 미디어컨텐츠</div><div class="sector-score">62.0</div></div><div class="sector-label">〰 Sideways</div></div>
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">KODEX 은행</div><div class="sector-score">59.3</div></div><div class="sector-label">〰 Sideways</div></div>
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">KODEX 에너지화학</div><div class="sector-score">58.0</div></div><div class="sector-label">〰 Sideways</div></div>
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">KODEX 금융</div><div class="sector-score">57.3</div></div><div class="sector-label">〰 Sideways</div></div>
+      <div class="sector-card"><div class="sector-head"><div class="sector-name">KODEX 증권</div><div class="sector-score">57.0</div></div><div class="sector-label">〰 Sideways</div></div>
+    </div>
+
+    <div class="sector-group-title">Weak <span class="count">&lt; 50 PTS</span></div>
+    <div class="sector-grid">
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">TIGER 반도체TOP10</div><div class="sector-score">40.0</div></div><div class="sector-label">Weakening</div></div>
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX 게임산업</div><div class="sector-score">38.3</div></div><div class="sector-label">Weakening</div></div>
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX 자동차</div><div class="sector-score">33.0</div></div><div class="sector-perf">주간 <span class="down">−5.7</span></div><div class="sector-label">Weakening</div></div>
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX 보험</div><div class="sector-score">28.7</div></div><div class="sector-perf">주간 <span class="down">−6.0</span></div><div class="sector-label">Weakening</div></div>
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX 바이오</div><div class="sector-score">24.0</div></div><div class="sector-perf">주간 <span class="up">+5.3</span></div><div class="sector-label">Weakening</div></div>
+      <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX K-방산</div><div class="sector-score">21.3</div></div><div class="sector-label">Weakening</div></div>
+    </div>
+  </section>
+
+  <hr class="decorative">
+
+  <!-- ========== SECTION 4: ENTRY READINESS (NEW) ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-title">
+        <div class="eyebrow">Minervini · Top 5 Entry Readiness</div>
+        <h2>Grade A · Top 5</h2>
+      </div>
+      <div class="section-meta">A:24 B:40 C:5 D:93</div>
+    </div>
+
+    <p style="font-family: var(--sans); font-size: 12px; color: var(--ink-muted); margin-bottom: 18px; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--accent); line-height: 1.5;">
+      <strong style="color: var(--ink);">판독 기준</strong> · 좌측(자동)은 스크리너로 검증된 트렌드 템플릿 조건, 우측(수동)은 차트에서 직접 확인해야 하는 Minervini 진입 트리거(VCP 수축·피벗 돌파·거래량 확장). <strong style="color: var(--ink);">우측 4개가 모두 확인되어야 실제 진입</strong>, 아니면 관망.
+    </p>
+
+    <div class="readiness-card">
+      <div class="readiness-header">
+        <div class="rank">I</div>
+        <div class="readiness-title">
+          <div class="name">SK하이닉스 <span class="ticker">000660 · 11일차</span></div>
+          <div class="meta">
+            <span>MA50 961,860</span>
+            <span>MA150 695,627</span>
+            <span>PER 40.6×</span>
+            <span>ROE 26.8%</span>
+            <span>52W 고점 <span class="up">+0.0%</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">1,166,000</div>
+          <div class="stop">손절 · 1,084,380</div>
+          <div class="rs">RS 99</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template (자동 검증)</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">✓</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">✓</span>RS ≥ 70<span class="check-val">99</span></li>
+            <li><span class="check-mark">✓</span>주도 섹터 소속<span class="check-val">KODEX 반도체</span></li>
+            <li><span class="check-mark">✓</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">Entry Trigger (차트 확인)</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W +0.0%</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">READINESS</span>
+        <span>스크리너 통과 · <strong>일봉 차트에서 VCP + 피벗 가격 + 거래량 배수 수동 확인 필요</strong>. R:R 목표 2~3R.</span>
+      </div>
+    </div>
+    <div class="readiness-card">
+      <div class="readiness-header">
+        <div class="rank">II</div>
+        <div class="readiness-title">
+          <div class="name">삼성전기 <span class="ticker">009150 · 20일차</span></div>
+          <div class="meta">
+            <span>MA50 445,490</span>
+            <span>MA150 307,851</span>
+            <span>PER 75.7×</span>
+            <span>ROE 7.7%</span>
+            <span>52W 고점 <span class="up">+0.0%</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">680,000</div>
+          <div class="stop">손절 · 632,400</div>
+          <div class="rs">RS 98</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">✓</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">✓</span>RS ≥ 70<span class="check-val">98</span></li>
+            <li><span class="check-mark">✓</span>주도 섹터 소속<span class="check-val">KODEX IT</span></li>
+            <li><span class="check-mark">✓</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">Entry Trigger</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W +0.0%</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">READINESS</span>
+        <span>스크리너 통과 · <strong>일봉 차트에서 VCP + 피벗 가격 + 거래량 배수 수동 확인 필요</strong>. R:R 목표 2~3R.</span>
+      </div>
+    </div>
+    <div class="readiness-card held">
+      <div class="readiness-header">
+        <div class="rank">III</div>
+        <div class="readiness-title">
+          <div class="name">두산에너빌리티 <span class="ticker">034020 · 10일차</span><span class="held-tag">HELD</span></div>
+          <div class="meta">
+            <span>MA50 99,980</span>
+            <span>MA150 85,565</span>
+            <span>PER 637.9×</span>
+            <span>ROE 1.5%</span>
+            <span>52W 고점 <span class="up">+0.0%</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">111,000</div>
+          <div class="stop">손절 · 103,230</div>
+          <div class="rs">RS 97</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">✓</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">✓</span>RS ≥ 70<span class="check-val">97</span></li>
+            <li><span class="check-mark">⚠</span>주도 섹터 소속<span class="check-val">ETF 데이터 없음</span></li>
+            <li><span class="check-mark">✓</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">Add-On Trigger</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">⚠</span>추매 가격 도달<span class="check-val">114,450 대기</span></li>
+            <li><span class="check-mark">⚠</span>추매 시점 거래량 확장<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>손절선 이탈 여부<span class="check-val">101,000 유지</span></li>
+            <li><span class="check-mark">⚠</span>시장 게이트 유지<span class="check-val">매일 재확인</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">ACTION</span>
+        <span>보유 종목 · <strong>HOLD 유지</strong>. 114,450원 도달 + 거래량 확장 동반 시 1차 추매 검토. 101,000원 이탈 시 전량 손절.</span>
+      </div>
+    </div>
+    <div class="readiness-card">
+      <div class="readiness-header">
+        <div class="rank">IV</div>
+        <div class="readiness-title">
+          <div class="name">두산 <span class="ticker">000150 · 20일차</span></div>
+          <div class="meta">
+            <span>MA50 1,124,080</span>
+            <span>MA150 906,027</span>
+            <span>PBR 16.92×</span>
+            <span>ROE <span class="down">−15.3%</span></span>
+            <span>52W 고점 <span class="up">+0.0%</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">1,407,000</div>
+          <div class="stop">손절 · 1,308,510</div>
+          <div class="rs">RS 96</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">✓</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">✓</span>RS ≥ 70<span class="check-val">96</span></li>
+            <li><span class="check-mark">⚠</span>주도 섹터 소속<span class="check-val">ETF 데이터 없음</span></li>
+            <li><span class="check-mark">✓</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">Entry Trigger</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W +0.0%</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">READINESS</span>
+        <span>스크리너 통과 · <strong>PBR 16.9·ROE −15.3% 펀더멘털 취약</strong>. 차트 확인 + 포지션 사이즈 보수적 관리 권장.</span>
+      </div>
+    </div>
+    <div class="readiness-card">
+      <div class="readiness-header">
+        <div class="rank">V</div>
+        <div class="readiness-title">
+          <div class="name">한화시스템 <span class="ticker">272210 · 15일차</span></div>
+          <div class="meta">
+            <span>MA50 127,832</span>
+            <span>MA150 83,439</span>
+            <span>PER 53.9×</span>
+            <span>ROE 18.2%</span>
+            <span>52W 고점 <span class="down">−19.8%</span></span>
+          </div>
+        </div>
+        <div class="readiness-price">
+          <div class="price">130,500</div>
+          <div class="stop">손절 · 121,365</div>
+          <div class="rs">RS 94</div>
+        </div>
+      </div>
+      <div class="readiness-body">
+        <div class="check-col auto-col">
+          <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">✓</span>코어 조건 8/8<span class="check-val">100%</span></li>
+            <li><span class="check-mark">✓</span>RS ≥ 70<span class="check-val">94</span></li>
+            <li><span class="check-mark">✗</span>주도 섹터 소속<span class="check-val">K-방산 21.3점</span></li>
+            <li><span class="check-mark">✓</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+          </ul>
+        </div>
+        <div class="check-col manual-col">
+          <div class="check-head"><span class="tag">MANUAL</span><span class="label">Entry Trigger</span></div>
+          <ul class="check-list">
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W −19.8%</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="readiness-footer">
+        <span class="verdict-tag">CAUTION</span>
+        <span>스크리너 통과 · <strong>섹터(K-방산) 약세</strong>라 Minervini 기준 미달 구간. 52W 고점 대비 −19.8%로 재돌파 여부 관찰 필요.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 4B: A-GRADE REMAINING ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">04<span style="font-size: 22px;">·b</span></div>
+      <div class="section-title">
+        <div class="eyebrow">A-Grade · Complete Universe</div>
+        <h2>Remaining 19 Tickers</h2>
+      </div>
+      <div class="section-meta">SORTED BY RS</div>
+    </div>
+
+    <table class="agrade-table">
+      <thead>
+        <tr>
+          <th>#</th><th>종목</th><th>코드</th>
+          <th class="num">현재가</th><th class="num">RS</th>
+          <th class="num">52W 고점</th><th class="num">일수</th>
+          <th class="num">손절</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">6</td><td class="name">효성</td><td>004800</td><td class="num">159,600</td><td class="num"><span class="rs-bar rs-90">91</span></td><td class="num down">−8.6%</td><td class="num">10D</td><td class="num down">148,428</td></tr>
+        <tr><td class="num">7</td><td class="name">삼성생명</td><td>032830</td><td class="num">253,500</td><td class="num"><span class="rs-bar rs-90">90</span></td><td class="num down">−1.7%</td><td class="num">20D</td><td class="num down">235,755</td></tr>
+        <tr><td class="num">8</td><td class="name">LS</td><td>006260</td><td class="num">332,000</td><td class="num"><span class="rs-bar rs-80">89</span></td><td class="num down">−3.3%</td><td class="num">20D</td><td class="num down">308,760</td></tr>
+        <tr><td class="num">9</td><td class="name">SK</td><td>034730</td><td class="num">377,000</td><td class="num"><span class="rs-bar rs-80">88</span></td><td class="num down">−10.8%</td><td class="num">10D</td><td class="num down">350,610</td></tr>
+        <tr><td class="num">10</td><td class="name">한화</td><td>000880</td><td class="num">129,700</td><td class="num"><span class="rs-bar rs-80">88</span></td><td class="num down">−6.8%</td><td class="num">10D</td><td class="num down">120,621</td></tr>
+        <tr><td class="num">11</td><td class="name">LG이노텍</td><td>011070</td><td class="num">409,500</td><td class="num"><span class="rs-bar rs-80">87</span></td><td class="num"><span class="nh-badge">NH</span></td><td class="num">20D</td><td class="num down">380,835</td></tr>
+        <tr><td class="num">12</td><td class="name">삼성SDI</td><td>006400</td><td class="num">538,000</td><td class="num"><span class="rs-bar rs-80">86</span></td><td class="num"><span class="nh-badge">NH</span></td><td class="num">20D</td><td class="num down">500,340</td></tr>
+        <tr><td class="num">13</td><td class="name">NH투자증권</td><td>005940</td><td class="num">35,150</td><td class="num"><span class="rs-bar rs-80">85</span></td><td class="num down">−10.3%</td><td class="num">10D</td><td class="num down">32,690</td></tr>
+        <tr><td class="num">14</td><td class="name">현대건설기계</td><td>267270</td><td class="num">164,900</td><td class="num"><span class="rs-bar rs-80">84</span></td><td class="num"><span class="nh-badge">NH</span></td><td class="num">15D</td><td class="num down">153,357</td></tr>
+        <tr><td class="num">15</td><td class="name">동원F&amp;B</td><td>005960</td><td class="num">9,100</td><td class="num"><span class="rs-bar rs-80">83</span></td><td class="num down">−11.4%</td><td class="num">20D</td><td class="num down">8,463</td></tr>
+        <tr><td class="num">16</td><td class="name">신세계</td><td>004170</td><td class="num">373,000</td><td class="num"><span class="rs-bar rs-80">81</span></td><td class="num down">−1.6%</td><td class="num">9D</td><td class="num down">346,890</td></tr>
+        <tr><td class="num">17</td><td class="name">삼성증권</td><td>016360</td><td class="num">109,200</td><td class="num"><span class="rs-bar rs-80">81</span></td><td class="num down">−4.6%</td><td class="num">10D</td><td class="num down">101,556</td></tr>
+        <tr><td class="num">18</td><td class="name">한국항공우주</td><td>047810</td><td class="num">186,800</td><td class="num"><span class="rs-bar rs-80">80</span></td><td class="num down">−7.5%</td><td class="num">15D</td><td class="num down">173,724</td></tr>
+        <tr><td class="num">19</td><td class="name">우리금융지주</td><td>316140</td><td class="num">35,750</td><td class="num"><span class="rs-bar rs-70">76</span></td><td class="num down">−12.4%</td><td class="num">8D</td><td class="num down">33,248</td></tr>
+        <tr><td class="num">20</td><td class="name">하나금융지주</td><td>086790</td><td class="num">122,700</td><td class="num"><span class="rs-bar rs-70">75</span></td><td class="num down">−6.5%</td><td class="num">10D</td><td class="num down">114,111</td></tr>
+        <tr><td class="num">21</td><td class="name">S-Oil</td><td>010950</td><td class="num">115,900</td><td class="num"><span class="rs-bar rs-70">75</span></td><td class="num down">−18.0%</td><td class="num">13D</td><td class="num down">107,787</td></tr>
+        <tr><td class="num">22</td><td class="name">신한지주</td><td>055550</td><td class="num">100,000</td><td class="num"><span class="rs-bar rs-70">74</span></td><td class="num down">−5.7%</td><td class="num">10D</td><td class="num down">93,000</td></tr>
+        <tr><td class="num">23</td><td class="name">KB금융</td><td>105560</td><td class="num">160,900</td><td class="num"><span class="rs-bar rs-70">72</span></td><td class="num down">−4.7%</td><td class="num">10D</td><td class="num down">149,637</td></tr>
+        <tr><td class="num">24</td><td class="name">에코프로</td><td>247540</td><td class="num">210,000</td><td class="num"><span class="rs-bar rs-70">70</span></td><td class="num down">−14.6%</td><td class="num">4D</td><td class="num down">195,300</td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 18px; padding: 12px 16px; background: var(--bg); font-family: var(--mono); font-size: 11px; color: var(--ink-muted); border-left: 2px solid var(--ink-muted);">
+      <strong style="color: var(--ink);">C-GRADE (5):</strong> DL이앤씨 · 한전KPS · SK네트웍스 · 현대백화점 · 현대엘리베이터
+      <span style="margin: 0 10px; color: var(--ink-faint);">|</span>
+      <strong style="color: var(--ink);">B-GRADE:</strong> 40종목 (노션 DB 참조)
+    </div>
+  </section>
+
+  <!-- ========== SECTION 5: PORTFOLIO ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">
+        <div class="eyebrow">Portfolio · 1 Position</div>
+        <h2>Holdings</h2>
+      </div>
+      <div class="section-meta">HOLD</div>
+    </div>
+
+    <div class="portfolio-main">
+      <div>
+        <div class="portfolio-header">
+          <div class="portfolio-name">두산에너빌리티 <span class="ticker" style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint);">034020</span></div>
+          <div class="portfolio-status">HOLD</div>
+        </div>
+
+        <div class="portfolio-grid">
+          <div class="pg-label">매수가</div>
+          <div class="pg-value">109,000 원</div>
+          <div class="pg-label">현재가</div>
+          <div class="pg-value big">111,000 원 <span class="pill-up" style="margin-left: 6px; font-size: 12px; vertical-align: middle;">▲ +1.83%</span></div>
+          <div class="pg-label">52주 고점</div>
+          <div class="pg-value">111,000 <span class="nh-badge" style="margin-left: 5px;">NEW HIGH</span></div>
+          <div class="pg-label">손절가</div>
+          <div class="pg-value" style="color: var(--bear);">101,000 원</div>
+        </div>
+
+        <div class="portfolio-stats">
+          <div class="stat"><div class="stat-label">정배열</div><div class="stat-value up">✓</div></div>
+          <div class="stat"><div class="stat-label">MA200 상승</div><div class="stat-value up">✓</div></div>
+          <div class="stat"><div class="stat-label">코어</div><div class="stat-value">8 / 8</div></div>
+        </div>
+      </div>
+
+      <div class="portfolio-action">
+        <div class="label">Action</div>
+        <div class="verdict">추매 금지 · HOLD</div>
+        <div class="detail">매수가 +5% 기준 <strong>114,450원</strong> 미달 (현재 +1.83%). 도달 시 거래량 확장 동반 여부 확인 후 1차 추매. <strong>101,000원</strong> 하회 시 전량 손절.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div class="section-title">
+        <div class="eyebrow">Upcoming Events · Next 30 Days</div>
+        <h2>Macro Calendar</h2>
+      </div>
+      <div class="section-meta">HIGH IMPACT · 3</div>
+    </div>
+
+    <div>
+      <div class="macro-row">
+        <div class="dday">D−15</div>
+        <div class="macro-event">FOMC · Federal Reserve 금리 결정</div>
+        <div class="macro-date">2026-05-06 (WED)</div>
+        <div class="macro-impact impact-high">HIGH IMPACT</div>
+      </div>
+      <div class="macro-row">
+        <div class="dday">D−17</div>
+        <div class="macro-event">NFP · 미국 고용 지표</div>
+        <div class="macro-date">2026-05-08 (FRI)</div>
+        <div class="macro-impact impact-high">HIGH IMPACT</div>
+      </div>
+      <div class="macro-row">
+        <div class="dday far">D−22</div>
+        <div class="macro-event">CPI · 미국 소비자물가지수</div>
+        <div class="macro-date">2026-05-13 (WED)</div>
+        <div class="macro-impact impact-high">HIGH IMPACT</div>
+      </div>
+    </div>
+
+    <p style="margin-top: 16px; font-family: var(--sans); font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--ink-muted);">
+5월 초까지 매크로 이벤트 집중. FOMC 전 포지션 사이징 보수적 관리, 이벤트 직전 신규 진입 자제.    </p>
+  </section>
+
+  <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div class="section-title">
+        <div class="eyebrow">Market-Wide Data Points</div>
+        <h2>Market Context</h2>
+      </div>
+      <div class="section-meta">4 / 4</div>
+    </div>
+
+    <div class="context-grid">
+      <div class="context-col plus-col">
+        <div class="context-head">
+          <h3>Catalysts</h3>
+          <span class="subtag">시장 우호 데이터</span>
+        </div>
+        <ul class="context-list">
+<li>주도 섹터 <strong>KODEX IT</strong> <span class="num up">99점</span> 유지, 2차전지산업 테마 주간 <span class="num up">+6.0점</span></li><li>KOSDAQ <strong>20일 신고가</strong> <span class="num up">+0.61%</span>, 52주 고점 대비 <span class="num down">−1.9%</span> 근접</li>          <li>A등급 <strong>24종목 중 7종목</strong>이 52주 고점 돌파 중 (신고가 클러스터링)</li>
+<li>기관 <span class="num up">+2,937억</span> 순매수, KOSPI MA20/60/120 정배열 유지</li>        </ul>
+      </div>
+
+      <div class="context-col minus-col">
+        <div class="context-head">
+          <h3>Headwinds</h3>
+          <span class="subtag">시장 역풍 데이터</span>
+        </div>
+        <ul class="context-list">
+<li>외국인 KOSPI <strong><span class="num down">−2,338억</span></strong> 순매도, 개인 <span class="num down">−3,159억</span> 동반 매도</li><li>빅테크 약세: 인텔 <span class="num down">−4.09%</span>, 메타 <span class="num down">−2.56%</span>, 테슬라 <span class="num down">−2.03%</span></li><li>헬스케어 XLV <span class="num down">−0.93%</span> + MA60/120 하향 이탈, 섹터 리더십 일부 약화</li>          <li>USD/KRW <strong>1,470.56</strong> 고레벨, WTI <span class="num up">+2.43%</span> — 원화 자본유출·수입물가 상승 압력 병존</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DISCLOSURES ========== -->
+  <div class="disclosures">
+    <p><strong>METHODOLOGY.</strong> Minervini Trend Template — 코어 조건 (8): 현재가 &gt; MA150, MA200 / MA150 &gt; MA200 / MA200 상승 추세 / MA50 &gt; MA150, MA200 / 현재가 &gt; MA50 / 현재가 ≥ 52주 저점 × 1.3 / 현재가 ≥ 52주 고점 × 0.75 / RS ≥ 70. Entry Trigger (VCP + 피벗 돌파 + 거래량 확장)는 현재 자동화 미적용 구간 — 일봉 차트 수동 검증 필요.</p>
+    <p><strong>DATA.</strong> Google Drive <code style="font-family: var(--mono);">morning_data_20260421.txt</code> · GitHub Actions 06:00 KST · 전일 마감 기준.</p>
+    <p><strong>SCOPE.</strong> 본 리포트는 진입 후보 스크리닝과 시장 컨텍스트 요약. 종목별 스토리(Bull/Bear)는 Minervini 트렌드 추종 원칙에 부합하지 않아 의도적으로 제외.</p>
+    <p><strong>DISCLAIMER.</strong> 개인 투자 판단 보조 자료. 투자 권유가 아니며 모든 결정과 결과는 본인 책임.</p>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <div class="footer-brand">
+      <strong>MORNING REPORT</strong> · Daily Brief
+    </div>
+    <div class="footer-meta">
+      v6.2 · Minervini-Aligned Entry Readiness · 06:00 KST
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
