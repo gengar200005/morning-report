@@ -66,20 +66,27 @@ jobs:
       # ─────────────────────────────────────────────────────────
       # Phase 2: v6.2 HTML 리포트 자동 렌더링 + GitHub Pages 배포
       # ─────────────────────────────────────────────────────────
+      # combine_data.py가 이미 Contents API로 morning_data.txt를 원격에 push한 상태.
+      # 로컬 workspace에도 같은 파일이 남아있어 git이 "dirty"로 인식.
+      # → fetch + reset으로 원격 최신 상태와 맞춘 뒤 renderer로 docs/만 생성해 커밋.
 
-      - name: v6.2 리포트 HTML 렌더링
-        run: python -m reports.render_report --input morning_data.txt --output-dir docs
-
-      - name: GitHub Pages 배포 (docs/ 커밋 & 푸시)
+      - name: v6.2 HTML 렌더링 + GitHub Pages 배포
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin "$GITHUB_REF_NAME" || true
+
+          # combine_data.py가 Contents API로 push한 최신 커밋을 로컬에 반영
+          git fetch origin "$GITHUB_REF_NAME"
+          git reset --hard "origin/$GITHUB_REF_NAME"
+
+          # 원격 기준 최신 morning_data.txt로 렌더 (reset 때문에 workspace가 초기화됐으므로 재실행)
+          python -m reports.render_report --input morning_data.txt --output-dir docs
+
           git add docs/
           if git diff --staged --quiet; then
             echo "docs/ 변경 없음 — 커밋 스킵"
           else
             TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
             git commit -m "Daily report ${TODAY} (auto)"
-            git push
+            git push origin "HEAD:$GITHUB_REF_NAME"
           fi
