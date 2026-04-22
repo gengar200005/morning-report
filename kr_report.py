@@ -1,13 +1,24 @@
 import os
+import sys
 import base64
 import json
 import requests
 import time
+import numpy as np
 import yfinance as yf
 from pathlib import Path
 from pykrx import stock as krx
 from datetime import datetime, timedelta
 import pytz
+
+# backtest/ 를 import path 에 추가 — strategy 모듈 공유 (single source of truth)
+BASE = Path(__file__).resolve().parent
+sys.path.insert(0, str(BASE / "backtest"))
+from strategy import (  # noqa: E402
+    load_config as _load_strategy_config,
+    check_minervini_core,
+    check_market_gate,
+)
 
 # ── 설정 ──────────────────────────────────────────
 KIS_APP_KEY    = os.environ["KIS_APP_KEY"]
@@ -37,12 +48,14 @@ def latest_trading_day():
 def prev_trading_day():
     return latest_trading_day()
 
-# ── 전략 파라미터 (백테 확정: T15/CD120, 2026-04-22) ────
-STRATEGY_STOP_LOSS   = 0.07     # 진입가 대비 -7%
-STRATEGY_TRAIL_STOP  = 0.15     # 최고가 대비 -15%
-STRATEGY_COOLDOWN_D  = 170      # 쿨다운 거래일 120일 ≈ 달력 170일
-STRATEGY_MAX_HOLD    = 252      # 최대 보유 1년
-STRATEGY_MAX_POS     = 5        # 동시 포지션 상한
+# ── 전략 파라미터 (strategy_config.yaml 단일 소스, 2026-04-22 재확정 T10/CD60) ──
+STRATEGY_CFG = _load_strategy_config()
+STRATEGY_STOP_LOSS   = STRATEGY_CFG["risk"]["stop_loss"]
+STRATEGY_TRAIL_STOP  = STRATEGY_CFG["risk"]["trail_stop"]
+# 쿨다운: 거래일 → 달력일 환산 (252/365 비율 역적용)
+STRATEGY_COOLDOWN_D  = int(round(STRATEGY_CFG["cooldown_days"] * 365 / 252))
+STRATEGY_MAX_HOLD    = STRATEGY_CFG["risk"]["max_hold_days"]
+STRATEGY_MAX_POS     = STRATEGY_CFG["risk"]["max_positions"]
 
 # ── 스크리닝 state (쿨다운 추적) ────────────────────
 STATE_DIR  = Path("reports/state")
@@ -314,22 +327,11 @@ def calc_ma(prices, n):
 
 # ── Minervini 코어 8조건 체크 (특정 시점 i 기준) ──────
 def check_core_at(closes, i):
-    """closes[i] 시점에서 코어 8조건 충족 여부"""
-    if i < 200 or i >= len(closes):
+    """closes[i] 시점에서 코어 8조건 충족 여부 — strategy.py 로 delegate."""
+    if i < 0 or i >= len(closes):
         return False
-    c = closes[i]
-    ma50  = sum(closes[i-50:i]) / 50
-    ma150 = sum(closes[i-150:i]) / 150
-    ma200 = sum(closes[i-200:i]) / 200
-    ma200_1m = sum(closes[i-222:i-22]) / 200 if i >= 222 else None
-    window = closes[max(0,i-252):i]
-    hi52, lo52 = max(window), min(window)
-    return all([
-        c > ma50, c > ma150, c > ma200,
-        ma50 > ma150, ma150 > ma200,
-        ma200_1m is not None and ma200 > ma200_1m,
-        c >= lo52 * 1.25, c >= hi52 * 0.75,
-    ])
+    c_arr = np.asarray(closes, dtype=float)
+    return check_minervini_core(c_arr, i, STRATEGY_CFG)
 
 def calc_signal_age(closes):
     """오늘부터 역산하여 코어 통과 연속일수 반환 (최대 20일)"""
@@ -760,46 +762,34 @@ def screen_stocks(token, mkt_ctx):
             rs_map[code] = sum(1 for v in sorted_rets if v <= ret) / n * 100
         print(f"  RS 계산 완료: {n}종목")
 
-    # 3단계: Minervini 스크리닝
+    # 3단계: Minervini 스크리닝 (strategy.py 공유 로직)
     for code, (name, closes, volumes) in stock_data.items():
         try:
             close_now = closes[-1]
+            # strategy.check_minervini_detailed 는 numpy 배열 + 인덱스 기준.
+            # closes 는 list 일 수 있으므로 변환 후 마지막 인덱스 기준 평가.
+            c_arr = np.asarray(closes, dtype=float)
+            i = len(c_arr) - 1
+            det = check_minervini_detailed(c_arr, i, STRATEGY_CFG)
 
-            ma50  = calc_ma(closes, 50)
-            ma150 = calc_ma(closes, 150)
-            ma200 = calc_ma(closes, 200)
-
-            # MA200 1개월 전 (22거래일)
-            ma200_1m = None
-            if len(closes) >= 222:
-                ma200_1m = round(sum(closes[-222:-22]) / 200, 0)
-
-            # 52주 고저
-            window = closes[-252:] if len(closes) >= 252 else closes
-            hi52 = max(window)
-            lo52 = min(window)
+            ma50, ma150, ma200 = det["ma50"], det["ma150"], det["ma200"]
+            ma200_1m = det["ma200_prev"]   # 표시용 alias (백테와 용어 통일)
+            hi52, lo52 = det["hi52"], det["lo52"]
 
             rs_pct = rs_map.get(code, 0)
 
-            # ── Minervini 코어 8조건 ──
-            c1 = bool(ma50  and close_now > ma50)      # ① 현재가 > MA50
-            c2 = bool(ma150 and close_now > ma150)     # ② 현재가 > MA150
-            c3 = bool(ma200 and close_now > ma200)     # ③ 현재가 > MA200
-            c4 = bool(ma50 and ma150 and ma50 > ma150) # ④ MA50 > MA150
-            c5 = bool(ma150 and ma200 and ma150 > ma200) # ⑤ MA150 > MA200
-            c6 = bool(ma200 and ma200_1m and ma200 > ma200_1m) # ⑥ MA200 상승
-            c7 = close_now >= lo52 * 1.25              # ⑦ 52주 저점 +25%
-            c8 = close_now >= hi52 * 0.75              # ⑧ 52주 고점 -25% 이내
-
-            core_list = [c1, c2, c3, c4, c5, c6, c7, c8]
-            core_ok   = all(core_list)
-            aligned   = all([c1, c2, c3, c4, c5])  # MA 정배열 요약
+            # Minervini 8조건 (strategy.py 계산 결과를 분해하여 표시용 변수로)
+            core_list = det["conds"]
+            c1, c2, c3, c4, c5, c6, c7, c8 = core_list
+            core_ok = det["core_ok"]
+            aligned = det["aligned"]
 
             # ── 게이트 ──
             gate_ok = kospi_ok and vix_ok
 
             # ── 코어/게이트 미통과 → D등급 (수급·가격 API 스킵) ──
-            rs_ok = rs_pct >= 70
+            rs_min = STRATEGY_CFG["signal"]["minervini"]["rs_min"]
+            rs_ok = rs_pct >= rs_min
             max_score = 12  # 코어8 + 게이트2 + 보조2
 
             if not (core_ok and gate_ok):
