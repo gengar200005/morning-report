@@ -90,3 +90,44 @@ jobs:
             git commit -m "Daily report ${TODAY} (auto)"
             git push origin "HEAD:$GITHUB_REF_NAME"
           fi
+
+      # ─────────────────────────────────────────────────────────
+      # Phase 3: HTML → PDF 변환 + Google Drive 업로드
+      # Chrome headless 로 아카이브 HTML 을 PDF 로 변환, docs/archive/ 에 커밋 +
+      # Google Drive ClaudeMorningData 폴더에도 업로드 (Claude 커넥터용).
+      # ─────────────────────────────────────────────────────────
+      - name: Chrome 설치 (PDF 렌더링용)
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: HTML → PDF + Drive 업로드
+        env:
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
+          GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
+          GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          YMD=$(TZ=Asia/Seoul date +%Y%m%d)
+          HTML="docs/archive/report_${YMD}.html"
+          PDF="docs/archive/report_${YMD}.pdf"
+
+          if [ ! -f "$HTML" ]; then
+            echo "⚠️ HTML 파일이 없습니다: $HTML — PDF 렌더 스킵"
+            exit 0
+          fi
+
+          python -m reports.render_pdf --html "$HTML" --pdf "$PDF"
+
+          # Drive 업로드 (GDRIVE_* Secrets 누락 시 내부에서 스킵)
+          python upload_pdf_to_drive.py "$PDF"
+
+          # 커밋 + Pages 배포
+          git add "$PDF"
+          if git diff --staged --quiet; then
+            echo "PDF 변경 없음 — 커밋 스킵"
+          else
+            TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
+            git commit -m "Daily report PDF ${TODAY} (auto)"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
