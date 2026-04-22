@@ -103,12 +103,13 @@ jobs:
 
       - name: 한글 폰트 설치 (PDF 렌더링용)
         # 러너 이미지엔 라틴 폰트만 있어서 한글이 □ 로 깨짐.
-        # Noto Sans CJK KR 설치 + fc-cache 갱신으로 Chrome fallback 해결.
+        # fonts-nanum: 나눔고딕·나눔명조·나눔고딕코딩 (약 10MB, 10초 이내)
+        # → Noto CJK 전체(400MB+)는 과잉이라 한국어 전용 경량 패키지 사용.
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-cjk-extra
+          sudo apt-get install -y -qq --no-install-recommends fonts-nanum fonts-nanum-coding
           fc-cache -f
-          echo "installed CJK fonts (sample):"
+          echo "installed Korean fonts (sample):"
           fc-list :lang=ko | head -5
 
       - name: HTML → PDF + Drive 업로드
