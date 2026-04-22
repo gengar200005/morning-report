@@ -1,0 +1,51 @@
+# Phase 3 확정 전략: T10/CD60 (2026-04-22)
+#
+# 162종목 백테 CAGR +29.29%, MDD -29.8%, 실전 기댓값 +15-20%.
+# 파라미터 변경 시 백테 먼저 돌려서 검증할 것.
+
+name: "T10/CD60"
+description: "Minervini 8조건 + 수급 프록시 + 시장 게이트"
+confirmed_at: "2026-04-22"
+
+signal:
+  # Minervini 8조건 트렌드 템플릿
+  minervini:
+    ma_periods: [50, 150, 200]       # 현재가 > MA50, MA150, MA200 / MA 정배열
+    trend_acceleration_days: 22      # MA200 > MA200(22일 전)
+    lookback_52w: 252                # 52주 고저 판정 기간
+    hi52_threshold: 0.75             # close >= hi52 × 0.75 (고점 대비 -25% 이내)
+    lo52_threshold: 1.25             # close >= lo52 × 1.25 (저점 대비 +25%)
+    rs_min: 70                       # RS percentile ≥ 70
+
+  # 수급 프록시: 최근 N일 up/down volume 비율
+  supply:
+    lookback_days: 20
+    ratio_min: 1.2                   # up_vol / dn_vol ≥ 1.2
+
+  # 시장 게이트 (신규 진입만 차단, 보유 청산은 계속)
+  market_gate:
+    kospi_ma: 60                     # KOSPI close > MA60
+
+# ── 리스크 관리 (T10/CD60 확정값) ──
+risk:
+  stop_loss: 0.07                    # 진입가 대비 -7%
+  trail_stop: 0.10                   # 최고가 대비 -10% (T15 → T10 재확정)
+  max_hold_days: 252                 # 1년
+  max_positions: 5                   # 균등 가중
+
+# ── 쿨다운 ──
+cooldown_days: 60                    # 청산 후 60 거래일 재진입 금지 (CD120 → CD60 재확정)
+
+# ── 실행 ──
+execution:
+  cost_one_way: 0.0015               # 편도 0.15% (왕복 0.3%)
+  entry: open_next_day               # 시그널 익일 시가 진입
+  exit: open_next_day                # 청산 익일 시가
+  cma_rate: 0.03                     # CMA 현금 이자 (연)
+  warmup_days: 252                   # 백테 warmup (MA 계산용)
+
+# ── 백테 전용 ──
+backtest:
+  start_date: "2015-01-01"
+  end_date: null                     # null = 오늘
+  universe_source: "validation_ok"   # validation_report.json status=ok
