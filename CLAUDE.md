@@ -165,5 +165,5 @@ morning-report-main/          ← 이 레포 (Git 연결)
 - [ADR-002] strategy.py/yaml 단일 소스 아키텍처 — `docs/decisions/002-strategy-module.md`
 
 ## 최근 세션
-- 2026-04-22: 162종목 재백테 + T10/CD60 확정 + strategy 모듈화 + kr_report 연결
+- 2026-04-22: 162종목 재백테 + T10/CD60 확정 + strategy 모듈화 + 문서 인프라 (CLAUDE.md/SESSION_LOG/ADR/슬래시) + 내일 알림 플랜
 - 자세한 건 `SESSION_LOG.md` 참조
