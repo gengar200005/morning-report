@@ -22,6 +22,7 @@ from typing import Optional
 
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 MIME_TEXT = "text/plain"
+MIME_PDF = "application/pdf"
 TOKEN_URI = "https://oauth2.googleapis.com/token"
 
 
@@ -97,6 +98,58 @@ def upload_text(
     while attempt <= retries:
         try:
             return _upload_once(service, folder_id, filename, content)
+        except Exception as e:
+            last_err = e
+            attempt += 1
+            if attempt <= retries:
+                time.sleep(2)
+    print(f"❌ Drive 업로드 실패 ({filename}): {last_err}")
+    return None
+
+
+def _upload_binary_once(
+    service, folder_id: str, filename: str, filepath: str, mimetype: str
+) -> str:
+    from googleapiclient.http import MediaFileUpload
+
+    media = MediaFileUpload(filepath, mimetype=mimetype, resumable=False)
+
+    existing_id = _find_file_id(service, folder_id, filename)
+    if existing_id:
+        updated = service.files().update(
+            fileId=existing_id,
+            media_body=media,
+        ).execute()
+        return updated["id"]
+
+    metadata = {"name": filename, "parents": [folder_id]}
+    created = service.files().create(
+        body=metadata,
+        media_body=media,
+        fields="id",
+    ).execute()
+    return created["id"]
+
+
+def upload_binary(
+    filename: str,
+    filepath: str,
+    mimetype: str,
+    folder_id: str,
+    client_id: str,
+    client_secret: str,
+    refresh_token: str,
+    retries: int = 1,
+) -> Optional[str]:
+    """Drive 폴더에 바이너리 파일(PDF 등) 업로드. 성공 시 file id, 실패 시 None."""
+    service = _build_service(client_id, client_secret, refresh_token)
+    attempt = 0
+    last_err: Optional[Exception] = None
+    while attempt <= retries:
+        try:
+            return _upload_binary_once(
+                service, folder_id, filename, filepath, mimetype
+            )
         except Exception as e:
             last_err = e
             attempt += 1
