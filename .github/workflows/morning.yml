@@ -103,10 +103,11 @@ jobs:
 
       - name: 한글 폰트 설치 (PDF 렌더링용)
         # 러너 이미지엔 라틴 폰트만 있어서 한글이 □ 로 깨짐.
-        # fonts-nanum: 나눔고딕·나눔명조·나눔고딕코딩 (약 10MB, 10초 이내)
-        # → Noto CJK 전체(400MB+)는 과잉이라 한국어 전용 경량 패키지 사용.
+        # fonts-nanum: 나눔고딕·나눔명조·나눔고딕코딩 (약 10MB).
+        # apt update 가 러너 미러 이슈로 가끔 수 분간 hang 되어 60초 타임아웃 설정.
+        # 타임아웃돼도 러너 이미지에 캐시된 apt index 로 install 진행 가능.
         run: |
-          sudo apt-get update -qq
+          timeout 60 sudo apt-get update -qq || echo "⚠️ apt update 지연 — 캐시된 index 로 진행"
           sudo apt-get install -y -qq --no-install-recommends fonts-nanum fonts-nanum-coding
           fc-cache -f
           echo "installed Korean fonts (sample):"
