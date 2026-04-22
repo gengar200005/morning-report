@@ -1,15 +1,13 @@
 {
   "__meta": {
-    "description": "Morning Report Notion 페이지 템플릿. Notion API POST /v1/blocks/{page_id}/children 요청 바디와 동일 구조. Claude는 아래 __placeholders 에 있는 {{VAR}} 문자열만 치환하고, children 배열의 블록 개수·타입·키·중첩 구조는 절대 변경하지 말 것. 이 JSON 그대로 Notion API에 POST 한다.",
-    "version": "1.1",
+    "description": "Morning Report Notion 페이지 템플릿 v1.2 (통합 PDF 모드). 마켓 데이터 PDF + Claude 분석 PDF 를 pypdf 로 merge 한 통합 PDF 를 Notion File Upload API 로 업로드한 뒤, 여기 {{UPLOAD_ID}} 를 그 id 로 치환해서 PATCH /v1/blocks/{page_id}/children 에 전송.",
+    "version": "1.2",
     "updated": "2026-04-22",
     "usage_rules": [
-      "1) children 배열의 순서와 개수는 고정. 블록 추가/삭제 금지.",
-      "2) 각 블록의 type / 키 이름(예: 'bulleted_list_item', 'rich_text') 수정 금지.",
-      "3) rich_text 안의 content 문자열만 값으로 치환. HTML/markdown 문자열 주입 금지 (예: '<embed>', '##', '- ' 등).",
-      "4) 데이터 부재로 작성 불가한 bullet은 해당 placeholder 를 '없음' 또는 '데이터 없음' 으로 채울 것. 블록 자체를 빼지 말 것.",
-      "5) '🗒 오늘의 수동 메모' heading_2 는 children 을 두지 말 것(마스터가 수동 작성).",
-      "6) 첫 블록은 pdf 타입이다 — Notion 커넥터가 embed 를 미지원해서 2026-04-22 교체됨. external.url 은 반드시 .pdf 로 끝나는 직링크여야 인라인 렌더됨."
+      "1) children 은 블록 2개 고정 — pdf (통합 파일) + heading_2 (빈 수동 메모).",
+      "2) pdf 블록은 file_upload 타입. external URL 방식 아님. 통합 PDF 는 Notion 내부 저장.",
+      "3) {{UPLOAD_ID}} 는 Notion POST /v1/file_uploads 응답 + 실제 업로드 완료 후의 file_upload.id (UUID) 로 치환.",
+      "4) __meta / __placeholders 키는 Notion API 바디에 포함 금지."
     ]
   },
 
@@ -18,144 +16,22 @@
       "object": "block",
       "type": "pdf",
       "pdf": {
-        "type": "external",
-        "external": {
-          "url": "{{PDF_URL}}"
-        }
+        "type": "file_upload",
+        "file_upload": { "id": "{{UPLOAD_ID}}" }
       }
     },
-
     {
       "object": "block",
-      "type": "callout",
-      "callout": {
-        "icon": { "type": "emoji", "emoji": "💡" },
+      "type": "heading_2",
+      "heading_2": {
         "rich_text": [
-          { "type": "text", "text": { "content": "{{SUMMARY_ONE_LINE}}" } }
+          { "type": "text", "text": { "content": "🗒 오늘의 수동 메모" } }
         ]
       }
-    },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "시장 게이트" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "VIX {{VIX_VALUE}} ({{VIX_ZONE}})" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "KOSPI MA60 {{KOSPI_MA60_VALUE}} {{KOSPI_MA60_STATUS}} — 현재 {{KOSPI_NOW}} (상회 폭 {{KOSPI_MA60_DIFF_PCT}})" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "게이트 종합: {{GATE_VERDICT}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "수급 (KOSPI)" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "외국인 {{FOREIGN_FLOW}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "기관 {{INSTITUTION_FLOW}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "개인 {{RETAIL_FLOW}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "패턴 메모: {{FLOW_PATTERN_NOTE}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "섹터 로테이션" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "주도 (80점+): {{SECTOR_LEADERS}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "강세 (65–79): {{SECTOR_STRONG}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "약세 가속 (주간 -5점 이상): {{SECTOR_WEAK}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "주의할 변화: {{SECTOR_NOTABLE_CHANGE}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "A등급 종목 동향" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "총 {{A_GRADE_COUNT}}종목 (전일 {{A_GRADE_DIFF}})" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "🆕 신규 편입: {{A_GRADE_NEW}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "52주 고점 근접 (-0.5% 이내): {{A_GRADE_NEAR_HIGH}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "⚠ 쿨다운 경고: {{A_GRADE_COOLDOWN}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "매크로 임박도" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "가장 가까운 고영향 이벤트: {{MACRO_NEXT_EVENT}} D-{{MACRO_DDAY}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "포지션 사이징 주의 구간: {{MACRO_POSITION_CAUTION}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "보유 종목 (두산에너빌리티)" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "현재가 {{HOLDING_PRICE}} ({{HOLDING_CHANGE_PCT}})" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "매수가 109,000원 대비 {{HOLDING_PNL_PCT}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "추매 기준 114,450원 {{HOLDING_ADDBUY_STATUS}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "손절 101,000원 {{HOLDING_STOPLOSS_STATUS}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "MA 배열 {{HOLDING_MA_STATUS}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "트레일링(-15%) 상태: {{HOLDING_TRAILING_STATUS}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "오늘의 주의사항" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "{{ALERT_1}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "{{ALERT_2}}" } }] } },
-    { "object": "block", "type": "bulleted_list_item",
-      "bulleted_list_item": { "rich_text": [{ "type": "text", "text": { "content": "{{ALERT_3}}" } }] } },
-
-    { "object": "block", "type": "heading_2",
-      "heading_2": { "rich_text": [{ "type": "text", "text": { "content": "🗒 오늘의 수동 메모" } }] } }
+    }
   ],
 
   "__placeholders": {
-    "PDF_URL":                  "GitHub Pages 직링크. 형식: https://gengar200005.github.io/morning-report/archive/report_YYYYMMDD.pdf (예: https://gengar200005.github.io/morning-report/archive/report_20260422.pdf). 반드시 .pdf 로 끝나야 Notion 이 인라인 렌더.",
-    "YYYYMMDD":                 "오늘 날짜 KST 기준 YYYYMMDD (예: 20260422). PDF 파일명 부분.",
-    "SUMMARY_ONE_LINE":         "Callout 한 줄 요약. 게이트/섹터/쿨다운을 30~60자로 압축 (예: '게이트 통과, 반도체 주도, A등급 쿨다운 2종목 주의').",
-
-    "VIX_VALUE":                "VIX 값 (소수 2자리, 예: '19.50').",
-    "VIX_ZONE":                 "'안정 <20' / '주의 20–30' / '위험 30+' / '패닉 35+' 중 하나.",
-    "KOSPI_MA60_VALUE":         "KOSPI 60일 이동평균 값 (콤마 포함, 예: '5,539.07').",
-    "KOSPI_MA60_STATUS":        "'통과' 또는 '미달'.",
-    "KOSPI_NOW":                "KOSPI 현재가 (콤마 포함, 예: '6,219.09').",
-    "KOSPI_MA60_DIFF_PCT":      "MA60 대비 상회/하회 폭 (부호 포함, 예: '+12.3%' 또는 '-2.1%').",
-    "GATE_VERDICT":             "'통과 → 진입 가능' 또는 '미달 → 신규 진입 금지'.",
-
-    "FOREIGN_FLOW":             "외국인 매수/매도 요약 (예: '매도 3,240억 (3일 연속)').",
-    "INSTITUTION_FLOW":         "기관 수급 요약 (예: '매수 +9,180억원 (동반 순매수)').",
-    "RETAIL_FLOW":              "개인 수급 요약 (예: '매도 -5,940억원').",
-    "FLOW_PATTERN_NOTE":        "한 줄 패턴 메모 (예: '외국인 3일 연속 순매도, 기관 방어'). 원인 추측 금지.",
-
-    "SECTOR_LEADERS":           "80점+ ETF 목록 + 점수 + 전주 대비 (예: 'KODEX 반도체 87점 (+4)'). 없으면 '없음'.",
-    "SECTOR_STRONG":            "65–79점 ETF 목록. 없으면 '없음'.",
-    "SECTOR_WEAK":              "주간 -5점 이상 하락 섹터. 없으면 '없음'.",
-    "SECTOR_NOTABLE_CHANGE":    "주의할 변화 1문장 또는 '없음'.",
-
-    "A_GRADE_COUNT":            "A등급 종목 수 (예: '7').",
-    "A_GRADE_DIFF":             "전일 대비 증감 (부호 포함, 예: '+2' 또는 '-1' 또는 '0').",
-    "A_GRADE_NEW":              "신규 편입 종목 목록 (예: '삼성전자, SK하이닉스') 또는 '없음'.",
-    "A_GRADE_NEAR_HIGH":        "52주 고점 -0.5% 이내 종목 (예: '3종목 — 한미반도체, LG전자, NAVER') 또는 '없음'.",
-    "A_GRADE_COOLDOWN":         "쿨다운 잔여 있는 종목 + 잔여 거래일 (예: 'HD현대중공업 (잔여 78일), POSCO (잔여 45일, 곧 해제 예정)') 또는 '없음'.",
-
-    "MACRO_NEXT_EVENT":         "가장 가까운 고영향 이벤트명 (예: 'FOMC', 'CPI', 'NFP').",
-    "MACRO_DDAY":               "D-day 숫자만 (예: '3'). 방향성 예측 금지.",
-    "MACRO_POSITION_CAUTION":   "'예' 또는 '아니오'. 예인 경우 근거 한 문장 뒤에 부연 가능.",
-
-    "HOLDING_PRICE":            "두산에너빌리티 현재가 (콤마 포함, 예: '110,500').",
-    "HOLDING_CHANGE_PCT":       "전일 대비 변동 (부호 포함, 예: '+1.38%').",
-    "HOLDING_PNL_PCT":          "매수가 109,000원 대비 손익 (부호 포함, 예: '+1.38%').",
-    "HOLDING_ADDBUY_STATUS":    "'도달' 또는 '미달 (현재가 -X.X%)' (예: '미달 (-3.5%)').",
-    "HOLDING_STOPLOSS_STATUS":  "'충분한 여유' 또는 '근접 — 5% 이내 경고'.",
-    "HOLDING_MA_STATUS":        "'정배열 유지' 또는 '역배열 전환 경고'.",
-    "HOLDING_TRAILING_STATUS":  "최고가 기준 하락폭 (부호 포함, 예: '-4.2% (발동까지 여유)') 또는 '발동 근접 경고'.",
-
-    "ALERT_1":                  "오늘의 주의사항 첫 번째 (예: 'VIX 22 돌파 관찰, 게이트 주의'). 해당 없으면 '해당 없음'.",
-    "ALERT_2":                  "두 번째 주의사항. 해당 없으면 '해당 없음'.",
-    "ALERT_3":                  "세 번째 주의사항. 해당 없으면 '해당 없음'."
+    "UPLOAD_ID": "Notion File Upload API 로 통합 PDF 를 업로드하면 응답에 포함되는 file_upload 객체의 id (UUID 형식 예: a1b2c3d4-e5f6-7890-abcd-ef0123456789)."
   }
 }
