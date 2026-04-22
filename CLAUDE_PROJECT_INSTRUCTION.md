@@ -17,7 +17,7 @@ NOTION_PARENT_PAGE_ID    = 33f14f34-3a56-81a0-bf2d-d9920d69303f
 GDRIVE_OAUTH_CLIENT_ID       = <GitHub Secrets 동일값>
 GDRIVE_OAUTH_CLIENT_SECRET   = <GitHub Secrets 동일값>
 GDRIVE_OAUTH_REFRESH_TOKEN   = <GitHub Secrets 동일값>
-GDRIVE_MORNING_DATA_FOLDER_ID = <GitHub Secrets 동일값>
+GDRIVE_FOLDER_ID = <GitHub Secrets 동일값>
 ```
 
 ## 필요 파일 (마스터가 Claude.ai Files 에 업로드)
@@ -188,7 +188,7 @@ H = {"Authorization": f"Bearer {tok}"}
 import json
 meta = {
     "name": f"report_{YMD}_full.pdf",
-    "parents": [GDRIVE_MORNING_DATA_FOLDER_ID],
+    "parents": [GDRIVE_FOLDER_ID],
     "mimeType": "application/pdf",
 }
 with open("/tmp/combined.pdf", "rb") as f:
