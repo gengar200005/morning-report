@@ -1,12 +1,12 @@
 {
   "__meta": {
-    "description": "Morning Report Notion 페이지 템플릿 v1.2 (통합 PDF 모드). 마켓 데이터 PDF + Claude 분석 PDF 를 pypdf 로 merge 한 통합 PDF 를 Notion File Upload API 로 업로드한 뒤, 여기 {{UPLOAD_ID}} 를 그 id 로 치환해서 PATCH /v1/blocks/{page_id}/children 에 전송.",
-    "version": "1.2",
+    "description": "Morning Report Notion 페이지 템플릿 v1.3 (섹션별 통합 모드). Claude 분석이 이미 섹션별 카드로 삽입된 단일 PDF 를 Drive 에 public 업로드하고, 여기 {{PDF_URL}} 를 그 direct-download URL 로 치환해서 PATCH /v1/blocks/{page_id}/children 에 전송.",
+    "version": "1.3",
     "updated": "2026-04-22",
     "usage_rules": [
-      "1) children 은 블록 2개 고정 — pdf (통합 파일) + heading_2 (빈 수동 메모).",
-      "2) pdf 블록은 file_upload 타입. external URL 방식 아님. 통합 PDF 는 Notion 내부 저장.",
-      "3) {{UPLOAD_ID}} 는 Notion POST /v1/file_uploads 응답 + 실제 업로드 완료 후의 file_upload.id (UUID) 로 치환.",
+      "1) children 은 블록 2개 고정 — pdf (external URL) + heading_2 (빈 수동 메모).",
+      "2) pdf 블록은 external 타입. file_upload 방식 아님. PDF 는 Drive 에 호스팅.",
+      "3) {{PDF_URL}} 는 Drive public 파일의 direct-download URL (예: https://drive.google.com/uc?export=download&id=<FILE_ID>).",
       "4) __meta / __placeholders 키는 Notion API 바디에 포함 금지."
     ]
   },
@@ -16,8 +16,8 @@
       "object": "block",
       "type": "pdf",
       "pdf": {
-        "type": "file_upload",
-        "file_upload": { "id": "{{UPLOAD_ID}}" }
+        "type": "external",
+        "external": { "url": "{{PDF_URL}}" }
       }
     },
     {
@@ -32,6 +32,6 @@
   ],
 
   "__placeholders": {
-    "UPLOAD_ID": "Notion File Upload API 로 통합 PDF 를 업로드하면 응답에 포함되는 file_upload 객체의 id (UUID 형식 예: a1b2c3d4-e5f6-7890-abcd-ef0123456789)."
+    "PDF_URL": "Google Drive 에 업로드된 통합 PDF 의 direct-download URL. 권한: anyone with link, reader. 형식: https://drive.google.com/uc?export=download&id=<FILE_ID>. 실패 시 fallback: https://drive.usercontent.google.com/download?id=<FILE_ID>&export=download."
   }
 }

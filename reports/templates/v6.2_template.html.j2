@@ -1148,6 +1148,59 @@
     letter-spacing: 1em;
   }
 
+  /* ========== CLAUDE ANALYSIS CARDS (v3.0) ========== */
+  .claude-card {
+    margin-top: 20px;
+    padding: 14px 16px 14px 18px;
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    page-break-inside: avoid;
+  }
+  .claude-card .claude-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .claude-card .claude-body {
+    color: var(--ink-soft);
+  }
+  .claude-card .claude-body p {
+    margin: 0 0 6px 0;
+  }
+  .claude-card .claude-body p:last-child { margin-bottom: 0; }
+  .claude-card .claude-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+  }
+  .claude-card .claude-body li {
+    padding: 2px 0 2px 14px;
+    position: relative;
+  }
+  .claude-card .claude-body li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .claude-card strong { color: var(--ink); }
+
+  .claude-card.alert {
+    background: var(--bear-bg-soft);
+    border-left-color: var(--bear);
+  }
+  .claude-card.alert .claude-label { color: var(--bear); }
+  .claude-card.alert .claude-body li::before { color: var(--bear); }
+
   @media print {
     body { padding: 0; background: #fff; }
     .report { box-shadow: none; padding: 36px; }
@@ -1211,6 +1264,14 @@
     </div>
     {% endif %}
   </div>
+
+  {% set _ca_alert = (claude_analysis | default({})).get("alert") %}
+  {% if _ca_alert %}
+  <div class="claude-card alert">
+    <div class="claude-label">🗒 Claude · 오늘의 주의사항</div>
+    <div class="claude-body">{{ _ca_alert | safe }}</div>
+  </div>
+  {% endif %}
 
   <!-- ========== SECTION 1: US MARKETS ========== -->
   <section>
@@ -1365,6 +1426,14 @@
         </div>
       </div>
     </div>
+
+    {% set _ca_gate_flow = (claude_analysis | default({})).get("gate_flow") %}
+    {% if _ca_gate_flow %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 시장 게이트 · 수급</div>
+      <div class="claude-body">{{ _ca_gate_flow | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- ========== SECTION 3: SECTOR LEADERSHIP ========== -->
@@ -1416,6 +1485,14 @@
       <div class="sector-card bear"><div class="sector-head"><div class="sector-name">{{ etf.name }}</div><div class="sector-score">{{ etf.score | format_number(1) }}</div></div>{% if weekly_entry %}<div class="sector-perf">주간 <span class="{{ 'up' if weekly_entry.delta >= 0 else 'down' }}">{{ weekly_entry.delta | format_pct_signed(1) | replace('%', '') }}</span></div>{% endif %}<div class="sector-label">Weakening</div></div>
       {% endfor %}
     </div>
+
+    {% set _ca_sector = (claude_analysis | default({})).get("sector") %}
+    {% if _ca_sector %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 섹터 로테이션</div>
+      <div class="claude-body">{{ _ca_sector | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <hr class="decorative">
@@ -1494,6 +1571,14 @@
       </div>
     </div>
     {% endfor %}
+
+    {% set _ca_entry = (claude_analysis | default({})).get("entry") %}
+    {% if _ca_entry %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · A등급 Top 5 동향</div>
+      <div class="claude-body">{{ _ca_entry | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- ========== SECTION 4B: A-GRADE REMAINING ========== -->
@@ -1528,6 +1613,14 @@
       <span style="margin: 0 10px; color: var(--ink-faint);">|</span>
       <strong style="color: var(--ink);">B-GRADE:</strong> {{ data.minervini.counts.B }}종목 (노션 DB 참조)
     </div>
+
+    {% set _ca_agrade = (claude_analysis | default({})).get("agrade") %}
+    {% if _ca_agrade %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · A등급 유니버스</div>
+      <div class="claude-body">{{ _ca_agrade | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- ========== SECTION 5: PORTFOLIO ========== -->
@@ -1574,6 +1667,14 @@
       </div>
     </div>
     {% endfor %}
+
+    {% set _ca_portfolio = (claude_analysis | default({})).get("portfolio") %}
+    {% if _ca_portfolio %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 보유 종목 상태</div>
+      <div class="claude-body">{{ _ca_portfolio | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
@@ -1604,6 +1705,14 @@
     <p style="margin-top: 16px; font-family: var(--sans); font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--ink-muted);">
       {% if data.next_high_impact %}5월 초까지 매크로 이벤트 집중. {{ data.next_high_impact.event }} 전 포지션 사이징 보수적 관리, 이벤트 직전 신규 진입 자제.{% else %}당분간 주요 매크로 이벤트 없음.{% endif %}
     </p>
+
+    {% set _ca_macro = (claude_analysis | default({})).get("macro") %}
+    {% if _ca_macro %}
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 매크로 임박도</div>
+      <div class="claude-body">{{ _ca_macro | safe }}</div>
+    </div>
+    {% endif %}
   </section>
 
   <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
