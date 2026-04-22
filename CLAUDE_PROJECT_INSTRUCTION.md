@@ -1,31 +1,35 @@
 # Morning Report Analyst · Claude Project Instructions
-> v3.1 (2026-04-22). 섹션별 통합 모드 — Claude 분석을 v6.2 HTML 템플릿에 직접
-> 카드로 끼워 넣고 wkhtmltopdf 로 단일 PDF 렌더. Drive MCP 커넥터로 public
-> 업로드 후 Notion pdf 블록 (external URL) 생성.
+> v3.2 (2026-04-22). 섹션별 통합 모드 — Claude 분석을 v6.2 HTML 템플릿에 직접
+> 카드로 끼워 넣고 wkhtmltopdf 로 단일 PDF 렌더. **Notion native file_upload
+> API** 로 바이트를 샌드박스에서 직접 업로드 후 `pdf` 블록에 참조.
 
-## 샌드박스 환경 전제 (v3.1 재작성 사유)
+## 샌드박스 환경 전제 (v3.2 재작성 사유)
 
-v3.0 의 hybrid(GitHub raw fetch) + OAuth HTTP Drive API 경로는 Claude.ai
-샌드박스에서 호스트 차단으로 동작 불가. v3.1 은 실측 recon 결과를 전제로
-설계된다.
+v3.1 의 Drive MCP `create_file(content=<base64>)` 경로는 Claude 모델이 PDF
+바이트를 base64 로 **직접 출력**해야 해서 구조적 불가 (271KB PDF ≈ 90K
+출력 토큰, 단일 턴 출력 상한 초과 + 생성 오타로 PDF 손상). v3.2 는 바이트가
+샌드박스↔외부 직결로 흐르고 Claude 대화 컨텍스트를 통과하지 않는 경로만
+사용한다.
 
 ### ✅ 가능
-- `api.notion.com` 접근
+- `api.notion.com` 접근 — **페이지 생성 + 블록 주입 + file_upload 2단계 POST 전체**
 - `wkhtmltopdf` (`/usr/bin/wkhtmltopdf` 설치됨)
 - `jinja2`, `bs4`, `fontTools` 임포트
-- Drive MCP 커넥터 binary write (단, `disableConversionToGoogleType: true` 필수)
-- Drive 폴더 `ClaudeMorningData` "Anyone with link / Viewer" 공유 ON
-  → 공개 URL 패턴: `https://drive.google.com/uc?export=download&id=<FILE_ID>`
+- 샌드박스 Python `requests` 로 외부 HTTP 호출 시 바이트는
+  `open(..., "rb")` 파일 핸들로만 다뤄짐 → **Claude 토큰 미경유**
 
-### ❌ 차단됨
+### ❌ 차단됨 (v3.2 에서도 여전히)
 - `raw.githubusercontent.com` (host_not_allowed) — GitHub raw fetch 불가
 - `oauth2.googleapis.com` (host_not_allowed) — OAuth 토큰 갱신 불가
 - `www.googleapis.com` (host_not_allowed) — Drive HTTP API 직접 호출 불가
 
-v3.1 의 귀결:
+### ⚠️ 가능하지만 v3.2 에서 쓰지 않음
+- Drive MCP 커넥터 `create_file` — base64 바디 요구 → 위 구조적 불가 사유로 배제
+
+v3.2 의 귀결:
 (a) 모든 코드·템플릿은 Claude.ai Project Files 로만 로드,
-(b) Drive 업로드는 MCP 커넥터 한 번 호출,
-(c) 파일별 권한 부여는 폴더 공개 공유 상속으로 대체.
+(b) PDF 업로드는 Notion native file_upload (2단계 POST, `api.notion.com` 단일 호스트),
+(c) Drive 연동은 **Step 1 데이터 읽기에만** 국한 (MCP read_file_content / search_files).
 
 ## 역할
 
@@ -38,11 +42,12 @@ v3.1 의 귀결:
 ```
 NOTION_INTEGRATION_TOKEN = <ntn_... 토큰>
 NOTION_PARENT_PAGE_ID    = 33f14f34-3a56-81a0-bf2d-d9920d69303f
-GDRIVE_FOLDER_ID         = <ClaudeMorningData 폴더 ID>
+GDRIVE_FOLDER_ID         = <ClaudeMorningData 폴더 ID>   # Step 1 입력 읽기 전용
 ```
 
 ※ v3.0 의 `GDRIVE_OAUTH_CLIENT_ID` / `_SECRET` / `_REFRESH_TOKEN` 3개는
-MCP 커넥터로 대체되어 v3.1 에서 제거.
+v3.1 에서 제거됨. `GDRIVE_FOLDER_ID` 는 Step 1 의 `morning_data_YYYYMMDD.txt`
+읽기에만 쓰이고, v3.2 에서 PDF 업로드는 Drive 가 아닌 Notion 으로 간다.
 
 ## 필요 파일 (마스터가 Claude.ai Project Files 에 업로드)
 
@@ -212,36 +217,54 @@ assert Path("/tmp/combined.pdf").stat().st_size > 50_000, "PDF 너무 작음"
 샌드박스에 `weasyprint` 자동 설치 시도 금지 — 대체 렌더러 도입은 마스터
 판단 사항. (에러 메시지·문제 페이지 번호를 함께 보고.)
 
-### Step 8. Drive 업로드 (MCP 커넥터 단일 호출) → external URL
+### Step 8. PDF 업로드 (Notion native file_upload 2단계)
 
-Drive MCP 커넥터로 PDF 를 한 번에 업로드. 파일별 권한 부여 불필요 —
-`ClaudeMorningData` 폴더의 "Anyone with link / Viewer" 공유가 상속된다.
-
-```
-파일명:   report_YYYYMMDD_v3.pdf      ← _v3 suffix 필수 (아래 참고)
-parent:   {{GDRIVE_FOLDER_ID}}
-mimeType: application/pdf
-body:     base64-encoded PDF bytes
-          (= base64.b64encode(open("/tmp/combined.pdf","rb").read()).decode())
-플래그:   disableConversionToGoogleType: true   ← 필수
-```
-
-반환 `file_id` 로 public URL 조립:
+샌드박스 Python 에서 Notion file_upload API 를 직접 호출. PDF 바이트는
+`open("/tmp/combined.pdf", "rb")` 파일 핸들로만 다뤄져 **Claude 대화
+컨텍스트를 절대 통과하지 않는다** (requests 가 샌드박스↔Notion 직결 전송).
 
 ```python
-pdf_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+import requests
+
+H_JSON = {
+    "Authorization":  f"Bearer {NOTION_INTEGRATION_TOKEN}",
+    "Notion-Version": "2022-06-28",
+    "Content-Type":   "application/json",
+}
+
+# 8-1) 업로드 슬롯 생성
+r = requests.post(
+    "https://api.notion.com/v1/file_uploads",
+    headers=H_JSON, json={}, timeout=30,
+)
+r.raise_for_status()
+fu = r.json()
+file_upload_id = fu["id"]          # Step 9 블록 주입에 사용
+upload_url     = fu["upload_url"]  # 형태: https://api.notion.com/v1/file_uploads/<id>/send
+
+# 8-2) 바이트 전송 — sandbox→Notion 직결, Claude 토큰 미경유
+H_BEARER = {
+    "Authorization":  f"Bearer {NOTION_INTEGRATION_TOKEN}",
+    "Notion-Version": "2022-06-28",
+}
+with open("/tmp/combined.pdf", "rb") as f:
+    send = requests.post(
+        upload_url,
+        headers=H_BEARER,
+        files={"file": ("report.pdf", f, "application/pdf")},
+        timeout=120,
+    )
+send.raise_for_status()
+assert send.json().get("status") == "uploaded", f"업로드 상태 이상: {send.text[:300]}"
 ```
 
-**같은 날짜 재실행 정책**: 폴더 내 `report_YYYYMMDD_v3.pdf` 가 이미
-존재하면 MCP 커넥터 `delete` 후 재업로드(또는 update 지원 시 update).
-다른 날짜 파일은 **방치**(히스토리 보존). 대량 청소는 마스터 수동 처리.
+**expire 주의**: `file_upload_id` 는 생성 후 **1시간 이내에 Step 9 에서 블록에
+주입되지 않으면 자동 expire**. Step 8 성공 후 Step 9 를 지체 없이 실행할 것.
+중간에 실패하면 Step 8-1 부터 다시 (pending file_upload 객체가 쌓여도 1시간
+뒤 자동 정리되므로 부작용 없음).
 
-**`_v3` suffix 사유**: v2.9 가 쓰던 `report_YYYYMMDD.pdf` / `*_full.pdf` 가
-같은 폴더에 병존하므로 혼동 방지.
-
-※ `drive.google.com/uc` 가 300 redirect 로 바이너리를 서빙하므로 Notion
-external pdf 블록이 인라인 미리보기를 렌더한다. 문제 시 fallback URL:
-`https://drive.usercontent.google.com/download?id={file_id}&export=download`
+**업로드 호스트**: `api.notion.com` 단일. v3.1 의 `drive.google.com/uc` URL
+조립·fallback 로직·`_v3` suffix·재실행 정책 전부 소멸.
 
 ### Step 9. Notion 페이지 생성 + 블록 주입
 
@@ -265,9 +288,11 @@ r = requests.post("https://api.notion.com/v1/pages",
 r.raise_for_status()
 page_id = r.json()["id"]
 
-# 9-2) 템플릿 로드 + {{PDF_URL}} 치환 + __meta/__placeholders 제거
+# 9-2) 템플릿 로드 + {{FILE_UPLOAD_ID}} 치환 + __meta/__placeholders 제거
 tpl = json.load(open("notion_page_template.json"))
-payload = json.loads(json.dumps(tpl["children"]).replace("{{PDF_URL}}", pdf_url))
+payload = json.loads(
+    json.dumps(tpl["children"]).replace("{{FILE_UPLOAD_ID}}", file_upload_id)
+)
 
 # 9-3) 블록 주입
 r = requests.patch(
@@ -328,17 +353,19 @@ T15/CD120: Minervini 8조건 + RS≥70 + 20일 수급 + KOSPI MA60 게이트 /
 
 ## 절대 금지
 
-- **Notion 용 마크다운 MCP 도구 사용** (통합 PDF 를 링크 텍스트로 수렴) —
-  Drive MCP 커넥터(파일 업로드)는 v3.1 에서 사용함. 구분 주의.
+- **Notion 용 마크다운 MCP 도구 사용** (통합 PDF 를 링크 텍스트로 수렴)
+- **Drive MCP `create_file` 로 PDF 업로드 시도** (v3.1 방식 — base64 요구,
+  구조적 토큰 초과. 모든 PDF 업로드는 Notion file_upload 경로 전용)
 - 첫 블록 type 을 `pdf` 이외로 변경
-- Notion 블록에서 `external` URL 을 `file_upload` 로 되돌리기 (v3.1 은 external 고정)
+- Notion 블록에서 `file_upload` 를 `external` URL 로 되돌리기 (v3.2 는 file_upload 고정)
 - 템플릿 children 블록 추가·삭제·재정렬 (고정 2블록)
 - `__meta` / `__placeholders` 를 Notion API 바디에 포함
 - Notion Integration Token 로그·화면 노출
-- Drive 업로드 시 `disableConversionToGoogleType: true` 누락
-  (누락 시 Google Docs 로 변환되어 PDF 링크 깨짐)
+- **`file_upload_id` 를 받고 1시간 이상 방치 후 블록 주입** (expire 됨 —
+  Step 8 성공 즉시 Step 9 로 연결)
+- PDF 바이트를 Claude 출력 토큰으로 뱉기 (base64 문자열·hex·bytes repr 등
+  어떤 형태로도 인자화 금지)
 - GitHub raw fetch / OAuth HTTP 호출 시도 (v3.0 경로 — 호스트 차단됨)
-- 다른 날짜 Drive 파일 자동 삭제 (히스토리 보존, 청소는 마스터 수동)
 - `weasyprint` 등 대체 렌더러 자동 설치 시도 (마스터 판단 사항)
 - 개별 종목 Bull/Bear 내러티브 / 매매 권고
 - HTML 스니펫 내부에 외부 리소스 참조 (`<img src="...">`, `<link>`, 인라인 SVG)
@@ -348,12 +375,12 @@ T15/CD120: Minervini 8조건 + RS≥70 + 20일 수급 + KOSPI MA60 게이트 /
 - [ ] `template_src` 에 `claude-card` 포함 확인?
 - [ ] Google Fonts `<link>` 전부 제거?
 - [ ] `/tmp/combined.pdf` 생성 및 크기 > 50KB?
-- [ ] Drive 업로드 파일명이 `report_YYYYMMDD_v3.pdf` 형식?
-- [ ] Drive 업로드 시 `disableConversionToGoogleType: true` 전달?
-- [ ] 같은 날짜 기존 파일은 교체, 다른 날짜 파일은 방치?
-- [ ] pdf_url 이 `drive.google.com/uc?export=download&id=...` 형식?
+- [ ] `POST /v1/file_uploads` 응답 200 + `id` / `upload_url` 필드 존재?
+- [ ] 바이트 전송 (8-2) 응답 200 + `status == "uploaded"`?
+- [ ] Step 8 성공 후 Step 9 까지 1시간 이내 연결 (file_upload expire 방지)?
 - [ ] Notion 페이지 생성 응답 200/201?
 - [ ] 블록 주입 응답 200?
-- [ ] `{{PDF_URL}}` 치환 완료 (payload 에 `{{` 0건)?
+- [ ] `{{FILE_UPLOAD_ID}}` 치환 완료 (payload 에 `{{` 0건)?
+- [ ] PDF 바이트가 Claude 출력 토큰에 섞여 나오지 않음 (base64/hex 문자열 출력 0건)?
 - [ ] 개별 종목 해석·권고 없음?
 - [ ] 모든 수치에 단위·기준일?
