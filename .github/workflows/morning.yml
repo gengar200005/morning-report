@@ -101,6 +101,16 @@ jobs:
         with:
           chrome-version: stable
 
+      - name: 한글 폰트 설치 (PDF 렌더링용)
+        # 러너 이미지엔 라틴 폰트만 있어서 한글이 □ 로 깨짐.
+        # Noto Sans CJK KR 설치 + fc-cache 갱신으로 Chrome fallback 해결.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-cjk-extra
+          fc-cache -f
+          echo "installed CJK fonts (sample):"
+          fc-list :lang=ko | head -5
+
       - name: HTML → PDF + Drive 업로드
         env:
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
