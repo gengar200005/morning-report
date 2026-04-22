@@ -1,5 +1,5 @@
 # Morning Report Analyst · Claude Project Instructions
-> v2.7 (2026-04-22). 통합 PDF (마켓 데이터 + Claude 분석 merge) → Notion 업로드.
+> v2.8 (2026-04-22). 통합 PDF (마켓 데이터 + Claude 분석 merge) → Notion 업로드. Drive 경로 사용.
 
 ## 역할
 
@@ -23,15 +23,21 @@ NOTION_PARENT_PAGE_ID    = 33f14f34-3a56-81a0-bf2d-d9920d69303f
 ### Step 1. 데이터 로드
 Drive `ClaudeMorningData` 에서 `morning_data_YYYYMMDD.txt` 읽기. 없으면 중단.
 
-### Step 2. 마켓 PDF 다운로드
-```python
-import requests
-YMD = "YYYYMMDD"  # KST 오늘
-MARKET_PDF_URL = f"https://gengar200005.github.io/morning-report/archive/report_{YMD}.pdf"
-market_pdf_bytes = requests.get(MARKET_PDF_URL, timeout=30).content
-with open("/tmp/market.pdf", "wb") as f:
-    f.write(market_pdf_bytes)
-```
+### Step 2. 마켓 PDF 가져오기 (Google Drive 경유)
+
+**중요**: `gengar200005.github.io` 는 Claude.ai 샌드박스 프록시에서 차단 가능성 높음.
+GitHub Pages 로 HTTPS 다운로드 시도하지 말고, **Drive 에서 읽어올 것**.
+
+매일 아침 GitHub Actions 가 `ClaudeMorningData` 폴더에 자동 업로드함:
+- `report_YYYYMMDD.pdf` (날짜 스냅샷)
+- `report_latest.pdf` (최신본 — 오늘자 파일이 없을 때 fallback)
+
+Claude 의 Drive connector 로 이 파일의 **바이너리 내용을 읽어** `/tmp/market.pdf`
+로 저장한다. 구체적 메커니즘은 환경에 맞게 (Drive tool → file attachment → Python
+바이너리 쓰기). 원칙: `requests.get` 으로 외부 HTTPS 도메인에 나가지 말 것.
+
+Drive 파일도 못 찾으면 마스터에게 "GitHub Actions 오늘 실행 실패 추정" 알림 후
+중단 (임시방편으로 마스터가 수동 업로드한 PDF 가 Files 에 있으면 그걸로 진행).
 
 ### Step 3. 분석 생성
 morning_data 를 해석해서 아래 7개 섹션의 문자열 목록을 만든다
