@@ -1,7 +1,10 @@
 # morning-report
 
-<!-- Last session branch: claude/session-start-UBATP (2026-04-23) -->
-<!-- 다음 세션 /session-start 가 이 포인터를 참조. /session-end 가 자동 갱신. -->
+<!-- ACTIVE BRANCHES (2026-04-23, main 미머지 상태로 병렬 진행 중): -->
+<!--   claude/session-start-UZymn  : ADR-003 섹터 강도 산식 + 응급 패치 (최신, 본 브랜치) -->
+<!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
+<!-- 다음 세션은 /session-start 의 "0. 브랜치 누락 체크" 자동 실행으로 양쪽 모두 인지. -->
+<!-- /session-end 가 본 포인터 자동 갱신. -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
