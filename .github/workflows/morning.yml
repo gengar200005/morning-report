@@ -93,9 +93,10 @@ jobs:
           TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
           git commit -m "Daily report ${TODAY} (auto)"
 
-          # morning_data.txt 는 dirty 상태 (HEAD=어제, workspace=오늘). rebase 전 HEAD
-          # 로 되돌림 (원격에 combine_data 가 올린 오늘자가 이미 있음).
-          git checkout HEAD -- morning_data.txt
+          # combine_data / kr_report / sector_report / holdings_report 등이 workspace
+          # 에 쓴 *_data.txt 들이 여전히 unstaged dirty 상태. rebase 가 거부하므로
+          # HEAD (방금 만든 docs 커밋) 으로 전면 리셋. docs/ 는 HEAD 에 이미 포함됨.
+          git reset --hard HEAD
 
           # Contents API commit 이 git ref 에 전파 안 됐을 수 있으므로 fetch + rebase +
           # push 재시도. rebase 는 combine_data commit 위에 우리 docs commit 을 올림.
