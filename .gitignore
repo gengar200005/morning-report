@@ -11,3 +11,8 @@ backtest/data/*.log
 
 # validation_report.json 은 추적 (162종목 ok 판정이 백테 재현성에 중요)
 !backtest/data/validation_report.json
+
+# Colab 노트북 산출물 — Drive (MyDrive/morning-report/sector_data/)에 저장.
+# 로컬로 sync 시 레포에 섞이지 않도록 차단. 재생성 방법: notebooks/sector_data_fetch.ipynb 실행.
+notebooks/**/*.parquet
+notebooks/.ipynb_checkpoints/
