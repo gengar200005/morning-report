@@ -730,7 +730,7 @@ def screen_stocks(token, mkt_ctx):
     kospi_ok = mkt_ctx["kospi_above_ma60"]
     vix_ok   = mkt_ctx["vix_ok"]
 
-    # 쿨다운 state 로드 (백테 확정 T15/CD120 기준)
+    # 쿨다운 state 로드 (strategy_config.yaml 기반, T10/CD60)
     state = load_screening_state()
     today_str  = NOW.strftime("%Y-%m-%d")
     today_date = NOW.date()
@@ -815,7 +815,7 @@ def screen_stocks(token, mkt_ctx):
             sig_age = calc_signal_age(closes) if core_ok else 0
             sig_tag = "🆕 신규" if sig_age <= 1 else f"{sig_age}일차"
 
-            # ── 쿨다운 잔여 (백테 확정 120거래일) ──
+            # ── 쿨다운 잔여 (strategy_config.yaml cooldown_days 기반) ──
             cooldown_rem = compute_cooldown_remaining(state, code, today_date)
 
             print(f"  {name} [{grade}] {score}/{max_score}점 [{sig_tag}] — "
@@ -927,9 +927,9 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     d_grade   = [c for c in candidates if c["등급"] == "D"]
 
     lines.append(f"\n【 Minervini 스크리닝 결과 】")
-    lines.append(f"  전략: Minervini + 수급 + KOSPI MA60 게이트 + 쿨다운 120거래일")
+    lines.append(f"  전략: Minervini + 수급 + KOSPI MA60 게이트 + 쿨다운 {STRATEGY_CFG['cooldown_days']}거래일")
     lines.append(f"  리스크: 손절 -{int(STRATEGY_STOP_LOSS*100)}% / 트레일링 -{int(STRATEGY_TRAIL_STOP*100)}% / 최대 {STRATEGY_MAX_POS}종목 / 최대 보유 {STRATEGY_MAX_HOLD}일")
-    lines.append(f"  백테(2015~2026, 103종목) CAGR +20.7%, MDD -26.2%, PF 2.22 (실전 기댓값 10-13%)")
+    lines.append(f"  백테(2015~2026, 162종목) CAGR +29.29%, MDD -29.8%, PF 2.22 (실전 기댓값 +15-20%)")
     lines.append(f"  전체 {len(candidates)}종목 — A:{len([c for c in candidates if c['등급']=='A'])} B:{len(ab_grade) - len([c for c in candidates if c['등급']=='A'])} C:{len(c_grade)} D:{len(d_grade)}")
 
     a_grade = [c for c in ab_grade if c["등급"] == "A"]
