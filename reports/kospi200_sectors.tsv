@@ -1,0 +1,151 @@
+ticker	name	sector_id	sector_name	sector_short	role_note
+5930	삼성전자	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	메모리/파운드리 대장
+660	SK하이닉스	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	HBM 선두
+42700	한미반도체	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	HBM TC본더 독점
+9150	삼성전기	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	MLCC/기판
+7660	이수페타시스	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	AI 서버 PCB, 25.12 신규편입
+67310	하나마이크론	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	반도체 후공정
+58470	리노공업	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	테스트 소켓
+240810	원익IPS	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	반도체 장비
+108320	LX세미콘	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	디스플레이 반도체
+357780	솔브레인	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	반도체 소재
+403870	HPSP	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	고압 수소 어닐링
+39030	이오테크닉스	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	레이저 장비
+95340	ISC	01_semiconductor_ai	반도체 & AI 밸류체인	SEMI	테스트 소켓
+267260	HD현대일렉트릭	02_power_infra_nuclear	전력인프라 & 원전	POWER	변압기 초호황 대장
+298040	효성중공업	02_power_infra_nuclear	전력인프라 & 원전	POWER	초고압 변압기
+10120	LS ELECTRIC	02_power_infra_nuclear	전력인프라 & 원전	POWER	전력기기 종합
+6260	LS	02_power_infra_nuclear	전력인프라 & 원전	POWER	LS 지주
+229640	LS에코에너지	02_power_infra_nuclear	전력인프라 & 원전	POWER	해저케이블
+34020	두산에너빌리티	02_power_infra_nuclear	전력인프라 & 원전	POWER	원전 주기기/SMR 대장
+52690	한전기술	02_power_infra_nuclear	전력인프라 & 원전	POWER	원전 설계
+15760	한국전력	02_power_infra_nuclear	전력인프라 & 원전	POWER	전력 유틸리티
+36460	한국가스공사	02_power_infra_nuclear	전력인프라 & 원전	POWER	LNG 인프라
+103140	풍산	02_power_infra_nuclear	전력인프라 & 원전	POWER	전선/구리
+457190	산일전기	02_power_infra_nuclear	전력인프라 & 원전	POWER	25.12 신규편입, 변압기
+336260	두산퓨얼셀	02_power_infra_nuclear	전력인프라 & 원전	POWER	수소연료전지
+9540	HD한국조선해양	03_shipbuilding_marine	조선 & 해양	SHIP	조선 지주 대장
+329180	HD현대중공업	03_shipbuilding_marine	조선 & 해양	SHIP	상선+특수선
+42660	한화오션	03_shipbuilding_marine	조선 & 해양	SHIP	LNG선+잠수함
+10140	삼성중공업	03_shipbuilding_marine	조선 & 해양	SHIP	해양플랜트
+75580	세진중공업	03_shipbuilding_marine	조선 & 해양	SHIP	조선기자재
+92200	디아이씨	03_shipbuilding_marine	조선 & 해양	SHIP	조선부품
+82740	한화엔진	03_shipbuilding_marine	조선 & 해양	SHIP	25.12 신규편입, 선박엔진
+12450	한화에어로스페이스	04_defense_aerospace	방산 & 항공우주	DEF	K9/장갑차/엔진 대장
+64350	현대로템	04_defense_aerospace	방산 & 항공우주	DEF	K2 전차
+79550	LIG넥스원	04_defense_aerospace	방산 & 항공우주	DEF	미사일/레이더
+47810	한국항공우주	04_defense_aerospace	방산 & 항공우주	DEF	KF-21/FA-50
+272210	한화시스템	04_defense_aerospace	방산 & 항공우주	DEF	방산 전자/위성
+880	한화	04_defense_aerospace	방산 & 항공우주	DEF	방산 지주
+373220	LG에너지솔루션	05_battery_ess	2차전지 & ESS	BATT	2차전지 대장
+6400	삼성SDI	05_battery_ess	2차전지 & ESS	BATT	전고체/ESS
+51910	LG화학	05_battery_ess	2차전지 & ESS	BATT	양극재 모회사
+96770	SK이노베이션	05_battery_ess	2차전지 & ESS	BATT	SK온 모회사
+5490	POSCO홀딩스	05_battery_ess	2차전지 & ESS	BATT	양극재/리튬
+3670	포스코퓨처엠	05_battery_ess	2차전지 & ESS	BATT	양극재/음극재
+86520	에코프로	05_battery_ess	2차전지 & ESS	BATT	에코프로 지주
+247540	에코프로비엠	05_battery_ess	2차전지 & ESS	BATT	양극재
+66970	엘앤에프	05_battery_ess	2차전지 & ESS	BATT	양극재
+5380	현대차	06_auto_mobility	자동차 & 모빌리티	AUTO	완성차 대장
+270	기아	06_auto_mobility	자동차 & 모빌리티	AUTO	완성차
+12330	현대모비스	06_auto_mobility	자동차 & 모빌리티	AUTO	부품 대장
+204320	HL만도	06_auto_mobility	자동차 & 모빌리티	AUTO	자율주행 부품
+161390	한국타이어앤테크놀로지	06_auto_mobility	자동차 & 모빌리티	AUTO	타이어
+73240	금호타이어	06_auto_mobility	자동차 & 모빌리티	AUTO	타이어
+307950	현대오토에버	06_auto_mobility	자동차 & 모빌리티	AUTO	25.12 신규편입, 자동차 SW
+11210	현대위아	06_auto_mobility	자동차 & 모빌리티	AUTO	자동차 부품
+25540	한국단자공업	06_auto_mobility	자동차 & 모빌리티	AUTO	자동차 부품
+240	한국앤컴퍼니	06_auto_mobility	자동차 & 모빌리티	AUTO	한국타이어 지주
+207940	삼성바이오로직스	07_bio_healthcare	바이오 & 헬스케어	BIO	CDMO 대장
+68270	셀트리온	07_bio_healthcare	바이오 & 헬스케어	BIO	바이오시밀러
+100	유한양행	07_bio_healthcare	바이오 & 헬스케어	BIO	렉라자
+196170	알테오젠	07_bio_healthcare	바이오 & 헬스케어	BIO	피하주사 기술
+302440	SK바이오사이언스	07_bio_healthcare	바이오 & 헬스케어	BIO	백신
+326030	SK바이오팜	07_bio_healthcare	바이오 & 헬스케어	BIO	신약
+6280	녹십자	07_bio_healthcare	바이오 & 헬스케어	BIO	혈액제제
+128940	한미약품	07_bio_healthcare	바이오 & 헬스케어	BIO	신약개발
+69620	대웅제약	07_bio_healthcare	바이오 & 헬스케어	BIO	제약
+950210	프레스티지바이오파마	07_bio_healthcare	바이오 & 헬스케어	BIO	바이오
+105560	KB금융	08_finance_holdings	금융 & 지주	FIN	은행 대장
+55550	신한지주	08_finance_holdings	금융 & 지주	FIN	은행
+86790	하나금융지주	08_finance_holdings	금융 & 지주	FIN	은행
+316140	우리금융지주	08_finance_holdings	금융 & 지주	FIN	은행
+138930	BNK금융지주	08_finance_holdings	금융 & 지주	FIN	지방은행
+24110	기업은행	08_finance_holdings	금융 & 지주	FIN	국책은행
+175330	JB금융지주	08_finance_holdings	금융 & 지주	FIN	지방은행
+32830	삼성생명	08_finance_holdings	금융 & 지주	FIN	생명보험 대장
+810	삼성화재	08_finance_holdings	금융 & 지주	FIN	손해보험
+88350	한화생명	08_finance_holdings	금융 & 지주	FIN	생명보험
+138040	메리츠금융지주	08_finance_holdings	금융 & 지주	FIN	종합금융
+71050	한국금융지주	08_finance_holdings	금융 & 지주	FIN	증권
+29780	삼성카드	08_finance_holdings	금융 & 지주	FIN	카드
+16360	삼성증권	08_finance_holdings	금융 & 지주	FIN	증권
+5830	DB손해보험	08_finance_holdings	금융 & 지주	FIN	손해보험
+6800	미래에셋증권	08_finance_holdings	금융 & 지주	FIN	증권
+3550	LG	08_finance_holdings	금융 & 지주	FIN	LG 지주
+34730	SK	08_finance_holdings	금융 & 지주	FIN	SK 지주
+35420	NAVER	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	플랫폼 대장
+35720	카카오	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	플랫폼
+17670	SK텔레콤	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	통신 대장
+30200	KT	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	통신
+32640	LG유플러스	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	통신
+259960	크래프톤	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	게임 대장
+36570	엔씨소프트	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	게임
+251270	넷마블	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	게임
+263750	펄어비스	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	게임
+352820	하이브	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	엔터 대장
+41510	SM	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	엔터
+122870	와이지엔터테인먼트	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	엔터
+35760	CJ ENM	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	미디어
+18260	삼성에스디에스	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	IT서비스
+377300	카카오페이	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	핀테크
+323410	카카오뱅크	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	인터넷은행
+64850	LG씨엔에스	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	25.12 신규편입, IT서비스
+36420	제이콘텐트리	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	미디어
+34120	SBS	09_platform_comm_content	플랫폼 & 통신 & 콘텐츠	PLAT	방송
+720	현대건설	10_construction_building	건설 & 건자재	CONST	건설 대장, 원전 EPC
+28260	삼성물산	10_construction_building	건설 & 건자재	CONST	건설+상사, 계열 지주성격
+47040	대우건설	10_construction_building	건설 & 건자재	CONST	원전 시공, 중동 재건
+6360	GS건설	10_construction_building	건설 & 건자재	CONST	자이 브랜드, 중동
+375500	DL이앤씨	10_construction_building	건설 & 건자재	CONST	e편한세상, 플랜트
+375780	DL	10_construction_building	건설 & 건자재	CONST	DL 지주
+28050	삼성E&A	10_construction_building	건설 & 건자재	CONST	플랜트 EPC (구 삼성엔지니어링)
+294870	HDC현대산업개발	10_construction_building	건설 & 건자재	CONST	주택/개발
+2380	KCC	10_construction_building	건설 & 건자재	CONST	건자재 대장
+3410	쌍용C&E	10_construction_building	건설 & 건자재	CONST	시멘트 대장
+300720	한일시멘트	10_construction_building	건설 & 건자재	CONST	시멘트
+2030	아세아	10_construction_building	건설 & 건자재	CONST	25.12 신규편입, 아세아시멘트 지주사
+11170	롯데케미칼	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	석유화학
+10950	S-Oil	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	정유
+11780	금호석유	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	석유화학
+4020	현대제철	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	철강
+10130	고려아연	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	비철금속
+1430	세아베스틸지주	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	철강
+3030	세아제강지주	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	철강
+1230	동국홀딩스	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	철강 지주
+90430	아모레퍼시픽	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	화장품 대장
+2790	아모레G	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	아모레 지주
+51900	LG생활건강	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	생활용품/화장품
+97950	CJ제일제당	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	식품 대장
+271560	오리온	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	식품
+1800	오리온홀딩스	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	오리온 지주
+7310	오뚜기	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	식품
+5300	롯데칠성	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	음료
+5740	크라운제과	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	식품
+139480	이마트	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	유통
+23530	롯데쇼핑	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	유통
+7070	GS리테일	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	유통
+282330	BGF리테일	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	편의점
+71840	롯데하이마트	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	유통
+21240	코웨이	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	생활가전
+11200	HMM	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	해운 대장
+3490	대한항공	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	항공 대장
+20560	아시아나항공	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	항공
+1040	CJ	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	CJ 지주
+4990	롯데지주	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	롯데 지주
+5440	현대지에프홀딩스	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	지주
+78930	GS	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	GS 지주
+4800	효성	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	효성 지주
+34230	파라다이스	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	25.12 신규편입, 카지노
+35250	강원랜드	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	카지노
+114090	GKL	11_materials_consumer_industrials	소재·화학·필수소비재·유통·운송	MISC	카지노
