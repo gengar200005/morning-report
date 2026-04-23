@@ -1,9 +1,12 @@
 name: 모닝 리포트
 
+# ⚠️ schedule 트리거 절대 추가 금지.
+# cron-job.org 가 KST 06:25 에 workflow_dispatch 로 단일 호출하는 구조
+# (ADR / 658e231 / 본 세션 ee63ad1 후속). GitHub 내장 cron 은 고부하 시
+# 2~3시간 지연 + cron-job.org 호출과 중복 실행되어 race 유발. 과거에
+# 658e231 (4/20) 에서 한 번 제거했으나 d93baf4 (4/23 UZymn 세션) 에서
+# 인프라 통째 재생성 시 stale morning.yml 따라 부활한 회귀 사례 있음.
 on:
-  schedule:
-    # UTC 21:00 평일(일–금) = KST 06:00 (월–토). 주말 전 금요일 밤엔 실행 안 함.
-    - cron: '0 21 * * 0-5'
   workflow_dispatch:
 
 jobs:
