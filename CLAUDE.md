@@ -1,22 +1,22 @@
 # morning-report
 
-> ## 🚨 새 세션 재개 시 반드시 먼저 실행 (2026-04-23 기준)
+> ## 🚨 데스크탑에서 이어가기 (2026-04-23 #5 기준)
 >
-> 현재 **main 미머지** 상태로 2개 브랜치 병렬 진행 중. 새 세션이 fresh
-> 브랜치에서 시작되면 이 아래 작업 내역을 못 봄. `/session-start` 전에:
+> 현재 **UZymn 브랜치에 5커밋 push 완료, main 머지 대기 중**. 핵심 블로커:
+> HTML 섹터 카드 렌더가 구 18 ETF 포맷 의존 → plan-004 재작성 완료 후 머지.
 >
 > ```bash
 > git fetch origin
-> git checkout claude/session-start-UZymn   # 섹터 breadth 작업 (최신)
+> git checkout claude/session-start-UZymn
 > git pull
 > /session-start
 > ```
 >
-> 또는 알림 작업 이어가려면 `claude/session-start-UBATP` 체크아웃.
-> 둘 다 건드려야 하면 UZymn 먼저 → /session-end 후 UBATP.
+> **가장 먼저 할 일**: `docs/plans/004-sector-html-renderer-rewrite.md` 읽기.
+> HTML 깨짐 양상 확인용 UZymn 수동 트리거는 옵션 (이미 plan 에 범위 명시).
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #4, UZymn 17 커밋): -->
-<!--   claude/session-start-UZymn  : ADR-003 Amendment 2 + 회귀 검증 PASS (주도+강세 vs universe-avg, hit 83%/mean +2.37%/월). 본 브랜치. -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #5, UZymn 23 커밋): -->
+<!--   claude/session-start-UZymn  : 11섹터 체계 전환 + sector_report.py 전면 재작성 (18 ETF 폐기). 본 브랜치. -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
@@ -24,54 +24,59 @@
 
 ---
 
-## 현재 상태 (2026-04-23 #4, UZymn 브랜치)
+## 현재 상태 (2026-04-23 #5, UZymn 브랜치)
 
-### 🎯 Phase 4 (실전 준비) — 섹터 산식 **검증 PASS** ✅
+### 🎯 Phase 4 (실전 준비) — 섹터 산식 **11섹터 전환 완료, HTML 재작성 대기** ⏳
 
 **확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR +29.29% (11.3년, 162종목), MDD -29.8%, 실전 기댓값 +15-20%
 
-### 섹터 강도 산식 (ADR-003 Amendment 2 **정식 채택**)
+### 섹터 강도 산식 — **KOSPI200 11섹터 체계로 전환** (2026-04-23 #5)
+
+**외부 리서치 v2026.04 기반 11섹터** (`reports/kospi200_sectors.tsv`):
+반도체 / 전력인프라 / 조선 / 방산 / 2차전지 / 자동차 / 바이오 / 금융 / 플랫폼 /
+건설 / 소재·유통.
+
+구 18 ETF 산식 **완전 폐기**. `sector_report.py` 전면 재작성 (414 → 226줄).
 
 ```
 점수 = ((A) IBD 6M 백분위 50 + (C) Breadth 25) × 100/75  → 0-100
-       (Weinstein Stage 25점은 pykrx 인덱스 API 복구 후 복원, ADR-005 대기)
-
-등급 임계: 주도 ≥75 / 강세 60-74 / 중립 40-59 / 약세 <40 / 표본<3 N/A
-운영 기준: "주도 + 강세" 복합 (주도 단독은 폐기 — hit 42% 변동성 과대)
-벤치마크: universe-avg (동등가중 162종목) — KOSPI 는 참고용
+등급 임계: 주도 ≥75 / 강세 60-74 / 중립 40-59 / 약세 <40
 ```
 
-**회귀 검증 결과** (최근 12개월, 16 ticker_overrides):
-| grades | benchmark | mean_excess/월 | hit | 판정 |
-|---|---|---:|---:|---|
-| 주도 | KOSPI | -2.21% | 42% | FAIL |
-| 주도+강세 | KOSPI | -1.22% | 33% | FAIL |
-| 주도 | universe | +1.39% | 42% | 부분 |
-| **주도+강세** | **universe** | **+2.37%** | **83%** | **PASS ✅** |
+**오늘(2026-04-23) 신 11섹터 결과** (dry-run 검증):
+- 🔥 주도: 반도체(5)=100, 건설(8)=90, 방산(5)=88, 전력인프라(10)=75
+- 📈 강세: 2차전지(10)=64
+- 〰️ 중립: 금융(24)=58, 자동차(9)=57, 조선(5)=52, 소재·유통(66)=44
+- 📉 약세: 플랫폼(15)=28, 바이오(7)=11
 
-핵심 insight: **KOSPI는 universe drag(-3.6%/월) 때문에 부적합**. ADR-003은
-"universe 내 섹터 선택 알파" 측정이므로 universe-avg 가 논리적.
+대비 구 15업종: 전기전자 100 → 반도체 100 + 2차전지 64 로 분해 / 운수장비 79
+→ 방산 88 + 자동차 57 + 조선 52 분해. **진입 대상 50% → 23% 집중**.
 
-**데이터 소스 pivot** (pykrx 인덱스 API 다운):
-- 섹터 매핑: KRX KIND (KSIC) + `reports/sector_overrides.yaml` 16 overrides
-- 시총: FinanceDataReader `StockListing('KRX')` Marcap
-- 종목 OHLCV: pykrx (정상)
-- 업종지수 주봉: 수집 보류 (Stage 복원 조건 충족 시 재개)
+**데이터 소스** (pykrx 인덱스 API 다운 상태, ADR-005 대기):
+- 섹터 매핑: `reports/sector_overrides.yaml` ticker_overrides **164개 전부 명시**
+- KSIC auto 매핑 (ksic_to_kospi22) 은 폴백 유지
+- parquet 2개: `backtest/data/sector/sector_map.parquet` + `stocks_daily.parquet`
+  (plan-003 옵션 2: 주 1회 Colab 수동 갱신)
 
-구현: `sector_breadth.py` + `scripts/validate_sector_breadth.py` +
-`tests/test_sector_breadth.py` (~35 tests) + `notebooks/sector_validate.ipynb`.
+구현: `sector_breadth.py` + `sector_report.py` 재작성 + `tests/test_sector_breadth.py`.
 
-### 진행중 작업 (2개 브랜치 병렬)
+### 🚨 main 머지 블로커 (plan-004)
+
+**HTML 섹터 카드 렌더가 구 18 ETF 포맷 의존**. 머지 전 재작성 필수:
+- `reports/parsers/morning_data_parser.py:_parse_sector_etf` → 신 `_parse_sector_adr003`
+- `reports/render_report.py` 섹터 카드 섹션 (line 161, 189, 240)
+- `reports/sector_mapping.py` STOCK_TO_SECTOR_ETF → ticker→sector (overrides.yaml 로드)
+
+상세: `docs/plans/004-sector-html-renderer-rewrite.md` (예상 1-2시간).
+
+### 진행중 작업 (2개 브랜치 병렬, main 미머지)
 
 ```
 claude/session-start-UBATP   →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
-claude/session-start-UZymn   →  ADR-003 Amendment 2 + 검증 PASS 완료
-                                다음: sector_report.py 신/구 병행 + ADR-004
+claude/session-start-UZymn   →  11섹터 전환 완료. HTML 재작성(plan-004) 대기
                                 ↑ 이 브랜치
 ```
-
-main 미머지 유지. 메타 인프라(인덱스+훅) 구축 보류.
 
 ### 아키텍처 (단일 소스 원칙, 2026-04-22 확립)
 
@@ -88,27 +93,21 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ## 활성 작업
 
-### ⏭️ 다음 세션 진입점 (웹/로컬 무관, 총 1.5-2h)
+### ⏭️ 다음 세션 진입점 (데스크탑 작업, 총 1.5-2.5h)
 
-#### 1️⃣ [우선] UZymn — `sector_report.py` 신/구 점수 병행 표시 (30-45분)
+#### 1️⃣ [최우선] plan-004 — HTML 섹터 카드 렌더/파서 재작성 (1-2h)
 
-ADR-003 Amendment 2 판정 PASS. 모닝리포트에 신 산식 결과 노출 단계.
+`sector_report.py` 재작성은 완료됐지만 HTML 렌더가 구 18 ETF 포맷 의존.
+**main 머지 블로커**.
 
-- 기존 18 ETF 기반 점수 + 신 ADR-003 점수를 나란히 출력
-- `reports/sector_mapping.py` 와 `sector_breadth.py` 통합 지점 결정
-- 모닝리포트에서 1-2주 운영 체감 후 구 산식 deprecate
-- 주의: `sector_breadth.py` 는 Colab 산출 parquet 필요 → GitHub Actions
-  워크플로에 parquet 생성 단계 추가 or pre-commit parquet 생성 고려
+- `reports/parsers/morning_data_parser.py` — `_parse_sector_adr003` 추가
+- `reports/render_report.py` 섹터 카드 섹션 재작성
+- `reports/sector_mapping.py` — ticker_overrides.yaml 로드 방식으로 교체
+- 상세 작업 단계 + 영향 라인: `docs/plans/004-sector-html-renderer-rewrite.md`
 
-#### 2️⃣ [차순위] UZymn — ADR-004 착수 (strategy 통합, 1시간)
+**완료되면**: UZymn 수동 트리거 검증 → main 머지 → 다음 06:00 cron 자동 반영.
 
-주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합.
-
-- `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
-- 백테 재실행 (162종목 × 11.3년)로 CAGR 변화 측정
-- 성공 시 ADR-004 정식 채택, 실전 전략 파라미터에 섹터 필터 추가
-
-#### 3️⃣ [이월] UBATP — 알림 시스템 E2E 테스트 (30분)
+#### 2️⃣ UBATP 알림 시스템 E2E 테스트 (30분, 별도 브랜치)
 ```bash
 git checkout claude/session-start-UBATP
 git pull
@@ -117,10 +116,23 @@ pip install -r requirements.txt
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 4️⃣ 이월 (별도 ADR/커밋)
-- universe.py 누락 4종목 (008560/000060/042670/000215 상폐·코드변경)
-- pykrx 복구 모니터링 → Stage 25점 복원 결정 (ADR-005)
-- `stocks_daily.parquet` 2026-04-30 확보 후 sector_breadth 재검증 (경계 outlier 확인)
+#### 3️⃣ [차순위] ADR-004 착수 (1시간, main 머지 후)
+
+주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합.
+- `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
+- 백테 재실행 (162종목 × 11.3년)로 CAGR 변화 측정
+- 성공 시 ADR-004 정식 채택
+
+#### 4️⃣ 브랜치 정리 (GitHub 웹 UI, 10분)
+이전 세션에서 보류. `https://github.com/gengar200005/morning-report/branches` 에서
+10개 stale 브랜치 삭제 (이전 세션 #5 대화 참조).
+
+#### 5️⃣ 이월 (별도 ADR/커밋)
+- **universe.py 누락 4종목 + 이름 stale** (008560/000060/042670/000215 + 009540
+  HD한국조선해양/079960 동양생명/005870 한화생명 금융 재분류). 별도 ADR.
+- **CLAUDE_PROJECT_INSTRUCTION.md T15/CD120 stale** → T10/CD60 수정 (머지 타이밍)
+- pykrx 인덱스 API 복구 모니터링 → Stage 25점 복원 (ADR-005)
+- `stocks_daily.parquet` 2026-04-30 확보 후 재검증 (월말 경계 outlier 확인)
 
 ### 다른 후보 작업
 - **1주일 알림 모니터링 후 v2 개선** (과알림 방지, 보유종목 제외, 1-2h)
@@ -242,8 +254,10 @@ morning-report-main/          ← 이 레포 (Git 연결)
 - [ADR-003] 섹터 강도 산정 방법론 (IBD + Weinstein + Breadth, 한국 적용) — `docs/decisions/003-sector-strength-methodology.md`
   - **Amendment 1 (2026-04-23)**: pykrx 인덱스 API 장애 대응 — KIND+FDR pivot, Stage 보류, rescale ×100/75
   - **Amendment 2 (2026-04-23 #4)**: 회귀 검증 **PASS** — 운영 기준 "주도+강세" × universe-avg 확정 (mean +2.37%/월, hit 83%). ticker_overrides 16개 baseline 고정.
+  - **Amendment 3 (2026-04-23 #5)**: KOSPI200 11섹터 체계 전환 — 외부 리서치 v2026.04 기반. `ticker_overrides` 16→164 전면 재작성. 구 18 ETF 산식 폐기.
 
 ## 최근 세션
+- **2026-04-23 #5 (UZymn, 웹)**: 11섹터 전환 — `reports/kospi200_sectors.tsv` 추가, `sector_overrides.yaml` ticker_overrides 164개 전면 재작성, `sector_report.py` 전면 재작성(414→226줄, 18 ETF 완전 폐기), `kr_report.py` import 버그 수정(check_minervini_detailed 누락) + 출력 문자열 T10/CD60/162종목 cleanup. HTML 렌더 재작성은 plan-004 이월.
 - **2026-04-23 #4 (UZymn, 웹)**: Colab 회귀 검증 3회 → "주도+강세 × universe-avg" PASS. ticker_overrides 5→16 확장 (금융업 41→26), validate_sector_breadth.py 신규, 벤치마크 플래그 추가, ADR-003 Amendment 2.
 - **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 — pykrx 장애 pivot, sector_breadth.py + 25 pytest + overrides.yaml 완성. Drive MCP 한계로 실데이터 검증 웹 세션 중 이월.
 - **2026-04-23 #2 (UZymn)**: ADR-003 채택 — 섹터 강도 산식 50/25/25 설계
