@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
 """
-sector_report.py — 국내 섹터 ETF 주도섹터 분석
-RS(50) + 추세(30) + 자금(20) 100점 산식 | 중기 추세추종 전략
-데이터: KIS API (OHLCV·거래량) + yfinance (KOSPI 기준선)
+sector_report.py — ADR-003 Amendment 2+ KOSPI200 11섹터 산식
+IBD 6M(50) + Breadth MA50(25) × 100/75 | universe 164종목 기준
+
+데이터: backtest/data/sector/*.parquet (주 1회 Colab 수동 갱신, plan-003 옵션 2).
+구 18 ETF 산식(RS/추세/자금) 전면 폐기 (2026-04-23 #5).
 """
-import os, json, base64, requests, time
-import numpy as np
-from datetime import datetime, timedelta
+import os
+import json
+import base64
+import requests
+from pathlib import Path
+from datetime import datetime
 import pytz
-import yfinance as yf
+import pandas as pd
+
+import sector_breadth as sb
 
 KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
@@ -16,223 +23,28 @@ TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
 GITHUB_REPO  = "gengar200005/morning-report"
 GITHUB_TOKEN = os.environ["MORNINGREPOT"]
-KIS_APP_KEY    = os.environ["KIS_APP_KEY"]
-KIS_APP_SECRET = os.environ["KIS_APP_SECRET"]
-KIS_BASE_URL   = "https://openapi.koreainvestment.com:9443"
 STATE_FILE   = "sector_state.json"
 OUTPUT_FILE  = "sector_data.txt"
 
-# ADR-003 섹터 강도 (베타 병행) — plan-003 옵션 2: 주 1회 Colab 수동 parquet 커밋
-ADR003_SECTOR_MAP   = "backtest/data/sector/sector_map.parquet"
-ADR003_STOCKS_DAILY = "backtest/data/sector/stocks_daily.parquet"
-ADR003_OVERRIDES    = "reports/sector_overrides.yaml"
+SECTOR_MAP   = "backtest/data/sector/sector_map.parquet"
+STOCKS_DAILY = "backtest/data/sector/stocks_daily.parquet"
+OVERRIDES    = "reports/sector_overrides.yaml"
 
-# ── 유니버스 (KIS 6자리 코드, 시총 500억+ 업종 ETF) ─────────────────
-UNIVERSE = [
-    ("091160", "KODEX 반도체"),
-    ("381170", "TIGER 반도체TOP10"),
-    ("305720", "KODEX 2차전지산업"),
-    ("305540", "TIGER 2차전지테마"),
-    ("091180", "KODEX 자동차"),
-    ("143860", "KODEX 바이오"),
-    ("091170", "KODEX 금융"),
-    ("091220", "KODEX 은행"),
-    ("140700", "KODEX 증권"),
-    ("140710", "KODEX 보험"),
-    ("139220", "KODEX IT"),
-    ("117460", "KODEX 에너지화학"),
-    ("117480", "KODEX 철강"),
-    ("117490", "KODEX 건설"),
-    ("130720", "KODEX 조선"),
-    ("273130", "KODEX K-방산"),
-    ("227550", "TIGER 미디어컨텐츠"),
-    ("214980", "KODEX 게임산업"),
-]
 
-# ── KIS API ──────────────────────────────────────────────────────────
-def get_token():
-    r = requests.post(
-        f"{KIS_BASE_URL}/oauth2/tokenP",
-        headers={"Content-Type": "application/json"},
-        json={"grant_type": "client_credentials",
-              "appkey": KIS_APP_KEY, "appsecret": KIS_APP_SECRET},
-        timeout=10,
+# ── 점수 계산 ────────────────────────────────────────
+def compute_scores():
+    overrides = sb.load_overrides(OVERRIDES)
+    scores = sb.compute_sector_scores(
+        sector_map_path=SECTOR_MAP,
+        stocks_daily_path=STOCKS_DAILY,
+        overrides=overrides,
     )
-    data = r.json()
-    if "access_token" not in data:
-        raise Exception(f"KIS 토큰 발급 실패: {data}")
-    return data["access_token"]
+    sd = pd.read_parquet(STOCKS_DAILY, columns=["날짜"])
+    ref_date = pd.to_datetime(sd["날짜"]).max().strftime("%Y-%m-%d")
+    return scores, ref_date
 
 
-def kis_get(token, path, tr_id, params):
-    headers = {
-        "Content-Type": "application/json",
-        "authorization": f"Bearer {token}",
-        "appkey": KIS_APP_KEY,
-        "appsecret": KIS_APP_SECRET,
-        "tr_id": tr_id,
-        "custtype": "P",
-    }
-    r = requests.get(f"{KIS_BASE_URL}{path}", headers=headers,
-                     params=params, timeout=15)
-    return r.json()
-
-
-# ── 데이터 수집 ──────────────────────────────────────────────────────
-def fetch_data(token):
-    # KOSPI 기준선: yfinance (RS 계산용, 동일 날짜 기준 필요)
-    print("📡 KOSPI 기준 데이터 수집 (yfinance)...")
-    kospi = yf.Ticker("^KS11").history(period="400d")["Close"].dropna()
-    if len(kospi) < 120:
-        raise Exception(f"KOSPI 데이터 부족: {len(kospi)}일")
-    print(f"  KOSPI {len(kospi)}일치")
-
-    # ETF OHLCV: KIS API (거래량 정확도 확보)
-    print("📡 섹터 ETF 수집 중 (KIS API)...")
-    etf_data = {}
-    today = NOW.strftime("%Y%m%d")
-    mid   = (NOW - timedelta(days=210)).strftime("%Y%m%d")
-    start = (NOW - timedelta(days=420)).strftime("%Y%m%d")
-
-    for code, name in UNIVERSE:
-        try:
-            closes, volumes = [], []
-            for s, e in [(start, mid), (mid, today)]:
-                data = kis_get(token,
-                    "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
-                    "FHKST03010100",
-                    {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": code,
-                     "FID_INPUT_DATE_1": s, "FID_INPUT_DATE_2": e,
-                     "FID_PERIOD_DIV_CODE": "D", "FID_ORG_ADJ_PRC": "0"},
-                )
-                items = data.get("output2", []) or data.get("output1", [])
-                for item in reversed(items):
-                    try:
-                        c = float(item.get("stck_clpr", 0))
-                        v = int(item.get("acml_vol", 0))
-                        if c > 0:
-                            closes.append(c)
-                            volumes.append(v)
-                    except:
-                        continue
-                time.sleep(0.2)
-
-            if len(closes) < 60:
-                print(f"  {name} ({code}): 데이터 부족 {len(closes)}일 → 제외")
-                continue
-
-            # 전일 대비 등락률
-            cur  = closes[-1]
-            prev = closes[-2] if len(closes) >= 2 else cur
-            chg_pct = round((cur / prev - 1) * 100, 2) if prev > 0 else 0.0
-
-            etf_data[name] = {
-                "code":    code,
-                "closes":  closes,
-                "volumes": volumes,
-                "chg_pct": chg_pct,
-            }
-            print(f"  {name}: {len(closes)}일치 ✓  {chg_pct:+.2f}%")
-        except Exception as e:
-            print(f"  {name} ({code}): 오류 — {e}")
-
-    if len(etf_data) < 5:
-        raise Exception(
-            f"섹터 ETF 데이터 수집 실패: {len(etf_data)}개만 수집됨 (최소 5개 필요)."
-        )
-
-    return kospi, etf_data
-
-
-# ── 점수 계산 ────────────────────────────────────────────────────────
-def calc_scores(kospi, etf_data):
-    k_arr = kospi.values
-
-    # A. 상대강도(RS) 초과수익률
-    rs = {20: {}, 60: {}, 120: {}}
-    for name, d in etf_data.items():
-        c = np.array(d["closes"])
-        min_len = min(len(c), len(k_arr))
-        c_t = c[-min_len:]
-        k_t = k_arr[-min_len:]
-        for n in [20, 60, 120]:
-            if min_len > n:
-                rs[n][name] = float(c_t[-1]/c_t[-n-1]) - float(k_t[-1]/k_t[-n-1])
-            else:
-                rs[n][name] = 0.0
-
-    def rank_pct(d):
-        vals = list(d.values())
-        return {name: sum(1 for x in vals if x <= v) / len(vals) for name, v in d.items()}
-
-    rp = {n: rank_pct(rs[n]) for n in [20, 60, 120]}
-
-    scores = {}
-    for name, d in etf_data.items():
-        c   = np.array(d["closes"])
-        v   = np.array(d["volumes"])
-        cur = float(c[-1])
-
-        # A. 상대강도 점수 (50점)
-        rs_score = 50 * (0.2*rp[20][name] + 0.5*rp[60][name] + 0.3*rp[120][name])
-
-        # B. 추세 품질 점수 (30점)
-        ma20  = float(np.mean(c[-20:]))  if len(c) >= 20  else None
-        ma60  = float(np.mean(c[-60:]))  if len(c) >= 60  else None
-        ma120 = float(np.mean(c[-120:])) if len(c) >= 120 else None
-        trend_score = 0
-        if ma20  and cur > ma20:  trend_score += 5
-        if ma60  and cur > ma60:  trend_score += 5
-        if ma20 and ma60 and ma120 and ma20 > ma60 > ma120:
-            trend_score += 10
-        lookback = min(len(c), 252)
-        if cur >= float(max(c[-lookback:])) * 0.90:
-            trend_score += 5
-        if len(c) >= 140 and ma120:
-            if ma120 > float(np.mean(c[-140:-20])):
-                trend_score += 5
-
-        # C. 자금 유입 점수 (20점) — KIS 거래량 기반
-        flow_score = 0
-        if len(v) >= 60:
-            avg20v = float(np.mean(v[-20:]))
-            avg60v = float(np.mean(v[-60:]))
-            if avg60v > 0:
-                ratio = avg20v / avg60v
-                if ratio >= 1.5:   flow_score = 20
-                elif ratio >= 1.2: flow_score = 10
-
-        def ret_n(n):
-            return round((cur / float(c[-n-1]) - 1) * 100, 1) if len(c) > n else None
-
-        scores[name] = {
-            "total":   round(rs_score + trend_score + flow_score, 1),
-            "rs":      round(rs_score, 1),
-            "trend":   trend_score,
-            "flow":    flow_score,
-            "code":    d["code"],
-            "chg_pct": d.get("chg_pct", 0.0),
-            "cur":     round(cur, 0),
-            "ma20":    round(ma20, 0)  if ma20  else None,
-            "ma60":    round(ma60, 0)  if ma60  else None,
-            "ma120":   round(ma120, 0) if ma120 else None,
-            "r1m":     ret_n(20),
-            "r3m":     ret_n(60),
-            "r6m":     ret_n(120),
-        }
-
-    return scores
-
-
-# ── 등급 분류 ────────────────────────────────────────────────────────
-def classify(total):
-    if total >= 80: return "주도"
-    if total >= 65: return "강세"
-    if total >= 50: return "중립"
-    return "약세"
-
-
-# ── 상태 파일 (GitHub) ────────────────────────────────────────────────
+# ── 상태 파일 (주간 변동용) ──────────────────────────
 def load_state():
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{STATE_FILE}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}",
@@ -265,150 +77,83 @@ def save_state(state, sha=None):
         print(f"❌ {STATE_FILE} 저장 실패: {r.status_code}")
 
 
-# ── 변동 감지 ────────────────────────────────────────────────────────
-def detect_changes(current, prev_state):
-    changes = {"new_leaders": [], "demoted": [], "score_jumps": []}
-    prev = prev_state.get("scores", {})
+def detect_changes(current_scores, prev_state):
+    """전주 대비 등급 변화 + 5점 이상 급변 감지.
 
-    for name, s in current.items():
-        cur_grade  = classify(s["total"])
-        prev_score = prev.get(name, {}).get("total", 0) if prev else 0
-        prev_grade = classify(prev_score) if prev_score else None
+    prev 섹터 이름이 current 와 교집합 0이면 산식 전환으로 간주 → 비교 생략.
+    """
+    prev = prev_state.get("scores", {})
+    changes = {"new_leaders": [], "demoted": [], "score_jumps": [], "transition": False}
+
+    if prev:
+        cur_secs = set(current_scores.index)
+        prev_secs = set(prev.keys())
+        if not (cur_secs & prev_secs):
+            changes["transition"] = True
+            return changes
+
+    for sector, row in current_scores.iterrows():
+        cur_grade = row["grade"]
+        cur_score = float(row["score"]) if pd.notna(row["score"]) else 0
+        prev_info = prev.get(sector, {})
+        prev_score = prev_info.get("score", 0) or 0
+        prev_grade = prev_info.get("grade")
 
         if cur_grade == "주도" and prev_grade != "주도":
-            changes["new_leaders"].append(name)
+            changes["new_leaders"].append(sector)
         elif prev_grade == "주도" and cur_grade != "주도":
-            changes["demoted"].append(f"{name}({cur_grade})")
+            changes["demoted"].append(f"{sector}({cur_grade})")
 
-        if abs(s["total"] - prev_score) >= 5:
-            changes["score_jumps"].append({"name": name, "delta": round(s["total"] - prev_score, 1)})
-
+        if abs(cur_score - prev_score) >= 5 and prev_grade is not None:
+            changes["score_jumps"].append({
+                "sector": sector,
+                "delta": round(cur_score - prev_score, 1),
+            })
     return changes
 
 
-# ── ADR-003 섹터 강도 (베타 병행) ────────────────────────────────────
-def render_adr003_section() -> str:
-    """ADR-003 Amendment 2 산식으로 섹터 강도 렌더. parquet 없거나 의존성
-    import 실패 시 빈 문자열 반환 (구 섹션만 출력, 모닝리포트 전체는 살림)."""
-    from pathlib import Path
+# ── 텍스트 출력 ──────────────────────────────────────
+def build_text(scores, changes, ref_date):
+    lines = []
+    bar = "━" * 52
+    lines.append(bar)
+    lines.append(f"  📊 주도 섹터 현황 — {TODAY_STR}")
+    lines.append(f"  산식: ADR-003 Amendment 2 (IBD 6M + Breadth MA50)")
+    lines.append(f"  기준: universe 164종목 · 11섹터 · 기준일 {ref_date}")
+    lines.append(bar)
 
-    sm_path = Path(ADR003_SECTOR_MAP)
-    sd_path = Path(ADR003_STOCKS_DAILY)
-    if not (sm_path.exists() and sd_path.exists()):
-        return ""
-
-    try:
-        import pandas as pd
-        import sector_breadth as sb
-    except Exception as e:
-        print(f"[ADR-003] import 실패 → 베타 섹션 스킵: {e}")
-        return ""
-
-    try:
-        overrides = sb.load_overrides(ADR003_OVERRIDES)
-        scores_df = sb.compute_sector_scores(
-            sector_map_path=sm_path,
-            stocks_daily_path=sd_path,
-            overrides=overrides,
-        )
-        sd_dates = pd.read_parquet(sd_path, columns=["날짜"])
-        last_date = pd.to_datetime(sd_dates["날짜"]).max().strftime("%Y-%m-%d")
-    except Exception as e:
-        print(f"[ADR-003] 계산 실패 → 베타 섹션 스킵: {e}")
-        return ""
-
-    leading = scores_df[scores_df["grade"].isin(["주도", "강세"])]
-    n_neutral = int((scores_df["grade"] == "중립").sum())
-    n_weak = int((scores_df["grade"] == "약세").sum())
-    n_na = int((scores_df["grade"] == "N/A").sum())
-
-    lines = [""]
-    lines.append("━" * 52)
-    lines.append("  🆕 ADR-003 섹터 강도 (베타 병행)")
-    lines.append("  산식: IBD 6M(50) + Breadth MA50(25) ×100/75")
-    lines.append("  기준: universe 162종목 | 벤치마크: universe-avg")
-    lines.append("━" * 52)
+    groups = [
+        ("🔥 주도 (≥75점)",    lambda g: g == "주도"),
+        ("📈 강세 (60~74점)",  lambda g: g == "강세"),
+        ("〰️ 중립 (40~59점)",  lambda g: g == "중립"),
+        ("📉 약세 (<40점)",    lambda g: g == "약세"),
+    ]
 
     def _fmt_breadth(pct):
         return f"{pct * 100:>3.0f}%" if pd.notna(pct) else " N/A"
 
-    for grade_label, emoji in [("주도", "🔥"), ("강세", "📈")]:
-        subset = leading[leading["grade"] == grade_label]
-        if len(subset) == 0:
+    for label, cond in groups:
+        bucket = scores[scores["grade"].apply(cond)]
+        if len(bucket) == 0:
             continue
-        lines.append(f"\n{emoji} {grade_label} ({len(subset)}업종)")
-        for sector, row in subset.iterrows():
+        lines.append(f"\n{label}")
+        for sector, row in bucket.iterrows():
             lines.append(
                 f"  • {sector:<10} {row['score']:>5.1f}점  "
                 f"({int(row['n_stocks']):>2}종목, breadth {_fmt_breadth(row['breadth_pct'])})"
             )
 
-    if len(leading) == 0:
-        lines.append("\n  (주도+강세 섹터 없음 — 시장 전반 약세)")
+    # 표본부족 (N/A)
+    na = scores[scores["grade"] == "N/A"]
+    if len(na):
+        lines.append(f"\n⚠ 표본부족 ({len(na)}섹터): "
+                     + ", ".join(f"{s}({int(r['n_stocks'])}종목)" for s, r in na.iterrows()))
 
-    lines.append(
-        f"\n  (중립 {n_neutral} / 약세 {n_weak} / 표본부족 {n_na} 업종 생략)"
-    )
-    lines.append(f"  기준일: {last_date}")
-    lines.append("━" * 52)
-    return "\n".join(lines)
-
-
-# ── 텍스트 출력 ──────────────────────────────────────────────────────
-def build_text(scores, changes):
-    lines = []
-    lines.append("━" * 52)
-    lines.append(f"  📊 주도 섹터 ETF 현황 — {TODAY_STR}")
-    lines.append(f"  기준: RS(50) + 추세(30) + 자금유입(20)")
-    lines.append("━" * 52)
-
-    sorted_s = sorted(scores.items(), key=lambda x: x[1]["total"], reverse=True)
-
-    def fmt_r(v):
-        if v is None: return "  N/A"
-        return f"{'+' if v >= 0 else ''}{v:.1f}%"
-
-    def fmt_chg(pct):
-        if pct is None: return "  —  "
-        sign = "▲" if pct >= 0 else "▼"
-        return f"{sign}{abs(pct):.2f}%"
-
-    def ma_tag(s):
-        cur, parts = s["cur"], []
-        for n, k in [(20, "ma20"), (60, "ma60"), (120, "ma120")]:
-            v = s.get(k)
-            if v:
-                parts.append(f"MA{n}{'✓' if cur > v else '✗'}")
-        return " ".join(parts)
-
-    groups = [
-        ("🔥 주도 (80점+)",    lambda s: s["total"] >= 80),
-        ("📈 강세 (65~79점)",  lambda s: 65 <= s["total"] < 80),
-        ("〰️ 중립 (50~64점)",  lambda s: 50 <= s["total"] < 65),
-        ("📉 약세 (50점 미만)", lambda s: s["total"] < 50),
-    ]
-
-    for label, cond in groups:
-        bucket = [(n, s) for n, s in sorted_s if cond(s)]
-        if not bucket:
-            continue
-        lines.append(f"\n{label}")
-        for i, (name, s) in enumerate(bucket, 1):
-            prefix = f"  {i}." if s["total"] >= 65 else "  •"
-            lines.append(
-                f"{prefix} {name:<22} {s['total']:>5.1f}점"
-                f"  {fmt_chg(s['chg_pct'])}"
-                f"  (RS {s['rs']:.0f} / 추세 {s['trend']} / 자금 {s['flow']})"
-            )
-            if s["total"] >= 65:
-                lines.append(
-                    f"     └ 1M {fmt_r(s['r1m'])} / 3M {fmt_r(s['r3m'])} / 6M {fmt_r(s['r6m'])}"
-                    f"  {ma_tag(s)}"
-                )
-
+    # 주간 변동
     lines.append("\n⚡ 주간 변동 (전주 대비)")
-    has = any([changes["new_leaders"], changes["demoted"], changes["score_jumps"]])
-    if not has:
+    if changes.get("transition"):
+        lines.append("  ℹ 산식 전환 후 첫 런 — 비교 생략 (다음 주부터 정상 감지)")
+    elif not any([changes["new_leaders"], changes["demoted"], changes["score_jumps"]]):
         lines.append("  변동 없음")
     else:
         if changes["new_leaders"]:
@@ -417,22 +162,16 @@ def build_text(scores, changes):
             lines.append(f"  ⬇️  주도 이탈: {', '.join(changes['demoted'])}")
         if changes["score_jumps"]:
             jumps = [
-                f"{c['name']} ({'+' if c['delta'] >= 0 else ''}{c['delta']}점)"
+                f"{c['sector']} ({'+' if c['delta'] >= 0 else ''}{c['delta']}점)"
                 for c in sorted(changes["score_jumps"], key=lambda x: abs(x["delta"]), reverse=True)
             ]
             lines.append(f"  📊 점수 급변: {', '.join(jumps)}")
 
-    lines.append("━" * 52)
-
-    # ADR-003 베타 병행 섹션 (parquet 있으면만, 없으면 빈 문자열 반환)
-    adr003 = render_adr003_section()
-    if adr003:
-        lines.append(adr003)
-
+    lines.append(bar)
     return "\n".join(lines)
 
 
-# ── GitHub 파일 저장 ──────────────────────────────────────────────────
+# ── GitHub 파일 저장 ─────────────────────────────────
 def save_to_github(filename, content):
     url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{filename}"
     headers = {"Authorization": f"token {GITHUB_TOKEN}",
@@ -440,7 +179,7 @@ def save_to_github(filename, content):
     r = requests.get(url, headers=headers)
     sha = r.json().get("sha") if r.status_code == 200 else None
     payload = {
-        "message": f"섹터 ETF 분석 — {TODAY_STR}",
+        "message": f"섹터 분석 — {TODAY_STR}",
         "content": base64.b64encode(content.encode()).decode(),
     }
     if sha:
@@ -452,37 +191,44 @@ def save_to_github(filename, content):
         print(f"❌ {filename} 저장 실패: {r2.status_code} {r2.text[:100]}")
 
 
-# ── 메인 ─────────────────────────────────────────────────────────────
+# ── 메인 ─────────────────────────────────────────────
 if __name__ == "__main__":
-    print("🔑 KIS 토큰 발급 중...")
-    token = get_token()
-    print("✅ 토큰 발급 완료")
-
-    kospi, etf_data = fetch_data(token)
-    print(f"✅ {len(etf_data)}개 ETF 데이터 수집 완료\n")
-
-    print("📊 점수 계산 중...")
-    scores = calc_scores(kospi, etf_data)
-
-    if not scores or max(s["total"] for s in scores.values()) == 0:
-        raise Exception(
-            "섹터 ETF 점수 계산 실패: 모든 ETF 점수가 0.\n"
-            "KOSPI 기준 데이터 또는 RS 계산에 오류가 있습니다."
+    # parquet 누락 방어: 없으면 모닝리포트 전체 실패 없이 경고 출력만
+    if not (Path(SECTOR_MAP).exists() and Path(STOCKS_DAILY).exists()):
+        msg = (
+            "━" * 52 + "\n"
+            f"  📊 주도 섹터 현황 — {TODAY_STR}\n"
+            f"  ⚠ 데이터 미수집: backtest/data/sector/ parquet 누락\n"
+            f"  재생성: Colab 에서 notebooks/sector_data_fetch.ipynb 실행\n"
+            + "━" * 52
         )
+        print(msg)
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(msg)
+        save_to_github(OUTPUT_FILE, msg)
+        raise SystemExit(0)
+
+    print("📊 ADR-003 섹터 강도 계산 중...")
+    scores, ref_date = compute_scores()
+    print(f"✅ {len(scores)}섹터 점수 산출 (기준일 {ref_date})")
 
     print("📂 이전 상태 로드...")
     prev_state, state_sha = load_state()
     changes = detect_changes(scores, prev_state)
 
-    text = build_text(scores, changes)
+    text = build_text(scores, changes, ref_date)
     print("\n" + text)
 
     print("\n💾 저장 중...")
     new_state = {
         "date": TODAY_STR,
+        "ref_date": ref_date,
         "scores": {
-            n: {"total": s["total"], "grade": classify(s["total"])}
-            for n, s in scores.items()
+            sector: {
+                "score": float(row["score"]) if pd.notna(row["score"]) else 0.0,
+                "grade": row["grade"],
+            }
+            for sector, row in scores.iterrows()
         },
     }
     save_state(new_state, state_sha)
