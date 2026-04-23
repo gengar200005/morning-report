@@ -66,30 +66,56 @@ jobs:
       # ─────────────────────────────────────────────────────────
       # Phase 2: v6.2 HTML 리포트 자동 렌더링 + GitHub Pages 배포
       # ─────────────────────────────────────────────────────────
-      # combine_data.py가 이미 Contents API로 morning_data.txt를 원격에 push한 상태.
-      # 로컬 workspace에도 같은 파일이 남아있어 git이 "dirty"로 인식.
-      # → fetch + reset으로 원격 최신 상태와 맞춘 뒤 renderer로 docs/만 생성해 커밋.
+      # combine_data.py 가 로컬 workspace 에 이미 오늘자 morning_data.txt 를 작성
+      # 했고, 동시에 Contents API 로 원격에도 push 함 (비동기). 과거 구현은 여기서
+      # `git fetch + reset --hard` 로 원격 상태와 맞췄으나 Contents API 의 eventual
+      # consistency 로 commit 이 git ref 에 전파 안 된 상태에서 reset 이 어제
+      # morning_data.txt 로 롤백되어 어제 데이터로 렌더되는 race 가 있었음
+      # (2026-04-23 gh run 24832792291 로 확인).
+      #
+      # 수정: 로컬 morning_data.txt 를 그대로 사용해 렌더. commit 은 docs/ 만.
+      # push 는 rebase + 재시도 루프로 Contents API commit 과 충돌 해소.
 
       - name: v6.2 HTML 렌더링 + GitHub Pages 배포
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # combine_data.py가 Contents API로 push한 최신 커밋을 로컬에 반영
-          git fetch origin "$GITHUB_REF_NAME"
-          git reset --hard "origin/$GITHUB_REF_NAME"
-
-          # 원격 기준 최신 morning_data.txt로 렌더 (reset 때문에 workspace가 초기화됐으므로 재실행)
+          # 로컬 morning_data.txt (combine_data 가 방금 쓴 오늘자) 로 렌더
           python -m reports.render_report --input morning_data.txt --output-dir docs
 
           git add docs/
           if git diff --staged --quiet; then
             echo "docs/ 변경 없음 — 커밋 스킵"
-          else
-            TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
-            git commit -m "Daily report ${TODAY} (auto)"
-            git push origin "HEAD:$GITHUB_REF_NAME"
+            exit 0
           fi
+
+          TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
+          git commit -m "Daily report ${TODAY} (auto)"
+
+          # morning_data.txt 는 dirty 상태 (HEAD=어제, workspace=오늘). rebase 전 HEAD
+          # 로 되돌림 (원격에 combine_data 가 올린 오늘자가 이미 있음).
+          git checkout HEAD -- morning_data.txt
+
+          # Contents API commit 이 git ref 에 전파 안 됐을 수 있으므로 fetch + rebase +
+          # push 재시도. rebase 는 combine_data commit 위에 우리 docs commit 을 올림.
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            if ! git rebase "origin/$GITHUB_REF_NAME"; then
+              echo "❌ rebase conflict (예상 외) — abort"
+              git rebase --abort
+              exit 1
+            fi
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              echo "✅ push 성공 (attempt $attempt/5)"
+              exit 0
+            fi
+            echo "⏳ push 실패 — Contents API commit 전파 대기 3초 (attempt $attempt/5)"
+            sleep 3
+          done
+
+          echo "❌ 5회 재시도 후에도 push 실패"
+          exit 1
 
       # ─────────────────────────────────────────────────────────
       # Phase 3: HTML → PDF 변환 + Google Drive 업로드
