@@ -757,6 +757,7 @@
     font-size: 11px;
     color: var(--ink-muted);
     font-weight: 600;
+    margin-left: 6px;
   }
 
   .readiness-footer {
@@ -1536,10 +1537,10 @@
         <div class="check-col auto-col">
           <div class="check-head"><span class="tag">AUTO</span><span class="label">Trend Template{% if loop.first %} (자동 검증){% endif %}</span></div>
           <ul class="check-list">
-            <li><span class="check-mark">{{ '✓' if stock.core == stock.core_max else '✗' }}</span>코어 조건 8/8<span class="check-val">100%</span></li>
-            <li><span class="check-mark">{{ '✓' if stock.rs >= 70 else '✗' }}</span>RS ≥ 70<span class="check-val">{{ stock.rs }}</span></li>
-            <li><span class="check-mark">{{ stock.leading_check }}</span>주도 섹터 소속<span class="check-val">{{ stock.leading_detail }}</span></li>
-            <li><span class="check-mark">{{ '✓' if data.market_context.vix_ok and data.market_context.kospi_ma60_ok else '✗' }}</span>시장 게이트 통과<span class="check-val">VIX+MA60</span></li>
+            <li><span class="check-mark">{{ '✓' if stock.core == stock.core_max else '✗' }}</span>코어 조건 8/8 <span class="check-val">100%</span></li>
+            <li><span class="check-mark">{{ '✓' if stock.rs >= 70 else '✗' }}</span>RS ≥ 70 <span class="check-val">{{ stock.rs }}</span></li>
+            <li><span class="check-mark">{{ stock.leading_check }}</span>주도 섹터 소속 <span class="check-val">{{ stock.leading_detail }}</span></li>
+            <li><span class="check-mark">{{ '✓' if data.market_context.vix_ok and data.market_context.kospi_ma60_ok else '✗' }}</span>시장 게이트 통과 <span class="check-val">VIX+MA60</span></li>
           </ul>
         </div>
         <div class="check-col manual-col">
@@ -1548,15 +1549,15 @@
             {% if stock.is_held %}
             {% set _holding_matches = data.holdings | selectattr("code", "equalto", stock.code) | list %}
             {% set holding_match = _holding_matches[0] if _holding_matches else None %}
-            <li><span class="check-mark">⚠</span>추매 가격 도달<span class="check-val">{{ holding_match.add_threshold | format_number if holding_match else '차트 확인' }} 대기</span></li>
-            <li><span class="check-mark">⚠</span>추매 시점 거래량 확장<span class="check-val">차트 확인</span></li>
-            <li><span class="check-mark">⚠</span>손절선 이탈 여부<span class="check-val">{{ holding_match.stop_price | format_number if holding_match else stock.stop_price | format_number }} 유지</span></li>
-            <li><span class="check-mark">⚠</span>시장 게이트 유지<span class="check-val">매일 재확인</span></li>
+            <li><span class="check-mark">⚠</span>추매 가격 도달 <span class="check-val">{{ holding_match.add_threshold | format_number if holding_match else '차트 확인' }} 대기</span></li>
+            <li><span class="check-mark">⚠</span>추매 시점 거래량 확장 <span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>손절선 이탈 여부 <span class="check-val">{{ holding_match.stop_price | format_number if holding_match else stock.stop_price | format_number }} 유지</span></li>
+            <li><span class="check-mark">⚠</span>시장 게이트 유지 <span class="check-val">매일 재확인</span></li>
             {% else %}
-            <li><span class="check-mark">⚠</span>VCP 수축 2~6회<span class="check-val">차트 확인</span></li>
-            <li><span class="check-mark">⚠</span>피벗 포인트 돌파<span class="check-val">52W {{ stock.pct_from_52w_high | format_pct_signed(1) }}</span></li>
-            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3<span class="check-val">차트 확인</span></li>
-            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈<span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>VCP 수축 2~6회 <span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>피벗 포인트 돌파 <span class="check-val">52W {{ stock.pct_from_52w_high | format_pct_signed(1) }}</span></li>
+            <li><span class="check-mark">⚠</span>돌파 시 거래량 ≥ ×1.3 <span class="check-val">차트 확인</span></li>
+            <li><span class="check-mark">⚠</span>직전 수축기 거래량 고갈 <span class="check-val">차트 확인</span></li>
             {% endif %}
           </ul>
         </div>

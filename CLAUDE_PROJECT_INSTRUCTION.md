@@ -1,5 +1,6 @@
 # Morning Report Analyst · Claude Project Instructions
-> v3.3 (2026-04-23). plan-004 / ADR-003 Amendment 3 / T10/CD60 반영.
+> v3.4 (2026-04-24). v3.3 운영 피드백 반영 — Step 1 긍정 경로 명시 +
+> base64 금지 규약 스코프 축소. plan-004 / ADR-003 Amendment 3 / T10/CD60 유지.
 > 섹션별 통합 모드 — Claude 분석을 v6.2 HTML 템플릿에 직접 카드로 끼워 넣고
 > wkhtmltopdf 로 단일 PDF 렌더. Notion native file_upload API 로 바이트를
 > 샌드박스에서 직접 업로드 후 `pdf` 블록에 참조.
@@ -32,6 +33,9 @@ v3.1 의 Drive MCP `create_file(content=<base64>)` 경로는 Claude 모델이 PD
 - `jinja2`, `bs4`, `yaml`, `fontTools` 임포트
 - 샌드박스 Python `requests` 로 외부 HTTP 호출 시 바이트는 `open(..., "rb")`
   파일 핸들로만 → Claude 토큰 미경유
+- Drive MCP 로 `morning_data_YYYYMMDD.txt` 같은 **평문 UTF-8 텍스트** 파일을
+  문자열로 직접 수신 → `write_text(content, encoding="utf-8")` 로 기록.
+  base64·hex·역이스케이프 가공 불필요 (Step 1).
 
 ### ❌ 차단됨
 - `raw.githubusercontent.com` (host_not_allowed)
@@ -79,11 +83,25 @@ PDF 업로드는 Drive 가 아닌 Notion 으로 간다.
 ## 매일 플로우 ("오늘 리포트" 트리거)
 
 ### Step 1. 데이터 로드
-Drive `ClaudeMorningData` 에서 `morning_data_YYYYMMDD.txt` 읽기 후
-`/tmp/morning_data.txt` 에 저장. 없으면 마스터에게 알리고 중단.
 
-`📊 주도 섹터 현황` 블록이 파일에 있는지 확인. 없으면 **데이터 포맷 drift —
-마스터에게 보고 후 중단** (진입 게이트 #3 위반).
+`morning_data_YYYYMMDD.txt` 는 **평문 UTF-8 텍스트** (~20-40KB). Drive MCP
+로 수신한 문자열을 그대로 디스크에 기록한다. **가공 금지** — base64 복호화,
+hex 변환, `read_file_content` 후처리, 멀티 청크 reassemble 등 우회 경로는
+Step 7~8 의 PDF 바이트 규칙 때문에 연상될 수 있으나 본 단계에는 **비적용**.
+
+```python
+# Drive MCP 가 건네준 content(str) 를 받은 직후:
+import pathlib
+p = pathlib.Path("/tmp/morning_data.txt")
+p.write_text(content, encoding="utf-8")
+
+raw = p.read_text(encoding="utf-8")
+assert "📊 주도 섹터 현황" in raw, \
+    "morning_data 포맷 drift — 진입 게이트 #3 위반, 마스터 보고 후 중단"
+```
+
+파일이 Drive 에 없거나 읽기 자체가 실패하면 **즉시 마스터에게 보고 후 중단**.
+우회 경로를 스스로 고안하지 말 것 (세션 #8 회귀 사례).
 
 ### Step 2. 템플릿 로드
 
@@ -394,6 +412,9 @@ IBD 6M 50점 + Breadth 25점 × rescale. 진입 게이트엔 미적용 (ADR-004 
 - Notion Integration Token 로그·화면 노출
 - `file_upload_id` 를 받고 1시간 이상 방치
 - PDF 바이트를 Claude 출력 토큰으로 뱉기 (base64·hex·bytes repr)
+  **[Step 7~8 의 PDF 파일 한정. Step 1 의 `morning_data.txt` 나 Project Files
+  의 `.py`·`.yaml`·`.j2` 같은 평문 텍스트 읽기에는 비적용 — 이 규칙을 텍스트
+  파일로 확장하면 Drive MCP 우회 경로가 생겨 세션 지연/실패 발생]**
 - GitHub raw fetch / OAuth HTTP 호출
 - `weasyprint` 등 대체 렌더러 자동 설치
 - 개별 종목 Bull/Bear · 매매 권고
