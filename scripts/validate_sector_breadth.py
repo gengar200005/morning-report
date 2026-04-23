@@ -122,8 +122,15 @@ def run_validation(
     stocks_daily: pd.DataFrame,
     months: int = 12,
     grades: tuple[str, ...] = ("주도",),
+    benchmark: str = "universe",
 ) -> pd.DataFrame:
-    """매 월말 기준 선정 섹터의 다음 1개월 수익률 vs KOSPI."""
+    """매 월말 기준 선정 섹터의 다음 1개월 수익률 vs benchmark.
+
+    benchmark:
+        - "universe": 같은 stocks_daily 유니버스의 동등가중 평균 (ADR-003 의도:
+          universe 내 섹터 선택의 순 알파)
+        - "kospi": yfinance ^KS11. universe 대비 대형주 편입 차이로 장기 drag
+          가능하므로 참고용."""
     month_ends = get_month_end_trading_days(stocks_daily)
     if len(month_ends) < 2:
         raise ValueError("월말 거래일이 2개 이상 필요")
@@ -136,14 +143,13 @@ def run_validation(
         .sort_index()
     )
 
-    kospi = fetch_kospi_monthly(month_ends[0], month_ends[-1])
+    kospi = fetch_kospi_monthly(month_ends[0], month_ends[-1]) if benchmark == "kospi" else None
 
     rows = []
     for i in range(len(month_ends) - 1):
         t0 = month_ends[i]
         t1 = month_ends[i + 1]
 
-        # 기준일 현재 섹터 점수
         scores = sb.compute_sector_scores(
             sector_map=sector_map, stocks_daily=stocks_daily, end_date=t0,
         )
@@ -151,14 +157,16 @@ def run_validation(
         selected_tickers = sector_map.loc[
             sector_map["sector"].isin(selected), "ticker"
         ].tolist()
-
-        # 유니버스 전체 평균 (KOSPI 폴백 + 참고지표)
         universe_tickers = sector_map["ticker"].tolist()
 
         sector_ret, n_sec = forward_return(prices_wide, selected_tickers, t0, t1)
         universe_ret, n_uni = forward_return(prices_wide, universe_tickers, t0, t1)
         kospi_ret = kospi_return_between(kospi, t0, t1) if kospi is not None else float("nan")
-        bench = kospi_ret if np.isfinite(kospi_ret) else universe_ret
+
+        if benchmark == "kospi":
+            bench = kospi_ret if np.isfinite(kospi_ret) else universe_ret
+        else:
+            bench = universe_ret
 
         rows.append({
             "month_end": t0.strftime("%Y-%m-%d"),
@@ -166,8 +174,8 @@ def run_validation(
             "leading_sectors": ", ".join(selected) if selected else "(none)",
             "n_leading_stocks": n_sec,
             "sector_ret": sector_ret,
-            "kospi_ret": kospi_ret,
             "universe_ret": universe_ret,
+            "kospi_ret": kospi_ret,
             "benchmark": bench,
             "excess": sector_ret - bench if np.isfinite(sector_ret) and np.isfinite(bench) else float("nan"),
         })
@@ -209,6 +217,16 @@ def main():
         default="주도",
         help="콤마 구분 대상 등급. 예: '주도' 또는 '주도,강세'",
     )
+    p.add_argument(
+        "--benchmark",
+        choices=["universe", "kospi"],
+        default="universe",
+        help=(
+            "판정 벤치마크. universe(기본): stocks_daily 유니버스 동등가중 평균 "
+            "— ADR-003 의도인 'universe 내 섹터 선택 알파' 측정. "
+            "kospi: yfinance ^KS11 — universe 구성에 따른 drag 있을 수 있음 (참고용)"
+        ),
+    )
     args = p.parse_args()
 
     sector_map = sb.load_sector_map(args.sector_map)
@@ -220,9 +238,12 @@ def main():
         sector_map = sb.apply_ticker_overrides(sector_map, overrides)
 
     grades = tuple(g.strip() for g in args.grades.split(",") if g.strip())
-    print(f"[info] target grades = {grades}, months = {args.months}")
+    print(f"[info] target grades = {grades}, months = {args.months}, benchmark = {args.benchmark}")
 
-    results = run_validation(sector_map, stocks_daily, months=args.months, grades=grades)
+    results = run_validation(
+        sector_map, stocks_daily,
+        months=args.months, grades=grades, benchmark=args.benchmark,
+    )
     with pd.option_context("display.max_rows", None, "display.width", 200, "display.float_format", "{:.4f}".format):
         print("\n=== 월별 결과 ===")
         print(results.to_string(index=False))
