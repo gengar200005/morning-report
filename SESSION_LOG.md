@@ -4,6 +4,75 @@
 
 ---
 
+## 2026-04-23 #8 (PC, main) — Claude Project v3.3 지침 개편 + 운영 진단
+
+### 결정
+- **CLAUDE_PROJECT_INSTRUCTION.md v3.2 → v3.3 업데이트** — plan-004 / ADR-003
+  Amendment 3 / T10/CD60 / ADR-004 기각 전부 반영. 주요 변경:
+  - 최상단 "v3.3 진입 게이트" 3줄 (Files 신선도 / shim 금지 / 포맷 고정)
+  - 전략 파라미터 T15/CD120 → **T10/CD60** (손절 -7%, 트레일링 -10%, 쿨다운 60)
+  - 필요 파일 5개 → **7개** (sector_mapping.py / sector_overrides.yaml / universe.py 추가, `__init__.py` 는 Step 3 런타임 생성)
+  - Step 3 에 `/tmp/backtest/` 패키지 구성 추가 (sector_mapping 의 universe import 의존)
+  - Step 4 sector 키에 **11섹터 체계** 명시, ETF 명 (KODEX / TIGER) 언급 금지
+  - 절대 금지에 shim/ETF 관련 4개 신규 (`_parse_sector_etf`, 런타임 monkey-patch, 포맷 감지 셰임, sector_etf 키)
+  - 자체 체크에 드리프트 감지 6개 항목
+- **Project Files ↔ Git 레포 동기화 규칙 명문화** — main 에 `reports/` 수정
+  커밋 머지되면 **그 세션 안에서** Project Files 7개 전부 재업로드 (덮어쓰기).
+  이 규칙 없으면 v3.3 진입 게이트 #1 에서 매번 걸림.
+- **삼성전기 (009150) 반도체 섹터 분류 타당성 확인** — 증권가 리포트 기반
+  (iM증권·교보·하나·대신·Mirae Asset) 2026 컨센서스가 FC-BGA/AI 기판 밸류
+  체인으로 커버 중. 매출 드라이버·주가 상관·애널리스트 커버리지 3축 모두
+  반도체 사이클과 정렬. ADR-003 Amendment 3 의 분류 **유지**.
+
+### 검토한 대안
+- **v3.3 Step 1 에 명시적 `base64.b64decode` 코드 블록 박기** — morning_data
+  로드 시 Claude Project 가 과잉 해석으로 `read_file_content` + 역이스케이프
+  같은 복잡 경로를 택해 병목 발생. 사용자가 "오늘은 결과 떴다"로 종료, 패치
+  보류. 다음 세션에서 체감 지연 재발 시 반영 판단.
+- **Drive MCP → Notion code block 으로 morning_data 경로 전환** — 구조적
+  해결책이지만 Actions 워크플로 변경 필요 (1-2h). 오늘 결론 나오고 종료,
+  우선순위 낮음으로 이월.
+- **삼성전기 분류 전기전자로 원복** — KRX KSIC 기준으로는 합리적이지만
+  증권가 커버리지·실적 드라이버 기준으론 반도체 일치. **원복 기각**,
+  현재 분류 유지.
+
+### 이번 세션에서 배운 것
+- **Claude Project Files ↔ Git 레포 drift 가 무음 실패** — plan-004 머지
+  (#6) 당시 Project Files 재업로드 체크리스트 항목이 없어서 세션 #6 ~ #7
+  동안 Claude Project 의 Files 는 plan-004 이전 스냅샷 유지. 사용자 체감
+  으론 "ADR 다 반영됐는데 리포트엔 왜 안 뜨지?" 로 나타남. 이런 이원화
+  시스템에선 동기화 훅이 첫 번째 인프라 투자 대상.
+- **지침에 "방지 규약" 많이 박으면 Claude 가 무관한 경로에까지 일반화**
+  — v3.3 에 "PDF base64 는 토큰 독" 경고를 박았더니 morning_data (UTF-8
+  텍스트) 로드까지 그 paranoia 적용해서 우회 경로 고안. 규약은 **적용
+  대상을 명시적으로 좁혀서** 기재해야 함 (e.g. "Step 8 의 PDF 업로드
+  한정"). 아니면 명시적 "긍정 경로" 코드 블록으로 대체.
+- **Project Files 0 바이트 파일은 업로드 목록에 뜨지 않음** — claude.ai
+  의 드롭 동작. 런타임 생성으로 우회 가능 (`write_text("")`). 이번에
+  `reports/__init__.py` 케이스로 발견.
+- **사명 ≠ 사업 실체** — 삼성전기 사례. 1969년 삼성산요전기 합작 출신이라
+  이름에 "전기" 박혔지만 현재 매출은 MLCC + FC-BGA + 카메라 모듈.
+  `reports/kospi200_sectors.tsv::role_note` 컬럼에 실제 역할 기재되어
+  있어 섹터 분류 헷갈릴 때 이게 1차 참고자료.
+
+### 미해결
+- **v3.3 Step 1 base64 경로 명시** — 오늘은 결과 떴지만 다음 런에서 또
+  병목 나면 `base64.b64decode` 한 줄로 고정 필요. 판단 이월.
+- **내일(2026-04-24) 06:00 cron 검증** — plan-004 + 11섹터 + workflow race
+  fix 정상 반영 확인 대기 (세션 #6 부터 이월).
+- **UBATP 알림 E2E 테스트** — PC 필요 (30분). 세션 #4 부터 누적 이월.
+- **Morning report Drive MCP 구조 개선** — base64 경유 비용 + 지연 누적.
+  Notion code block 경로가 대안. 우선순위 중.
+
+### 다음 세션에서 할 일
+- **[우선] UBATP 알림 E2E** (30분, 이월) — 가장 오래 이월된 항목.
+- **[차순위] 06:00 cron 결과 확인** (5분) — 내일 아침.
+- **(조건부)** Claude Project 모닝 리포트 재발 시 v3.3 Step 1 패치 반영.
+- **(중장기)** ADR-005 후보 — 박스권 조건부 섹터 게이트 (regime-dependent,
+  ADR-004 기각 후속). 2015-19 이득 보존 + 중립/강세장 손실 회피.
+
+---
+
 ## 2026-04-23 #7 (PC, main) — ADR-004 섹터 게이트 통합 실증 → **기각**
 
 ### 결정
