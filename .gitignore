@@ -12,6 +12,9 @@ backtest/data/*.log
 # validation_report.json 은 추적 (162종목 ok 판정이 백테 재현성에 중요)
 !backtest/data/validation_report.json
 
+# ADR-003 섹터 parquet — 주 1회 Colab 수동 업데이트 (plan-003 옵션 2).
+# 차단 규칙 없음 = 레포 추적. 크기: sector_map ~10KB + stocks_daily ~1.6MB.
+
 # Colab 노트북 산출물 — Drive (MyDrive/morning-report/sector_data/)에 저장.
 # 로컬로 sync 시 레포에 섞이지 않도록 차단. 재생성 방법: notebooks/sector_data_fetch.ipynb 실행.
 notebooks/**/*.parquet

@@ -22,6 +22,11 @@ KIS_BASE_URL   = "https://openapi.koreainvestment.com:9443"
 STATE_FILE   = "sector_state.json"
 OUTPUT_FILE  = "sector_data.txt"
 
+# ADR-003 섹터 강도 (베타 병행) — plan-003 옵션 2: 주 1회 Colab 수동 parquet 커밋
+ADR003_SECTOR_MAP   = "backtest/data/sector/sector_map.parquet"
+ADR003_STOCKS_DAILY = "backtest/data/sector/stocks_daily.parquet"
+ADR003_OVERRIDES    = "reports/sector_overrides.yaml"
+
 # ── 유니버스 (KIS 6자리 코드, 시총 500억+ 업종 ETF) ─────────────────
 UNIVERSE = [
     ("091160", "KODEX 반도체"),
@@ -281,6 +286,74 @@ def detect_changes(current, prev_state):
     return changes
 
 
+# ── ADR-003 섹터 강도 (베타 병행) ────────────────────────────────────
+def render_adr003_section() -> str:
+    """ADR-003 Amendment 2 산식으로 섹터 강도 렌더. parquet 없거나 의존성
+    import 실패 시 빈 문자열 반환 (구 섹션만 출력, 모닝리포트 전체는 살림)."""
+    from pathlib import Path
+
+    sm_path = Path(ADR003_SECTOR_MAP)
+    sd_path = Path(ADR003_STOCKS_DAILY)
+    if not (sm_path.exists() and sd_path.exists()):
+        return ""
+
+    try:
+        import pandas as pd
+        import sector_breadth as sb
+    except Exception as e:
+        print(f"[ADR-003] import 실패 → 베타 섹션 스킵: {e}")
+        return ""
+
+    try:
+        overrides = sb.load_overrides(ADR003_OVERRIDES)
+        scores_df = sb.compute_sector_scores(
+            sector_map_path=sm_path,
+            stocks_daily_path=sd_path,
+            overrides=overrides,
+        )
+        sd_dates = pd.read_parquet(sd_path, columns=["날짜"])
+        last_date = pd.to_datetime(sd_dates["날짜"]).max().strftime("%Y-%m-%d")
+    except Exception as e:
+        print(f"[ADR-003] 계산 실패 → 베타 섹션 스킵: {e}")
+        return ""
+
+    leading = scores_df[scores_df["grade"].isin(["주도", "강세"])]
+    n_neutral = int((scores_df["grade"] == "중립").sum())
+    n_weak = int((scores_df["grade"] == "약세").sum())
+    n_na = int((scores_df["grade"] == "N/A").sum())
+
+    lines = [""]
+    lines.append("━" * 52)
+    lines.append("  🆕 ADR-003 섹터 강도 (베타 병행)")
+    lines.append("  산식: IBD 6M(50) + Breadth MA50(25) ×100/75")
+    lines.append("  기준: universe 162종목 | 벤치마크: universe-avg")
+    lines.append("━" * 52)
+
+    def _fmt_breadth(pct):
+        return f"{pct * 100:>3.0f}%" if pd.notna(pct) else " N/A"
+
+    for grade_label, emoji in [("주도", "🔥"), ("강세", "📈")]:
+        subset = leading[leading["grade"] == grade_label]
+        if len(subset) == 0:
+            continue
+        lines.append(f"\n{emoji} {grade_label} ({len(subset)}업종)")
+        for sector, row in subset.iterrows():
+            lines.append(
+                f"  • {sector:<10} {row['score']:>5.1f}점  "
+                f"({int(row['n_stocks']):>2}종목, breadth {_fmt_breadth(row['breadth_pct'])})"
+            )
+
+    if len(leading) == 0:
+        lines.append("\n  (주도+강세 섹터 없음 — 시장 전반 약세)")
+
+    lines.append(
+        f"\n  (중립 {n_neutral} / 약세 {n_weak} / 표본부족 {n_na} 업종 생략)"
+    )
+    lines.append(f"  기준일: {last_date}")
+    lines.append("━" * 52)
+    return "\n".join(lines)
+
+
 # ── 텍스트 출력 ──────────────────────────────────────────────────────
 def build_text(scores, changes):
     lines = []
@@ -350,6 +423,12 @@ def build_text(scores, changes):
             lines.append(f"  📊 점수 급변: {', '.join(jumps)}")
 
     lines.append("━" * 52)
+
+    # ADR-003 베타 병행 섹션 (parquet 있으면만, 없으면 빈 문자열 반환)
+    adr003 = render_adr003_section()
+    if adr003:
+        lines.append(adr003)
+
     return "\n".join(lines)
 
 
