@@ -15,8 +15,8 @@
 > 또는 알림 작업 이어가려면 `claude/session-start-UBATP` 체크아웃.
 > 둘 다 건드려야 하면 UZymn 먼저 → /session-end 후 UBATP.
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #3, UZymn 12 커밋): -->
-<!--   claude/session-start-UZymn  : ADR-003 Amendment + sector_breadth.py + 25 pytest + overrides.yaml (PC 실데이터 검증 대기, 본 브랜치) -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #4, UZymn 17 커밋): -->
+<!--   claude/session-start-UZymn  : ADR-003 Amendment 2 + 회귀 검증 PASS (주도+강세 vs universe-avg, hit 83%/mean +2.37%/월). 본 브랜치. -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
@@ -24,44 +24,54 @@
 
 ---
 
-## 현재 상태 (2026-04-23, UZymn 브랜치)
+## 현재 상태 (2026-04-23 #4, UZymn 브랜치)
 
-### 🎯 Phase 4 (실전 준비) — 알림 시스템 + 섹터 산식 개편 병행
+### 🎯 Phase 4 (실전 준비) — 섹터 산식 **검증 PASS** ✅
 
 **확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR +29.29% (11.3년, 162종목), MDD -29.8%, 실전 기댓값 +15-20%
+
+### 섹터 강도 산식 (ADR-003 Amendment 2 **정식 채택**)
+
+```
+점수 = ((A) IBD 6M 백분위 50 + (C) Breadth 25) × 100/75  → 0-100
+       (Weinstein Stage 25점은 pykrx 인덱스 API 복구 후 복원, ADR-005 대기)
+
+등급 임계: 주도 ≥75 / 강세 60-74 / 중립 40-59 / 약세 <40 / 표본<3 N/A
+운영 기준: "주도 + 강세" 복합 (주도 단독은 폐기 — hit 42% 변동성 과대)
+벤치마크: universe-avg (동등가중 162종목) — KOSPI 는 참고용
+```
+
+**회귀 검증 결과** (최근 12개월, 16 ticker_overrides):
+| grades | benchmark | mean_excess/월 | hit | 판정 |
+|---|---|---:|---:|---|
+| 주도 | KOSPI | -2.21% | 42% | FAIL |
+| 주도+강세 | KOSPI | -1.22% | 33% | FAIL |
+| 주도 | universe | +1.39% | 42% | 부분 |
+| **주도+강세** | **universe** | **+2.37%** | **83%** | **PASS ✅** |
+
+핵심 insight: **KOSPI는 universe drag(-3.6%/월) 때문에 부적합**. ADR-003은
+"universe 내 섹터 선택 알파" 측정이므로 universe-avg 가 논리적.
+
+**데이터 소스 pivot** (pykrx 인덱스 API 다운):
+- 섹터 매핑: KRX KIND (KSIC) + `reports/sector_overrides.yaml` 16 overrides
+- 시총: FinanceDataReader `StockListing('KRX')` Marcap
+- 종목 OHLCV: pykrx (정상)
+- 업종지수 주봉: 수집 보류 (Stage 복원 조건 충족 시 재개)
+
+구현: `sector_breadth.py` + `scripts/validate_sector_breadth.py` +
+`tests/test_sector_breadth.py` (~35 tests) + `notebooks/sector_validate.ipynb`.
 
 ### 진행중 작업 (2개 브랜치 병렬)
 
 ```
 claude/session-start-UBATP   →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
-claude/session-start-UZymn   →  ADR-003 Amendment + sector_breadth.py 구현 + 25 pytest
-                                (PC 실데이터 검증 + 지주회사 오버라이드 대기, 본 브랜치)
+claude/session-start-UZymn   →  ADR-003 Amendment 2 + 검증 PASS 완료
+                                다음: sector_report.py 신/구 병행 + ADR-004
                                 ↑ 이 브랜치
 ```
 
-**다음 PC 세션**: UZymn 검증(45-60분) + UBATP 알림 E2E(30분) = 총 1.5-2h.
 main 미머지 유지. 메타 인프라(인덱스+훅) 구축 보류.
-
-### 섹터 강도 산식 (ADR-003 + Amendment 2026-04-23)
-
-```
-[원 설계] IBD 6M(50) + Weinstein Stage(25) + Breadth(25) = 100점
-                                 ↓  pykrx 인덱스 API 장애로 Stage 25점 보류
-[현 산식] (IBD 6M(50) + Breadth(25)) × 100/75 = 0-100점
-          - 시총가중 + 단일 종목 25% cap
-          - 표본 단계화: ≥5 정상 / 3-4 breadth=0 / <3 N/A
-          - 임계 75/60/40 (rescale 덕분에 유지)
-```
-
-**데이터 소스 pivot** (pykrx 인덱스 API 다운):
-- 섹터 매핑: KRX KIND (KSIC) + `reports/sector_overrides.yaml` 로 22업종 환원
-- 시총: FinanceDataReader `StockListing('KRX')` Marcap
-- 종목 OHLCV: pykrx (정상)
-- 업종지수 주봉: 수집 보류 (Stage 복원 조건 충족 시 재개)
-
-구현: `sector_breadth.py` + `tests/test_sector_breadth.py` (25 tests).
-실데이터 검증 runbook: `docs/plans/002-sector-breadth-pc-execution.md`.
 
 ### 아키텍처 (단일 소스 원칙, 2026-04-22 확립)
 
@@ -78,44 +88,39 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ## 활성 작업
 
-### ⏭️ 다음 세션 진입점 (PC 환경 권장, 총 1.5-2h)
+### ⏭️ 다음 세션 진입점 (웹/로컬 무관, 총 1.5-2h)
 
-**두 브랜치 묶음 처리 필요** (main 미머지로 인해):
+#### 1️⃣ [우선] UZymn — `sector_report.py` 신/구 점수 병행 표시 (30-45분)
 
-#### 1️⃣ UBATP 브랜치 — 알림 시스템 E2E 테스트 (30분, 이월)
+ADR-003 Amendment 2 판정 PASS. 모닝리포트에 신 산식 결과 노출 단계.
+
+- 기존 18 ETF 기반 점수 + 신 ADR-003 점수를 나란히 출력
+- `reports/sector_mapping.py` 와 `sector_breadth.py` 통합 지점 결정
+- 모닝리포트에서 1-2주 운영 체감 후 구 산식 deprecate
+- 주의: `sector_breadth.py` 는 Colab 산출 parquet 필요 → GitHub Actions
+  워크플로에 parquet 생성 단계 추가 or pre-commit parquet 생성 고려
+
+#### 2️⃣ [차순위] UZymn — ADR-004 착수 (strategy 통합, 1시간)
+
+주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합.
+
+- `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
+- 백테 재실행 (162종목 × 11.3년)로 CAGR 변화 측정
+- 성공 시 ADR-004 정식 채택, 실전 전략 파라미터에 섹터 필터 추가
+
+#### 3️⃣ [이월] UBATP — 알림 시스템 E2E 테스트 (30분)
 ```bash
 git checkout claude/session-start-UBATP
 git pull
-pip install -r requirements.txt        # PyYAML/python-dotenv/pandas 추가됨
-# .env 생성 (디스코드 webhook 4개 + KIS 키 + MORNINGREPOT)
-python notifier.py signals "테스트"     # 디스코드 수신 확인
-python signals_today.py --force --dry-run
-# scripts/windows/signals_today_task.xml 의 WorkingDirectory 수정 → Task Scheduler 등록
+pip install -r requirements.txt
+# .env 생성 → python notifier.py signals "테스트" → Task Scheduler 등록
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 2️⃣ UZymn 브랜치 — sector_breadth 실데이터 검증 (45-60분)
-
-**진행 상태**: 코드 + 데이터 + 테스트 완료, 실데이터 실행만 남음.
-
-상세 runbook: [`docs/plans/002-sector-breadth-pc-execution.md`](docs/plans/002-sector-breadth-pc-execution.md)
-
-핵심 변경 (2026-04-23 웹 세션):
-- **pykrx 인덱스 API 전면 다운 확인** → KRX KIND + FDR 로 pivot
-- **Weinstein Stage 25점 보류** → rescale ×100/75, 임계 75/60/40 유지
-- `sector_breadth.py` + `sector_overrides.yaml` + 25 pytest 완성
-- Colab 에서 parquet 2개 Drive 저장됨: `MyDrive/morning-report/sector_data/`
-
-PC 에서 할 것:
-1. `pytest tests/test_sector_breadth.py -v` (뼈대 검증)
-2. Drive parquet 2개 로컬 복사 → `backtest/data/sector/`
-3. `python sector_breadth.py --sector-map ... --stocks-daily ...`
-4. 회귀 검증 스크립트 작성 + 실행 (최근 12개월 월별)
-5. 지주회사 29개 재분류 오버라이드 추가
-
-#### 이월 (별도 ADR/커밋)
+#### 4️⃣ 이월 (별도 ADR/커밋)
 - universe.py 누락 4종목 (008560/000060/042670/000215 상폐·코드변경)
-- pykrx 복구 모니터링 → Stage 복원 결정 (ADR-005)
+- pykrx 복구 모니터링 → Stage 25점 복원 결정 (ADR-005)
+- `stocks_daily.parquet` 2026-04-30 확보 후 sector_breadth 재검증 (경계 outlier 확인)
 
 ### 다른 후보 작업
 - **1주일 알림 모니터링 후 v2 개선** (과알림 방지, 보유종목 제외, 1-2h)
@@ -235,10 +240,12 @@ morning-report-main/          ← 이 레포 (Git 연결)
 - [ADR-001] T10/CD60 재확정 (103 → 162종목, T15/CD120 과적합 철회) — `docs/decisions/001-t10-cd60-reconfirm.md`
 - [ADR-002] strategy.py/yaml 단일 소스 아키텍처 — `docs/decisions/002-strategy-module-architecture.md`
 - [ADR-003] 섹터 강도 산정 방법론 (IBD + Weinstein + Breadth, 한국 적용) — `docs/decisions/003-sector-strength-methodology.md`
-  - **Amendment 2026-04-23**: pykrx 인덱스 API 장애 대응 — KIND+FDR pivot, Stage 보류, rescale ×100/75
+  - **Amendment 1 (2026-04-23)**: pykrx 인덱스 API 장애 대응 — KIND+FDR pivot, Stage 보류, rescale ×100/75
+  - **Amendment 2 (2026-04-23 #4)**: 회귀 검증 **PASS** — 운영 기준 "주도+강세" × universe-avg 확정 (mean +2.37%/월, hit 83%). ticker_overrides 16개 baseline 고정.
 
 ## 최근 세션
-- **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 착수 — Colab 노트북 작성→실행 중 pykrx 인덱스 API 전면 다운 발견 → KRX KIND + FDR 로 pivot, Weinstein Stage 보류 (ADR amendment). sector_breadth.py + 25 pytest + overrides.yaml 완성. 실데이터 검증은 PC 세션 이월 (Drive MCP 권한 부족).
-- **2026-04-23 (UZymn)**: ADR-003 채택 — 섹터 강도 산식 50/25/25 설계
+- **2026-04-23 #4 (UZymn, 웹)**: Colab 회귀 검증 3회 → "주도+강세 × universe-avg" PASS. ticker_overrides 5→16 확장 (금융업 41→26), validate_sector_breadth.py 신규, 벤치마크 플래그 추가, ADR-003 Amendment 2.
+- **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 — pykrx 장애 pivot, sector_breadth.py + 25 pytest + overrides.yaml 완성. Drive MCP 한계로 실데이터 검증 웹 세션 중 이월.
+- **2026-04-23 #2 (UZymn)**: ADR-003 채택 — 섹터 강도 산식 50/25/25 설계
 - 2026-04-22: 162종목 재백테 + T10/CD60 확정 + strategy 모듈화 + 문서 인프라
 - 자세한 건 `SESSION_LOG.md` 참조

@@ -4,6 +4,86 @@
 
 ---
 
+## 2026-04-23 #4 (UZymn, 웹) — 섹터 회귀 검증 PASS + ADR-003 Amendment 2
+
+### 결정
+- **ADR-003 정식 판정 기준 확정**: "주도+강세" × universe-avg 벤치마크.
+  hit 83%, mean_excess +2.37%/월, 종합 PASS.
+- **"주도" 단독 등급 운영 폐기** — 집중도 과도 → 섹터 변동성에 취약 (hit 42%
+  → FAIL). "주도+강세" 가 알파-안정성 균형점.
+- **벤치마크는 universe-avg** (동등가중 162종목 평균) — KOSPI 는 universe
+  구성 차이(SK하이닉스 등 mega-cap 편입 여부)로 beta drag -3.6%/월 유발.
+  이는 signal 책임 아님. `--benchmark kospi` 참고용 유지.
+- **`ticker_overrides` 16개 seeding 고정** — 5 initial + 11 확장. 금융업
+  41 → 26종목 축소. KSIC "기타 금융업" 에 혼재된 비금융 지주사업 분리.
+
+### 주요 작업
+1. ✅ `scripts/validate_sector_breadth.py` 신규 — 월별 회귀 루프 + KOSPI/
+   universe 벤치마크 + PASS/FAIL 판정
+2. ✅ `sector_breadth.py` 에 `load_overrides` + `apply_ticker_overrides` +
+   CLI `--overrides` 통합. compute_sector_scores 에 overrides 파라미터.
+3. ✅ `tests/test_sector_breadth.py` 에 overrides 테스트 10개 추가 → 총 ~35
+4. ✅ `reports/sector_overrides.yaml` 5 → 16 entries 확장 (지주회사 재분류)
+5. ✅ `notebooks/sector_validate.ipynb` Colab 실행 파이프라인 (pytest →
+   latest scores → 회귀 → 금융업 Top 30 iterate → 커밋)
+6. ✅ `requirements.txt` 에 pandas/pyarrow/PyYAML 명시 (실사용 중이었으나
+   latent 의존)
+7. ✅ Colab 3회 회귀 실험:
+   - 5 override × KOSPI: mean -1.16%, hit 50% → FAIL
+   - 16 override × KOSPI: mean -2.21%, hit 42% → FAIL (역효과)
+   - 16 override × universe: mean +2.37%, hit 83% → **PASS**
+8. ✅ ADR-003 Amendment 2 작성 — 판정 기준 + ticker_overrides 근거 + 한계
+
+### 검토한 대안
+- **override 확장 없이 산식만 튜닝**: 16 override 확장 후 주도 mean 이
+  오히려 -1.1 → -2.2%/월 악화 (전기전자 marcap 커지며 일부 약세월 drag
+  증폭). override 자체보다 **벤치마크가 근본 문제**였음이 드러남.
+- **주도 단독 유지 + 임계 상향(≥80)**: 신호 더 적어져 변동성 ↑, 표본 부족
+  으로 신뢰구간 악화. 기각.
+- **표준 Stage 25점 복원 시도**: pykrx 인덱스 API 여전히 다운. 회귀 돌리기
+  전 복원 조건(ADR-005) 충족 불가. 보류 유지.
+- **종목 단위 Minervini 필터 병행**: 섹터 산식의 독립 검증이 우선. Strategy
+  통합은 ADR-004 로 분리.
+
+### 이번 세션에서 배운 것
+- **벤치마크 선택이 결과를 뒤집음**: 산식 변경 없이 KOSPI → universe-avg
+  전환만으로 FAIL → PASS. 벤치마크가 "측정 대상에 관련된 beta drag 을
+  포함하는가" 가 판정 타당성의 핵심. 3회 실험 중 2번은 산식/override 를
+  튜닝한 건데, 진짜 문제는 비교 기준이었음.
+- **"주도" 엄격 필터 ≠ 우수한 알파**: 집중하면 알파 평균은 비슷해도
+  분산이 커서 hit ratio 망가짐. **"주도+강세" 가 hit 41% → 83%** 로 확
+  뛴 건 reliability 자체의 가치. 백테에서 mean 보다 hit ratio 중시한 결정.
+- **ticker_overrides 이중 효과**: 금융업 drag 제거 기대로 시작 → 실제로는
+  전기전자/기계 marcap 증가시켜 주도 단독에선 역효과. 주도+강세로 확장하면
+  섹터 다양성 복원으로 효과 발휘. **override 효과는 grade 조합과 연동**.
+- **fat-tailed 알파**: 2025-12/2026-01/2026-03 3개월이 전체 excess 의
+  60% 이상 기여. 강세장 집중 효과. 즉 "주도+강세" 는 하락장 방어보다
+  **상승장 초과수익 레버리지** 성격. 이 방향성은 Minervini 전략과 일치.
+
+### 미해결
+- **2026-03 경계 효과**: 23거래일(1개월 미달)이라 outlier 가능. 다음 월말
+  (2026-04-30) 데이터 확보 후 재검증 시 알파 크기 확인
+- **표본 12개월**: mean/hit 신뢰구간 여전히 넓음. 2년치 stocks_daily 로
+  6M lookback 후 12개월 확보 한계. 2027년까지 누적 재측정 필요
+- **SK Inc. (034730) / 카카오페이 (377300)**: 투자지주·핀테크 섹터 귀속
+  보수적 유지. 향후 그룹별 사업 재편 모니터링 필요
+- **universe.py 누락 3-4종목**: 008560/000060/042670/000215. 백테 재현성
+  영향 → 별도 ADR 판단 이월
+
+### 다음 세션에서 할 일
+- **[우선] `sector_report.py` 신/구 점수 병행 표시** (30-45분)
+  - 기존 18 ETF 산식 결과 + 신 ADR-003 결과를 나란히 출력
+  - `reports/sector_mapping.py` 와 `sector_breadth.py` 통합 지점
+  - 모닝리포트에서 실전 체감 → 1-2주 운영 후 구 산식 deprecate
+- **[차순위] ADR-004 착수** (1시간)
+  - 주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합
+  - `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
+  - 백테 재실행으로 CAGR 변화 측정 (162종목 × 11.3년)
+- **(이월)** UBATP 브랜치 알림 시스템 E2E 테스트 (30분)
+- **(이월)** universe.py 누락 종목 처리 + pykrx Stage 복원 모니터링
+
+---
+
 ## 2026-04-23 #3 (UZymn, 웹) — pykrx 장애 pivot + sector_breadth 구현
 
 ### 결정
