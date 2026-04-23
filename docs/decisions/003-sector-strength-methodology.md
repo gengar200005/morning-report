@@ -205,3 +205,85 @@ Stage 4 Down     :  0점  (가격 < MA30W AND MA30W 하락)
 - ⏳ `sector_report.py` 출력에 신/구 점수 병행 표시 (검증용)
 - ⏳ 1-2개월 병행 운영 후 ETF 점수 폐기 또는 보조 유지 결정
 - ⏳ 검증 통과 시 ADR-004 로 strategy 진입조건 통합 결정
+
+---
+
+## Amendment 2026-04-23 — pykrx 장애 대응 (Phase B 실행 중 발견)
+
+### 배경
+
+Colab Phase B 실행 중 pykrx 의 KRX 인덱스 마스터 API 전면 다운 확인.
+진단 결과:
+
+| pykrx API | 상태 |
+|---|---|
+| `get_market_ohlcv_by_date` (종목 OHLCV) | ✅ 정상 |
+| `get_index_ticker_list` | ❌ `KeyError: '시장'` |
+| `get_index_ticker_name` | ❌ `KeyError: '지수명'` |
+| `get_index_ohlcv_by_date` | ❌ `KeyError: '지수명'` |
+| `get_index_portfolio_deposit_file` | ❌ 빈 결과 (0행) |
+
+원인: pykrx 1.2.7 `krx.IndexTicker.__fetch()` 가 KRX 마스터 데이터
+엔드포인트에서 빈 응답(`Expecting value: line 1 column 1 (char 0)`) → 동일
+`self.df` 를 쓰는 모든 인덱스 API 동반 사망. 종목 레벨만 정상.
+
+또한 ADR 초안에 데이터 소스로 명시한 `get_market_sector_classifications()`
+는 pykrx 에 **존재하지 않는 함수**였음 (초안 오류). 실제 동등 경로로
+쓰려 했던 `get_index_portfolio_deposit_file` 도 같이 사망.
+
+### 영향
+
+1. **(B) Weinstein Stage 25점 산출 불가** — 업종지수 주봉 OHLCV 수집 못함
+2. **섹터 매핑 불가** — pykrx 인덱스 API 전체 사망
+
+### 조정
+
+#### 데이터 소스 pivot
+
+| 데이터 | 초안 | Amendment |
+|---|---|---|
+| 섹터 매핑 | pykrx 업종지수 구성종목 역매핑 | **KRX KIND 상장법인목록** (KSIC 9차) + `reports/sector_overrides.yaml` (KSIC → KOSPI 22업종 자동 매핑 + 종목 오버라이드) |
+| 업종지수 OHLCV | pykrx `get_index_ohlcv_by_date` | **수집 보류** (Stage 복구 시 재개) |
+| 종목 OHLCV | pykrx `get_market_ohlcv_by_date` | **변경 없음** (정상) |
+| 시가총액 | (초안 미명시) | **FinanceDataReader** `StockListing('KRX')` Marcap |
+
+KIND `업종` 컬럼은 KSIC 9차 소분류 (100+ 종) — 우리 universe 160종목에서
+58종 등장. 22업종 으로 환원하려면 자동 매핑 규칙 + 일부 수동 오버라이드
+필요. `sector_overrides.yaml` 이 1) KSIC→22 자동 규칙 2) 종목 단위 수동
+오버라이드 두 역할 모두 수행.
+
+#### 산식 조정 — Stage 25점 임시 제거 + rescale
+
+```
+섹터 점수 (임시) =
+  ((A) IBD 6M 백분위 50점 + (C) Breadth 25점) × 100/75
+
+= (IBD + Breadth) × 1.333   →   0-100 스케일
+```
+
+- 임계값 **75/60/40 유지** (rescale 덕분에 동일 해석)
+- 표본 단계화 변경 없음: ≥5 정상 / 3-4 breadth=0 / <3 N/A
+
+#### Stage 복원 조건 (별도 ADR로 결정)
+
+1. pykrx `get_index_ohlcv_by_date` 정상 응답 복구
+2. 업종지수 주봉 2년치 결손 없이 수집 가능
+3. Stage 판정 결과가 직관과 부합 (sanity)
+
+복원 시 rescale `× 1.333` 제거하여 원 산식 (IBD 50 + Stage 25 + Breadth 25
+= 100) 으로 복귀. 노트북 Section 2 복구.
+
+### 한계 명시
+
+- Stage 가 잡던 "추세 전환" 신호가 빠짐 → IBD 6M lagging 만 남아 최신성
+  보완 효과 감소
+- **실전 진입조건 통합(ADR-004) 전에 Stage 복원 강력 권장**
+
+### 이월 작업 (PC 세션)
+
+- [ ] `universe.py` 누락 3종목 처리: 008560 메리츠증권(2023-04 지주자회사화),
+      000060 메리츠화재(2023-02 동), 042670 HD현대인프라코어(2026-01 해산).
+      백테 재현성 영향 → 별도 ADR 필요 여부 검토
+- [ ] `sector_overrides.yaml` 지주회사 ticker_overrides 추가 (KSIC "기타
+      금융업" 29종목 중 LG/SK/GS/CJ 등은 실 사업 섹터로 재분류)
+- [ ] pykrx 인덱스 API 복구 모니터링 → 복구 시 Stage 복원
