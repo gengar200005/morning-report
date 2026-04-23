@@ -1148,6 +1148,59 @@
     letter-spacing: 1em;
   }
 
+  /* ========== CLAUDE ANALYSIS CARDS (v3.0) ========== */
+  .claude-card {
+    margin-top: 20px;
+    padding: 14px 16px 14px 18px;
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    page-break-inside: avoid;
+  }
+  .claude-card .claude-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .claude-card .claude-body {
+    color: var(--ink-soft);
+  }
+  .claude-card .claude-body p {
+    margin: 0 0 6px 0;
+  }
+  .claude-card .claude-body p:last-child { margin-bottom: 0; }
+  .claude-card .claude-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0 0;
+  }
+  .claude-card .claude-body li {
+    padding: 2px 0 2px 14px;
+    position: relative;
+  }
+  .claude-card .claude-body li::before {
+    content: '·';
+    position: absolute;
+    left: 4px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .claude-card strong { color: var(--ink); }
+
+  .claude-card.alert {
+    background: var(--bear-bg-soft);
+    border-left-color: var(--bear);
+  }
+  .claude-card.alert .claude-label { color: var(--bear); }
+  .claude-card.alert .claude-body li::before { color: var(--bear); }
+
   @media print {
     body { padding: 0; background: #fff; }
     .report { box-shadow: none; padding: 36px; }
@@ -1202,6 +1255,7 @@
       <span>두산에너빌리티 <strong>114,450원</strong> 도달 전 관망. <strong>FOMC D−14</strong> 이전 신규 진입 보수적.</span>
     </div>
   </div>
+
 
   <!-- ========== SECTION 1: US MARKETS ========== -->
   <section>
@@ -1369,6 +1423,7 @@
         </div>
       </div>
     </div>
+
   </section>
 
   <!-- ========== SECTION 3: SECTOR LEADERSHIP ========== -->
@@ -1419,6 +1474,7 @@
       <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX K-방산</div><div class="sector-score">22.0</div></div><div class="sector-label">Weakening</div></div>
       <div class="sector-card bear"><div class="sector-head"><div class="sector-name">KODEX 바이오</div><div class="sector-score">11.3</div></div><div class="sector-label">Weakening</div></div>
     </div>
+
   </section>
 
   <hr class="decorative">
@@ -1658,6 +1714,7 @@
         <span>스크리너 통과 · <strong>PBR 2.4·ROE −3.1% 펀더멘털 취약</strong>. 차트 확인 + 포지션 사이즈 보수적 관리 권장.</span>
       </div>
     </div>
+
   </section>
 
   <!-- ========== SECTION 4B: A-GRADE REMAINING ========== -->
@@ -1709,6 +1766,7 @@
       <span style="margin: 0 10px; color: var(--ink-faint);">|</span>
       <strong style="color: var(--ink);">B-GRADE:</strong> 41종목 (노션 DB 참조)
     </div>
+
   </section>
 
   <!-- ========== SECTION 5: PORTFOLIO ========== -->
@@ -1753,6 +1811,7 @@
         <div class="detail">매수가 +5% 기준 <strong>114,450원</strong> 미달 (현재 +4.86%). 도달 시 거래량 확장 동반 여부 확인 후 1차 추매. <strong>101,000원</strong> 하회 시 전량 손절.</div>
       </div>
     </div>
+
   </section>
 
   <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
@@ -1789,6 +1848,7 @@
 
     <p style="margin-top: 16px; font-family: var(--sans); font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--ink-muted);">
 5월 초까지 매크로 이벤트 집중. FOMC 전 포지션 사이징 보수적 관리, 이벤트 직전 신규 진입 자제.    </p>
+
   </section>
 
   <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
