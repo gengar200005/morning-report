@@ -71,20 +71,28 @@ python signals_today.py --force --dry-run
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 2️⃣ UZymn 브랜치 — sector_breadth.py 구현 (1시간, ADR-003)
-```bash
-git checkout claude/session-start-UZymn
-# 이 브랜치는 ADR-003 만 추가됨, 알림 코드 없음
-```
-ADR-003 명세 그대로 구현:
-- `sector_breadth.py` 신규 — 50/25/25 산식, 시총가중+25%cap, 표본 단계화
-- `reports/sector_overrides.yaml` 신규 — KRX 자동 분류 보강용 dict
-- `sector_report.py` 출력에 신/구 점수 병행 표시 (검증)
-- 회귀 검증: 최근 1년 월별 "주도" 판정 → 다음 1개월 코스피 대비 초과수익
+#### 2️⃣ UZymn 브랜치 — sector_breadth 실데이터 검증 (45-60분)
 
-#### 사전 확인 (PC 세션 시작 시)
-- KRX 22업종 중 우리 162종목 분포 → 표본 부족 섹터 (3개 미만) 몇 개?
-- 결과로 섹터 단위 점수 산출 가능 개수 확정
+**진행 상태**: 코드 + 데이터 + 테스트 완료, 실데이터 실행만 남음.
+
+상세 runbook: [`docs/plans/002-sector-breadth-pc-execution.md`](docs/plans/002-sector-breadth-pc-execution.md)
+
+핵심 변경 (2026-04-23 웹 세션):
+- **pykrx 인덱스 API 전면 다운 확인** → KRX KIND + FDR 로 pivot
+- **Weinstein Stage 25점 보류** → rescale ×100/75, 임계 75/60/40 유지
+- `sector_breadth.py` + `sector_overrides.yaml` + 25 pytest 완성
+- Colab 에서 parquet 2개 Drive 저장됨: `MyDrive/morning-report/sector_data/`
+
+PC 에서 할 것:
+1. `pytest tests/test_sector_breadth.py -v` (뼈대 검증)
+2. Drive parquet 2개 로컬 복사 → `backtest/data/sector/`
+3. `python sector_breadth.py --sector-map ... --stocks-daily ...`
+4. 회귀 검증 스크립트 작성 + 실행 (최근 12개월 월별)
+5. 지주회사 29개 재분류 오버라이드 추가
+
+#### 이월 (별도 ADR/커밋)
+- universe.py 누락 4종목 (008560/000060/042670/000215 상폐·코드변경)
+- pykrx 복구 모니터링 → Stage 복원 결정 (ADR-005)
 
 ### 다른 후보 작업
 - **1주일 알림 모니터링 후 v2 개선** (과알림 방지, 보유종목 제외, 1-2h)
@@ -206,6 +214,7 @@ morning-report-main/          ← 이 레포 (Git 연결)
 - [ADR-003] 섹터 강도 산정 방법론 (IBD + Weinstein + Breadth, 한국 적용) — `docs/decisions/003-sector-strength-methodology.md`
 
 ## 최근 세션
-- **2026-04-23 (UZymn)**: ADR-003 채택 — 섹터 강도 산식을 ETF top-down → 유니버스 bottom-up 으로 전환 (50/25/25, 시총가중+25%cap). 구현은 PC 세션 이월.
-- 2026-04-22: 162종목 재백테 + T10/CD60 확정 + strategy 모듈화 + 문서 인프라 (CLAUDE.md/SESSION_LOG/ADR/슬래시) + 내일 알림 플랜
+- **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 착수 — Colab 노트북 작성→실행 중 pykrx 인덱스 API 전면 다운 발견 → KRX KIND + FDR 로 pivot, Weinstein Stage 보류 (ADR amendment). sector_breadth.py + 25 pytest + overrides.yaml 완성. 실데이터 검증은 PC 세션 이월 (Drive MCP 권한 부족).
+- **2026-04-23 (UZymn)**: ADR-003 채택 — 섹터 강도 산식 50/25/25 설계
+- 2026-04-22: 162종목 재백테 + T10/CD60 확정 + strategy 모듈화 + 문서 인프라
 - 자세한 건 `SESSION_LOG.md` 참조

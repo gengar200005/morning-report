@@ -4,6 +4,99 @@
 
 ---
 
+## 2026-04-23 #3 (UZymn, 웹) — pykrx 장애 pivot + sector_breadth 구현
+
+### 결정
+- **pykrx 1.2.7 인덱스 마스터 API 전면 다운 확인** — Colab Phase B 실행
+  중 발견. `get_index_ticker_list`, `get_index_ticker_name`,
+  `get_index_ohlcv_by_date`, `get_index_portfolio_deposit_file` 모두 사망.
+  종목 OHLCV 만 정상.
+- **데이터 소스 pivot**: 섹터 매핑은 KRX KIND (KSIC) + FDR 시총, 업종지수
+  주봉은 수집 보류 (Weinstein Stage 25점 비활성)
+- **산식 조정**: `(IBD 50 + Breadth 25) × 100/75 = 0-100 스케일`, 임계값
+  75/60/40 유지 (rescale 덕분)
+- **Stage 복원 조건** 명시: pykrx 복구 + 2년치 결손 없는 수집 + sanity
+  pass → 별도 ADR
+- **Weinstein 처리 (a) 75점 재정의 채택** (사용자 승인). 대안 (b) 합성
+  sector index, (c) ETF 임시, (d) 대기 모두 기각
+- **Phase C 실데이터 검증은 PC 세션 이월** — 웹 Drive MCP 가 `drive.file`
+  scope 제한으로 Colab 산출 parquet 접근 불가. 1시간 삽질 대신 PC 에서
+  10분 처리가 효율
+
+### 주요 작업
+1. ✅ Colab 노트북 초안 (Section 1-4, 22셀) 작성 + 커밋 5개
+2. ✅ pykrx fetch 실패 진단 — `__fetch` JSON 에러 → IndexTicker master
+   df 공유 구조로 인덱스 API 전체 사망 확인
+3. ✅ FDR `StockListing('KRX-DESC')` + KRX KIND `상장법인목록` 검증
+4. ✅ KIND `업종` 컬럼 = KSIC 9차 소분류 (58종) 확인 → 22업종 환원 필요
+5. ✅ ADR-003 Amendment 2026-04-23 작성 (커밋 `3a236e6`)
+6. ✅ `reports/sector_overrides.yaml` 작성 — KSIC 58종 → 15개 KOSPI 22업종
+   자동 매핑 (커밋 `b4cb496`)
+7. ✅ 노트북 전면 재작성 (KIND+FDR pivot, 16셀) 커밋 `02ae40f`
+8. ✅ Colab 재실행 → parquet 2개 Drive 저장 성공:
+   - sector_map.parquet: 164행, 160 섹터매핑 성공, 9.7KB
+   - stocks_daily.parquet: 162종목 × 500일 = 79,644행, 1.6MB
+9. ✅ Drive MCP 접근 실패 확인 → PC 이월 결정
+10. ✅ `sector_breadth.py` 전체 구현 + 25 pytest (커밋 `2650050`):
+    - IBD 6M 백분위 (시총가중+25%cap iterative)
+    - Breadth (% above MA50) + 표본 단계화
+    - classify_grade + compute_sector_scores CLI
+11. ✅ `docs/plans/002-sector-breadth-pc-execution.md` runbook
+
+### 검토한 대안
+- **pykrx retry/폴백** (과거 영업일 5단계 x 3회): IndexTicker 마스터 df
+  공유 구조 때문에 모든 시도 같은 에러. 기각
+- **pykrx 강제 재설치**: 같은 버전이라 의미 없음. 대신 소스 pivot 선택
+- **FDR `KRX-DESC` Sector 컬럼**: "벤처기업부" 등 KOSDAQ 상장구분값 → 섹터
+  아님. 기각. Industry (KSIC) 는 유용
+- **Naver/Daum 스크래핑**: 162 요청 fragility → KIND 1회 호출이 나음
+- **웹에서 Drive 파일 ID 직접 입력**: MCP `drive.file` scope 로 외부 파일
+  접근 불가 확인. 두 번 시도 모두 "not found"
+- **Phase C 지금 세션 강행**: Drive 접근 삽질 + 로컬 pytest 불가 (sandbox
+  numpy 없음) 으로 PC 10분 < 웹 30분. PC 이월 선택
+- **Drive 파일을 ClaudeMorningData 폴더로 복사**: 가능하지만 사용자 수작업
+  + 임시방편. PC 이월 택일
+
+### 다음 세션에서 할 일 (PC 환경)
+- **[우선] sector_breadth 실데이터 검증** (45-60분)
+  - pytest → pass 확인
+  - Drive parquet 로컬 복사
+  - CLI 실행 → 섹터 점수 분포 + 금융 편중 체감
+  - `scripts/validate_sector_breadth.py` 작성 + 12개월 회귀 검증
+  - 지주회사 29개 `ticker_overrides` 추가
+  - 상세: `docs/plans/002-sector-breadth-pc-execution.md`
+- **(이월)** UBATP 알림 시스템 E2E 테스트 (30분)
+- **(이월)** universe.py 누락 4종목 처리 + pykrx 복구 모니터링
+
+### 미해결
+- **Drive MCP 권한 범위 조사 보류** — `drive.file` scope 로 외부 생성
+  파일 접근 불가. 웹에서 Phase C 불가능이 구조적. 해결책은 MCP 권한 확장
+  또는 ClaudeMorningData 경로 통일 — 비용 > 편익으로 PC 이월이 최적.
+- **universe.py 누락 4종목**: 008560 메리츠증권(2023 상폐), 000060 메리츠
+  화재(2023 상폐), 042670 HD현대인프라코어(2026-01 해산), **000215 DL
+  이앤씨(신규 발견 — 코드 변경 가능성, 현재 375500)**. PC 에서 확인 + 정리
+- **pykrx 복구 여부 미확정**: 2026-04-23 장애 발견, 임시 회피 방식이
+  언제까지 유효할지 불투명. ADR-005 대기
+- **지주회사 ticker_overrides 비어있음**: 금융업 41개 중 비금융 사업 지주
+  회사 많음. 실데이터 보고 PC 에서 20-30개 수동 추가 예상
+
+### 이번 세션에서 배운 것
+- **세션 연속성 실전**: 이전 세션이 Colab 진행 중 "세션 터짐" 으로 중단
+  → "작업 쪼개서 하자" 합의 후 각 단계마다 즉시 커밋. 9 커밋 동안 1회도
+  날리지 않음. **중간 커밋 전략의 가치 확실히 입증**
+- **외부 API 의존 단일점**: pykrx 하나로 모든 인덱스/종목 데이터 하려다가
+  한 번에 무너짐. KIND + FDR + pykrx 3원화가 일부만 죽어도 계속 전진 가능
+- **"데이터 없이 코드만 작성" 의 가치**: Drive 접근 불가 상태에서도
+  sector_breadth.py + 25 pytest 를 다 썼음. PC 세션이 25분 걸릴 일 10분
+  으로 단축. **테스트가 실데이터 없어도 가치 있음**
+- **ADR amendment 의 가치**: 원 ADR-003 을 "폐기하고 새로 쓰기" 가 아닌
+  amendment 섹션 추가로 변화 이력 유지. 나중에 Stage 복원 시 깔끔한 diff
+- **사용자 결정 위임**: "클로드 추천대로 가자" 3회 등장. 근거 + 후보 + 권장
+  제시 후 "네" 받는 패턴이 효율적. 세부 매핑 (KSIC 58 → 22업종 매핑) 도
+  전부 맡김 → 실데이터로 1회 완성
+
+---
+
 ## 2026-04-23 (UZymn 브랜치) — ADR-003 섹터 강도 산정 방법론 채택
 
 > **참고**: 같은 날짜에 `claude/session-start-UBATP` 브랜치에서 별개 작업
