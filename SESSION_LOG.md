@@ -4,6 +4,103 @@
 
 ---
 
+## 2026-04-23 #6 (PC, UZymn → main) — plan-004 완료 + workflow race 수정 + main 머지
+
+### 결정
+- **plan-004 실행 범위 확정**: sector_mapping 완전 재작성 / `_parse_sector_adr003`
+  파서 신규 / render_report 4-way 분기(leading/weak/neutral·na/미매핑) / 템플릿
+  `sector_etf`→`sector_adr003` 전면 교체. Session #5 의 plan 문서 그대로 따름.
+- **`_parse_sector_etf` 구 파서 존치**: 후방 호환 안전망. 구 fixture 테스트 19개
+  그대로 통과 확인. 후속 cleanup 커밋에서 제거 판단.
+- **Workflow race 수정 방향 — 옵션 A**: `git reset --hard` 제거 후 로컬 workspace
+  의 `morning_data.txt` 그대로 사용. push 는 `git fetch + rebase + retry` 루프
+  (최대 5회, 3초 간격) 로 Contents API commit 과의 non-ff 자동 해소.
+- **main 머지 전략**: `git merge origin/main -X ours --no-ff` — UZymn(12:41 UTC)
+  이 main(06:00 KST) 보다 최신 데이터이므로 충돌 시 UZymn 편. 이후 main
+  fast-forward.
+
+### 주요 작업
+1. ✅ `reports/sector_mapping.py` 재작성 — STOCK_TO_SECTOR_ETF 하드코드 삭제.
+   `ticker_overrides.yaml` (164) + `backtest/universe.py` 역매핑 로드.
+   `resolve_sector(name, sector_adr003)` 새 시그니처 (sector/tier/score/in_leading).
+2. ✅ `reports/parsers/morning_data_parser.py` — `_parse_sector_adr003` 신규(+107).
+   `📊 주도 섹터 현황(?!ETF)` 헤더로 구 파서와 공존. 11섹터 점수/종목수/breadth
+   + 주간변동(new_leaders/demoted/score_jumps) + transition flag + na 파싱.
+3. ✅ `reports/render_report.py` — `_enrich_grade_a` 4-way 재작성. "KODEX " replace
+   삭제. `data["sector_adr003"]` 키 사용. "ETF 데이터 없음" → "섹터 미매핑".
+4. ✅ `reports/templates/v6.2_template.html.j2` — `sector_etf.*` → `sector_adr003.*`
+   7곳 교체. 섹션 meta "16 ETFs" → "11 Sectors · KOSPI200". 티어 임계 라벨
+   갱신(≥75 / 60–74 / 40–59 / <40). 카드에 `N종목 · breadth X%` 추가.
+5. ✅ `tests/test_parser.py` +3 테스트 / `tests/test_sector_mapping.py` 신규 +8
+   → **27 passed**. Dry-run 렌더: 삼성SDI=2차전지 64점, LG이노텍=반도체 100점,
+   두산에너빌리티=전력인프라 75점. "ETF 데이터 없음" 0건.
+6. ✅ UZymn 1차 수동 트리거 (`gh run 24832792291`) — success 인데 어제 데이터로
+   렌더됨 발견. 로그 타임라인 분석: combine_data 의 Contents API push 후 195ms
+   만에 render step 의 `git fetch`가 실행돼 새 commit 을 못 봄 → `reset --hard`
+   가 yesterday's `morning_data.txt` 로 workspace 롤백 → 어제 데이터로 렌더.
+   GitHub 의 Contents API ↔ git upload-pack eventual consistency 가 근본 원인.
+7. ✅ `morning.yml` 재설계 — `reset --hard` 제거. 로컬 `morning_data.txt` 로
+   render. commit 후 `git reset --hard HEAD` 로 workspace 클린화 (1차 수정에선
+   morning_data.txt 만 되돌려 kr_data/us_data 등 unstaged dirty 로 rebase 실패).
+   push 는 fetch+rebase+retry 루프.
+8. ✅ UZymn 3차 트리거 (`gh run 24835114736`) — **success, attempt 1/5 push 성공**.
+   배포본 검증: Report date=2026-04-23, "ETF 데이터 없음"/"KODEX "/"TIGER "=0,
+   섹터 카드 11섹터 정상, 삼성SDI/LG이노텍 등 정상 매핑.
+9. ✅ `git merge origin/main -X ours --no-ff` → UZymn 에 main 의 오늘 auto
+   commit 60개 흡수. 충돌 3파일 (docs/latest.html, report_20260423.html/pdf)
+   전부 UZymn 편. main FF → `4477143`. non-force push 성공.
+10. ✅ 브랜치 정리 — 8개 삭제:
+    - **흡수 확정 3**: automate-9bUuB(UZymn⊃), Zhskp(UBATP⊃), handoff-4O6g8
+    - **main 직접 머지 4**: add-dated-workflow-files-HeeoS, fix-notion-embed-pkGLk,
+      fix-supply-demand-data-mJAXF, morning-report-automation-l7hoA
+    - **패치 동등(cherry) 1**: fix-duplicate-workflows-VWASY
+    - 보존 7: workflow 영향 4 (user rule 보호) + 고유 산출물 2 + UBATP 활성 1
+
+### 검토한 대안
+- **1차 fetch+reset retry 루프 추가**: race 는 회피하지만 Contents API 가 끝내
+  propagate 안 되는 edge case 잔존 (현재는 매일 정상 동작해도 이론적 결함).
+  옵션 A 가 근본. 기각.
+- **combine_data 의 Contents API push 제거 → 워크플로에서 한 번에 commit**: 큰
+  구조 변경. morning_data.txt 를 별도 public 레포에도 push 하는 로직과 얽혀 PR
+  리뷰 범위 커짐. 이월.
+- **UZymn 을 main 으로 rebase**: 60 × 47 대량 conflict 맛집. merge + `-X ours`
+  가 깔끔.
+- **브랜치 일괄 삭제**: 워크플로 영향 브랜치 (7toDJ/uQdUm/Zj26Z) 는 고유 infra
+  커밋 포함해 content-level 반영 여부 불확실. user rule "action flow 지장 금지"
+  적용 → 보존.
+
+### 이번 세션에서 배운 것
+- **로그 엔지니어링 필수** — "success" conclusion 이어도 렌더 결과가 이상하면
+  step 단위 타임스탬프로 race 추적해야 함. 195ms 간격이 diagnostic smoking gun.
+- **git reset --hard 위험성** — "원격과 동기화" 라는 깔끔한 명분이 있지만, 원격
+  상태가 eventual consistency 로 stale 이면 workspace 를 과거로 되돌림. 로컬에
+  이미 옳은 상태가 있으면 reset 은 오히려 해악.
+- **-X ours vs -X theirs 방향** — 현재 브랜치 기준. UZymn 위에서 `merge main -X
+  ours` = UZymn 편. main 위에서 `merge UZymn -X theirs` = UZymn 편. 같은 결과.
+- **git cherry 의 가치** — 브랜치 정리 시 commit SHA 비교 (log) 는 약함. 패치
+  동등 (cherry) 로 봐야 squash/rebase 머지 흔적까지 포착.
+- **"이미 오늘자" 인 로컬 파일을 reset 으로 덮어쓰는 반-직관** — render step 이
+  오늘자 로컬 `morning_data.txt` 를 받아놓고도 "원격 최신화" 명분으로 어제자로
+  롤백. "신뢰할 수 있는 로컬 상태 > 신뢰 못 하는 원격 상태" 원칙.
+
+### 미해결
+- **내일(2026-04-24) 06:00 cron 자동 런 검증** — plan-004 + workflow 수정이
+  정상 trigger 에서도 동작하는지 확인 필요
+- **universe.py 009540 "한진칼" 이름 stale** — 실제 HD한국조선해양. 섹터 배치
+  (조선) 는 정확. 이름만 수정 대기
+- **`_parse_sector_etf` 구 파서 cleanup** — 후속 커밋에서 제거 판단
+- **판단 보류 브랜치 7개** — phase3-backtest, fix-error-handling-riAYS, 워크플로
+  수정 4개 (7toDJ/uQdUm/Zj26Z/stock-tracker), 활성 UBATP
+
+### 다음 세션에서 할 일
+- **[최우선] UBATP 알림 시스템 E2E 테스트** (30분, PC 필요)
+- **[차순위] ADR-004 착수** — 섹터 게이트 (주도+강세) 를 kr_report.py signals
+  진입 게이트로 통합. `strategy_config.yaml::sector_filter` 플래그 + 162종목
+  × 11.3년 백테 재실행 (1시간)
+- **(모니터링)** 내일 06:00 cron 런 결과 확인
+
+---
+
 ## 2026-04-23 #5 (UZymn, 웹) — 11섹터 전환 + sector_report.py 재작성 + kr_report 버그 수정
 
 ### 결정

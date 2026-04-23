@@ -1,22 +1,22 @@
 # morning-report
 
-> ## 🚨 데스크탑에서 이어가기 (2026-04-23 #5 기준)
+> ## ✅ 2026-04-23 #6 완료 — plan-004 + T10/CD60 + 11섹터 main 반영
 >
-> 현재 **UZymn 브랜치에 5커밋 push 완료, main 머지 대기 중**. 핵심 블로커:
-> HTML 섹터 카드 렌더가 구 18 ETF 포맷 의존 → plan-004 재작성 완료 후 머지.
+> UZymn 머지 완료 (`4477143`). main 에 **plan-004 HTML 렌더 11섹터 전환 /
+> T10/CD60 전략 / strategy.py 단일소스 / ADR-003 Amend 3 / morning.yml race
+> 수정** 전부 반영. 브랜치 8개 정리.
 >
 > ```bash
 > git fetch origin
-> git checkout claude/session-start-UZymn
+> git checkout main
 > git pull
 > /session-start
 > ```
 >
-> **가장 먼저 할 일**: `docs/plans/004-sector-html-renderer-rewrite.md` 읽기.
-> HTML 깨짐 양상 확인용 UZymn 수동 트리거는 옵션 (이미 plan 에 범위 명시).
+> **다음 활성 작업**: UBATP 알림 E2E (30분) OR ADR-004 섹터 게이트 통합 (1h).
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #5, UZymn 23 커밋): -->
-<!--   claude/session-start-UZymn  : 11섹터 체계 전환 + sector_report.py 전면 재작성 (18 ETF 폐기). 본 브랜치. -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #6): -->
+<!--   main                        : plan-004 + T10/CD60 + 11섹터 반영 완료 (4477143) -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
@@ -24,9 +24,9 @@
 
 ---
 
-## 현재 상태 (2026-04-23 #5, UZymn 브랜치)
+## 현재 상태 (2026-04-23 #6, main)
 
-### 🎯 Phase 4 (실전 준비) — 섹터 산식 **11섹터 전환 완료, HTML 재작성 대기** ⏳
+### 🎯 Phase 4 (실전 준비) — **전략·섹터 인프라 main 반영 완료** ✅
 
 **확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR +29.29% (11.3년, 162종목), MDD -29.8%, 실전 기댓값 +15-20%
@@ -61,21 +61,21 @@
 
 구현: `sector_breadth.py` + `sector_report.py` 재작성 + `tests/test_sector_breadth.py`.
 
-### 🚨 main 머지 블로커 (plan-004)
+### ✅ main 반영 완료 (2026-04-23 #6 머지, `4477143`)
 
-**HTML 섹터 카드 렌더가 구 18 ETF 포맷 의존**. 머지 전 재작성 필수:
-- `reports/parsers/morning_data_parser.py:_parse_sector_etf` → 신 `_parse_sector_adr003`
-- `reports/render_report.py` 섹터 카드 섹션 (line 161, 189, 240)
-- `reports/sector_mapping.py` STOCK_TO_SECTOR_ETF → ticker→sector (overrides.yaml 로드)
+- **plan-004**: HTML 렌더/파서 11섹터 전환 (ETF 데이터 없음 버그 해소).
+  `_parse_sector_adr003` 신규 / `resolve_sector` 재작성 / 템플릿 키 변경
+- **T10/CD60 전략**: 162종목 재백테 +29.29% CAGR / 전략 단일 소스
+- **strategy.py/yaml 아키텍처**: 백테 ↔ 라이브 단일화
+- **ADR-003 Amendment 3**: KOSPI200 11섹터 체계 + ticker_overrides 164개
+- **morning.yml workflow race 수정**: `git reset --hard` 제거, 로컬 render
+  + push rebase 재시도 (어제 데이터로 렌더되던 버그 해소)
 
-상세: `docs/plans/004-sector-html-renderer-rewrite.md` (예상 1-2시간).
-
-### 진행중 작업 (2개 브랜치 병렬, main 미머지)
+### 진행중 작업
 
 ```
-claude/session-start-UBATP   →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
-claude/session-start-UZymn   →  11섹터 전환 완료. HTML 재작성(plan-004) 대기
-                                ↑ 이 브랜치
+main                          →  위 반영 완료. 내일 06:00 cron 정상 반영 확인 대기
+claude/session-start-UBATP    →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
 ```
 
 ### 아키텍처 (단일 소스 원칙, 2026-04-22 확립)
@@ -93,21 +93,9 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ## 활성 작업
 
-### ⏭️ 다음 세션 진입점 (데스크탑 작업, 총 1.5-2.5h)
+### ⏭️ 다음 세션 진입점
 
-#### 1️⃣ [최우선] plan-004 — HTML 섹터 카드 렌더/파서 재작성 (1-2h)
-
-`sector_report.py` 재작성은 완료됐지만 HTML 렌더가 구 18 ETF 포맷 의존.
-**main 머지 블로커**.
-
-- `reports/parsers/morning_data_parser.py` — `_parse_sector_adr003` 추가
-- `reports/render_report.py` 섹터 카드 섹션 재작성
-- `reports/sector_mapping.py` — ticker_overrides.yaml 로드 방식으로 교체
-- 상세 작업 단계 + 영향 라인: `docs/plans/004-sector-html-renderer-rewrite.md`
-
-**완료되면**: UZymn 수동 트리거 검증 → main 머지 → 다음 06:00 cron 자동 반영.
-
-#### 2️⃣ UBATP 알림 시스템 E2E 테스트 (30분, 별도 브랜치)
+#### 1️⃣ [최우선] UBATP 알림 시스템 E2E 테스트 (30분, 별도 브랜치)
 ```bash
 git checkout claude/session-start-UBATP
 git pull
@@ -116,23 +104,23 @@ pip install -r requirements.txt
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 3️⃣ [차순위] ADR-004 착수 (1시간, main 머지 후)
+#### 2️⃣ ADR-004 — 섹터 게이트 전략 통합 (1시간)
 
 주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합.
 - `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
 - 백테 재실행 (162종목 × 11.3년)로 CAGR 변화 측정
 - 성공 시 ADR-004 정식 채택
 
-#### 4️⃣ 브랜치 정리 (GitHub 웹 UI, 10분)
-이전 세션에서 보류. `https://github.com/gengar200005/morning-report/branches` 에서
-10개 stale 브랜치 삭제 (이전 세션 #5 대화 참조).
+#### 3️⃣ 모니터링 대기
+- **내일(2026-04-24) 06:00 cron** 자동 런에서 11섹터 + plan-004 가 정상 반영되는지 확인
+- **pykrx 인덱스 API 복구** → Weinstein Stage 25점 복원 (ADR-005)
+- **`stocks_daily.parquet` 2026-04-30 확보** 후 재검증 (월말 경계 outlier)
 
-#### 5️⃣ 이월 (별도 ADR/커밋)
-- **universe.py 누락 4종목 + 이름 stale** (008560/000060/042670/000215 + 009540
-  HD한국조선해양/079960 동양생명/005870 한화생명 금융 재분류). 별도 ADR.
-- **CLAUDE_PROJECT_INSTRUCTION.md T15/CD120 stale** → T10/CD60 수정 (머지 타이밍)
-- pykrx 인덱스 API 복구 모니터링 → Stage 25점 복원 (ADR-005)
-- `stocks_daily.parquet` 2026-04-30 확보 후 재검증 (월말 경계 outlier 확인)
+#### 4️⃣ 이월
+- **`_parse_sector_etf` 구 파서 cleanup** — 후속 커밋에서 제거 판단 (현재는
+  안전망으로 존치, 구 fixture 테스트 19개 통과)
+- **브랜치 잔여 정리**: `phase3-backtest`, `fix-error-handling-riAYS` (Colab 노트북).
+  워크플로 수정 포함 브랜치 4개는 보존 (action flow 규칙)
 
 ### 다른 후보 작업
 - **1주일 알림 모니터링 후 v2 개선** (과알림 방지, 보유종목 제외, 1-2h)
@@ -257,6 +245,7 @@ morning-report-main/          ← 이 레포 (Git 연결)
   - **Amendment 3 (2026-04-23 #5)**: KOSPI200 11섹터 체계 전환 — 외부 리서치 v2026.04 기반. `ticker_overrides` 16→164 전면 재작성. 구 18 ETF 산식 폐기.
 
 ## 최근 세션
+- **2026-04-23 #6 (PC, UZymn → main)**: plan-004 완료 — sector_mapping 재작성(164 ticker_overrides + universe 역매핑), `_parse_sector_adr003` 신규, render_report 4-way 분기 재작성, 템플릿 sector_etf→sector_adr003. 27 pytest PASS + dry-run + UZymn 수동 트리거 검증. `morning.yml` workflow race (git reset --hard 가 어제 데이터 롤백) 수정 — 로컬 render + push rebase 재시도. UZymn → main 머지(`4477143`, -X ours), 브랜치 8개 정리.
 - **2026-04-23 #5 (UZymn, 웹)**: 11섹터 전환 — `reports/kospi200_sectors.tsv` 추가, `sector_overrides.yaml` ticker_overrides 164개 전면 재작성, `sector_report.py` 전면 재작성(414→226줄, 18 ETF 완전 폐기), `kr_report.py` import 버그 수정(check_minervini_detailed 누락) + 출력 문자열 T10/CD60/162종목 cleanup. HTML 렌더 재작성은 plan-004 이월.
 - **2026-04-23 #4 (UZymn, 웹)**: Colab 회귀 검증 3회 → "주도+강세 × universe-avg" PASS. ticker_overrides 5→16 확장 (금융업 41→26), validate_sector_breadth.py 신규, 벤치마크 플래그 추가, ADR-003 Amendment 2.
 - **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 — pykrx 장애 pivot, sector_breadth.py + 25 pytest + overrides.yaml 완성. Drive MCP 한계로 실데이터 검증 웹 세션 중 이월.
