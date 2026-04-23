@@ -28,6 +28,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -85,6 +86,37 @@ def load_sector_map(path: str | Path) -> pd.DataFrame:
         raise ValueError(f"sector_map missing columns: {missing}")
     df["ticker"] = df["ticker"].astype(str).str.zfill(6)
     return df
+
+
+def load_overrides(path: str | Path) -> dict[str, str]:
+    """sector_overrides.yaml 의 `ticker_overrides` 딕셔너리만 추출.
+
+    Returns:
+        {ticker(6자리 zero-pad): sector_name} 형태. 파일이 없거나 키 없으면 {}.
+    """
+    p = Path(path)
+    if not p.exists():
+        return {}
+    with p.open("r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    raw = data.get("ticker_overrides") or {}
+    return {str(k).zfill(6): str(v) for k, v in raw.items()}
+
+
+def apply_ticker_overrides(
+    sector_map: pd.DataFrame,
+    overrides: dict[str, str],
+) -> pd.DataFrame:
+    """ticker-level 섹터 오버라이드 적용. 원본 불변, copy 반환."""
+    if not overrides:
+        return sector_map
+    sm = sector_map.copy()
+    sm["ticker"] = sm["ticker"].astype(str).str.zfill(6)
+    for ticker, new_sector in overrides.items():
+        mask = sm["ticker"] == ticker
+        if mask.any():
+            sm.loc[mask, "sector"] = new_sector
+    return sm
 
 
 def load_stocks_daily(path: str | Path) -> pd.DataFrame:
@@ -290,6 +322,7 @@ def compute_sector_scores(
     end_date: str | pd.Timestamp | None = None,
     sector_map: pd.DataFrame | None = None,
     stocks_daily: pd.DataFrame | None = None,
+    overrides: dict[str, str] | None = None,
 ) -> pd.DataFrame:
     """섹터 점수 일괄 산출 — ADR-003 Amendment 산식.
 
@@ -312,6 +345,9 @@ def compute_sector_scores(
         if stocks_daily_path is None:
             raise ValueError("stocks_daily or stocks_daily_path required")
         stocks_daily = load_stocks_daily(stocks_daily_path)
+
+    if overrides:
+        sector_map = apply_ticker_overrides(sector_map, overrides)
 
     if end_date is None:
         end_date = stocks_daily["날짜"].max()
@@ -371,12 +407,21 @@ if __name__ == "__main__":
     parser.add_argument("--sector-map", required=True, help="sector_map.parquet 경로")
     parser.add_argument("--stocks-daily", required=True, help="stocks_daily.parquet 경로")
     parser.add_argument("--end-date", default=None, help="기준일 YYYY-MM-DD (기본: 최신)")
+    parser.add_argument(
+        "--overrides",
+        default="reports/sector_overrides.yaml",
+        help="sector_overrides.yaml 경로 (ticker_overrides 적용용). 파일 없으면 무시",
+    )
     args = parser.parse_args()
 
+    overrides = load_overrides(args.overrides) if args.overrides else {}
     scores = compute_sector_scores(
         sector_map_path=args.sector_map,
         stocks_daily_path=args.stocks_daily,
         end_date=args.end_date,
+        overrides=overrides,
     )
+    if overrides:
+        print(f"[info] ticker_overrides {len(overrides)} applied from {args.overrides}")
     with pd.option_context("display.max_rows", None, "display.width", 200):
         print(scores.round(2))

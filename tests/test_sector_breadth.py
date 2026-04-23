@@ -8,9 +8,12 @@ ADR-003 Amendment 2026-04-23 기준.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 import sector_breadth as sb
 
@@ -300,3 +303,97 @@ class TestSectorScoresEndToEnd:
         np.testing.assert_allclose(
             valid["score"], valid["raw_score"] * (100 / 75),
         )
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  ticker overrides
+# ═══════════════════════════════════════════════════════════════════
+class TestApplyTickerOverrides:
+    def test_empty_overrides_noop(self):
+        sm = pd.DataFrame([{"ticker": "003550", "name": "LG", "sector": "금융업", "marcap": 100}])
+        out = sb.apply_ticker_overrides(sm, {})
+        assert out.loc[0, "sector"] == "금융업"
+
+    def test_reassigns_sector(self):
+        sm = pd.DataFrame([
+            {"ticker": "003550", "name": "LG", "sector": "금융업", "marcap": 100},
+            {"ticker": "001040", "name": "CJ", "sector": "금융업", "marcap": 50},
+        ])
+        out = sb.apply_ticker_overrides(sm, {"003550": "전기전자", "001040": "음식료품"})
+        assert out.set_index("ticker").loc["003550", "sector"] == "전기전자"
+        assert out.set_index("ticker").loc["001040", "sector"] == "음식료품"
+
+    def test_unknown_ticker_ignored(self):
+        sm = pd.DataFrame([{"ticker": "003550", "name": "LG", "sector": "금융업", "marcap": 100}])
+        out = sb.apply_ticker_overrides(sm, {"999999": "전기전자"})
+        assert out.loc[0, "sector"] == "금융업"  # 건드리지 않음
+
+    def test_zero_padding(self):
+        # overrides 키가 zero-pad 되지 않아도 매칭돼야 함
+        sm = pd.DataFrame([{"ticker": "003550", "name": "LG", "sector": "금융업", "marcap": 100}])
+        out = sb.apply_ticker_overrides(sm, {"3550": "전기전자"})
+        assert out.loc[0, "sector"] == "전기전자"
+
+    def test_original_not_mutated(self):
+        sm = pd.DataFrame([{"ticker": "003550", "name": "LG", "sector": "금융업", "marcap": 100}])
+        sm_before = sm.copy()
+        _ = sb.apply_ticker_overrides(sm, {"003550": "전기전자"})
+        pd.testing.assert_frame_equal(sm, sm_before)
+
+
+class TestLoadOverrides:
+    def test_missing_file_returns_empty(self, tmp_path):
+        out = sb.load_overrides(tmp_path / "nonexistent.yaml")
+        assert out == {}
+
+    def test_reads_ticker_overrides(self, tmp_path):
+        p = tmp_path / "overrides.yaml"
+        p.write_text(
+            "ticker_overrides:\n"
+            "  003550: 전기전자\n"
+            "  001040: 음식료품\n",
+            encoding="utf-8",
+        )
+        out = sb.load_overrides(p)
+        assert out == {"003550": "전기전자", "001040": "음식료품"}
+
+    def test_missing_section_returns_empty(self, tmp_path):
+        p = tmp_path / "overrides.yaml"
+        p.write_text("ksic_to_kospi22:\n  foo: bar\n", encoding="utf-8")
+        out = sb.load_overrides(p)
+        assert out == {}
+
+    def test_integer_keys_stringified_and_padded(self, tmp_path):
+        # YAML 에서 leading zero 숫자는 파싱 시 정수로 해석될 수 있음 → zero-pad 복원
+        p = tmp_path / "overrides.yaml"
+        p.write_text("ticker_overrides:\n  3550: 전기전자\n", encoding="utf-8")
+        out = sb.load_overrides(p)
+        assert out == {"003550": "전기전자"}
+
+
+class TestOverridesIntegration:
+    def test_overrides_propagate_to_scores(self):
+        # 2개 섹터 × 5종목씩 기본, override 로 한 종목을 이동시켜 sizes 변화 확인
+        sm_rows = []
+        for i in range(5):
+            sm_rows.append({"ticker": f"A{i}", "name": f"A{i}", "sector": "X", "marcap": 100})
+        for i in range(5):
+            sm_rows.append({"ticker": f"B{i}", "name": f"B{i}", "sector": "Y", "marcap": 100})
+        sm = pd.DataFrame(sm_rows)
+
+        tickers = {}
+        n = 140
+        for i in range(5):
+            tickers[f"A{i}"] = [100.0] * n
+        for i in range(5):
+            tickers[f"B{i}"] = [100.0] * n
+        stocks = _make_stocks_daily(tickers)
+
+        # A0 을 X → Y 로 이동시키면 X 는 4종목 (< SAMPLE_MIN_FULL), Y 는 6종목
+        out = sb.compute_sector_scores(
+            sector_map=sm, stocks_daily=stocks, overrides={"A0": "Y"},
+        )
+        assert out.loc["X", "n_stocks"] == 4
+        assert out.loc["Y", "n_stocks"] == 6
+        # X 는 3-4 표본 → breadth_points = 0
+        assert out.loc["X", "breadth_points"] == 0.0

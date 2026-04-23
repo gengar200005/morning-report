@@ -9,6 +9,9 @@ pytz>=2024.1
 # NOTE: FinanceDataReader는 Python 3.11 환경에서 wheel 매치 실패 이슈로 제외.
 #       실제로 기존 수집 스크립트가 쓰지 않음. 필요 시 Python 버전 핀과 함께 재도입.
 numpy>=1.26
+pandas>=2.0
+pyarrow>=14.0
+PyYAML>=6.0
 yfinance>=0.2
 pykrx>=1.0
 
