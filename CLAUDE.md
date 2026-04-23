@@ -1,5 +1,8 @@
 # morning-report
 
+<!-- Last session branch: claude/session-start-UBATP (2026-04-23) -->
+<!-- 다음 세션 /session-start 가 이 포인터를 참조. /session-end 가 자동 갱신. -->
+
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
