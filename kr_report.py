@@ -17,6 +17,7 @@ sys.path.insert(0, str(BASE / "backtest"))
 from strategy import (  # noqa: E402
     load_config as _load_strategy_config,
     check_minervini_core,
+    check_minervini_detailed,
     check_market_gate,
 )
 
