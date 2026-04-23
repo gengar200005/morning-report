@@ -32,9 +32,9 @@ RS(50) + 추세(30) + 자금(20) = 100점 산식을 사용. 다음 한계 발견
 
 ```
 섹터 점수 (0-100) =
-  (A) IBD 6M 백분위 순위         40점
-  (B) Weinstein Stage 2          30점
-  (C) Breadth (% above MA50)     30점
+  (A) IBD 6M 백분위 순위         50점
+  (B) Weinstein Stage 2          25점
+  (C) Breadth (% above MA50)     25점
 
 등급:
   ≥ 75점  → 주도 (Leading)
@@ -43,36 +43,61 @@ RS(50) + 추세(30) + 자금(20) = 100점 산식을 사용. 다음 한계 발견
   < 40점  → 약세 (Weak)
 ```
 
-#### (A) IBD 6M 백분위 (40점) — O'Neil/Minervini 표준
+**비중 50/25/25 근거** (한국 시장 적용 판단):
+- O'Neil 과 Minervini 본인의 **우선순위 명시**: IBD Industry Group Rank
+  를 1차 필터(Top 40 / 상위 20%), Weinstein Stage 를 2차 보조로 사용.
+- 한국 모멘텀 효과는 학술적으로 혼재 (Chae & Eom 2009 negative momentum
+  vs Asness et al. 2013 "Value and Momentum Everywhere" 한국 포함 양성)
+  지만, **6M lookback은 단일 모멘텀 팩터 중 가장 검증된 형태**.
+- 한국 시장 변동성(연환산 ~22%, S&P ~15%) 이 미국보다 큼 → Weinstein
+  Stage 의 false signal (whipsaw) 빈도 높음 → 비중 30→25로 낮춤.
 
-- 섹터별 **6개월(126 거래일) 가격 수익률**을 집계 (시총 가중 평균)
+**임계값 75/60/40** : 임의값. 첫 구현 후 백테 분포 확인하여 조정 가능.
+
+#### (A) IBD 6M 백분위 (50점) — O'Neil/Minervini 표준
+
+- 섹터별 **6개월(126 거래일) 가격 수익률**을 집계
+- 집계 방식: **시총 가중 + 단일 종목 25% cap**
+  - 한국 시총 집중 (삼성전자 KOSPI ~20%, Top 10 ~50%) 으로 순수 시총
+    가중 시 단일 종목에 점수 휘둘림
+  - **KRX 200 인덱스 자체가 단일 종목 30% cap 사용** (한국 시장 표준)
+  - 본 산식은 25% 로 더 보수적 적용 (섹터 단위는 더 좁아 영향 ↑)
+  - 동등 가중 대안 기각: 소형주 영향 과대 + 시장 신호 왜곡
 - 22개 섹터 중 백분위 순위 산출
-- 점수 = `40 × percentile_rank` (0~1)
-- 출처: O'Neil *How to Make Money in Stocks* 14장 "Industry Group Strength";
-  Minervini *Trade Like a Stock Market Wizard* 4장 "Leading Stocks in
-  Leading Industries" — 명시적으로 IBD Industry Group Rank Top 40 (상위
-  20%) 권장
+- 점수 = `50 × percentile_rank` (0~1)
+- 출처:
+  - O'Neil *How to Make Money in Stocks* 14장 "Industry Group Strength"
+  - Minervini *Trade Like a Stock Market Wizard* 4장 — IBD Industry
+    Group Rank Top 40 명시적 권장
+  - Asness et al. (2013) "Value and Momentum Everywhere" *Journal of
+    Finance* — 6M momentum 글로벌(한국 포함) 양성 검증
 
-#### (B) Weinstein Stage 2 (30점) — Stan Weinstein 표준
+#### (B) Weinstein Stage 2 (25점) — Stan Weinstein 표준
 
 KRX 업종지수의 **주봉 MA30 (30주 = 약 7개월)** 기준 4단계 분류:
 
 ```
-Stage 2 Uptrend  : 30점  (가격 > MA30W AND MA30W 상승)
-Stage 1 Base     : 20점  (가격 ≈ MA30W 횡보)
+Stage 2 Uptrend  : 25점  (가격 > MA30W AND MA30W 상승)
+Stage 3 Top      :  8점  (가격 > MA30W AND MA30W 평탄/하락 시작)
+Stage 1 Base     : 17점  (가격 ≈ MA30W 횡보)
 Stage 4 Down     :  0점  (가격 < MA30W AND MA30W 하락)
-Stage 3 Top      : 10점  (가격 > MA30W AND MA30W 평탄/하락 시작)
 ```
 
 - 출처: Weinstein *Secrets for Profiting in Bull and Bear Markets* 2장;
-  Minervini의 "Stage 2 진입" 개념의 원조
+  Minervini *Trade Like a Stock Market Wizard* 의 "Stage 2 진입" 개념의
+  직접적 원조
 
-#### (C) Breadth — % above MA50 (30점)
+#### (C) Breadth — % above MA50 (25점)
 
 - **섹터 내 우리 유니버스 종목 중 종가가 MA50 이상인 비율**
-- 점수 = `30 × pct_above_ma50` (0~1)
-- 표본 부족 보정: 섹터 내 유니버스 종목 < 5개면 점수 0 처리
-  (코스피 22개 업종 중 일부 섹터는 우리 백테 162종목에서 표본 적음)
+- 점수 = `25 × pct_above_ma50` (0~1)
+- **표본 부족 처리** (한국 22업종 중 일부 섹터 우리 162종목에서 종목수
+  부족 — 예: 섬유의복, 종이목재 등):
+  ```
+  종목 수 ≥ 5  : 정상 점수 산출
+  종목 수 3-4 : breadth 0점 처리, IBD/Stage 만으로 점수 (max 75점)
+  종목 수 < 3 : 섹터 점수 자체 N/A (집계 제외)
+  ```
 - 출처: Murphy *Technical Analysis of the Financial Markets* 6장 Market
   Breadth; Zweig *Winning on Wall Street* — 섹터 단위 적용은 StockCharts
   /FinViz 표준 시각화
@@ -110,19 +135,38 @@ Stage 3 Top      : 10점  (가격 > MA30W AND MA30W 평탄/하락 시작)
 
 ### ❌ Jegadeesh-Titman 12-1 Momentum
 
-- 학술 표준이지만 12개월 lookback은 코스피 변동성 대비 너무 김
-- 6개월(IBD)이 한국 시장에 더 적합 (역사적으로 회전 빠름)
+- 학술 표준이지만 12개월 lookback은 한국 변동성 대비 너무 김
+- 한국 모멘텀 효과는 학술적으로 혼재 (Chae & Eom 2009 negative momentum
+  보고). 짧은 lookback(6M)이 그나마 robust.
+- IBD 원문도 6M 사용. 일관성 유지.
 
 ### ❌ WICS 세분류 (10섹터 → 24산업그룹 → 69산업)
 
 - FnGuide 유료 또는 스크래핑 필요 → 인프라 부담
 - KRX 22 업종으로 충분 (우리 162종목 분포 시 산업그룹 단위는 표본 부족)
 
-### ❌ 시총 가중 vs 동등 가중
+### ❌ 동등 가중 (equal-weighted)
 
-- IBD 원문은 시총 가중 (시장 영향력 반영)
-- 동등 가중은 소형주 영향 과대
-- **시총 가중 채택** (IBD 원문 따름, 한국 대형주 집중도 반영)
+- 소형주 영향 과대, 시장 신호 왜곡
+- 한국에서 특히 부적합: 시총 작은 종목이 변동성 큼 → 점수 노이즈 ↑
+
+### ❌ 순수 시총 가중 (uncapped market-cap weighted)
+
+- IBD 원문 방식이지만 **한국 시장에서는 부적합**
+- 삼성전자 단독 KOSPI 시총 ~20% → 전기전자 섹터 점수 = 사실상 삼성 점수
+- KRX 200 인덱스조차 단일 종목 30% cap 사용 (시장 표준)
+
+### ✅ 시총 가중 + 25% 종목 cap (채택)
+
+- KRX 200 cap (30%) 보다 보수적 (섹터 단위는 종목 적어 cap 영향 더 큼)
+- 시장 영향력 반영 + 단일 종목 왜곡 차단의 절충
+
+### ❌ 비중 다른 조합 검토
+
+- **40/30/30 (균등)**: O'Neil/Minervini 우선순위와 불일치
+- **60/20/20 (IBD 강조)**: Stage 가 너무 약화, Minervini 의 2단 필터 구조
+  무력화
+- **50/25/25 (채택)**: 1차 필터(IBD) 우위 + 2-3차(Stage/Breadth) 보조
 
 ## 결과
 
