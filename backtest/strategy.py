@@ -163,15 +163,120 @@ def load_data(universe: list[tuple[str, str]]):
 
 
 # ══════════════════════════════════════════════════════════════════
+#  Sector gate (ADR-004)
+# ══════════════════════════════════════════════════════════════════
+_REPO_ROOT = BASE_DIR.parent
+_SECTOR_MAP_PATH = DATA_DIR / "sector" / "sector_map.parquet"
+_SECTOR_OVERRIDES_PATH = _REPO_ROOT / "reports" / "sector_overrides.yaml"
+
+
+def _build_stocks_daily_long(all_dates, stock_arr) -> pd.DataFrame:
+    """stock_arr dict → sector_breadth 가 기대하는 long format DataFrame.
+
+    Columns: [날짜, ticker, 종가]. close <= 0 인 행은 제외 (상장 전/정지일).
+    """
+    dates = pd.to_datetime(all_dates)
+    frames = []
+    for ticker, (c, _o, _v) in stock_arr.items():
+        mask = c > 0
+        if not mask.any():
+            continue
+        frames.append(pd.DataFrame({
+            "날짜": dates[mask],
+            "ticker": ticker,
+            "종가": c[mask],
+        }))
+    if not frames:
+        return pd.DataFrame(columns=["날짜", "ticker", "종가"])
+    return (pd.concat(frames, ignore_index=True)
+            .sort_values(["ticker", "날짜"])
+            .reset_index(drop=True))
+
+
+def precompute_sector_tiers(all_dates, stock_arr, cfg) -> dict[int, dict[str, str]]:
+    """날짜 인덱스별 {ticker: grade} 사전계산.
+
+    성능: recompute_every 거래일마다 compute_sector_scores 재계산, 중간 날짜는
+    직전 등급 재사용. grade ∈ {"주도", "강세", "중립", "약세", "N/A"}.
+
+    룩어헤드 방지: day i 의 게이트 판정은 all_dates[i-1] 종가까지만 사용.
+    """
+    import sys as _sys
+    if str(_REPO_ROOT) not in _sys.path:
+        _sys.path.insert(0, str(_REPO_ROOT))
+    import sector_breadth as sb  # noqa: E402
+
+    gate = cfg.get("signal", {}).get("sector_gate", {})
+    if not gate.get("enabled", False):
+        return {}
+
+    recompute_every = int(gate.get("recompute_every", 5))
+    warmup = cfg["execution"]["warmup_days"]
+
+    sm = sb.load_sector_map(_SECTOR_MAP_PATH)
+    overrides = sb.load_overrides(_SECTOR_OVERRIDES_PATH)
+    sm = sb.apply_ticker_overrides(sm, overrides)
+    ticker_to_sector = dict(zip(sm["ticker"].astype(str).str.zfill(6),
+                                 sm["sector"]))
+
+    stocks_long = _build_stocks_daily_long(all_dates, stock_arr)
+
+    n = len(all_dates)
+    cache: dict[int, dict[str, str]] = {}
+    last: dict[str, str] = {}
+    computed = 0
+    for i in range(warmup, n):
+        if (i - warmup) % recompute_every == 0:
+            end_date = all_dates[i - 1]
+            try:
+                scores = sb.compute_sector_scores(
+                    sector_map=sm, stocks_daily=stocks_long, end_date=end_date,
+                )
+                sector_grade = scores["grade"].to_dict()
+                last = {t: sector_grade.get(s, "N/A")
+                        for t, s in ticker_to_sector.items()}
+                computed += 1
+            except Exception as e:
+                # compute 실패 시 직전 결과 유지
+                if computed == 0:
+                    last = {t: "N/A" for t in ticker_to_sector}
+        cache[i] = last
+    return cache
+
+
+def check_sector_gate(ticker: str, i: int,
+                      tier_cache: dict[int, dict[str, str]],
+                      cfg: dict) -> bool:
+    """섹터 게이트 통과 여부.
+
+    - enabled=False → 항상 True (baseline)
+    - ticker 매핑 없음 → N/A 정책 적용
+    - 섹터 등급이 tiers 에 있으면 True, 아니면 False
+    """
+    gate = cfg.get("signal", {}).get("sector_gate", {})
+    if not gate.get("enabled", False):
+        return True
+    tk = str(ticker).zfill(6)
+    grade = tier_cache.get(i, {}).get(tk, "N/A")
+    if grade == "N/A":
+        return gate.get("fallback_on_na", "pass") == "pass"
+    return grade in gate.get("tiers", ["주도", "강세"])
+
+
+# ══════════════════════════════════════════════════════════════════
 #  Backtest engine
 # ══════════════════════════════════════════════════════════════════
 def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
                  trail_stop: float | None = None,
                  cooldown: int | None = None,
-                 stop_loss: float | None = None):
+                 stop_loss: float | None = None,
+                 sector_tier_cache: dict | None = None):
     """
     config 기반 포트폴리오 백테. trail_stop/cooldown/stop_loss 파라미터는
     그리드 스윕용 오버라이드 — None 이면 cfg 값 사용.
+
+    sector_tier_cache: precompute_sector_tiers 결과. None 이면 cfg 에서
+        sector_gate.enabled=True 일 때 자동 계산. enabled=False 면 무시.
 
     Returns:
         (equity_df, trades_df)
@@ -185,6 +290,12 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
     max_hold = risk["max_hold_days"]
     max_pos = risk["max_positions"]
     warmup = exec_cfg["warmup_days"]
+
+    gate_enabled = cfg.get("signal", {}).get("sector_gate", {}).get("enabled", False)
+    if gate_enabled and sector_tier_cache is None:
+        sector_tier_cache = precompute_sector_tiers(all_dates, stock_arr, cfg)
+    elif not gate_enabled:
+        sector_tier_cache = {}
 
     n_days = len(all_dates)
     cash = 1.0
@@ -281,6 +392,8 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
                     if i - last_exit_i[tk] < cd:
                         continue
                 if check_signal(c, v, i, rs_map.get(tk), cfg):
+                    if not check_sector_gate(tk, i, sector_tier_cache, cfg):
+                        continue
                     candidates.append((tk, rs_map.get(tk, 0)))
 
             candidates.sort(key=lambda x: -x[1])

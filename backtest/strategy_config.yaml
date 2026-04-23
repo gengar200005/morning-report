@@ -26,6 +26,13 @@ signal:
   market_gate:
     kospi_ma: 60                     # KOSPI close > MA60
 
+  # 섹터 게이트 (ADR-004, 실험 단계 — 기본 off 로 baseline 보존)
+  sector_gate:
+    enabled: false                   # true → 섹터 티어가 `tiers` 에 없는 종목 진입 차단
+    tiers: ["주도", "강세"]          # 허용 등급 (sector_breadth.classify_grade 출력과 매칭)
+    fallback_on_na: pass             # "pass" = N/A 섹터 통과 / "block" = 차단
+    recompute_every: 5               # N거래일마다 섹터 점수 재계산 (1이면 매일, 성능 ↓)
+
 # ── 리스크 관리 (T10/CD60 확정값) ──
 risk:
   stop_loss: 0.07                    # 진입가 대비 -7%

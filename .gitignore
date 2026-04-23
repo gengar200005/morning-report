@@ -8,6 +8,7 @@ backtest/data/ohlcv/
 backtest/data/index/
 backtest/data/meta.json
 backtest/data/*.log
+backtest/data/adr*.json
 
 # validation_report.json 은 추적 (162종목 ok 판정이 백테 재현성에 중요)
 !backtest/data/validation_report.json

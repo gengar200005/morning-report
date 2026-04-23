@@ -1,22 +1,16 @@
 # morning-report
 
-> ## ✅ 2026-04-23 #6 완료 — plan-004 + T10/CD60 + 11섹터 main 반영
+> ## ✅ 2026-04-23 #7 완료 — ADR-004 섹터 게이트 기각 (실증 검증)
 >
-> UZymn 머지 완료 (`4477143`). main 에 **plan-004 HTML 렌더 11섹터 전환 /
-> T10/CD60 전략 / strategy.py 단일소스 / ADR-003 Amend 3 / morning.yml race
-> 수정** 전부 반영. 브랜치 8개 정리.
+> 11.3년 × 162종목 × 5 variant 백테 결과 **모든 섹터 게이트 조합이 baseline
+> (+29.55%) CAGR 를 하회**. 주도+강세 -8.12%p, 약세만 차단(D) -2.99%p.
+> T10/CD60 확정 전략 **유지**. ADR-004 기각 문서화.
 >
-> ```bash
-> git fetch origin
-> git checkout main
-> git pull
-> /session-start
-> ```
->
-> **다음 활성 작업**: UBATP 알림 E2E (30분) OR ADR-004 섹터 게이트 통합 (1h).
+> **다음 활성 작업**: UBATP 알림 E2E (30분) OR 박스권 조건부 게이트 검증
+> (ADR-005 후보, 1-2h).
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #6): -->
-<!--   main                        : plan-004 + T10/CD60 + 11섹터 반영 완료 (4477143) -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #7): -->
+<!--   main                        : #6 머지 + #7 ADR-004 기각 문서화 (커밋 승인 대기) -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
@@ -24,12 +18,29 @@
 
 ---
 
-## 현재 상태 (2026-04-23 #6, main)
+## 현재 상태 (2026-04-23 #7, main)
 
-### 🎯 Phase 4 (실전 준비) — **전략·섹터 인프라 main 반영 완료** ✅
+### 🎯 Phase 4 (실전 준비) — **전략 확정 유지 + 섹터 게이트 실증 기각** ✅
 
-**확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일)
-- 백테 CAGR +29.29% (11.3년, 162종목), MDD -29.8%, 실전 기댓값 +15-20%
+**확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일) — 변경 없음
+- 백테 CAGR **+29.55%** (11.3년, 162종목, 새 pykrx 수집 데이터), MDD -29.83%
+- 이전 기록 (+29.29%) 대비 +0.26%p 는 2026-04-23 최신 일자 포함 효과
+- 실전 기댓값 +15-20% 유지
+
+### ADR-004 섹터 게이트 통합 — **기각** (2026-04-23 #7)
+
+5 variant × 11.3년 백테. 전부 baseline 하회:
+
+| Variant | CAGR | Δ | 2015-19 | 2020-24 | 2025+ |
+|---|---:|---:|---:|---:|---:|
+| **A baseline (off)** | **+29.55%** | - | -2.05% | +35.26% | +160.96% |
+| B 주도 only | +15.66% | -13.89%p | +1.71% | +18.68% | +56.77% |
+| C 주도+강세 | +21.43% | -8.12%p | +9.49% | +12.15% | +128.59% |
+| D 주도+강세+중립 | +26.56% | -2.99%p | -1.79% | +32.96% | +129.86% |
+
+**근본 가설**: Minervini 8조건 자체가 trend-following 필터라 섹터 추세
+게이트와 상관 높음 → 등급 부여 lag 만 비용으로 발생. 박스권에선 개선
+되지만 중립/강세장 손실 압도. 상세: `docs/decisions/004-sector-gate-rejection.md`
 
 ### 섹터 강도 산식 — **KOSPI200 11섹터 체계로 전환** (2026-04-23 #5)
 
@@ -104,12 +115,17 @@ pip install -r requirements.txt
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 2️⃣ ADR-004 — 섹터 게이트 전략 통합 (1시간)
+#### 2️⃣ ADR-005 후보 — 박스권 조건부 섹터 게이트 (1-2시간)
 
-주도+강세 섹터를 `kr_report.py` signals 생성 시 진입 게이트로 통합.
-- `strategy_config.yaml` 에 `sector_filter: true|false` 플래그
-- 백테 재실행 (162종목 × 11.3년)로 CAGR 변화 측정
-- 성공 시 ADR-004 정식 채택
+ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득
+나타남 (+3~+11%p). 시장 regime detection (6M KOSPI return, MA200 slope)
+기반으로 박스권 구간에만 게이트 활성화.
+- 인프라: `strategy_config.yaml::sector_gate` + `precompute_sector_tiers`
+  이미 있음. `enabled` 를 regime-flag 로 교체
+- 검증: 162종목 × 11.3년 백테 + 기간 분해 vs baseline
+- 성공 조건: 전체 CAGR 유지 or 개선, MDD 악화 없음
+
+**또는** 섹터 점수를 filter 대신 랭킹 가점으로 (RS + 섹터점수 가중합).
 
 #### 3️⃣ 모니터링 대기
 - **내일(2026-04-24) 06:00 cron** 자동 런에서 11섹터 + plan-004 가 정상 반영되는지 확인
@@ -243,8 +259,12 @@ morning-report-main/          ← 이 레포 (Git 연결)
   - **Amendment 1 (2026-04-23)**: pykrx 인덱스 API 장애 대응 — KIND+FDR pivot, Stage 보류, rescale ×100/75
   - **Amendment 2 (2026-04-23 #4)**: 회귀 검증 **PASS** — 운영 기준 "주도+강세" × universe-avg 확정 (mean +2.37%/월, hit 83%). ticker_overrides 16개 baseline 고정.
   - **Amendment 3 (2026-04-23 #5)**: KOSPI200 11섹터 체계 전환 — 외부 리서치 v2026.04 기반. `ticker_overrides` 16→164 전면 재작성. 구 18 ETF 산식 폐기.
+- [ADR-004] 섹터 게이트를 전략 진입 조건으로 통합 — **기각** — `docs/decisions/004-sector-gate-rejection.md`
+  - 5 variant × 11.3년 × 162종목 백테. 전부 baseline +29.55% 하회 (최소 손해 D: -2.99%p, 주도+강세 C: -8.12%p).
+  - 교훈: 회귀 알파 ≠ 전략 알파. Minervini 자체가 trend-filter 라 섹터 게이트와 상관되어 lag 만 추가.
 
 ## 최근 세션
+- **2026-04-23 #7 (PC, main)**: ADR-004 섹터 게이트 통합 실증 검증 → **기각**. `backtest/01_fetch_data.py` 복원 + 162종목 × 11.3년 pykrx 재수집 (74초), `01b_fetch_kospi_yf.py` 신규 (yfinance), `strategy_config.yaml::sector_gate` + `strategy.py::precompute_sector_tiers/check_sector_gate` 구현, `99_sector_gate_ab.py` + `99_sector_gate_variants.py` 5 variant 스윕. baseline +29.55% vs 최선 variant(D 약세만차단) +26.56% 로 모든 variant 악화. ADR-004 문서화 + CLAUDE.md 갱신.
 - **2026-04-23 #6 (PC, UZymn → main)**: plan-004 완료 — sector_mapping 재작성(164 ticker_overrides + universe 역매핑), `_parse_sector_adr003` 신규, render_report 4-way 분기 재작성, 템플릿 sector_etf→sector_adr003. 27 pytest PASS + dry-run + UZymn 수동 트리거 검증. `morning.yml` workflow race (git reset --hard 가 어제 데이터 롤백) 수정 — 로컬 render + push rebase 재시도. UZymn → main 머지(`4477143`, -X ours), 브랜치 8개 정리.
 - **2026-04-23 #5 (UZymn, 웹)**: 11섹터 전환 — `reports/kospi200_sectors.tsv` 추가, `sector_overrides.yaml` ticker_overrides 164개 전면 재작성, `sector_report.py` 전면 재작성(414→226줄, 18 ETF 완전 폐기), `kr_report.py` import 버그 수정(check_minervini_detailed 누락) + 출력 문자열 T10/CD60/162종목 cleanup. HTML 렌더 재작성은 plan-004 이월.
 - **2026-04-23 #4 (UZymn, 웹)**: Colab 회귀 검증 3회 → "주도+강세 × universe-avg" PASS. ticker_overrides 5→16 확장 (금융업 41→26), validate_sector_breadth.py 신규, 벤치마크 플래그 추가, ADR-003 Amendment 2.

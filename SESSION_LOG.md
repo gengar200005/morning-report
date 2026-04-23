@@ -4,6 +4,109 @@
 
 ---
 
+## 2026-04-23 #7 (PC, main) — ADR-004 섹터 게이트 통합 실증 → **기각**
+
+### 결정
+- **ADR-004 섹터 게이트 기각** — 5 variant × 11.3년 × 162종목 백테. 모든 variant
+  가 baseline +29.55% CAGR 를 하회. "주도+강세" (ADR-003 검증 조합) 는 -8.12%p
+  악화, "약세만 차단" (D) 조차 -2.99%p 악화. MDD 도 C/D 모두 baseline 대비 악화.
+- **확정 전략 T10/CD60 변경 없음** — baseline 숫자는 +29.29% → +29.55% (최신
+  2026-04-23 포함 효과 +0.26%p), MDD -29.8% → -29.83% 로 사실상 동일 재현.
+- **섹터 게이트 인프라는 존치** — `strategy_config.yaml::sector_gate` +
+  `precompute_sector_tiers/check_sector_gate` 는 enabled=false 기본값으로 남김.
+  박스권 조건부 활성화 등 후속 실험 시 재사용.
+
+### 주요 작업
+1. ✅ `backtest/01_fetch_data.py` 복원 — 백업 (`phase3_backup/`) 에서 복사.
+   기존 레포에 ohlcv 데이터가 gitignore 로 누락된 상태였음.
+2. ✅ pykrx 종목 OHLCV 헬스체크 — 인덱스 API 만 다운이고 종목은 정상 확인.
+3. ✅ 162종목 × 11.3년 재수집 (`01_fetch_data.py --skip-index`) — **74초**
+   완료 (예상 30-60분에서 대폭 단축, pykrx 안정화 효과로 추정).
+4. ✅ `01b_fetch_kospi_yf.py` 신규 — pykrx index API 장애 우회. yfinance `^KS11`
+   2015-01 ~ 오늘 2771 rows 수집. 스키마는 `load_data` 가 기대하는 close 만.
+5. ✅ `strategy_config.yaml::signal.sector_gate` 블록 추가 — enabled/tiers/
+   fallback_on_na/recompute_every. 기본 off (후방 호환).
+6. ✅ `strategy.py::precompute_sector_tiers(all_dates, stock_arr, cfg)` 신규 —
+   `stock_arr` 를 long-format DataFrame 으로 변환 후 `sector_breadth.
+   compute_sector_scores` 를 `end_date=D-1` 로 N거래일마다 호출. 캐시
+   `{i: {ticker: grade}}`. 룩어헤드 방지 + 메모리 경제.
+7. ✅ `strategy.py::check_sector_gate(ticker, i, cache, cfg)` — `run_backtest`
+   의 candidates 루프에서 `check_signal` 통과 후 호출. N/A 정책 pass/block 지원.
+8. ✅ `99_sector_gate_ab.py` 초기 A/B + `99_sector_gate_variants.py` 5 variant
+   스윕 작성. tier_cache 1회 (80s) 후 각 variant 백테 1.5-2.6s.
+9. ✅ 결과 분석: 전 variant baseline 하회. 최소 손해 D (-3%p), 최대 손해 B (-14%p).
+10. ✅ `docs/decisions/004-sector-gate-rejection.md` 작성 (기각 + 대안 + 교훈).
+11. ✅ CLAUDE.md + SESSION_LOG 갱신. 다음 활성 작업 ADR-005 후보로 재정립.
+
+### 결과 요약
+
+```
+─────────────────────────────────────────────────────────────────
+ variant               전체       2015-19     2020-24     2025+
+─────────────────────────────────────────────────────────────────
+ A baseline          +29.55%      -2.05%     +35.26%    +160.96%   ← 유지
+ B 주도 only           +15.66%     +1.71%     +18.68%     +56.77%
+ C 주도+강세            +21.43%     +9.49%     +12.15%    +128.59%   ← ADR 검증 조합
+ D 주도+강세+중립        +26.56%     -1.79%     +32.96%    +129.86%   ← 최소 손해
+ E 주도+강세 strict     +21.43%     +9.49%     +12.15%    +128.59%
+─────────────────────────────────────────────────────────────────
+```
+
+### 검토한 대안
+- **박스권 detection + 조건부 활성화** — 2015-19 에서만 게이트 이득 나타남
+  (+3~+11%p). 6M KOSPI 수익률이나 MA200 slope 기반 regime detection 으로
+  박스권에만 활성화. 이론적으로 타당. **ADR-005 후보로 이월**.
+- **게이트 대신 랭킹 가점** — 현 RS 백분위 순위에 섹터 점수 가중합 추가로 반영.
+  filter 가 아닌 ranking 알파. 구현 1h. 후속 후보.
+- **recompute_every 단축 (5→1)** — lag 감소 가능하나 섹터 등급 플립이 주 단위
+  이상이라 효과 미미 예상. 우선순위 낮음.
+- **strict fallback (E) 만 따로 검증** — C와 수치 동일. N/A 섹터 거의 없어
+  의미 없음. 폐기.
+
+### 이번 세션에서 배운 것
+- **회귀 알파 ≠ 전략 알파** — ADR-003 Amendment 2 에서 "주도+강세 섹터 × universe-avg
+  다음 달 hit 83%" 가 PASS 였어도, Minervini 통과 종목 부분집합에 대한 조건부
+  알파는 다른 명제. 섹터 단위 평균 알파는 개별 종목 필터로 환원되지 않음.
+- **상관된 trend 필터 중첩은 lag 만 추가** — Minervini 자체가 trend-following
+  이므로 섹터 trend 게이트는 같은 방향. AND 로 걸면 등급 부여 시점까지 기다리며
+  조기 진입 기회 손실. "다른 축의 필터" (momentum × value, trend × MR) 가 효율적.
+- **박스권 vs 추세장 필터 비대칭** — 박스권에선 false signal 거르는 효과 > lag
+  손실 (이득). 추세장에선 lag 손실 >> 추가 정확도 (손해). regime-dependent
+  게이트가 이론적으로 타당.
+- **1회 데이터 재수집 = 전체 baseline 재현** — +29.29% → +29.55% 로 2015-2026
+  전 구간 일관 재현. 재생성 가능한 데이터의 힘. Windows 에서 pykrx 162종목
+  2015-2026 가 74초에 완료된 건 예상 외 발견 (SLEEP_SEC=0.4 × 164 = 66초 이론치
+  대비 이상적).
+- **tier_cache 재사용 변형 실험 거의 공짜** — 80s 1회 precompute 후 variant 당
+  2초. 의사결정 전 4-5 variant 스윕이 표준 patternizable.
+
+### 미해결
+- **박스권 조건부 게이트 실증** (ADR-005 후보) — 시장 regime detection +
+  조건부 활성화. 1-2h.
+- **랭킹 가점 방식 실증** — filter 대신 섹터 점수를 RS에 가중합. 1h.
+- **universe.py 009540 이름 교정 커밋 (335e988)** — 직전 세션 끝물에 main 에
+  이미 들어감 (이 세션 시작 시 pull). SESSION_LOG #6 "미해결" 중 이 건은 해소.
+- **UBATP 알림 E2E** — 여전히 이월 (PC 필요).
+- **내일(2026-04-24) 06:00 cron** — plan-004 + 11섹터 정상 반영 검증 대기.
+
+### 다음 세션에서 할 일
+- **[우선] UBATP 알림 E2E** (30분) — 이번 세션에서도 이월됨.
+- **[차순위] ADR-005 — 박스권 조건부 게이트** (1-2h) — 섹터 게이트 인프라는
+  있으므로 regime detection 붙이고 백테 1회.
+- **(모니터링)** 2026-04-24 06:00 cron 자동 런.
+
+### 이번 세션 생성/수정 파일
+- 신규: `backtest/01_fetch_data.py` (복원), `backtest/01b_fetch_kospi_yf.py`,
+  `backtest/99_sector_gate_ab.py`, `backtest/99_sector_gate_variants.py`,
+  `docs/decisions/004-sector-gate-rejection.md`
+- 수정: `backtest/strategy_config.yaml`, `backtest/strategy.py`,
+  `CLAUDE.md`, `SESSION_LOG.md`
+- 생성 데이터 (gitignore): `backtest/data/ohlcv/*.parquet` (164),
+  `backtest/data/index/kospi.parquet`, `backtest/data/adr004_ab.json`,
+  `backtest/data/adr004_variants.json` + 로그 3개
+
+---
+
 ## 2026-04-23 #6 (PC, UZymn → main) — plan-004 완료 + workflow race 수정 + main 머지
 
 ### 결정
