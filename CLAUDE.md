@@ -1,10 +1,10 @@
 # morning-report
 
 <!-- ACTIVE BRANCHES (2026-04-23, main 미머지 상태로 병렬 진행 중): -->
-<!--   claude/session-start-UZymn  : ADR-003 섹터 강도 산식 + 응급 패치 (최신, 본 브랜치) -->
+<!--   claude/session-start-UZymn  : ADR-003 Amendment + sector_breadth.py + 25 pytest + overrides.yaml (PC 실데이터 검증 대기, 본 브랜치) -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
 <!-- 다음 세션은 /session-start 의 "0. 브랜치 누락 체크" 자동 실행으로 양쪽 모두 인지. -->
-<!-- /session-end 가 본 포인터 자동 갱신. -->
+<!-- /session-end 가 본 포인터 자동 갱신. Last updated: 2026-04-23 #3 (웹 세션, UZymn 11 커밋). -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
@@ -21,24 +21,33 @@
 
 ```
 claude/session-start-UBATP   →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
-claude/session-start-UZymn   →  섹터 강도 새 산식 (ADR-003 채택, 구현 대기)
+claude/session-start-UZymn   →  ADR-003 Amendment + sector_breadth.py 구현 + 25 pytest
+                                (PC 실데이터 검증 + 지주회사 오버라이드 대기, 본 브랜치)
                                 ↑ 이 브랜치
 ```
 
-**다음 PC 세션에서 두 작업 모두 처리 필요** — main 미머지 상태로 양쪽
-브랜치 따로 체크아웃하며 진행. 메타 인프라(인덱스+훅) 구축 보류.
+**다음 PC 세션**: UZymn 검증(45-60분) + UBATP 알림 E2E(30분) = 총 1.5-2h.
+main 미머지 유지. 메타 인프라(인덱스+훅) 구축 보류.
 
-### 섹터 강도 새 산식 (ADR-003)
+### 섹터 강도 산식 (ADR-003 + Amendment 2026-04-23)
 
 ```
-ETF top-down (현재) → 유니버스 bottom-up (새)
-  KODEX 반도체 가격     →  우리 162종목 → KRX 22업종 분류 → 3요소 점수
-                              IBD 6M(50) + Weinstein Stage(25) + Breadth(25)
-                              시총 가중 + 단일 종목 25% cap
-                              임계: 75 주도 / 60 강세 / 40 중립 / <40 약세
+[원 설계] IBD 6M(50) + Weinstein Stage(25) + Breadth(25) = 100점
+                                 ↓  pykrx 인덱스 API 장애로 Stage 25점 보류
+[현 산식] (IBD 6M(50) + Breadth(25)) × 100/75 = 0-100점
+          - 시총가중 + 단일 종목 25% cap
+          - 표본 단계화: ≥5 정상 / 3-4 breadth=0 / <3 N/A
+          - 임계 75/60/40 (rescale 덕분에 유지)
 ```
-근거: O'Neil/Minervini 직접 인용 + 한국 시장 변동성/시총 집중 보정.
-구현은 다음 PC 세션, 검증 후 strategy 통합은 별도 ADR-004 로 결정.
+
+**데이터 소스 pivot** (pykrx 인덱스 API 다운):
+- 섹터 매핑: KRX KIND (KSIC) + `reports/sector_overrides.yaml` 로 22업종 환원
+- 시총: FinanceDataReader `StockListing('KRX')` Marcap
+- 종목 OHLCV: pykrx (정상)
+- 업종지수 주봉: 수집 보류 (Stage 복원 조건 충족 시 재개)
+
+구현: `sector_breadth.py` + `tests/test_sector_breadth.py` (25 tests).
+실데이터 검증 runbook: `docs/plans/002-sector-breadth-pc-execution.md`.
 
 ### 아키텍처 (단일 소스 원칙, 2026-04-22 확립)
 
@@ -212,6 +221,7 @@ morning-report-main/          ← 이 레포 (Git 연결)
 - [ADR-001] T10/CD60 재확정 (103 → 162종목, T15/CD120 과적합 철회) — `docs/decisions/001-t10-cd60-reconfirm.md`
 - [ADR-002] strategy.py/yaml 단일 소스 아키텍처 — `docs/decisions/002-strategy-module-architecture.md`
 - [ADR-003] 섹터 강도 산정 방법론 (IBD + Weinstein + Breadth, 한국 적용) — `docs/decisions/003-sector-strength-methodology.md`
+  - **Amendment 2026-04-23**: pykrx 인덱스 API 장애 대응 — KIND+FDR pivot, Stage 보류, rescale ×100/75
 
 ## 최근 세션
 - **2026-04-23 #3 (UZymn, 웹)**: ADR-003 구현 착수 — Colab 노트북 작성→실행 중 pykrx 인덱스 API 전면 다운 발견 → KRX KIND + FDR 로 pivot, Weinstein Stage 보류 (ADR amendment). sector_breadth.py + 25 pytest + overrides.yaml 완성. 실데이터 검증은 PC 세션 이월 (Drive MCP 권한 부족).
