@@ -488,6 +488,112 @@ def _parse_sector_etf(text: str) -> dict[str, Any]:
     }
 
 
+def _parse_sector_adr003(text: str) -> dict[str, Any]:
+    """📊 주도 섹터 현황 블록 (ADR-003 Amendment 3, KOSPI200 11섹터).
+
+    sector_report.py::build_text 의 출력을 파싱. 구 18 ETF 포맷과 공존하려면
+    헤더를 '주도 섹터 현황' 로 좁혀 'ETF' 단어가 없는 경우만 매칭한다.
+    """
+    empty = {
+        "leaders": [],
+        "strong": [],
+        "neutral": [],
+        "weak": [],
+        "na": [],
+        "new_leaders": [],
+        "demoted": [],
+        "score_jumps": [],
+        "transition": False,
+        "ref_date": None,
+    }
+
+    section_match = re.search(
+        r"📊\s*주도 섹터 현황(?!\s*ETF)[^━]*━+\s*\n(.*?)━━━━",
+        text,
+        re.DOTALL,
+    )
+    if not section_match:
+        return empty
+    body = section_match.group(1)
+
+    ref_date_match = re.search(r"기준일\s*(\d{4}-\d{2}-\d{2})", text)
+    ref_date = ref_date_match.group(1) if ref_date_match else None
+
+    item_pattern = re.compile(
+        r"^\s*•\s+(.+?)\s+([\d.]+)점\s+\(\s*(\d+)종목,\s+breadth\s+(\S+?)\s*\)",
+        re.MULTILINE,
+    )
+
+    def _extract_tier(tier_header: str, next_tier_header: str | None) -> list[dict[str, Any]]:
+        end_lookahead = re.escape(next_tier_header) if next_tier_header else r"⚠\s*표본부족|⚡"
+        pattern = rf"{re.escape(tier_header)}.*?\n(.*?)(?={end_lookahead}|\Z)"
+        match = re.search(pattern, body, re.DOTALL)
+        if not match:
+            return []
+        items: list[dict[str, Any]] = []
+        for m in item_pattern.finditer(match.group(1)):
+            name, score, n_stocks, breadth_raw = m.groups()
+            breadth = None
+            if breadth_raw and breadth_raw != "N/A":
+                breadth = _to_float(breadth_raw) / 100.0
+            items.append({
+                "name": name.strip(),
+                "score": _to_float(score),
+                "n_stocks": int(n_stocks),
+                "breadth_pct": breadth,
+            })
+        return items
+
+    leaders = _extract_tier("🔥 주도", "📈 강세")
+    strong = _extract_tier("📈 강세", "〰️ 중립")
+    neutral = _extract_tier("〰️ 중립", "📉 약세")
+    weak = _extract_tier("📉 약세", None)
+
+    na: list[dict[str, Any]] = []
+    na_match = re.search(r"⚠\s*표본부족\s*\(\d+섹터\):\s*(.+?)(?=\n|$)", body)
+    if na_match:
+        for chunk in na_match.group(1).split(","):
+            m = re.match(r"\s*(.+?)\s*\(\s*(\d+)종목\s*\)", chunk)
+            if m:
+                na.append({"name": m.group(1).strip(), "n_stocks": int(m.group(2))})
+
+    transition = bool(re.search(r"산식 전환 후 첫 런", body))
+
+    new_leaders: list[str] = []
+    nl_match = re.search(r"🆕\s*신규 주도 진입:\s*(.+?)(?=\n|$)", body)
+    if nl_match:
+        new_leaders = [s.strip() for s in nl_match.group(1).split(",") if s.strip()]
+
+    demoted: list[str] = []
+    dm_match = re.search(r"⬇️\s*주도 이탈:\s*(.+?)(?=\n|$)", body)
+    if dm_match:
+        demoted = [s.strip() for s in dm_match.group(1).split(",") if s.strip()]
+
+    score_jumps: list[dict[str, Any]] = []
+    sj_match = re.search(r"📊\s*점수 급변:\s*(.+?)(?=\n|$)", body)
+    if sj_match:
+        for chunk in sj_match.group(1).split(","):
+            m = re.match(r"\s*(.+?)\s*\(([+\-−]?[\d.]+)점\)", chunk)
+            if m:
+                score_jumps.append({
+                    "name": m.group(1).strip(),
+                    "delta": _to_float(m.group(2)),
+                })
+
+    return {
+        "leaders": leaders,
+        "strong": strong,
+        "neutral": neutral,
+        "weak": weak,
+        "na": na,
+        "new_leaders": new_leaders,
+        "demoted": demoted,
+        "score_jumps": score_jumps,
+        "transition": transition,
+        "ref_date": ref_date,
+    }
+
+
 def _parse_holdings(text: str) -> list[dict[str, Any]]:
     section_match = re.search(
         r"보유 종목 현황.*?={10,}\s*\n(.*?)(?=={10,}|\Z)",
@@ -655,6 +761,7 @@ def parse_morning_data(path: str | Path) -> dict[str, Any]:
         "market_context": _parse_market_context(context_body),
         "minervini": _parse_minervini(minervini_body),
         "sector_etf": _parse_sector_etf(text),
+        "sector_adr003": _parse_sector_adr003(text),
         "holdings": _parse_holdings(text),
         "macro_calendar": _parse_macro_calendar(calendar_body),
     }

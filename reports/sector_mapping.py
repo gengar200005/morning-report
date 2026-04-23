@@ -1,85 +1,73 @@
-"""종목명 → 주요 섹터 ETF 매핑.
+"""종목명 → KOSPI200 11섹터 매핑 (ADR-003 Amendment 3).
 
-v6.2 Readiness 카드에서 '주도 섹터 소속' 체크를 위해 사용.
-섹터 ETF 스코어(leaders/strong/neutral/weak)와 교차해서 자동 판정.
+sector_overrides.yaml 의 ticker_overrides (164종목) 를 로드하고
+backtest/universe.py 의 (code, name) 리스트로 종목명 → 티커 역매핑을 구성한다.
 
 Minervini 원칙상 "주도 섹터 소속 여부"가 진입 가점이므로,
-여기에 없는 종목은 렌더러에서 `⚠ ETF 데이터 없음`으로 표시.
+해당 섹터가 `leaders` 또는 `strong` 티어에 있으면 ✓ 표시.
 
-유지보수: 새 A등급 종목이 등장하면 여기 추가.
+유지보수:
+- 새 종목: `reports/sector_overrides.yaml` 의 `ticker_overrides` 에 추가
+- 종목명 변경: `backtest/universe.py` 동기화
 """
+from __future__ import annotations
 
-# Mapping: 종목명 → 대응 섹터 ETF 이름 (morning_data.txt의 sector_etf에 등장하는 name과 정확히 일치해야 함)
-STOCK_TO_SECTOR_ETF: dict[str, str] = {
-    # 반도체
-    "SK하이닉스": "KODEX 반도체",
-    "DB하이텍": "KODEX 반도체",
-    # IT·전자부품
-    "삼성전기": "KODEX IT",
-    "LG이노텍": "KODEX IT",
-    "삼성전자": "KODEX IT",
-    "LG전자": "KODEX IT",
-    # 2차전지
-    "삼성SDI": "KODEX 2차전지산업",
-    "에코프로": "KODEX 2차전지산업",
-    # 은행·금융지주
-    "KB금융": "KODEX 은행",
-    "신한지주": "KODEX 은행",
-    "하나금융지주": "KODEX 은행",
-    "우리금융지주": "KODEX 은행",
-    # 증권
-    "삼성증권": "KODEX 증권",
-    "NH투자증권": "KODEX 증권",
-    "미래에셋증권": "KODEX 증권",
-    "한국금융지주": "KODEX 증권",
-    "키움증권": "KODEX 증권",
-    # 에너지화학
-    "S-Oil": "KODEX 에너지화학",
-    "SK이노베이션": "KODEX 에너지화학",
-    "롯데케미칼": "KODEX 에너지화학",
-    "OCI": "KODEX 에너지화학",
-    # 방산 (K-방산 ETF)
-    "한국항공우주": "KODEX K-방산",
-    "한화시스템": "KODEX K-방산",
-    "한화에어로스페이스": "KODEX K-방산",
-    # 보험
-    "삼성생명": "KODEX 보험",
-    # 자동차
-    "현대차": "KODEX 자동차",
-    # 게임
-    "엔씨소프트": "KODEX 게임산업",
-    # 바이오
-    # (현재 A등급에 없음)
-    # 미디어/엔터
-    # (현재 A등급에 없음)
-    # --- 다음은 대응 ETF가 없거나 약한 종목 (미매핑) ---
-    # SK, 두산에너빌리티, 두산, 효성, 한화, LS, 신세계, 현대건설기계, 동원F&B, 삼성엔지니어링,
-    # 현대홈쇼핑, 대한유화 등
-}
+from functools import lru_cache
+from pathlib import Path
+
+import yaml
+
+from backtest.universe import UNIVERSE
+
+OVERRIDES_PATH = Path(__file__).parent / "sector_overrides.yaml"
 
 
-def resolve_sector(stock_name: str, sector_etf: dict) -> dict:
-    """종목명 → 섹터 ETF 매핑 후 티어/점수 포함해 반환.
+@lru_cache(maxsize=1)
+def _load_ticker_to_sector() -> dict[str, str]:
+    """sector_overrides.yaml::ticker_overrides → {ticker: sector_name}."""
+    with open(OVERRIDES_PATH, encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    return dict(data.get("ticker_overrides", {}))
+
+
+@lru_cache(maxsize=1)
+def _load_name_to_ticker() -> dict[str, str]:
+    """backtest/universe.py::UNIVERSE → {name: ticker}."""
+    return {name: code for code, name in UNIVERSE}
+
+
+def resolve_sector(stock_name: str, sector_adr003: dict) -> dict:
+    """종목명 → 섹터명 매핑 후 신 11섹터 등급/점수 포함해 반환.
+
+    Args:
+        stock_name: universe 에 등록된 종목명 (예: "삼성SDI").
+        sector_adr003: morning_data_parser 의 sector_adr003 dict.
+            키: leaders / strong / neutral / weak / na (list of items),
+                각 item = {"name": "반도체", "score": 100.0, "n_stocks": 5, "breadth_pct": 1.0}.
 
     Returns:
         {
-          "etf_name": "KODEX 반도체" or None,
-          "tier": "leaders"/"strong"/"neutral"/"weak" or None,
+          "sector": "2차전지" or None,   # universe/overrides 매칭 실패 시 None
+          "tier": "leaders"/"strong"/"neutral"/"weak"/"na"/None,
           "score": float or None,
-          "in_leading": bool,   # leaders + strong 에 속하면 True
+          "in_leading": bool,            # leaders + strong 에 속하면 True
         }
     """
-    etf_name = STOCK_TO_SECTOR_ETF.get(stock_name)
-    if not etf_name:
-        return {"etf_name": None, "tier": None, "score": None, "in_leading": False}
+    name_to_ticker = _load_name_to_ticker()
+    ticker_to_sector = _load_ticker_to_sector()
 
-    for tier in ("leaders", "strong", "neutral", "weak"):
-        for etf in sector_etf.get(tier, []):
-            if etf["name"] == etf_name:
+    ticker = name_to_ticker.get(stock_name)
+    sector = ticker_to_sector.get(ticker) if ticker else None
+    if not sector:
+        return {"sector": None, "tier": None, "score": None, "in_leading": False}
+
+    for tier in ("leaders", "strong", "neutral", "weak", "na"):
+        for item in sector_adr003.get(tier, []) or []:
+            if item.get("name") == sector:
                 return {
-                    "etf_name": etf_name,
+                    "sector": sector,
                     "tier": tier,
-                    "score": etf["score"],
+                    "score": item.get("score"),
                     "in_leading": tier in ("leaders", "strong"),
                 }
-    return {"etf_name": etf_name, "tier": None, "score": None, "in_leading": False}
+    return {"sector": sector, "tier": None, "score": None, "in_leading": False}

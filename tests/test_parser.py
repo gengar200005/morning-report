@@ -159,6 +159,91 @@ def test_sector_etf_weekly_changes(data):
     assert by_name["KODEX 보험"] == -6.0
 
 
+def test_sector_adr003_key_always_present(data):
+    """구 fixture 는 ADR-003 포맷 없으므로 빈 dict 반환 (KeyError 없이)."""
+    adr = data["sector_adr003"]
+    assert adr["leaders"] == []
+    assert adr["strong"] == []
+    assert adr["weak"] == []
+    assert adr["transition"] is False
+
+
+ADR003_FIXTURE = """\
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊 주도 섹터 현황 — 2026년 04월 23일 (수)
+  산식: ADR-003 Amendment 2 (IBD 6M + Breadth MA50)
+  기준: universe 164종목 · 11섹터 · 기준일 2026-04-23
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔥 주도 (≥75점)
+  • 반도체       100.0점  ( 5종목, breadth 100%)
+  • 건설          89.8점  ( 8종목, breadth  88%)
+
+📈 강세 (60~74점)
+  • 2차전지       64.2점  (10종목, breadth  80%)
+
+〰️ 중립 (40~59점)
+  • 금융          57.9점  (24종목, breadth  46%)
+  • 소재·유통     44.3점  (66종목, breadth  41%)
+
+📉 약세 (<40점)
+  • 바이오        10.8점  ( 7종목, breadth  14%)
+
+⚠ 표본부족 (1섹터): 레어섹터(2종목)
+
+⚡ 주간 변동 (전주 대비)
+  🆕 신규 주도 진입: 반도체, 건설
+  ⬇️  주도 이탈: 플랫폼
+  📊 점수 급변: 반도체 (+12점), 바이오 (-8.5점)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+
+
+def test_sector_adr003_parses_new_format():
+    from reports.parsers.morning_data_parser import _parse_sector_adr003
+    adr = _parse_sector_adr003(ADR003_FIXTURE)
+
+    assert adr["ref_date"] == "2026-04-23"
+    assert len(adr["leaders"]) == 2
+    assert adr["leaders"][0] == {
+        "name": "반도체", "score": 100.0, "n_stocks": 5, "breadth_pct": 1.0,
+    }
+    assert adr["leaders"][1]["name"] == "건설"
+    assert adr["leaders"][1]["n_stocks"] == 8
+    assert adr["leaders"][1]["breadth_pct"] == 0.88
+
+    assert len(adr["strong"]) == 1
+    assert adr["strong"][0]["name"] == "2차전지"
+
+    neutral_names = {x["name"] for x in adr["neutral"]}
+    assert "소재·유통" in neutral_names  # 중점(·) 포함 섹터명 파싱
+
+    assert adr["weak"][0]["name"] == "바이오"
+
+    assert adr["na"] == [{"name": "레어섹터", "n_stocks": 2}]
+
+    assert adr["new_leaders"] == ["반도체", "건설"]
+    assert adr["demoted"] == ["플랫폼"]
+    jumps = {j["name"]: j["delta"] for j in adr["score_jumps"]}
+    assert jumps["반도체"] == 12.0
+    assert jumps["바이오"] == -8.5
+    assert adr["transition"] is False
+
+
+def test_sector_adr003_transition_flag():
+    from reports.parsers.morning_data_parser import _parse_sector_adr003
+    text = ADR003_FIXTURE.replace(
+        "  🆕 신규 주도 진입: 반도체, 건설\n"
+        "  ⬇️  주도 이탈: 플랫폼\n"
+        "  📊 점수 급변: 반도체 (+12점), 바이오 (-8.5점)",
+        "  ℹ 산식 전환 후 첫 런 — 비교 생략 (다음 주부터 정상 감지)",
+    )
+    adr = _parse_sector_adr003(text)
+    assert adr["transition"] is True
+    assert adr["new_leaders"] == []
+    assert adr["score_jumps"] == []
+
+
 def test_holdings(data):
     assert len(data["holdings"]) == 1
     h = data["holdings"][0]

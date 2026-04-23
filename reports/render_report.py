@@ -158,7 +158,7 @@ def _top5_verdict(stock: dict, leading: dict, holdings: list[dict]) -> tuple[str
             f"{stop:,}원 이탈 시 전량 손절.",
         )
     if leading.get("tier") == "weak":
-        short = leading["etf_name"].replace("KODEX ", "").replace("TIGER ", "")
+        short = leading["sector"]
         return (
             "CAUTION",
             "Entry Trigger",
@@ -186,21 +186,27 @@ def _enrich_grade_a(data: dict) -> None:
 
     for i, stock in enumerate(grade_a_sorted):
         stock["is_held"] = stock["code"] in held_codes
-        leading = resolve_sector(stock["name"], data["sector_etf"])
+        leading = resolve_sector(stock["name"], data["sector_adr003"])
         stock["leading_sector"] = leading
 
         # check mark for AUTO column '주도 섹터 소속'
         if leading["in_leading"]:
             stock["leading_check"] = "✓"
-            stock["leading_detail"] = leading["etf_name"]
-        elif leading["etf_name"] and leading["tier"] == "weak":
+            score_str = f"{leading['score']:.0f}" if leading.get("score") is not None else "—"
+            stock["leading_detail"] = f"{leading['sector']} {score_str}점"
+        elif leading["sector"] and leading["tier"] == "weak":
             stock["leading_check"] = "✗"
-            stock["leading_detail"] = (
-                f"{leading['etf_name'].replace('KODEX ', '')} {leading['score']:.1f}점"
+            stock["leading_detail"] = f"{leading['sector']} {leading['score']:.0f}점"
+        elif leading["sector"] and leading["tier"] in ("neutral", "na"):
+            stock["leading_check"] = "⚠"
+            score_part = (
+                f" {leading['score']:.0f}점" if leading.get("score") is not None else ""
             )
+            label = "표본부족" if leading["tier"] == "na" else "중립"
+            stock["leading_detail"] = f"{leading['sector']} {label}{score_part}"
         else:
             stock["leading_check"] = "⚠"
-            stock["leading_detail"] = "ETF 데이터 없음"
+            stock["leading_detail"] = "섹터 미매핑"
 
         stock["rs_bar_class"] = _rs_bar_class(stock["rs"])
 
@@ -237,7 +243,7 @@ def _enrich_exec_summary(data: dict) -> None:
     bcd = sum(v for k, v in data["minervini"]["counts"].items() if k != "A")
     data["minervini"]["bcd_total"] = bcd
 
-    leaders = data["sector_etf"].get("leaders") or []
+    leaders = data["sector_adr003"].get("leaders") or []
     data["top_leader"] = leaders[0] if leaders else None
 
     # Next high-impact event
