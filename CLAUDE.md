@@ -1,10 +1,24 @@
 # morning-report
 
-<!-- ACTIVE BRANCHES (2026-04-23, main 미머지 상태로 병렬 진행 중): -->
+> ## 🚨 새 세션 재개 시 반드시 먼저 실행 (2026-04-23 기준)
+>
+> 현재 **main 미머지** 상태로 2개 브랜치 병렬 진행 중. 새 세션이 fresh
+> 브랜치에서 시작되면 이 아래 작업 내역을 못 봄. `/session-start` 전에:
+>
+> ```bash
+> git fetch origin
+> git checkout claude/session-start-UZymn   # 섹터 breadth 작업 (최신)
+> git pull
+> /session-start
+> ```
+>
+> 또는 알림 작업 이어가려면 `claude/session-start-UBATP` 체크아웃.
+> 둘 다 건드려야 하면 UZymn 먼저 → /session-end 후 UBATP.
+
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #3, UZymn 12 커밋): -->
 <!--   claude/session-start-UZymn  : ADR-003 Amendment + sector_breadth.py + 25 pytest + overrides.yaml (PC 실데이터 검증 대기, 본 브랜치) -->
 <!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
-<!-- 다음 세션은 /session-start 의 "0. 브랜치 누락 체크" 자동 실행으로 양쪽 모두 인지. -->
-<!-- /session-end 가 본 포인터 자동 갱신. Last updated: 2026-04-23 #3 (웹 세션, UZymn 11 커밋). -->
+<!-- /session-end 가 본 포인터 자동 갱신. -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
