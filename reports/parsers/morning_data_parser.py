@@ -186,7 +186,7 @@ def _parse_simple_quotes(body: str) -> list[dict[str, Any]]:
 def _parse_kr_indices(body: str, trend_body: str) -> list[dict[str, Any]]:
     """코스피/코스닥 지수 + 추세 분석 결합."""
     idx_pattern = re.compile(
-        r"^\s*(코스피|코스닥)\s+([\d,]+\.\d+)\s+([▲▼])\s*([+\-−]?[\d.]+%)",
+        r"^\s*(코스피|코스닥)\s+([\d,]+\.\d+)\s+([▲▼])\s*([+\-−]*[\d.]+%)",
         re.MULTILINE,
     )
     indices = []
