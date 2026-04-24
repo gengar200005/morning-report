@@ -4,6 +4,56 @@
 
 ---
 
+## 2026-04-24 #2 (PC web, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`) — Entry Candidates 섹션 + parser 🆕 + ACTION 분기 + 카드 보호 CSS
+
+### 결정
+- **백테 진입 규칙 명시**: `backtest/strategy_config.yaml::execution.entry: open_next_day`
+  + `strategy.py:310-330` 분석으로 실전 매수 후보 = **🆕 A등급 첫날 신호** 만
+  해당함을 확인. 기존 N일차 A등급 종목들은 백테 관점에서 이미 진입 완료
+  또는 미스샷. 이에 따라 모닝 리포트 UI 도 신규 편입을 최상위로 강조.
+- **Section 04 Entry Candidates 신설**, 기존 04 Top 5 → **05 Trend Watch** 로
+  역할 재정의. 04·b/05/06/07 → 05·b/06/07/08 일괄 재번호.
+  - Always render (0건도 empty-state 메시지 표시).
+  - 녹색 4px boundary + bull-bg-soft → 흰색 그라디언트 + "TODAY'S BUY
+    CANDIDATES · 백테 진입 규칙 일치" eyebrow + 백테 규칙 callout 박스.
+- **PDF 카드 찢김 방지 CSS 강화**: 전세션 (#1) 패치가 `.readiness-card` 등
+  큰 블록을 보호 안 했고 `wkhtmltopdf` 가정 주석으로 신문법(`break-*`)
+  미사용. 실제 렌더러는 Chrome headless (`reports/render_pdf.py`) 라
+  page-break-* + break-* 병기로 수정. `.readiness-card` / `.portfolio-main`
+  / `.sector-card` / `.context-col` + 섹션 헤더 (`.section-header` /
+  `.two-col-title` / `.context-head`) 보호.
+- **Parser `_parse_grade_a` regex 확장**: `(\d+)일` 만 매치하던 것을
+  `(\d+일|🆕)` 얼터네이션으로 확장 + `is_new` bool 필드 추가. 기존엔
+  신규 A등급 종목이 regex 미스매치로 드롭 → 카운트 불일치 (오늘 A:25 표기
+  vs 24종목 렌더). LIG넥스원(079550) 사례. 회귀 테스트 추가.
+- **Executive Summary ACTION 라인 분기**: 보유종목 +5% **돌파** 시에도
+  "도달 전 관망" 으로 출력되던 문제. `change_pct < 5` 분기로 "돌파 ·
+  거래량 수동 확인" 자동 전환.
+- **SessionStart hook 추가**: web 환경 한정 `pip install -r requirements.txt`
+  자동 실행. `CLAUDE_CODE_REMOTE` 가드로 로컬 무영향.
+
+### 커밋
+- `92f20fc` chore: add SessionStart hook to install Python deps on web sessions
+- `26bca68` chore(preview): PDF page-break CSS 수정안 견본 (리뷰용, merge 금지)
+- `ff064f8` fix(report): parser 🆕 regex + ACTION 분기 + PDF 카드 찢김 방지 CSS
+- `e16098f` feat(report): A등급 신규 편입 섹션 + 🆕 뱃지 일관 표시
+- `b48c324` chore: remove docs/preview/ (리뷰 완료, main 머지 대비 정리)
+- `bdcd4fc` feat(report): 신규 편입 섹션을 최상위 04 Entry Candidates 로 승격
+
+### 검증
+- `tests/test_parser.py`: 20/20 PASS (🆕 회귀 테스트 1건 신규 추가)
+- `tests/test_sector_mapping.py`: 8/8 PASS
+- `tests/test_sector_breadth.py`: 5 failure (pre-existing, 무관)
+- 로컬 Chromium v147 PDF 렌더: 9 페이지, 두산에너빌리티 카드 단일 페이지
+  유지 확인 (이전엔 p4→p5 찢김), Section 04 Entry Candidates 녹색 강조 표시
+- Synthetic 0/3 종목 케이스 모두 정상 (empty-state + 강조 렌더)
+
+### 다음 세션 진입점
+1. GH Actions Chrome 환경 PDF 검증 (다음 cron 또는 manual workflow_dispatch)
+2. main 머지 PR 생성
+
+---
+
 ## 2026-04-24 #1 (PC, main, 7151030) — 체크리스트 표기 + PDF 분할 + 지침 v3.3→v3.5 + 워크플로 정리
 
 ### 결정
