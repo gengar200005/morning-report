@@ -1,0 +1,15 @@
+{
+  "experiment": "A_baseline_diagnostic",
+  "cagr": 29.55,
+  "mdd": -29.83,
+  "pf": 2.21,
+  "win_rate": 42.3,
+  "trades": 333,
+  "avg_hold_days": 26.8,
+  "signal_age": {
+    "mean": 9.71,
+    "median": 6.0,
+    "p75": 13.0,
+    "p90": 23.0
+  }
+}

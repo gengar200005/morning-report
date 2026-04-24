@@ -1,0 +1,10 @@
+experiment,filter,entry_mode,cagr,mdd,pf,win_rate,trades,avg_hold_days,signal_age_mean,signal_age_median,note
+A_baseline,check_signal (core+rs+supply),open_next_day,29.55,-29.83,2.21,42.3,333,26.8,9.71,6.0,baseline T10/CD60 재현 + signal_age 계측
+B1_close_sameday_only,check_signal,close_same_day,22.85,-32.14,1.96,39.8,344,26.9,9.92,6.0,체결 타이밍만 변경 (당일 종가)
+B2_core_only_filter,core_only,open_next_day,3.74,-39.16,1.18,29.5,386,23.4,7.52,3.0,필터만 완화 (core_only)
+B3_both_relaxed,core_only,close_same_day,13.3,-38.84,1.52,32.1,377,24.9,7.56,3.0,필터+체결 둘 다
+C_fresh_le1,check_signal + streak<=N,open_next_day,18.72,-41.96,1.79,35.5,301,28.3,1.0,1.0,fresh-only max_streak=1
+C_fresh_le2,check_signal + streak<=N,open_next_day,22.54,-41.01,1.97,39.0,295,29.4,1.24,1.0,fresh-only max_streak=2
+C_fresh_le3,check_signal + streak<=N,open_next_day,18.75,-54.3,1.79,36.3,317,27.8,1.58,1.0,fresh-only max_streak=3
+C_fresh_le5,check_signal + streak<=N,open_next_day,25.84,-43.21,2.15,38.1,302,29.7,2.33,2.0,fresh-only max_streak=5
+C_fresh_le10,check_signal + streak<=N,open_next_day,25.24,-31.48,2.09,40.8,326,27.4,4.2,4.0,fresh-only max_streak=10

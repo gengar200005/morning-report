@@ -1,0 +1,15 @@
+{
+  "experiment": "B_live_equivalent",
+  "cagr": 13.3,
+  "mdd": -38.84,
+  "pf": 1.52,
+  "win_rate": 32.1,
+  "trades": 377,
+  "avg_hold_days": 24.9,
+  "signal_age": {
+    "mean": 7.56,
+    "median": 3.0,
+    "p75": 11.0,
+    "p90": 21.400000000000034
+  }
+}
