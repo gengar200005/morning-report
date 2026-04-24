@@ -60,12 +60,37 @@ Section 04 Entry Candidates (🆕 만 강조) 의 정당성은 별도 재검토 
 9. v3.6 Instructions draft Rejected 처리.
 10. **session-start 자동 git fetch 미실시** 교훈 — `memory/feedback_*.md` 기록.
 
+### 세션 후반 작업 (drift 복구 + 스킬 수정)
+11. **drift 사고 복구** — push 직전 로컬 main 이 origin/main 에 수십 커밋
+    뒤처진 상태 발견 (웹 세션 PR #10~#13 + Actions auto 커밋 다수). 전략
+    전환: rebase abort → `git reset --hard origin/main` → 신규 파일
+    (ADR/experiments/draft) 만 선택 checkout → 기록 파일 4개 (CLAUDE.md,
+    SESSION_LOG, .gitignore, plans/001) 수동 병합 → 단일 squash 커밋 →
+    force-push → PR #16 rebase merge 완료 (main `31c07b6`).
+12. **스킬 수정** — `/session-start` 와 `/session-end` 양쪽에 원격 sync
+    체크 자동화 추가. 글로벌 (`~/.claude/commands/`) + 프로젝트 로컬
+    (`.claude/commands/`) 둘 다 반영. 오늘 같은 drift 사고 재발 방지.
+    커밋 `339d373` main push 완료.
+13. **원격 #2 와의 관계 정리** — web #2 의 "백테 진입 규칙 = 🆕 첫날만"
+    해석은 ADR-005 가 실증 반증. Entry Candidates 섹션 (코드) 은 유지하되
+    설명 텍스트 정정은 차 세션 과제 (ADR-008 후보). CLAUDE.md 의 "확정
+    전략" 블록에 정정된 규칙 문구 삽입.
+14. **브랜치 정리** — 머지된 `claude/condescending-feynman-008ff4` 원격
+    삭제, ADR-007 결정 반영하여 `claude/session-start-UBATP` 원격 삭제,
+    PR #15 (중복) 폐기.
+15. **PR #17 생성** — `claude/session-start-hook-Lv8YN` → main 머지용 PR.
+    CONFLICTING 상태, 웹 세션에서 rebase 대기.
+
 ### 미해결 / 다음 세션
-- **[최우선] PR #16 머지 판단** — 본 세션 단일 커밋 rebase 후 origin/main
-  위에 올림. CLAUDE.md / SESSION_LOG 은 원격 #2 구조 유지.
-- **[차순위] Entry Candidates 섹션 재설계** (ADR-005 기반, 후보 ADR-008)
-- **[선택] 박스권 조건부 섹터 게이트** (구 ADR-005 후보 → ADR-008 로 재번호)
-- **[정리] UBATP 원격 브랜치 삭제** (ADR-007 결정 반영, push 권한 필요)
+- **[머지 대기] PR #17** (원격 #2 → main) — 웹 Claude 세션에서 rebase +
+  force-push 후 머지. 충돌은 CLAUDE.md / SESSION_LOG 등 기록 파일 위주.
+- **[확인 필요] PR #14** (`claude/session-end-2026-04-24-3`) — 어제 open,
+  내용 파악 필요.
+- **[차순위] Entry Candidates 섹션 설명 텍스트 재설계** (ADR-005 기반,
+  후보 ADR-008). "🆕 첫날만 매수 후보" → "Top 5 RS 순 분산, median 6일차".
+- **[선택] 박스권 조건부 섹터 게이트** (구 ADR-005 후보 → ADR-008 재번호).
+- **실전 매매**: 두산에너빌리티 1종목 유지. 오늘 Top 5 나머지 종목 RS 순
+  분산 매수 (기술 작업 아님).
 
 ### 이번 세션 생성/수정 파일
 - 신규:
@@ -75,8 +100,19 @@ Section 04 Entry Candidates (🆕 만 강조) 의 정당성은 별도 재검토 
   - `docs/decisions/006-streak-le10-residual-investigation.md` (Rejected)
   - `docs/decisions/007-scrap-intraday-alerts.md` (Accepted)
   - `docs/plans/002-instructions-v3.6-draft.md` (Rejected, 보존)
-- 수정: `CLAUDE.md`, `SESSION_LOG.md`, `.gitignore`,
-  `docs/plans/001-alert-system-setup.md` (DEPRECATED)
+  - `memory/feedback_session_start_git_fetch.md` (drift 방지 피드백)
+- 수정:
+  - `CLAUDE.md`, `SESSION_LOG.md`, `.gitignore`
+  - `docs/plans/001-alert-system-setup.md` (DEPRECATED)
+  - `.claude/commands/session-start.md` (원격 drift 체크 추가)
+  - `.claude/commands/session-end.md` (push 전/후 검증 추가)
+  - `~/.claude/commands/session-start.md`, `session-end.md` (글로벌 동일 수정)
+
+### 머지/푸시 결과 (2026-04-24 종료 시점)
+- `main` HEAD: `339d373` chore(skills): session-start/end drift 체크 추가
+- 직전: `31c07b6` feat(backtest): ADR-005/006/007 entry timing 실증
+- 로컬 main ↔ origin/main: **완전 동기** (drift 0)
+- 내일 06:00 cron 은 본 상태에서 돌아감 (리포트 렌더 코드 무변경)
 
 ---
 

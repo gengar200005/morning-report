@@ -1,8 +1,9 @@
 # morning-report
 
-> ## ✅ 2026-04-24 (PC, offline) 완료 — ADR-005/006/007 entry timing 실증
+> ## ✅ 2026-04-24 (PC, offline) 완료 — ADR-005/006/007 + drift 복구 + 스킬 sync 체크
 >
-> PC 오프라인 세션 5커밋 (`claude/condescending-feynman-008ff4`, PR #16 대기).
+> main `339d373` (완전 동기). PR #16 머지 완료 (squash → rebase merge,
+> main `31c07b6`), 이어서 `chore(skills)` 커밋 직접 push.
 > - **ADR-005 Accepted**: fresh-signal 필터 기각. baseline median
 >   signal_age=**6일**, fresh(≤1일)=19.5% 뿐. signal_days≤N 전부 baseline
 >   하회. 알파 분해 = 필터(수급+RS≥70) **+25.8%p** / 체결타이밍 +6.7%p.
@@ -11,11 +12,21 @@
 > - **ADR-007 Accepted**: UBATP 장중 알림 폐기 (재설계해도 장중 RS ≠
 >   종가 RS → 실익 없음). 운영은 06:00 모닝리포트 단일 채널.
 > - **baseline T10/CD60 유지 확정**.
+> - **drift 사고 복구**: 로컬 main 이 origin/main 에 수십 커밋 뒤처진
+>   상태에서 작업 → rebase abort → hard reset + cherry-pick 전략으로
+>   기록 파일만 수동 병합 후 squash 머지. 사고 예방용으로
+>   `/session-start` + `/session-end` 스킬에 `git fetch` drift 체크 자동화
+>   추가 (글로벌 + 프로젝트 로컬 양쪽).
 >
 > **⚠ Entry Candidates 섹션 재검토 필요**: web #2 의 "백테 진입 규칙 =
 > 🆕 A등급 첫날만" 해석을 ADR-005 가 실증 반증. baseline 은
 > `check_signal=True` 인 모든 A등급 RS 순 top-5 (streak 무관, median
-> signal_age=**6일**). "🆕 만 매수 후보" UI 정당성 별도 재검토 (차 세션).
+> signal_age=**6일**). "🆕 만 매수 후보" UI 정당성 별도 재검토 (차 세션,
+> ADR-008 후보).
+>
+> **다음 세션**: ① PR #17 (원격 #2) 웹 rebase 처리 ② Entry Candidates
+> 섹션 설명 텍스트 정정 ③ PR #14 확인 ④ 두산에너빌리티 외 Top 5 분산
+> 매수 (실전).
 
 > ## ✅ 2026-04-24 #2 완료 — Entry Candidates 섹션 + parser 🆕 + ACTION 분기 + CSS 카드 보호
 >
@@ -170,12 +181,12 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 세션 진입점
 
-#### 1️⃣ [최우선] PR #16 (ADR-005/006/007 PC 세션) main 머지 여부 판단
+#### 1️⃣ ~~PR #16 머지~~ — **완료 (2026-04-24, main `31c07b6`)**
 
-PC 오프라인 세션 5커밋. PR body 에 "원격 #2 Entry Candidates 의 백테 정합
-근거 반증" 명시. 머지 시 CLAUDE.md 의 "백테 진입 규칙" 정정 반영.
+ADR-005/006/007 + baseline T10/CD60 유지 확정. 단일 squash 커밋으로
+origin/main 위 rebase merge. CLAUDE.md "백테 진입 규칙" 정정 반영됨.
 
-#### 2️⃣ `claude/session-start-hook-Lv8YN` → main 머지 PR (5-10분)
+#### 2️⃣ [최우선] PR #17 (`claude/session-start-hook-Lv8YN` → main) 머지
 
 web #2 세션 5커밋 (`92f20fc` SessionStart hook + `ff064f8` parser/ACTION/CSS
 3-in-1 + `e16098f` 신규 편입 첫 도입 + `b48c324` preview 정리 + `bdcd4fc`
@@ -383,7 +394,7 @@ morning-report-main/          ← 이 레포 (Git 연결)
   - 운영은 06:00 모닝리포트 단일 신호 채널로 단순화.
 
 ## 최근 세션
-- **2026-04-24 (PC, offline, branch `claude/condescending-feynman-008ff4` — PR #16)**: 5 커밋. ADR-005 Accepted / ADR-006 Rejected / ADR-007 Accepted + baseline T10/CD60 유지 확정. 실험 A/B/C/E 구현·실행 (`backtest/experiments/engine.py` hooked engine + 5개 실험 스크립트). 실험 A: baseline median signal_age=6일. 실험 B: B2 vs B3 역전 관찰 (non-actionable). 실험 C: streak ≤ N 전부 baseline 하회 (K=10 만 특이 → ADR-006 대상). 실험 E: walkforward OOS1 (2020-22) ΔCAGR -19.27%p / OOS2 (2023-25) +11.72%p → 방향 불일치, K=10 기각. UBATP 장중 알림 ADR-007 로 폐기 (재설계해도 장중 RS ≠ 종가 RS). 실전 매매 규약 대화 정립 (Top 5 → 빈 슬롯 분산 매수, 5일 지연 OK). v3.6 draft 는 Rejected (기각 결정 방어 규칙 비대화). **주의**: 본 세션 ADR-005 가 원격 #2 (Entry Candidates) 의 "백테 진입 = 🆕 첫날만" 해석 실증 반증 — Section 04 재검토 필요.
+- **2026-04-24 (PC, offline, main `339d373`)**: ADR-005 Accepted / ADR-006 Rejected / ADR-007 Accepted + baseline T10/CD60 유지 확정 (PR #16 머지 `31c07b6`). 실험 A/B/C/E 구현·실행. 실험 E walkforward: OOS1 ΔCAGR -19.27%p / OOS2 +11.72%p 방향 불일치로 K=10 기각. ADR-005 가 원격 #2 (Entry Candidates "🆕 첫날만") 해석 실증 반증 — Section 04 설명 재검토 필요 (ADR-008 후보). drift 사고 복구: rebase abort → hard reset + cherry-pick + 기록 파일 수동 병합 → squash 머지. 스킬 수정: `/session-start` + `/session-end` 에 `git fetch` drift 체크 자동화 (글로벌 + 프로젝트 로컬). 실전 매매 규약 정립 (Top 5 → 빈 슬롯 분산 매수, 5일 지연 OK, streak 무관).
 - **2026-04-24 #2 (PC web, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`)**: 5 커밋 (main 머지 대기). (1) `92f20fc` SessionStart hook 추가 (web 환경 한정 `pip install -r requirements.txt` 자동화). (2) `ff064f8` parser/ACTION/CSS 3-in-1 fix — `_parse_grade_a` regex `(\d+일|🆕)` 얼터네이션 + `is_new` 필드 + 회귀 테스트 (#1 이월 bug 1건 해소), Executive Summary ACTION 분기 (#1 이월 bug 1건 해소), `.readiness-card` / `.portfolio-main` / `.sector-card` / `.context-col` + 섹션 헤더에 `page-break-*` + `break-*` 병기 (Chrome headless 기준 카드 찢김 방지, 두산에너빌리티 p4→p5 견본 검증). (3) `e16098f` 신규 편입 첫 도입 — `data.new_a_entries` 파생 + 🆕 뱃지 + 04·a 조건부 섹션. (4) `b48c324` preview 정리. (5) `bdcd4fc` **Entry Candidates 최상위 승격** — 백테 진입 규칙 (`entry: open_next_day`) 일치 종목만 강조, Section 04 Entry Candidates 신설 (항상 렌더 + 녹색 boundary + bull-bg-soft 그라디언트 + empty-state 메시지), 기존 04 Top 5 → 05 Trend Watch, 04·b/05/06/07 → 05·b/06/07/08 일괄 재번호. 28/28 테스트 PASS. 다음 cron-job.org 런 또는 manual workflow_dispatch 로 GH Actions Chrome 환경 PDF 검증 후 main 머지 PR.
 - **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 붙음 버그 fix (공백+margin fallback, wkhtmltopdf CSS Grid 미지원 우회), PDF 페이지 분할 규칙 추가 (작은 블록에만 avoid 적용 → 빈 공간 최소화), `docs/.nojekyll` (pages-build-deployment 실패 해소), `morning.yml` schedule 재제거 (UZymn 회귀 복구 + 주석 방지), Claude Project 지침 v3.3 → v3.5 (Drive MCP `download_file_content` + base64 decode canonical path 명시, v3.4 "raw str" 가정 현실화). 6 커밋 main 머지. 다음 세션 이월 bug 2건: parser regex(🆕 이모지 미스매치) + 템플릿 ACTION 고정문구.
 - **2026-04-23 #8 (PC, main)**: Claude Project 지침 v3.2 → **v3.3** 갱신 (plan-004 / ADR-003 Amend 3 / T10/CD60 / ADR-004 반영). 진입 게이트 3줄 신설 (Files 신선도 / shim 금지 / 포맷 고정), 필요 파일 5→7개 (sector_mapping / overrides / universe 추가), Step 3 `/tmp/backtest/` 패키지 구성, 절대 금지 4개 추가 (shim·ETF 관련). Claude Project Files 재업로드 후 삼성SDI "ETF 데이터 없음" 해소 확인. 삼성전기 반도체 분류는 2026 증권가 컨센서스와 일치 (iM·교보·하나·대신·Mirae 전부 FC-BGA/AI 기판 밸류체인 커버). Drive MCP base64 경유 병목은 v3.3 Step 1 패치 보류 (결과 떴으므로 차 세션 판단).
