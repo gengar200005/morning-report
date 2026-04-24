@@ -41,6 +41,8 @@ def main():
         print(f"\n[{label}] {mode} ...")
         eq, tr = run_backtest_hooked(all_dates, stock_arr, kospi_arr, cfg,
                                       select_fn=sel_fn, entry_mode=mode)
+        tr.to_parquet(RESULTS / f"{label}_trades.parquet")
+        eq.to_parquet(RESULTS / f"{label}_equity.parquet")
         m = calc_metrics(eq, tr)
         ages = tr["signal_age_at_sel"].dropna().astype(int) if len(tr) else pd.Series([0])
         r = {
