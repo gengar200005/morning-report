@@ -30,6 +30,14 @@ argument-hint: [오늘 작업 요약 한 줄]
    - 변경사항 커밋 메시지 제안: `docs: session YYYY-MM-DD - [한 줄 요약]`
    - 승인하면 커밋, 아니면 대기
 
+5. **push 승인 시 동기화 재검증** ⚠️
+   - push 전: `git fetch origin && git log --oneline main..origin/main` 재확인.
+     원격이 앞섰으면 fast-forward 또는 rebase 먼저 (PC/웹 동시 작업 대비)
+   - 충돌 발생 시 사용자에게 보고, 해결 방안 상의 후 진행
+   - push 후: `git fetch origin && git log -1 origin/main && git log -1 main`
+     두 해시 일치 확인 — 원격과 완전 동기 상태로 세션 종료
+
 ⚠️ 코드 파일은 건드리지 마. 문서 파일만 업데이트.
 ⚠️ git push 절대 자동 금지 (마스터 명시 승인 규칙).
 ⚠️ 브랜치 포인터 갱신은 필수 — 안 하면 다음 세션이 또 누락 위험.
+⚠️ push 후 양쪽 해시 일치 확인 필수 — drift 재발 방지.
