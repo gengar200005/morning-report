@@ -99,7 +99,7 @@ state-aware Top 5 delta 알림을 만들면 (~2-4시간 구현):
 
 ### 5.1 즉시 조치
 - [x] ADR-007 작성 (본 문서)
-- [ ] CLAUDE.md 활성 작업·이월 섹션에서 UBATP 항목 제거
+- [x] CLAUDE.md 활성 작업·이월 섹션에서 UBATP 항목 제거 (2026-04-24 압축에서 처리)
 - [ ] `docs/plans/001-alert-system-setup.md` 상단에 deprecated 배너 추가
 
 ### 5.2 세션 종료 시 판단
