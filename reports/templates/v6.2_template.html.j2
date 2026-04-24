@@ -294,6 +294,7 @@
     margin-bottom: 22px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--ink);
+    page-break-after: avoid;
   }
 
   .section-num {
@@ -583,6 +584,7 @@
     border-left: 4px solid var(--ink);
     margin-bottom: 18px;
     overflow: hidden;
+    page-break-inside: avoid;
   }
 
   .readiness-card.held {
@@ -1201,6 +1203,14 @@
   }
   .claude-card.alert .claude-label { color: var(--bear); }
   .claude-card.alert .claude-body li::before { color: var(--bear); }
+
+  /* PDF 페이지 분할 제어 — wkhtmltopdf 는 legacy page-break-* 만 지원.
+     작은 단위에만 avoid 걸어 빈 공간 최소화 (큰 섹션은 자연 분할). */
+  table, tr, th, td { page-break-inside: avoid; }
+  h1, h2, h3 { page-break-after: avoid; }
+  .readiness-header { page-break-after: avoid; }
+  .check-col, .check-list { page-break-inside: avoid; }
+  .readiness-footer { page-break-before: avoid; }
 
   @media print {
     body { padding: 0; background: #fff; }
