@@ -87,6 +87,18 @@ def test_kr_indices(data):
     assert kosdaq["pct_from_52w_high"] == -1.9
 
 
+def test_kr_indices_double_sign_regression():
+    """kr_report 가 `-0.0` pct 를 `+-0.00%` 로 출력하던 버그 (2026-04-24 #3).
+    파서 regex `[+\\-−]*` 로 이중 부호 허용 — KOSPI 항목 누락 방지."""
+    from reports.parsers.morning_data_parser import _parse_kr_indices
+
+    body = "  코스피        6,475.63  ▲ +-0.00%\n  코스닥        1,203.84  ▲ +2.51%\n"
+    trend = "  코스피  |  5일 +4.6%  /  20일 +19.1%\n  코스닥  |  5일 +2.9%  /  20일 +5.5%\n"
+    indices = _parse_kr_indices(body, trend)
+    names = [i["name"] for i in indices]
+    assert "KOSPI" in names and "KOSDAQ" in names
+
+
 def test_kospi_flow(data):
     flow = data["kospi_flow"]
     assert flow["foreign"] == -2338

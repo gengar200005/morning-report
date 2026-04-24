@@ -878,8 +878,10 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     lines.append(f"\n【 주요 지수 】")
     for name, d in indices.items():
         if d["close"]:
-            sign = "▲" if d["pct"] >= 0 else "▼"
-            pct  = f"{'+' if d['pct'] >= 0 else ''}{d['pct']:.2f}%"
+            pct_val = d["pct"] + 0.0  # -0.0 → 0.0 (avoids "+-0.00%" output)
+            sign = "▲" if pct_val >= 0 else "▼"
+            prefix = "+" if pct_val >= 0 else "-"
+            pct = f"{prefix}{abs(pct_val):.2f}%"
             lines.append(f"  {name:<8} {d['close']:>10,.2f}  {sign} {pct}")
 
     prev_day = prev_trading_day()
