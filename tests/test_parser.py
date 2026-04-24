@@ -136,6 +136,35 @@ def test_minervini_grade_b_new_badge(data):
         assert row["signal_days"] == 0
 
 
+def test_minervini_grade_a_new_badge_regression():
+    """🆕 가 붙은 A등급 신규 편입 종목이 드롭되지 않는지 보장 (2026-04-24 LIG넥스원 사례)."""
+    from reports.parsers.morning_data_parser import _parse_grade_a
+
+    body = (
+        "  ── A등급 (2개) — 진입 검토 ──\n\n"
+        "  ▶ LIG넥스원 (079550) [A 12/12] 🆕\n"
+        "    966,000원 | MA50 714,820 / MA150 545,863 / MA200 545,792\n"
+        "    RS 92% | 수급 ✓(+181,822주) | 52주고점 -5.3%\n"
+        "    PER 83.9x PBR 14.76x ROE 17.6%\n"
+        "    손절 898,380원(-7%) | 트레일링(고점-15%)\n\n"
+        "  ▶ SK하이닉스 (000660) [A 12/12] 14일\n"
+        "    1,225,000원 | MA50 978,360 / MA150 711,486 / MA200 589,322\n"
+        "    RS 99% | 수급 ✓(+231,723주) | 52주고점 +0.0%\n"
+        "    PER 20.8x PBR 5.04x ROE 33.8%\n"
+        "    손절 1,139,250원(-7%) | 트레일링(고점-15%)\n\n"
+        "  ── B등급 (0개) ──\n"
+    )
+    stocks = _parse_grade_a(body)
+    assert len(stocks) == 2, "🆕 종목이 regex 미스매치로 드롭됨"
+    new_stock = next(s for s in stocks if s["code"] == "079550")
+    assert new_stock["name"] == "LIG넥스원"
+    assert new_stock["is_new"] is True
+    assert new_stock["signal_days"] == 0
+    old_stock = next(s for s in stocks if s["code"] == "000660")
+    assert old_stock["is_new"] is False
+    assert old_stock["signal_days"] == 14
+
+
 def test_sector_etf_tiers(data):
     etf = data["sector_etf"]
     assert len(etf["leaders"]) == 1

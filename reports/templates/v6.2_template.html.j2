@@ -1204,13 +1204,41 @@
   .claude-card.alert .claude-label { color: var(--bear); }
   .claude-card.alert .claude-body li::before { color: var(--bear); }
 
-  /* PDF 페이지 분할 제어 — wkhtmltopdf 는 legacy page-break-* 만 지원.
-     작은 단위에만 avoid 걸어 빈 공간 최소화 (큰 섹션은 자연 분할). */
-  table, tr, th, td { page-break-inside: avoid; }
-  h1, h2, h3 { page-break-after: avoid; }
-  .readiness-header { page-break-after: avoid; }
-  .check-col, .check-list { page-break-inside: avoid; }
-  .readiness-footer { page-break-before: avoid; }
+  /* PDF 페이지 분할 제어 — Chrome headless (render_pdf.py).
+     구문법(page-break-*)과 신문법(break-*) 병기. */
+
+  /* 작은 단위: 절대 찢지 말 것 */
+  table, tr, th, td,
+  .check-col, .check-list,
+  .macro-row, .strip-item, .idx-cell,
+  .claude-card, .two-col {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 종목/섹터 카드: 한 카드는 한 페이지에 */
+  .readiness-card,
+  .portfolio-main,
+  .sector-card,
+  .context-col {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* 섹션 헤더는 뒤따르는 본문과 붙여서 */
+  h1, h2, h3,
+  .section-header,
+  .readiness-header,
+  .two-col-title,
+  .context-head {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .readiness-footer {
+    page-break-before: avoid;
+    break-before: avoid;
+  }
 
   @media print {
     body { padding: 0; background: #fff; }
@@ -1271,7 +1299,7 @@
     {% if holding and data.next_high_impact %}
     <div class="exec-action">
       <span class="tag">ACTION</span>
-      <span>{{ holding.name }} <strong>{{ holding.add_threshold | format_number }}원</strong> 도달 전 관망. <strong>{{ data.next_high_impact.event }} D−{{ data.next_high_impact.dday }}</strong> 이전 신규 진입 보수적.</span>
+      <span>{{ holding.name }} <strong>{{ holding.add_threshold | format_number }}원</strong> {% if holding.change_pct < 5 %}도달 전 관망{% else %}돌파 · 거래량 수동 확인{% endif %}. <strong>{{ data.next_high_impact.event }} D−{{ data.next_high_impact.dday }}</strong> 이전 신규 진입 보수적.</span>
     </div>
     {% endif %}
   </div>

@@ -280,7 +280,7 @@ def _parse_grade_a(body: str) -> list[dict[str, Any]]:
     a_body = section.group(1)
 
     stock_pattern = re.compile(
-        r"▶\s*(\S[^(]*?)\s*\((\d{6})\)\s*\[([A-D])\s+(\d+)/(\d+)\]\s*(\d+)일\s*\n"
+        r"▶\s*(\S[^(]*?)\s*\((\d{6})\)\s*\[([A-D])\s+(\d+)/(\d+)\]\s*(\d+일|🆕)\s*\n"
         r"\s*([\d,]+)원\s*\|\s*MA50\s+([\d,]+)\s*/\s*MA150\s+([\d,]+)\s*/\s*MA200\s+([\d,]+)\s*\n"
         r"\s*RS\s+(\d+)%\s*\|\s*수급\s+([✓✗])\(([+\-−]?[\d,]+)주\)\s*\|\s*52주고점\s+([+\-−]?[\d.]+)%\s*\n"
         r"\s*PER\s+(-?[\d.]+)x\s+PBR\s+(-?[\d.]+)x\s+ROE\s+(-?[\d.]+)%\s*\n"
@@ -295,7 +295,7 @@ def _parse_grade_a(body: str) -> list[dict[str, Any]]:
             grade,
             core,
             core_max,
-            signal_days,
+            signal,
             price,
             ma50,
             ma150,
@@ -309,6 +309,8 @@ def _parse_grade_a(body: str) -> list[dict[str, Any]]:
             roe,
             stop_price,
         ) = match.groups()
+        is_new = signal == "🆕"
+        signal_days = 0 if is_new else int(signal[:-1])
         stocks.append(
             {
                 "name": name.strip(),
@@ -316,7 +318,8 @@ def _parse_grade_a(body: str) -> list[dict[str, Any]]:
                 "grade": grade,
                 "core": int(core),
                 "core_max": int(core_max),
-                "signal_days": int(signal_days),
+                "signal_days": signal_days,
+                "is_new": is_new,
                 "price": _to_int(price),
                 "ma50": _to_int(ma50),
                 "ma150": _to_int(ma150),
