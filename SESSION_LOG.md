@@ -129,6 +129,132 @@
 
 ---
 
+## 2026-04-24 #3 (PC, main) — ADR-005/006/007 일괄 + 실전 매매 규약 정립
+
+### 결정
+- **ADR-005 Accepted** — Entry timing 실증. baseline median signal_age=6일,
+  fresh(1일차)=19.5% 뿐. signal_days≤N 필터 전부 baseline 하회 (≤1 -10.8%p,
+  ≤3 -10.8%p, ≤10 -4.3%p). "Extended 진입 우려" 가설 기각. 알파 분해:
+  **필터(수급+RS≥70) +25.8%p + 체결타이밍 +6.7%p = 전체 +29.55%**. 실전
+  기댓값 +15-20% 는 체결 알파 대부분 소실 + 슬리피지/세금/생존편향 차감 후
+  잔여 필터 알파. baseline T10/CD60 그대로 유지.
+- **ADR-007 Accepted** — UBATP 장중 알림 시스템 **폐기**. 현 알림 = "등급
+  변화 이벤트" (매매 신호 아님). 재설계 (Top 5 delta + state-aware) 해도
+  장중 RS ≠ 종가 RS → 실익 없음. 청산 알림도 불채택 (주식앱 기계 stop-loss/
+  trailing 주문으로 대체). 운영은 06:00 모닝리포트 단일 신호 채널로 단순화.
+- **ADR-006 Proposed** — signal_days ≤ 10 잔여 조사 계획. 실험 C 에서 ≤10
+  만 특이 프로파일 (MDD -31.48% baseline 수준, 2025+ +183.80% baseline 초과).
+  H1 우연 / H2 regime alpha / H3 MDD 방어 / H4 overfitting 4가지 가설.
+  실험 E(walkforward) → F(bootstrap) → G(민감도) → H(MDD 분해) 순. 차 세션
+  판단, 설계만 기록.
+- **과제 2 (B2 vs B3 역전) non-actionable 종료** — path dependency 확인
+  (공통 trade 1.8% 뿐, overnight gap 가설 기각), 그러나 baseline 에 영향
+  없어 종료. 분석 스크립트는 revert, `exp_b_split.py` 의 per-variant 저장
+  유틸만 남김.
+
+### 주요 작업
+1. ✅ `backtest/experiments/` 디렉토리 신규. `engine.py` 에 hooked backtest
+   엔진 구현 (select_fn 주입 + entry_mode 파라미터화). 기존 `strategy.py`
+   unchanged (제약 준수).
+2. ✅ 실험 A — baseline 재현 (+29.55% CAGR 정확 일치) + signal_age 계측.
+   분포: 1일 19.5%, 2-3일 12.3%, 4-7일 22.8%, 8-14일 22.2%, 15-30일 18.3%,
+   31-60일 4.5%. median=6, p75=13, p90=23.
+3. ✅ 실험 B split — 4 variant (B0 baseline / B1 close_sameday / B2 core_only
+   / B3 둘다). B2 +3.74% vs B3 +13.30% 역전 포착.
+4. ✅ 실험 C — max_streak ∈ {1,2,3,5,10} 민감도. ≤10 이 유일하게 MDD
+   -31.48% 로 baseline (-29.83%) 수준 유지.
+5. ✅ 통합 `experiments_compare.csv` + ADR-005 Accepted.
+6. ✅ ADR-007 작성 — UBATP 매매 로직 정합성 검토 결과 기각.
+   `docs/plans/001-alert-system-setup.md` deprecated 배너 추가.
+7. ✅ CLAUDE.md 갱신 — 활성 작업에서 UBATP 제거, ADR-005/007 요약 추가,
+   이월 섹션에 브랜치 정리 메모.
+8. ✅ 실전 매매 규약 대화 정립 (아래 "이번 세션에서 배운 것" 참조).
+9. ✅ ADR-006 Proposed 작성 — streak≤10 walkforward 조사 계획 4단계.
+
+### 검토한 대안
+- **signal_days ≤ 3 필터 채택** (원 프롬프트 제안) — 실험 C 결과 CAGR
+  -10.8%p, MDD -24.5%p 악화 → **기각**.
+- **signal_days ≤ 10 즉시 채택** — 실험 C 단독 샘플만으로는 통계 근거
+  부족. ADR-006 에서 walkforward 검증 후 판단 보류.
+- **UBATP 재설계 (Top 5 delta + state-aware 알림)** — 기술적으로 2-4h
+  구현 가능. 그러나 장중 RS ≠ 종가 RS → 장중 알림 기반 매수 = 미확정
+  종가 추정 기반 투기적 행동. **기각**, 구현 비용 대비 실익 없음.
+- **청산 트리거 알림만 유지** — 주식앱 자동 stop-loss 가 더 안정적. 알림
+  → 수동 매도는 시간 지연·감정 개입 리스크. **기각** (사용자 선호).
+- **과제 2 원인 규명 ADR-005 Amendment 로 추가** — non-actionable 발견
+  이라 문서 비대화만 유발. 코드 revert, 간단 노트로 마감.
+- **차트 패턴 LLM 판독 방식 도입** — LLM 차트 분석은 용어 구사 정확도 ≠
+  판정 정확도. 같은 차트 재질문 시 일관성 낮음. **비추천**.
+  VCP 알고리즘화는 가능 → ADR-008 후보로 분리.
+
+### 이번 세션에서 배운 것
+- **"Extended 진입이 실전 괴리 원인" 직관은 실증 기각**. baseline 이
+  이미 median signal_age=6일에 진입 중이며, fresh-only 로 강제하면 오히려
+  악화. 직관 → 실증 루틴이 없으면 잘못된 개선 방향으로 이끌 뻔함.
+- **알파 분해 = 필터(25.8%p) + 체결타이밍(6.7%p)**. 실전화 시 체결 알파
+  대부분 소실 → 실전 +15-20% 는 필터 알파 본체. 이 분해가 명확히 되면
+  "어느 부분을 실전화 손실로 감수할지" 의사결정 가능.
+- **필터 + 체결 타이밍은 독립 변수 아님**. 필터 완화 시 candidate pool
+  폭증 → 체결 1일 지연이 portfolio trajectory 를 divergent 하게 분기시킴
+  (B2/B3 공통 trade 1.8% 뿐). 2-변수 동시 변경 실험은 해석 불가.
+- **장중 RS ≠ 종가 RS**. 진짜 매매 신호는 종가 확정 후 (15:30+) 에만
+  유효. 종가 후 알림 = 다음 날 아침 리포트와 정보량 동일 → 중복. 결국
+  모든 "실시간 알림" 은 백테 정합 매매에 기여 안 함.
+- **LLM 차트 판독 = 말솜씨**. 교재 용어 구사 능력과 실제 이미지 판정
+  정확도는 별개. 같은 차트 재질문 시 일관성 낮음. 구체성 ≠ 정확성.
+  리포트의 "A등급" (수학 판정) 과 LLM 의 "Minervini 기준 통과" (눈대중)
+  을 같은 수준으로 신뢰하면 안 됨.
+- **실전 매매 규약 정립** (사용자 1종목 집중 → 원칙 복귀 대화에서 도출):
+  - 원칙: 오늘 아침 리포트 Top 5 → 시장게이트 통과 확인 → 미보유·쿨다운
+    해제 종목 RS 순 → 빈 슬롯 수만큼 균등 가중 → 09:00 시가 근처 매수
+  - 5일 지연 후 매수해도 OK. 필터가 엄격해서 Top 5 라인업이 day-to-day
+    안정적. baseline median signal_age=6일 = 지연 진입도 정상.
+  - 차트 판독으로 종목 거르기 ❌ (검증되지 않은 추가 필터)
+  - 단독 종목 집중 ❌ (백테는 5종목 포트폴리오 통계 기반 알파)
+- **추가 필터가 반드시 개선 아님**. ADR-004 (섹터 게이트) + ADR-005
+  (signal_days) 모두 추가 필터 악화. Minervini 8조건 자체가 trend filter
+  라 중복 필터는 lag 만 추가. VCP 알고리즘화도 같은 위험 — 반드시 실증.
+
+### 미해결
+- **3커멋 push 승인 대기** — `1aa0b79 + 26d3099 + ef40214`. 로컬에만 존재.
+- **Instructions v3.3 → v3.6 실제 반영** — draft 있음
+  (`docs/plans/002-instructions-v3.6-draft.md`), CLAUDE_PROJECT_INSTRUCTION.md
+  에 diff 적용 필요. 1-2h. 별도 세션 추천.
+- **ADR-006 실험 E/F/G/H 실행** — 차 세션 우선순위 판단. 실험 E 가
+  Rejected 판정 나면 최단 1.5h 로 마무리 가능.
+- **ADR-008 (VCP 알고리즘화) 초안** — 오늘 대화에서 도출된 후속. 30분.
+  `99_minervini_vcp_compare.py` 에 VCP 파라미터 이미 정의되어 있음.
+- **`claude/session-start-UBATP` 원격 브랜치 삭제** — ADR-007 결정 반영.
+  push 권한 필요 → 마스터 명시 승인.
+- **사용자 실전 매매** — 현재 두산에너빌리티 1종목 보유. 오늘 리포트
+  Top 5 중 나머지 4종목 (미보유·쿨다운 해제) RS 순 매수 예정 (기술
+  작업 아님).
+
+### 다음 세션에서 할 일
+- **[최우선]** push 여부 판단 (3커밋 일괄 or 순차)
+- **[차순위]** Instructions v3.6 실제 반영 (1-2h) — 별도 세션 추천
+- **[선택]** ADR-006 실험 E (walkforward) 착수 (1.5h + 분기)
+- **[선택]** ADR-008 초안 작성 (30분)
+- **[정리]** UBATP 원격 브랜치 삭제 (승인 후)
+
+### 이번 세션 생성/수정 파일
+- 신규:
+  - `backtest/experiments/engine.py` (hooked backtest engine)
+  - `backtest/experiments/exp_a_entry_timing_diag.py`
+  - `backtest/experiments/exp_b_split.py`
+  - `backtest/experiments/exp_b_live_equivalent.py`
+  - `backtest/experiments/exp_c_fresh_signal_only.py`
+  - `backtest/experiments/make_compare.py`
+  - `backtest/experiments/results/experiments_compare.csv` + summary JSON/CSV
+  - `docs/decisions/005-entry-timing-diagnosis.md` (Accepted)
+  - `docs/decisions/006-streak-le10-residual-investigation.md` (Proposed)
+  - `docs/decisions/007-scrap-intraday-alerts.md` (Accepted)
+  - `docs/plans/002-instructions-v3.6-draft.md`
+- 수정: `CLAUDE.md`, `.gitignore`, `docs/plans/001-alert-system-setup.md`
+- 시도 후 revert: exp_d_b2b3_diagnosis.py 외 3개 (non-actionable 판단)
+
+---
+
 ## 2026-04-23 #8 (PC, main) — Claude Project v3.3 지침 개편 + 운영 진단
 
 ### 결정
