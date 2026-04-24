@@ -20,3 +20,6 @@ backtest/data/adr*.json
 # 로컬로 sync 시 레포에 섞이지 않도록 차단. 재생성 방법: notebooks/sector_data_fetch.ipynb 실행.
 notebooks/**/*.parquet
 notebooks/.ipynb_checkpoints/
+
+# 실험 결과 산출물 — 재생성 가능 (parquet 만 차단, summary CSV/JSON 은 추적)
+backtest/experiments/results/*.parquet

@@ -1,0 +1,5 @@
+variant,filter,entry_mode,cagr,mdd,pf,win_rate,trades,avg_hold_days,signal_age_mean,signal_age_median,cagr_2015_19,cagr_2020_24,cagr_2025p
+B0_baseline,check_signal,open_next_day,29.55,-29.83,2.21,42.3,333,26.8,9.71,6.0,-2.05,35.26,160.96
+B1_close_sameday_only,check_signal,close_same_day,22.85,-32.14,1.96,39.8,344,26.9,9.92,6.0,-0.03,21.63,141.73
+B2_core_only_filter,core_only,open_next_day,3.74,-39.16,1.18,29.5,386,23.4,7.52,3.0,-3.67,4.32,28.37
+B3_both_relaxed,core_only,close_same_day,13.3,-38.84,1.52,32.1,377,24.9,7.56,3.0,-7.77,17.46,84.32
