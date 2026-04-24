@@ -216,23 +216,29 @@
   라 중복 필터는 lag 만 추가. VCP 알고리즘화도 같은 위험 — 반드시 실증.
 
 ### 미해결
-- **3커멋 push 승인 대기** — `1aa0b79 + 26d3099 + ef40214`. 로컬에만 존재.
-- **Instructions v3.3 → v3.6 실제 반영** — draft 있음
-  (`docs/plans/002-instructions-v3.6-draft.md`), CLAUDE_PROJECT_INSTRUCTION.md
-  에 diff 적용 필요. 1-2h. 별도 세션 추천.
-- **ADR-006 실험 E/F/G/H 실행** — 차 세션 우선순위 판단. 실험 E 가
-  Rejected 판정 나면 최단 1.5h 로 마무리 가능.
+- **PR #15 리뷰·머지 대기** — `claude/adr-005-006-007-entry-timing` 브랜치
+  (4커밋). `backup-2026-04-24-adr` 보존.
+- **세션 #2 Entry Candidates 섹션 재설계** — `claude/session-start-hook-Lv8YN`
+  브랜치의 Section 04 "🆕만 매수 후보" 해석이 ADR-005 로 반증됨. 머지 전
+  옵션 A/B/C 중 결정 필요 (PR #15 본문 참조).
+- **Instructions v3.5 → v3.6 ADR-005 반영** — 세션 #2 가 v3.6 까지 올렸으나
+  ADR-005 결론 (Extended 진입 정상, 🆕만 매수 기각) 추가 반영 필요.
+  `docs/plans/002-instructions-v3.6-draft.md` 초안.
+- **ADR-006 실험 E/F/G/H 실행** — 차 세션 우선순위 판단. 실험 E 가 Rejected
+  판정 나면 최단 1.5h 로 마무리 가능.
 - **ADR-008 (VCP 알고리즘화) 초안** — 오늘 대화에서 도출된 후속. 30분.
   `99_minervini_vcp_compare.py` 에 VCP 파라미터 이미 정의되어 있음.
 - **`claude/session-start-UBATP` 원격 브랜치 삭제** — ADR-007 결정 반영.
   push 권한 필요 → 마스터 명시 승인.
+- **SESSION_LOG 물리적 순서 이슈** — #3 (오늘) 이 #1/#2 (원격 기존) 뒤에
+  배치됨. 최신상단 규칙 어긋나지만 내용 정확. PR 리뷰 시 판단 또는 후속
+  커밋으로 정리.
 - **사용자 실전 매매** — 현재 두산에너빌리티 1종목 보유. 오늘 리포트
-  Top 5 중 나머지 4종목 (미보유·쿨다운 해제) RS 순 매수 예정 (기술
-  작업 아님).
+  Top 5 중 나머지 4종목 (미보유·쿨다운 해제) RS 순 매수 예정 (기술 작업 아님).
 
 ### 다음 세션에서 할 일
-- **[최우선]** push 여부 판단 (3커밋 일괄 or 순차)
-- **[차순위]** Instructions v3.6 실제 반영 (1-2h) — 별도 세션 추천
+- **[최우선]** PR #15 리뷰·머지 + Entry Candidates (세션 #2) 재설계 옵션 결정
+- **[차순위]** Instructions v3.6 ADR-005 반영 (1-2h) — 별도 세션 추천
 - **[선택]** ADR-006 실험 E (walkforward) 착수 (1.5h + 분기)
 - **[선택]** ADR-008 초안 작성 (30분)
 - **[정리]** UBATP 원격 브랜치 삭제 (승인 후)
@@ -250,8 +256,11 @@
   - `docs/decisions/006-streak-le10-residual-investigation.md` (Proposed)
   - `docs/decisions/007-scrap-intraday-alerts.md` (Accepted)
   - `docs/plans/002-instructions-v3.6-draft.md`
-- 수정: `CLAUDE.md`, `.gitignore`, `docs/plans/001-alert-system-setup.md`
+- 수정: `CLAUDE.md`, `SESSION_LOG.md`, `.gitignore`,
+  `docs/plans/001-alert-system-setup.md`
 - 시도 후 revert: exp_d_b2b3_diagnosis.py 외 3개 (non-actionable 판단)
+- Git: 4커밋 rebase 후 `claude/adr-005-006-007-entry-timing` 으로 push +
+  **PR #15** 생성. `backup-2026-04-24-adr` 로컬 백업 유지.
 
 ---
 

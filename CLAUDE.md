@@ -1,39 +1,60 @@
 # morning-report
 
-> ## ✅ 2026-04-24 #2 완료 — Entry Candidates 섹션 + parser 🆕 + ACTION 분기 + CSS 카드 보호
+> ## ✅ 2026-04-24 #3 완료 — ADR-005/006/007 일괄 + 실전 매매 규약 정립
 >
-> 5 커밋 `claude/session-start-hook-Lv8YN` 푸시 완료 (main 머지 대기).
-> (1) parser `_parse_grade_a` regex 가 🆕 신규 편입 종목 누락하던 버그
-> 해소 (`(\d+일|🆕)` 얼터네이션 + `is_new` 필드 추가, 회귀 테스트 추가).
-> (2) Executive Summary ACTION 라인 분기 fix (보유종목 +5% 돌파 시 "도달 전
-> 관망" → "돌파 · 거래량 수동 확인"). (3) PDF 카드 찢김 방지 CSS — Chrome
-> headless 기준 page-break-* + break-* 병기, `.readiness-card` /
-> `.portfolio-main` / `.sector-card` / `.context-col` / 섹션 헤더에 적용.
-> (4) **신규 편입 섹션을 최상위 04 Entry Candidates 로 승격** — 백테
-> 진입 규칙(`entry: open_next_day`) 일치 종목만 강조, 녹색 boundary +
-> bull-bg-soft 그라디언트, empty-state 메시지 포함. 기존 04 Top 5 →
-> 05 Trend Watch 로 역할 재정의 (재번호: 04·b→05·b, 05→06, 06→07, 07→08).
-> (5) SessionStart hook 추가 (`requirements.txt` 자동 설치, web 환경 한정).
+> 4커밋 `claude/adr-005-006-007-entry-timing` → **PR #15 생성**.
+> (1) **ADR-005 Accepted**: Entry timing 실증 — baseline median signal_age=6일,
+> fresh(1일차)=19.5% 뿐. signal_days≤N 필터 **전부 baseline 하회**. 알파 분해:
+> 필터(수급+RS≥70) +25.8%p / 체결타이밍 +6.7%p. "Extended 진입 우려" 가설
+> 실증 기각, T10/CD60 baseline 유지. (2) **ADR-007 Accepted**: UBATP 장중
+> 알림 폐기 (등급 변화 이벤트 ≠ 매매 신호, 장중 RS ≠ 종가 RS). 청산 알림도
+> 불채택 (주식앱 stop-loss 대체). (3) **ADR-006 Proposed**: streak≤10 잔여
+> 조사 계획 (walkforward/bootstrap/민감도/MDD 분해 4단계, 실험 미착수).
 >
-> **다음 활성 작업**: 다음 cron-job.org 런 또는 수동 workflow_dispatch 로
-> GH Actions Chrome 환경 PDF 검증 → 만족 시 main 머지 PR.
+> **⚠️ 세션 #2 결정과 충돌**: Section 04 "Entry Candidates = 🆕만" 해석이
+> ADR-005 로 반증됨. `claude/session-start-hook-Lv8YN` 머지 전 재설계 필요.
+>
+> **다음 활성 작업**: PR #15 리뷰·머지 + Entry Candidates 옵션 A/B/C 결정.
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-24 #2): -->
-<!--   main                              : 7151030 — #1 6커밋 머지 완료 -->
-<!--   claude/session-start-hook-Lv8YN   : #2 5커밋 (hook + bugfix + Entry Candidates 섹션). 머지 대기 -->
-<!--   claude/resume-session-progress-8cGdH : 보존 (세션 작업 브랜치, main 으로 흡수됨) -->
-<!--   claude/session-start-UBATP        : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 대기, 세션 #4 이월) -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-24 #3): -->
+<!--   main                                    : 7bf395e — 세션 #2 데이터 auto-commit + v3.6 반영 -->
+<!--   claude/adr-005-006-007-entry-timing     : #3 4커밋 (ADR-005/006/007 + 세션 로그). PR #15 리뷰 대기 -->
+<!--   claude/session-start-hook-Lv8YN         : #2 5커밋 (Entry Candidates 섹션). ADR-005 와 충돌, 재설계 후 머지 -->
+<!--   claude/session-start-UBATP              : ADR-007 결과 폐기 대상. 원격 삭제 push 승인 대기 -->
+<!--   backup-2026-04-24-adr                   : 로컬 안전 백업 (PR #15 머지 후 삭제 가능) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-24 #2, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`, main `7151030`)
+## 현재 상태 (2026-04-24 #3, branch `claude/adr-005-006-007-entry-timing`, PR #15)
 
-### 🎯 Phase 4 (실전 준비) — **전략 확정 유지 + 리포트 가시성·정확성 개선** ✅
+### 🎯 Phase 4 (실전 준비) — **전략 확정 유지 + 매매 규약 실증·정립** ✅
 
-**오늘 #2 세션 성과** (5 커밋, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`, main 머지 대기):
+**오늘 #3 세션 성과** (4커밋, `claude/adr-005-006-007-entry-timing`, **PR #15 리뷰 대기**):
+- **ADR-005 Accepted** — Entry timing 실증으로 fresh-signal 필터 기각.
+  baseline median signal_age=6일, fresh(1일차)=19.5% 뿐. signal_days≤N 필터
+  전부 baseline 하회. 알파 분해: 필터(수급+RS≥70) +25.8%p / 체결타이밍
+  +6.7%p = 전체 +29.55%.
+- **ADR-007 Accepted** — UBATP 장중 알림 폐기 (등급 변화 이벤트 ≠ 매매
+  신호, 장중 RS ≠ 종가 RS). 청산 알림도 불채택.
+- **ADR-006 Proposed** — streak≤10 잔여 조사 계획 (walkforward/bootstrap/
+  민감도/MDD 분해 4단계, 실험 미착수).
+- **실전 매매 규약 대화 정립** — "아침 리포트 Top 5 기계적 실행" 재확인.
+  차트 LLM 판독·단독 종목 집중·fresh-only 필터 모두 비추천 (실증 근거).
+
+**⚠️ 세션 #2 결과와 충돌**:
+- 세션 #2 가정 "백테 진입 = 🆕 A등급 첫날 신호" → Section 04 Entry
+  Candidates 승격 + Top 5 → Trend Watch 강등
+- **ADR-005 실측으로 반증** — baseline 진입의 80.5% 가 signal_age ≥ 2,
+  fresh-only 강제 시 CAGR -10.8%p 악화
+- `claude/session-start-hook-Lv8YN` 머지 전 Section 04 재설계 필요
+  (옵션 A/B/C, PR #15 본문 참조)
+
+---
+
+**이전 #2 세션 성과** (5 커밋, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`, main 머지 대기):
 - **`92f20fc` SessionStart hook**: web 환경 한정 `pip install -r
   requirements.txt` 자동화 (`CLAUDE_CODE_REMOTE` 가드, 로컬 무영향).
 - **`ff064f8` parser/ACTION/CSS 3-in-1 fix**:
@@ -64,8 +85,11 @@
 
 **확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일) — 변경 없음
 - 백테 CAGR **+29.55%** (11.3년, 162종목, 새 pykrx 수집 데이터), MDD -29.83%
-- 실전 기댓값 +15-20% 유지
-- **백테 진입 규칙 = 🆕 A등급 첫날 신호 → 익일 시가 매수** (이번 세션 명시)
+- 실전 기댓값 +15-20% 유지 (체결 알파 대부분 소실 + 슬리피지·세금·생존편향
+  차감 후 잔여 필터 알파)
+- **백테 진입 규칙 (ADR-005 실증 기준)**: A등급 중 RS Top N 을 **매일 종가에
+  재선정** (state-less, signal_age 무관), 익일 시가 체결. baseline median
+  signal_age = 6일, fresh(1일)은 19.5% 뿐.
 
 ### ADR-004 섹터 게이트 통합 — **기각** (2026-04-23 #7)
 
@@ -346,11 +370,9 @@ morning-report-main/          ← 이 레포 (Git 연결)
   - 운영은 06:00 모닝리포트 단일 신호 채널로 단순화.
 
 ## 최근 세션
-- **2026-04-24 #2 (PC web, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`)**: 5 커밋 (main 머지 대기). (1) `92f20fc` SessionStart hook 추가 (web 환경 한정 `pip install -r requirements.txt` 자동화). (2) `ff064f8` parser/ACTION/CSS 3-in-1 fix — `_parse_grade_a` regex `(\d+일|🆕)` 얼터네이션 + `is_new` 필드 + 회귀 테스트 (#1 이월 bug 1건 해소), Executive Summary ACTION 분기 (#1 이월 bug 1건 해소), `.readiness-card` / `.portfolio-main` / `.sector-card` / `.context-col` + 섹션 헤더에 `page-break-*` + `break-*` 병기 (Chrome headless 기준 카드 찢김 방지, 두산에너빌리티 p4→p5 견본 검증). (3) `e16098f` 신규 편입 첫 도입 — `data.new_a_entries` 파생 + 🆕 뱃지 + 04·a 조건부 섹션. (4) `b48c324` preview 정리. (5) `bdcd4fc` **Entry Candidates 최상위 승격** — 백테 진입 규칙 (`entry: open_next_day`) 일치 종목만 강조, Section 04 Entry Candidates 신설 (항상 렌더 + 녹색 boundary + bull-bg-soft 그라디언트 + empty-state 메시지), 기존 04 Top 5 → 05 Trend Watch, 04·b/05/06/07 → 05·b/06/07/08 일괄 재번호. 28/28 테스트 PASS. 다음 cron-job.org 런 또는 manual workflow_dispatch 로 GH Actions Chrome 환경 PDF 검증 후 main 머지 PR.
-- **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 붙음 버그 fix (공백+margin fallback, wkhtmltopdf CSS Grid 미지원 우회), PDF 페이지 분할 규칙 추가 (작은 블록에만 avoid 적용 → 빈 공간 최소화), `docs/.nojekyll` (pages-build-deployment 실패 해소), `morning.yml` schedule 재제거 (UZymn 회귀 복구 + 주석 방지), Claude Project 지침 v3.3 → v3.5 (Drive MCP `download_file_content` + base64 decode canonical path 명시, v3.4 "raw str" 가정 현실화). 6 커밋 main 머지. 다음 세션 이월 bug 2건: parser regex(🆕 이모지 미스매치) + 템플릿 ACTION 고정문구.
+- **2026-04-24 #3 (PC, branch `claude/adr-005-006-007-entry-timing`, PR #15)**: ADR-005/006/007 일괄 + 실전 매매 규약 정립. 4커밋 push + PR #15 생성. (1) **ADR-005 Accepted**: Entry timing 실증 — `backtest/experiments/` 디렉토리에 hooked engine + 실험 A/B/C 스크립트 신규. baseline median signal_age=6일, fresh(1일차)=19.5% 뿐 확인. signal_days≤N 필터 전부 baseline 하회 (≤1 -10.8%p, ≤3 -10.8%p, ≤10 -4.3%p). 알파 분해: 필터(수급+RS≥70) +25.8%p / 체결타이밍 +6.7%p. "Extended 진입 우려" 가설 실증 기각, T10/CD60 유지. (2) **ADR-007 Accepted**: UBATP 장중 알림 폐기 (등급 변화 이벤트 ≠ 매매 신호, 장중 RS ≠ 종가 RS, 청산 알림도 주식앱 stop-loss 대체). `docs/plans/001-alert-system-setup.md` deprecated. (3) **ADR-006 Proposed**: streak≤10 잔여 조사 walkforward 계획 (실험 미착수). (4) 실전 매매 대화에서 "오늘 리포트 Top 5 기계적 실행" 재확인 — 차트 LLM 판독·단독 집중·fresh-only 필터 모두 비추천. **⚠️ 세션 #2 결정 (Section 04 "Entry Candidates = 🆕만") 이 ADR-005 로 반증됨** — PR #15 본문에 옵션 A/B/C 제시, `claude/session-start-hook-Lv8YN` 머지 전 재설계 필요.
+- **2026-04-24 #2 (PC web, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`)**: 5 커밋 (main 머지 대기). (1) `92f20fc` SessionStart hook 추가. (2) `ff064f8` parser/ACTION/CSS 3-in-1 fix — `_parse_grade_a` regex `(\d+일|🆕)` 얼터네이션, Executive Summary ACTION 분기, `.readiness-card` / `.portfolio-main` / `.sector-card` / `.context-col` + 섹션 헤더에 `page-break-*` + `break-*` 병기. (3) `e16098f` 신규 편입 첫 도입. (4) `b48c324` preview 정리. (5) `bdcd4fc` **Entry Candidates 최상위 승격** — 세션 #3 ADR-005 로 반증됨, 재설계 대기. 28/28 테스트 PASS.
+- **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 붙음 버그 fix (공백+margin fallback, wkhtmltopdf CSS Grid 미지원 우회), PDF 페이지 분할 규칙 추가, `docs/.nojekyll` (pages-build-deployment 실패 해소), `morning.yml` schedule 재제거 (UZymn 회귀 복구), Claude Project 지침 v3.3 → v3.5. 6 커밋 main 머지.
 - **2026-04-23 #8 (PC, main)**: Claude Project 지침 v3.2 → **v3.3** 갱신 (plan-004 / ADR-003 Amend 3 / T10/CD60 / ADR-004 반영). 진입 게이트 3줄 신설 (Files 신선도 / shim 금지 / 포맷 고정), 필요 파일 5→7개 (sector_mapping / overrides / universe 추가), Step 3 `/tmp/backtest/` 패키지 구성, 절대 금지 4개 추가 (shim·ETF 관련). Claude Project Files 재업로드 후 삼성SDI "ETF 데이터 없음" 해소 확인. 삼성전기 반도체 분류는 2026 증권가 컨센서스와 일치 (iM·교보·하나·대신·Mirae 전부 FC-BGA/AI 기판 밸류체인 커버). Drive MCP base64 경유 병목은 v3.3 Step 1 패치 보류 (결과 떴으므로 차 세션 판단).
-- **2026-04-23 #7 (PC, main)**: ADR-004 섹터 게이트 통합 실증 검증 → **기각**. `backtest/01_fetch_data.py` 복원 + 162종목 × 11.3년 pykrx 재수집 (74초), `01b_fetch_kospi_yf.py` 신규 (yfinance), `strategy_config.yaml::sector_gate` + `strategy.py::precompute_sector_tiers/check_sector_gate` 구현, `99_sector_gate_ab.py` + `99_sector_gate_variants.py` 5 variant 스윕. baseline +29.55% vs 최선 variant(D 약세만차단) +26.56% 로 모든 variant 악화. ADR-004 문서화 + CLAUDE.md 갱신.
-- **2026-04-23 #6 (PC, UZymn → main)**: plan-004 완료 — sector_mapping 재작성(164 ticker_overrides + universe 역매핑), `_parse_sector_adr003` 신규, render_report 4-way 분기 재작성, 템플릿 sector_etf→sector_adr003. 27 pytest PASS + dry-run + UZymn 수동 트리거 검증. `morning.yml` workflow race 수정. UZymn → main 머지(`4477143`), 브랜치 8개 정리.
-- **2026-04-23 #5 (UZymn, 웹)**: 11섹터 전환 — `reports/kospi200_sectors.tsv` 추가, `sector_overrides.yaml` ticker_overrides 164개 전면 재작성, `sector_report.py` 전면 재작성(414→226줄, 18 ETF 완전 폐기), `kr_report.py` import 버그 수정(check_minervini_detailed 누락) + 출력 문자열 T10/CD60/162종목 cleanup. HTML 렌더 재작성은 plan-004 이월.
-- (2026-04-23 #4 이전 세션은 `SESSION_LOG.md` 참조)
-- 이전 세션 (2026-04-23 #2-#3, 2026-04-22 Phase 3 완료 등) 은 `SESSION_LOG.md` 참조
+- **2026-04-23 #7 (PC, main)**: ADR-004 섹터 게이트 통합 실증 검증 → **기각**. 5 variant × 11.3년 × 162종목 백테 전부 baseline +29.55% 하회. 교훈: 회귀 알파 ≠ 전략 알파, Minervini 자체가 trend filter.
+- 이전 세션 (2026-04-23 #6/#5/#4/#3/#2, 2026-04-22 Phase 3 완료 등) 은 `SESSION_LOG.md` 참조
