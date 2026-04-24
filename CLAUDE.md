@@ -1,38 +1,51 @@
 # morning-report
 
-> ## ✅ 2026-04-23 #8 완료 — Claude Project v3.3 지침 개편 + 운영 진단
+> ## ✅ 2026-04-24 #1 완료 — 체크리스트 표기 + PDF 분할 + 지침 v3.5 + 워크플로 정리
 >
-> CLAUDE_PROJECT_INSTRUCTION.md **v3.2 → v3.3** 갱신. plan-004 / ADR-003 Amend 3
-> / T10/CD60 / ADR-004 반영. 필요 파일 5→7개, 진입 게이트 3줄 신설, shim 금지
-> 명문화. Claude Project Files 재업로드 후 모닝 리포트 정상 렌더 확인. 삼성SDI
-> "ETF 데이터 없음" 해소. 삼성전기 반도체 분류는 증권가 컨센서스와 일치 확인.
+> 6 커밋 main 머지 완료 (`7151030`). (1) PDF 체크리스트 라벨-값 붙음 버그
+> 해소 (CSS Grid fail 시 공백+margin fallback). (2) `docs/.nojekyll` 로
+> `pages-build-deployment` 실패 해소. (3) `morning.yml` schedule 트리거
+> 재제거 (UZymn 세션 회귀 복구, cron-job.org 단일 경로). (4) CLAUDE_PROJECT_
+> INSTRUCTION v3.3 → v3.5 (Drive MCP `download_file_content` + base64 decode
+> canonical path 명시, v3.4 "raw str" 가정 현실화). (5) 템플릿에 page-break
+> 규칙 추가로 PDF 가시성 향상.
 >
-> **다음 활성 작업**: UBATP 알림 E2E (30분, 세션 #4 부터 이월) OR 내일 06:00
-> cron 결과 확인 (5분).
+> **다음 활성 작업**: 파서 regex + 템플릿 ACTION 라인 fix (30분, 오늘 모닝
+> 리포트 세션이 보고한 bug 2건) → 다음 cron-job.org 런 결과 확인 (5분).
 
-<!-- ACTIVE BRANCHES (Last updated: 2026-04-23 #8): -->
-<!--   main                        : #7 ADR-004 커밋(dd3dadf) + #8 v3.3 지침 (커밋 승인 대기) -->
-<!--   claude/session-start-UBATP  : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 테스트 대기) -->
+<!-- ACTIVE BRANCHES (Last updated: 2026-04-24 #1): -->
+<!--   main                              : 7151030 — 이번 세션 6커밋 머지 완료 -->
+<!--   claude/resume-session-progress-8cGdH : 보존 (세션 작업 브랜치, main 으로 흡수됨) -->
+<!--   claude/session-start-UBATP        : 알림 시스템 코드 + 세션 연속성 fix (PC E2E 대기, 세션 #4 이월) -->
 <!-- /session-end 가 본 포인터 자동 갱신. -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-23 #8, main)
+## 현재 상태 (2026-04-24 #1, main `7151030`)
 
-### 🎯 Phase 4 (실전 준비) — **전략 확정 유지 + 운영 인프라 정비** ✅
+### 🎯 Phase 4 (실전 준비) — **전략 확정 유지 + 운영 인프라 개선 집중** ✅
 
-**오늘 #8 세션 성과**:
-- Claude Project 지침 v3.3 으로 승격 (plan-004 / ADR-003 Amend 3 / T10/CD60
-  / ADR-004 전부 정렬). 상세: `CLAUDE_PROJECT_INSTRUCTION.md`
-- Project Files ↔ Git 레포 drift 가 모닝 리포트 "ETF 데이터 없음" 버그의
-  근본 원인이었음을 확인. 동기화 규칙 명문화 + 재업로드 완료
-- 삼성전기 반도체 분류 타당성 재확인 (2026 증권가 컨센서스 일치, ADR-003 Amend 3 유지)
+**오늘 #1 세션 성과** (6 커밋 머지, `7151030`):
+- **PDF 체크리스트 라벨-값 붙음 버그** 해소 (`v6.2_template.html.j2`). wkhtmltopdf
+  QtWebKit 이 CSS Grid 미지원 → 공백 + `.check-val { margin-left: 6px }`
+  fallback 추가. `코어 조건 8/8100%` → `코어 조건 8/8 100%`.
+- **PDF 페이지 분할 가시성**: `page-break-inside: avoid` 를 작은 블록
+  (`.readiness-card`, `table tr`, `check-col` 등) 에만 선별 적용. 큰 섹션은
+  자연 분할 허용 → 빈 공간 최대 ~220px.
+- **Claude Project 지침 v3.3 → v3.5**: Step 1 canonical path 를 Drive MCP
+  `download_file_content` + `base64.b64decode` 단일 호출로 고정. v3.4 의
+  "raw str + write_text" 가정이 현실과 불일치해서 Claude 가 `read_file_content`
+  → escape 감지 → `download_file_content` 재시도 루프 발생하던 지연 해소.
+- **`docs/.nojekyll` 추가** → `pages-build-deployment` 빌드 실패 해소.
+  `docs/plans/*.md` 의 Liquid 충돌 패턴에 앞으로도 안전.
+- **`morning.yml` schedule 트리거 재제거** (cron-job.org 단일 경로 회복).
+  UZymn 세션이 stale morning.yml 통째 재생성하면서 4/20 삭제했던 schedule
+  부활했던 회귀 복구. 상단 주석에 "schedule 절대 추가 금지" 명문화.
 
 **확정 전략**: **T10/CD60** (Trail 10% / Cooldown 60거래일) — 변경 없음
 - 백테 CAGR **+29.55%** (11.3년, 162종목, 새 pykrx 수집 데이터), MDD -29.83%
-- 이전 기록 (+29.29%) 대비 +0.26%p 는 2026-04-23 최신 일자 포함 효과
 - 실전 기댓값 +15-20% 유지
 
 ### ADR-004 섹터 게이트 통합 — **기각** (2026-04-23 #7)
@@ -93,8 +106,10 @@
 ### 진행중 작업
 
 ```
-main                          →  위 반영 완료. 내일 06:00 cron 정상 반영 확인 대기
-claude/session-start-UBATP    →  알림 시스템 (코드 완성, PC E2E 테스트 대기)
+main                                   →  7151030 (2026-04-24 #1 머지 완료).
+                                          다음 cron-job.org 런에서 검증 대기.
+claude/resume-session-progress-8cGdH   →  이번 세션 작업 브랜치 (main 흡수). 보존.
+claude/session-start-UBATP             →  알림 시스템 (코드 완성, PC E2E 대기, 세션 #4 이월)
 ```
 
 ### 아키텍처 (단일 소스 원칙, 2026-04-22 확립)
@@ -114,7 +129,27 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 세션 진입점
 
-#### 1️⃣ [최우선] UBATP 알림 시스템 E2E 테스트 (30분, 별도 브랜치)
+#### 1️⃣ [최우선] 파서 regex + 템플릿 ACTION 라인 수정 (30분)
+
+오늘 Claude Project 모닝 리포트 세션이 보고한 레포 이슈 2건:
+
+- **`reports/parsers/morning_data_parser.py::_parse_grade_a`**: 신규 A등급이
+  `🆕` 이모지로 오면 `(\d+)일` 정규식 미스매치 → 오늘 LIG넥스원 (079550)
+  누락, 25종목 중 24개만 파싱. fix: `re.compile(r"(\d+일|🆕)")` 얼터네이션.
+- **`reports/templates/v6.2_template.html.j2` Executive Summary 끝**: `{{ holding.add_threshold }}원 도달 전 관망` 이 조건 분기 없이 고정. 추매 돌파
+  (+13.03%) 상황에도 "도달 전" 표시. fix: `{% if holding.change_pct < 5 %}도달 전 관망{% else %}돌파 · 거래량 수동 확인{% endif %}`.
+
+#### 2️⃣ [간편] 다음 cron-job.org 런 결과 확인 (5분)
+
+내일 (2026-04-25 Sat) 또는 월요일 06:25 KST cron-job.org 자동 트리거. 체크:
+- PDF 페이지 분할: 종목 카드·섹션 헤더 중간 잘림 0건
+- 체크리스트 4줄 표기: `코어 조건 8/8 100%` / `RS ≥ 70 96` 식으로 공백
+- `pages-build-deployment` 워크플로 녹색 (= `.nojekyll` 효과)
+- GitHub 내장 cron 중복 실행 없음 (= schedule 제거 효과)
+- Claude Project 세션에서 Step 1 이 `download_file_content` 한 번만 호출
+  (= v3.5 효과). 여전히 `read_file_content` 시도하면 지침 강화 필요.
+
+#### 3️⃣ UBATP 알림 시스템 E2E 테스트 (30분, 세션 #4 부터 이월)
 ```bash
 git checkout claude/session-start-UBATP
 git pull
@@ -123,7 +158,7 @@ pip install -r requirements.txt
 ```
 상세: `docs/plans/001-alert-system-setup.md`
 
-#### 2️⃣ ADR-005 후보 — 박스권 조건부 섹터 게이트 (1-2시간)
+#### 4️⃣ ADR-005 후보 — 박스권 조건부 섹터 게이트 (1-2시간)
 
 ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득
 나타남 (+3~+11%p). 시장 regime detection (6M KOSPI return, MA200 slope)
@@ -277,9 +312,10 @@ morning-report-main/          ← 이 레포 (Git 연결)
   - 교훈: 회귀 알파 ≠ 전략 알파. Minervini 자체가 trend-filter 라 섹터 게이트와 상관되어 lag 만 추가.
 
 ## 최근 세션
+- **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 붙음 버그 fix (공백+margin fallback, wkhtmltopdf CSS Grid 미지원 우회), PDF 페이지 분할 규칙 추가 (작은 블록에만 avoid 적용 → 빈 공간 최소화), `docs/.nojekyll` (pages-build-deployment 실패 해소), `morning.yml` schedule 재제거 (UZymn 회귀 복구 + 주석 방지), Claude Project 지침 v3.3 → v3.5 (Drive MCP `download_file_content` + base64 decode canonical path 명시, v3.4 "raw str" 가정 현실화). 6 커밋 main 머지. 다음 세션 이월 bug 2건: parser regex(🆕 이모지 미스매치) + 템플릿 ACTION 고정문구.
 - **2026-04-23 #8 (PC, main)**: Claude Project 지침 v3.2 → **v3.3** 갱신 (plan-004 / ADR-003 Amend 3 / T10/CD60 / ADR-004 반영). 진입 게이트 3줄 신설 (Files 신선도 / shim 금지 / 포맷 고정), 필요 파일 5→7개 (sector_mapping / overrides / universe 추가), Step 3 `/tmp/backtest/` 패키지 구성, 절대 금지 4개 추가 (shim·ETF 관련). Claude Project Files 재업로드 후 삼성SDI "ETF 데이터 없음" 해소 확인. 삼성전기 반도체 분류는 2026 증권가 컨센서스와 일치 (iM·교보·하나·대신·Mirae 전부 FC-BGA/AI 기판 밸류체인 커버). Drive MCP base64 경유 병목은 v3.3 Step 1 패치 보류 (결과 떴으므로 차 세션 판단).
 - **2026-04-23 #7 (PC, main)**: ADR-004 섹터 게이트 통합 실증 검증 → **기각**. `backtest/01_fetch_data.py` 복원 + 162종목 × 11.3년 pykrx 재수집 (74초), `01b_fetch_kospi_yf.py` 신규 (yfinance), `strategy_config.yaml::sector_gate` + `strategy.py::precompute_sector_tiers/check_sector_gate` 구현, `99_sector_gate_ab.py` + `99_sector_gate_variants.py` 5 variant 스윕. baseline +29.55% vs 최선 variant(D 약세만차단) +26.56% 로 모든 variant 악화. ADR-004 문서화 + CLAUDE.md 갱신.
 - **2026-04-23 #6 (PC, UZymn → main)**: plan-004 완료 — sector_mapping 재작성(164 ticker_overrides + universe 역매핑), `_parse_sector_adr003` 신규, render_report 4-way 분기 재작성, 템플릿 sector_etf→sector_adr003. 27 pytest PASS + dry-run + UZymn 수동 트리거 검증. `morning.yml` workflow race 수정. UZymn → main 머지(`4477143`), 브랜치 8개 정리.
 - **2026-04-23 #5 (UZymn, 웹)**: 11섹터 전환 — `reports/kospi200_sectors.tsv` 추가, `sector_overrides.yaml` ticker_overrides 164개 전면 재작성, `sector_report.py` 전면 재작성(414→226줄, 18 ETF 완전 폐기), `kr_report.py` import 버그 수정(check_minervini_detailed 누락) + 출력 문자열 T10/CD60/162종목 cleanup. HTML 렌더 재작성은 plan-004 이월.
-- **2026-04-23 #4 (UZymn, 웹)**: Colab 회귀 검증 3회 → "주도+강세 × universe-avg" PASS. ticker_overrides 5→16 확장, validate_sector_breadth.py 신규, ADR-003 Amendment 2.
+- (2026-04-23 #4 이전 세션은 `SESSION_LOG.md` 참조)
 - 이전 세션 (2026-04-23 #2-#3, 2026-04-22 Phase 3 완료 등) 은 `SESSION_LOG.md` 참조

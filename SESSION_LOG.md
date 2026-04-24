@@ -4,6 +4,81 @@
 
 ---
 
+## 2026-04-24 #1 (PC, main, 7151030) — 체크리스트 표기 + PDF 분할 + 지침 v3.3→v3.5 + 워크플로 정리
+
+### 결정
+- **템플릿 체크리스트 표기 fix** (`v6.2_template.html.j2`): `<span class="check-val">`
+  앞에 공백 1자 + `.check-val { margin-left: 6px }` 추가. wkhtmltopdf QtWebKit
+  이 CSS Grid 미지원이라 기존 `display: grid; gap: 6px` 가 실패해서
+  `코어 조건 8/8100%` / `RS ≥ 7096` / `소속전력인프라` / `통과VIX+MA60` 으로
+  붙어 나오는 버그. CSS Grid fail 환경에서도 inline margin 으로 간격 유지.
+- **Claude Project 지침 v3.3 → v3.4 → v3.5** (`CLAUDE_PROJECT_INSTRUCTION.md`):
+  - v3.4: Step 1 긍정 경로 코드 블록 추가 + `base64 금지` 규칙 스코프 축소
+    (Step 7~8 PDF 한정 명시) → 세션 #8 에서 발견한 paranoia 우회 루프 차단
+  - v3.5: 2026-04-24 모닝 리포트 실측 반영. Drive MCP `read_file_content` 가
+    이모지/특수문자 백슬래시 이스케이프로 반환해서 Claude 가 `download_file_content`
+    재시도 → 왕복 2회. `download_file_content` + `base64.b64decode` 를 단일
+    canonical path 로 명시. `read_file_content` 선호출 금지.
+- **`docs/.nojekyll` 추가**: GitHub Pages 기본 Jekyll 이
+  `docs/plans/004-sector-html-renderer-rewrite.md:100` 의 `{%}%` 패턴을 Liquid
+  태그로 오인해서 `pages-build-deployment` #141-143 연속 실패. Jekyll 자체
+  비활성으로 앞으로 md 파일의 어떤 Liquid 충돌도 안전.
+- **`morning.yml` schedule 트리거 재제거**: `0 21 * * 0-5` cron 이 4/20 `658e231`
+  에서 제거됐었는데 4/23 UZymn 세션 `d93baf4` (ADR/CLAUDE.md 인프라 통째 재
+  생성) 가 stale morning.yml 145줄 신규 추가하면서 부활. 오늘 KST 06:25
+  cron-job.org 정상 트리거(#85) 와 ~2.5시간 지연된 GitHub 내장 cron(#86) 이
+  중복 실행되는 걸 발견. schedule 재제거 + 주석으로 회귀 방지 사유 명시.
+- **PDF 페이지 분할 규칙 추가** (`v6.2_template.html.j2`):
+  `.readiness-card { page-break-inside: avoid }`, `.section-header { page-break-after: avoid }`,
+  공통 `table tr / h1-h3 / check-col / readiness-header / readiness-footer`.
+  큰 섹션은 자연 분할 허용 → 빈 공간 최대 ~220px.
+
+### 검토한 대안
+- **템플릿 표기 fix**: CSS Grid 대신 flexbox 전환 고려했으나 wkhtmltopdf
+  flexbox `gap` 도 미지원. 공백 + inline margin 이 가장 호환성 좋음.
+- **pages-build-deployment**: 문제의 md 한 줄만 escape 하는 방안도 있었으나
+  ADR/plan 에 계속 충돌 패턴 나올 수 있음. `.nojekyll` 로 구조적 차단.
+- **페이지 분할**: `section` 단위 강제 개행 (`page-break-before: always`)
+  고려했으나 빈 공간 큼. 작은 블록 단위 avoid 만 적용해서 빈 공간 최소화.
+- **v3.5 Step 1**: `read_file_content` 를 대안 경로로 유지 고려했으나,
+  두 경로 병기 시 Claude 가 또 선택 루프 돌 가능성 → 단일 canonical 강제.
+
+### 이번 세션에서 배운 것
+- **웹 Claude 세션의 "인프라 파일 통째 재생성" 패턴은 회귀 주범**. UZymn
+  세션이 stale morning.yml (schedule 포함) 을 145줄 신규 파일로 추가하면서
+  4/20 의 schedule 삭제가 부활. **예방책으로 morning.yml 상단에 주석 명시**.
+- **v3.3 → v3.4 paranoia 축소 패치는 효과 있었지만 부분적**. Claude 가
+  "규칙 스코프: Step 7~8 의 PDF 한정" 이라고 스스로 말함 = scope narrowing
+  적용됨. 하지만 canonical path 가 현실과 안 맞아 여전히 왕복. 지침 개선은
+  **"방지 규약 좁히기 + 긍정 경로 정확히 기술"** 둘 다 필요.
+- **CSS Grid + wkhtmltopdf 호환성 주의**. QtWebKit (Chrome 57 이전 fork)
+  은 CSS Grid/flexbox gap 미지원. PDF 생성 때 grid 레이아웃 쓸 땐 fallback
+  (공백 텍스트 노드, inline margin) 같이 박기.
+
+### 미해결
+- **파서 regex bug** (오늘 Claude Project 세션이 보고): `_parse_grade_a` 가
+  신규 A등급 `🆕` 이모지 케이스 누락 (오늘 LIG넥스원 079550). 25→24 파싱.
+  Top5 영향 없음. fix: `re.compile(r"(\d+일|🆕)")` 얼터네이션.
+- **템플릿 ACTION 라인 고정 문구** (같은 세션 보고): Executive Summary 끝
+  `{{ holding.add_threshold }}원 도달 전 관망` 이 조건 분기 없이 고정. 추매
+  돌파 상황 (+13.03%) 에도 "도달 전" 표시. fix:
+  `{% if holding.change_pct < 5 %}도달 전 관망{% else %}돌파 · 거래량 수동 확인{% endif %}`.
+- **cron-job.org 시간**: 06:25 유지/06:05 변경 여부 마스터 결정 대기.
+  변경 시 `morning.yml` line 4 주석도 동기화.
+- **UBATP 알림 E2E**: 세션 #4 부터 이월, 이번 세션도 미수행.
+- **v3.5 실효성 검증**: 다음 모닝 리포트에서 Step 1 이 `download_file_content`
+  한 번만 호출하는지 관찰. 여전히 `read_file_content` 시도하면 강화 필요.
+
+### 다음 세션에서 할 일
+- **[최우선] 파서 regex + 템플릿 ACTION 라인 수정** (30분, 오늘 발견 bug 2건).
+- **[차순위] 다음 cron-job.org 런 결과 확인** (5분): PDF 분할 / 체크리스트
+  표기 / pages 빌드 녹색 / GitHub 내장 cron 중복 실행 없음 / v3.5 효과.
+- **[조건부] cron-job.org 시간 변경** (2분, 마스터 결정 시).
+- **[중장기] UBATP 알림 E2E** (30분, 이월).
+- **[중장기] ADR-005 박스권 조건부 섹터 게이트** (1-2h, ADR-004 기각 후속).
+
+---
+
 ## 2026-04-23 #8 (PC, main) — Claude Project v3.3 지침 개편 + 운영 진단
 
 ### 결정
