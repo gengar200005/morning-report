@@ -1,0 +1,82 @@
+[
+  {
+    "max_streak": 1,
+    "cagr": 18.72,
+    "mdd": -41.96,
+    "pf": 1.79,
+    "win_rate": 35.5,
+    "trades": 301,
+    "avg_hold_days": 28.3,
+    "signal_age_mean": 1.0,
+    "signal_age_median": 1.0,
+    "period_cagr": {
+      "2015_19": -3.69,
+      "2020_24": 19.78,
+      "2025p": 119.35
+    }
+  },
+  {
+    "max_streak": 2,
+    "cagr": 22.54,
+    "mdd": -41.01,
+    "pf": 1.97,
+    "win_rate": 39.0,
+    "trades": 295,
+    "avg_hold_days": 29.4,
+    "signal_age_mean": 1.24,
+    "signal_age_median": 1.0,
+    "period_cagr": {
+      "2015_19": 0.54,
+      "2020_24": 26.39,
+      "2025p": 101.11
+    }
+  },
+  {
+    "max_streak": 3,
+    "cagr": 18.75,
+    "mdd": -54.3,
+    "pf": 1.79,
+    "win_rate": 36.3,
+    "trades": 317,
+    "avg_hold_days": 27.8,
+    "signal_age_mean": 1.58,
+    "signal_age_median": 1.0,
+    "period_cagr": {
+      "2015_19": -8.78,
+      "2020_24": 26.05,
+      "2025p": 112.67
+    }
+  },
+  {
+    "max_streak": 5,
+    "cagr": 25.84,
+    "mdd": -43.21,
+    "pf": 2.15,
+    "win_rate": 38.1,
+    "trades": 302,
+    "avg_hold_days": 29.7,
+    "signal_age_mean": 2.33,
+    "signal_age_median": 2.0,
+    "period_cagr": {
+      "2015_19": -6.89,
+      "2020_24": 41.93,
+      "2025p": 100.27
+    }
+  },
+  {
+    "max_streak": 10,
+    "cagr": 25.24,
+    "mdd": -31.48,
+    "pf": 2.09,
+    "win_rate": 40.8,
+    "trades": 326,
+    "avg_hold_days": 27.4,
+    "signal_age_mean": 4.2,
+    "signal_age_median": 4.0,
+    "period_cagr": {
+      "2015_19": -4.25,
+      "2020_24": 25.62,
+      "2025p": 183.8
+    }
+  }
+]

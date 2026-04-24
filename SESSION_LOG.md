@@ -4,6 +4,82 @@
 
 ---
 
+## 2026-04-24 (PC, offline, branch `claude/condescending-feynman-008ff4` — PR #16) — ADR-005/006/007 entry timing 실증 + baseline 확정
+
+### 결정
+- **ADR-005 Accepted** — Entry timing 실증. baseline median signal_age=**6일**,
+  fresh(1일차)=19.5% 뿐. signal_days≤N 필터 전부 baseline 하회 (≤1 -10.8%p,
+  ≤3 -10.8%p, ≤10 -4.3%p). "Extended 진입 우려" 가설 기각. 알파 분해:
+  **필터(수급+RS≥70) +25.8%p + 체결타이밍 +6.7%p = 전체 +29.55%**. 실전
+  기댓값 +15-20% 는 체결 알파 대부분 소실 + 슬리피지/세금/생존편향 차감 후
+  잔여 필터 알파. baseline T10/CD60 그대로 유지.
+- **ADR-006 Rejected** — Walkforward 실험 E. baseline vs K=10 (streak≤10) 4 window 분해:
+  - IS1 (2015-19): ΔCAGR -2.20%p, ΔMDD -1.58%p
+  - **OOS1 (2020-22): ΔCAGR -19.27%p, ΔMDD -2.58%p → C1/C2 미달**
+  - IS2 (2015-22): ΔCAGR -8.51%p
+  - **OOS2 (2023-25): ΔCAGR +11.72%p, ΔMDD +8.36%p → C3 통과**
+  - 방향 불일치 = 재현 알파 아님. H1 (우연) / H4 (overfitting) 강력 지지.
+    H3 (MDD 방어) OOS1 에서 오히려 악화로 기각. 실험 F/G/H 는 skip (E
+    결과 명백).
+- **ADR-007 Accepted** — UBATP 장중 알림 시스템 **폐기**. 현 알림 = "등급
+  변화 이벤트" (매매 신호 아님). 재설계 (Top 5 delta + state-aware) 해도
+  장중 RS ≠ 종가 RS → 실익 없음. 청산 알림도 불채택 (주식앱 기계 stop-loss/
+  trailing 주문으로 대체). 운영은 06:00 모닝리포트 단일 신호 채널로 단순화.
+- **v3.6 Instructions draft Rejected** — draft 추가분이 전부 ADR-005/007
+  "기각 결정" 의 가상 방어 규칙. 실 사건 아닌 가상 위험 기반 규칙 비대화
+  불필요. 실제 Claude 오답 사건 발생 시에만 한 줄씩 추가.
+
+### ⚠ 원격 #2 와의 관계 — 중대 발견
+web #2 세션 (`claude/session-start-hook-Lv8YN`) 의 **"백테 진입 규칙 =
+🆕 A등급 첫날 신호 → 익일 시가 매수"** 해석은 본 ADR-005 가 **실증 반증**.
+실제 baseline 은 `check_signal=True` 인 모든 종목 RS 순 top-5 진입 — streak
+무관. Extended 진입 (signal_age 10+ 일) 도 baseline 의 정상 분포 (median=6일).
+Section 04 Entry Candidates (🆕 만 강조) 의 정당성은 별도 재검토 필요 (차
+세션 작업 #3).
+
+### 실전 매매 규약 정립 (사용자 1종목 집중 → 원칙 복귀 대화에서 도출)
+- 원칙: 오늘 아침 리포트 Top 5 → 시장게이트 통과 확인 → 미보유·쿨다운
+  해제 종목 RS 순 → **빈 슬롯 수만큼 균등 가중** → 09:00 시가 근처 매수
+- 5일 지연 후 매수해도 OK. 필터가 엄격해서 Top 5 라인업이 day-to-day
+  안정적. baseline median signal_age=6일 = 지연 진입도 정상.
+- 차트 판독으로 종목 거르기 ❌ (검증되지 않은 추가 필터)
+- 단독 종목 집중 ❌ (백테는 5종목 포트폴리오 통계 기반 알파)
+
+### 주요 작업
+1. `backtest/experiments/` 디렉토리 신규. `engine.py` hooked backtest 엔진
+   (select_fn 주입 + entry_mode 파라미터화). 기존 `strategy.py` unchanged.
+2. 실험 A — baseline 재현 (+29.55% 정확 일치) + signal_age 분포 계측
+   (1일 19.5% / median 6 / p90 23).
+3. 실험 B split — 4 variant. B2 +3.74% vs B3 +13.30% 역전 (non-actionable).
+4. 실험 C — streak ∈ {1,2,3,5,10} 민감도. ≤10 만 특이 프로파일 → ADR-006 대상.
+5. 실험 E — walkforward IS/OOS, K=10 기각.
+6. 통합 `experiments_compare.csv` + `exp_e_windows.csv` + ADR 3개 확정.
+7. ADR-007 작성, `docs/plans/001-alert-system-setup.md` DEPRECATED.
+8. CLAUDE.md / SESSION_LOG 원격 #2 구조 존중하며 병합 (hard reset +
+   선택 체크아웃 + 수동 병합 전략으로 5커밋을 단일 커밋에 압축).
+9. v3.6 Instructions draft Rejected 처리.
+10. **session-start 자동 git fetch 미실시** 교훈 — `memory/feedback_*.md` 기록.
+
+### 미해결 / 다음 세션
+- **[최우선] PR #16 머지 판단** — 본 세션 단일 커밋 rebase 후 origin/main
+  위에 올림. CLAUDE.md / SESSION_LOG 은 원격 #2 구조 유지.
+- **[차순위] Entry Candidates 섹션 재설계** (ADR-005 기반, 후보 ADR-008)
+- **[선택] 박스권 조건부 섹터 게이트** (구 ADR-005 후보 → ADR-008 로 재번호)
+- **[정리] UBATP 원격 브랜치 삭제** (ADR-007 결정 반영, push 권한 필요)
+
+### 이번 세션 생성/수정 파일
+- 신규:
+  - `backtest/experiments/engine.py` + exp_a/b_split/b_live/c/e + make_compare.py
+  - `backtest/experiments/results/exp_*` (summary CSV/JSON)
+  - `docs/decisions/005-entry-timing-diagnosis.md` (Accepted)
+  - `docs/decisions/006-streak-le10-residual-investigation.md` (Rejected)
+  - `docs/decisions/007-scrap-intraday-alerts.md` (Accepted)
+  - `docs/plans/002-instructions-v3.6-draft.md` (Rejected, 보존)
+- 수정: `CLAUDE.md`, `SESSION_LOG.md`, `.gitignore`,
+  `docs/plans/001-alert-system-setup.md` (DEPRECATED)
+
+---
+
 ## 2026-04-24 #2 (PC web, branch `claude/session-start-hook-Lv8YN` `bdcd4fc`) — Entry Candidates 섹션 + parser 🆕 + ACTION 분기 + 카드 보호 CSS
 
 ### 결정

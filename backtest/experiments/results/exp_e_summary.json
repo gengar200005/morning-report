@@ -1,0 +1,117 @@
+{
+  "baseline": {
+    "label": "baseline",
+    "overall": {
+      "cagr": 29.55,
+      "mdd": -29.83,
+      "trades": 333,
+      "win_rate": 42.3,
+      "pf": 2.21
+    },
+    "windows": {
+      "IS1_2015_19": {
+        "kind": "IS",
+        "cagr": -2.05,
+        "mdd": -29.83,
+        "trades": 104,
+        "win_rate": 33.7,
+        "pf": 0.91
+      },
+      "OOS1_2020_22": {
+        "kind": "OOS",
+        "cagr": 34.0,
+        "mdd": -24.84,
+        "trades": 93,
+        "win_rate": 41.9,
+        "pf": 2.6
+      },
+      "IS2_2015_22": {
+        "kind": "IS",
+        "cagr": 11.87,
+        "mdd": -29.83,
+        "trades": 197,
+        "win_rate": 37.6,
+        "pf": 1.64
+      },
+      "OOS2_2023_25": {
+        "kind": "OOS",
+        "cagr": 78.09,
+        "mdd": -27.16,
+        "trades": 136,
+        "win_rate": 49.3,
+        "pf": 3.08
+      }
+    }
+  },
+  "k10": {
+    "label": "k10",
+    "overall": {
+      "cagr": 25.24,
+      "mdd": -31.48,
+      "trades": 326,
+      "win_rate": 40.8,
+      "pf": 2.09
+    },
+    "windows": {
+      "IS1_2015_19": {
+        "kind": "IS",
+        "cagr": -4.25,
+        "mdd": -31.41,
+        "trades": 108,
+        "win_rate": 26.9,
+        "pf": 0.83
+      },
+      "OOS1_2020_22": {
+        "kind": "OOS",
+        "cagr": 14.73,
+        "mdd": -27.42,
+        "trades": 95,
+        "win_rate": 38.9,
+        "pf": 1.62
+      },
+      "IS2_2015_22": {
+        "kind": "IS",
+        "cagr": 3.36,
+        "mdd": -31.41,
+        "trades": 203,
+        "win_rate": 32.5,
+        "pf": 1.17
+      },
+      "OOS2_2023_25": {
+        "kind": "OOS",
+        "cagr": 89.81,
+        "mdd": -18.8,
+        "trades": 123,
+        "win_rate": 54.5,
+        "pf": 4.22
+      }
+    }
+  },
+  "evaluation": {
+    "oos_rows": [
+      {
+        "window": "OOS1_2020_22",
+        "baseline_cagr": 34.0,
+        "k10_cagr": 14.73,
+        "d_cagr": -19.27,
+        "baseline_mdd": -24.84,
+        "k10_mdd": -27.42,
+        "d_mdd": -2.58
+      },
+      {
+        "window": "OOS2_2023_25",
+        "baseline_cagr": 78.09,
+        "k10_cagr": 89.81,
+        "d_cagr": 11.72,
+        "baseline_mdd": -27.16,
+        "k10_mdd": -18.8,
+        "d_mdd": 8.36
+      }
+    ],
+    "criterion_1_cagr_within_3pp": false,
+    "criterion_2_mdd_within_2pp": false,
+    "criterion_3_any_oos_improved": true,
+    "decision": "Rejected",
+    "reason": "CAGR 악화 >3%p: ['OOS1_2020_22']; MDD 악화 >2%p: ['OOS1_2020_22']"
+  }
+}
