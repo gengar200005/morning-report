@@ -144,24 +144,81 @@ def _parse_commodities(body: str) -> dict[str, Any]:
     return result
 
 
+# GICS 11 Select Sector SPDR + SOXX. leaders = ETF 상위 비중 상위 3개 (연 1회 리밸런싱),
+# super_sector = Morningstar 3분류 (cyclical/defensive/sensitive). SOXX는 Tech 하위
+# industry ETF 이므로 sensitive 로 분류.
+US_SECTOR_META: dict[str, dict[str, str]] = {
+    "SOXX": {"leaders": "NVDA·AVGO·AMD",   "super_sector": "sensitive"},
+    "XLK":  {"leaders": "AAPL·MSFT·NVDA",  "super_sector": "sensitive"},
+    "XLC":  {"leaders": "META·GOOGL·NFLX", "super_sector": "sensitive"},
+    "XLE":  {"leaders": "XOM·CVX·COP",     "super_sector": "sensitive"},
+    "XLI":  {"leaders": "GE·RTX·CAT",      "super_sector": "sensitive"},
+    "XLY":  {"leaders": "AMZN·TSLA·HD",    "super_sector": "cyclical"},
+    "XLF":  {"leaders": "BRK.B·JPM·V",     "super_sector": "cyclical"},
+    "XLB":  {"leaders": "LIN·SHW·FCX",     "super_sector": "cyclical"},
+    "XLRE": {"leaders": "PLD·AMT·WELL",    "super_sector": "cyclical"},
+    "XLP":  {"leaders": "COST·WMT·PG",     "super_sector": "defensive"},
+    "XLV":  {"leaders": "LLY·UNH·JNJ",     "super_sector": "defensive"},
+    "XLU":  {"leaders": "NEE·SO·DUK",      "super_sector": "defensive"},
+}
+
+
 def _parse_us_sectors(body: str) -> list[dict[str, Any]]:
-    """'반도체(SOXX)  +0.44%  MA20✓/MA60✓/MA120✓'."""
+    """'반도체(SOXX)  +0.44%  MA20✓/MA60✓/MA120✓'.
+
+    morning_report.py 는 `|pct| × 2` 만큼 ▲/▼ 를 찍어 최대 10개까지 생성하므로
+    arrow 그룹은 `*` (0-N개) 여야 한다. `?` (0-1개) 였을 때 ±1% 이상 등락 섹터가
+    탈락하는 버그가 있었음 (회귀 방지 테스트: test_us_sectors_multi_arrow).
+    """
     pattern = re.compile(
-        r"^\s*([가-힣A-Z]+)\(([A-Z]+)\)\s+([+\-−]?[\d.]+%)\s*[▲▼]?\s*(MA20[^/]+/\s*MA60[^/]+/\s*MA120\S+)",
+        r"^\s*([가-힣A-Z]+)\(([A-Z]+)\)\s+([+\-−]?[\d.]+%)\s*[▲▼]*\s*(MA20[^/]+/\s*MA60[^/]+/\s*MA120\S+)",
         re.MULTILINE,
     )
     sectors = []
     for match in pattern.finditer(body):
         name, ticker, pct, ma_text = match.groups()
+        meta = US_SECTOR_META.get(ticker, {"leaders": "", "super_sector": "unknown"})
         sectors.append(
             {
                 "name": name,
                 "ticker": ticker,
                 "change_pct": _parse_change_pct(pct),
                 **_parse_ma_flags(ma_text),
+                "leaders": meta["leaders"],
+                "super_sector": meta["super_sector"],
             }
         )
     return sectors
+
+
+def _build_us_sector_summary(sectors: list[dict[str, Any]]) -> dict[str, Any]:
+    """Morningstar 3분류 (cyclical/defensive/sensitive) 단순평균 + regime 판정."""
+    def avg(group: str) -> float | None:
+        vals = [s["change_pct"] for s in sectors if s.get("super_sector") == group]
+        if not vals:
+            return None
+        return round(sum(vals) / len(vals), 2)
+
+    defensive = avg("defensive")
+    sensitive = avg("sensitive")
+    cyclical = avg("cyclical")
+
+    regime: str | None = None
+    if defensive is not None and sensitive is not None:
+        diff = sensitive - defensive
+        if diff >= 0.3:
+            regime = "Risk-on · 민감재 주도"
+        elif diff <= -0.3:
+            regime = "Risk-off · 방어주 선호"
+        else:
+            regime = "혼조 · 뚜렷한 주도 없음"
+
+    return {
+        "defensive_avg": defensive,
+        "sensitive_avg": sensitive,
+        "cyclical_avg": cyclical,
+        "regime": regime,
+    }
 
 
 def _parse_simple_quotes(body: str) -> list[dict[str, Any]]:
@@ -749,6 +806,7 @@ def parse_morning_data(path: str | Path) -> dict[str, Any]:
     minervini_body = _extract_section(kr_text, "Minervini 스크리닝 결과") or ""
     calendar_body = _extract_section(text, "매크로 캘린더") or ""
 
+    us_sectors = _parse_us_sectors(us_sectors_body)
     data: dict[str, Any] = {
         "date": date_str,
         "weekday": weekday,
@@ -756,7 +814,8 @@ def parse_morning_data(path: str | Path) -> dict[str, Any]:
         "vix": _parse_vix(vix_body),
         "rates_fx": _parse_rates_fx(rates_body),
         "commodities": _parse_commodities(commodities_body),
-        "us_sectors": _parse_us_sectors(us_sectors_body),
+        "us_sectors": us_sectors,
+        "us_sector_summary": _build_us_sector_summary(us_sectors),
         "us_semis": _parse_simple_quotes(semis_body),
         "big_tech": _parse_simple_quotes(bigtech_body),
         "kr_indices": _parse_kr_indices(kr_idx_body, trend_body),

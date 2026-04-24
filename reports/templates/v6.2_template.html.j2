@@ -429,10 +429,37 @@
     margin-left: 6px;
   }
 
+  .leaders {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-left: 4px;
+  }
+
   .name-cell strong {
     color: var(--ink);
     font-weight: 600;
   }
+
+  .sector-summary {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-left: 3px solid var(--accent, #4a5568);
+    font-size: 11px;
+    color: var(--ink-soft);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .sector-summary .ss-group { font-family: var(--mono); }
+  .sector-summary .ss-group .ss-label { color: var(--ink-muted); margin-right: 4px; }
+  .sector-summary .ss-group .ss-val { font-weight: 600; color: var(--ink); }
+  .sector-summary .ss-val.up { color: var(--bull); }
+  .sector-summary .ss-val.down { color: var(--bear); }
+  .sector-summary .ss-regime { margin-left: auto; color: var(--ink); font-weight: 600; }
 
   /* ========== TWO COL ========== */
   .two-col {
@@ -1410,10 +1437,25 @@
           <tbody>
             {% for s in data.us_sectors %}
             {% set pill = 'pill-up' if s.change_pct >= 0 else 'pill-down' %}
-            <tr><td class="name-cell"><strong>{{ s.name }}</strong> <span class="ticker">{{ s.ticker }}</span></td><td class="num"><span class="{{ pill }}">{{ s.change_pct | format_change_arrow }} {{ s.change_pct | format_pct_signed(2) }}</span></td><td class="num">{{ '✓' if s.ma20 else '✗' }}/{{ '✓' if s.ma60 else '✗' }}/{{ '✓' if s.ma120 else '✗' }}</td></tr>
+            <tr><td class="name-cell"><strong>{{ s.name }}</strong> <span class="ticker">{{ s.ticker }}</span>{% if s.leaders %}<span class="leaders">· {{ s.leaders }}</span>{% endif %}</td><td class="num"><span class="{{ pill }}">{{ s.change_pct | format_change_arrow }} {{ s.change_pct | format_pct_signed(2) }}</span></td><td class="num">{{ '✓' if s.ma20 else '✗' }}/{{ '✓' if s.ma60 else '✗' }}/{{ '✓' if s.ma120 else '✗' }}</td></tr>
             {% endfor %}
           </tbody>
         </table>
+        {% set summary = data.us_sector_summary %}
+        {% if summary and (summary.defensive_avg is not none or summary.sensitive_avg is not none or summary.cyclical_avg is not none) %}
+        <div class="sector-summary">
+          {% if summary.defensive_avg is not none %}
+          <span class="ss-group"><span class="ss-label">방어</span><span class="ss-val {{ 'up' if summary.defensive_avg >= 0 else 'down' }}">{{ summary.defensive_avg | format_pct_signed(2) }}</span></span>
+          {% endif %}
+          {% if summary.sensitive_avg is not none %}
+          <span class="ss-group"><span class="ss-label">민감</span><span class="ss-val {{ 'up' if summary.sensitive_avg >= 0 else 'down' }}">{{ summary.sensitive_avg | format_pct_signed(2) }}</span></span>
+          {% endif %}
+          {% if summary.cyclical_avg is not none %}
+          <span class="ss-group"><span class="ss-label">순환</span><span class="ss-val {{ 'up' if summary.cyclical_avg >= 0 else 'down' }}">{{ summary.cyclical_avg | format_pct_signed(2) }}</span></span>
+          {% endif %}
+          {% if summary.regime %}<span class="ss-regime">→ {{ summary.regime }}</span>{% endif %}
+        </div>
+        {% endif %}
       </div>
       <div>
         <div class="two-col-title">Big Tech &amp; Semi</div>

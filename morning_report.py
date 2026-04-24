@@ -179,14 +179,20 @@ def get_all_data():
     }
 
     print("📡 섹터 ETF 수집 중...")
+    # GICS 11 Select Sector SPDR + SOXX (industry). 명칭은 한국 증권가 표준.
     sectors = {
-        "반도체(SOXX)":  q_ma("SOXX"),
-        "테크(XLK)":     q_ma("XLK"),
-        "에너지(XLE)":   q_ma("XLE"),
-        "금융(XLF)":     q_ma("XLF"),
-        "헬스케어(XLV)": q_ma("XLV"),
-        "소비재(XLY)":   q_ma("XLY"),
-        "유틸리티(XLU)": q_ma("XLU"),
+        "반도체(SOXX)":     q_ma("SOXX"),
+        "IT(XLK)":          q_ma("XLK"),
+        "커뮤니케이션(XLC)": q_ma("XLC"),
+        "경기소비재(XLY)":   q_ma("XLY"),
+        "필수소비재(XLP)":   q_ma("XLP"),
+        "에너지(XLE)":      q_ma("XLE"),
+        "금융(XLF)":        q_ma("XLF"),
+        "헬스케어(XLV)":    q_ma("XLV"),
+        "산업재(XLI)":      q_ma("XLI"),
+        "소재(XLB)":        q_ma("XLB"),
+        "부동산(XLRE)":     q_ma("XLRE"),
+        "유틸리티(XLU)":    q_ma("XLU"),
     }
 
     return weather, indices, fg, rates, comms, vix, semis, m7, sectors

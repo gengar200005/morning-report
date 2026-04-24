@@ -62,14 +62,97 @@ def test_commodities(data):
 
 def test_us_sectors(data):
     sectors = data["us_sectors"]
-    assert len(sectors) == 7
+    assert len(sectors) == 7  # 구 fixture (2026-04-21) 기준. 신 포맷은 별도 테스트
     soxx = next(s for s in sectors if s["ticker"] == "SOXX")
     assert soxx["name"] == "반도체"
     assert soxx["change_pct"] == 0.44
+    assert soxx["leaders"] == "NVDA·AVGO·AMD"
+    assert soxx["super_sector"] == "sensitive"
     xlv = next(s for s in sectors if s["ticker"] == "XLV")
     assert xlv["change_pct"] == -0.93
     assert xlv["ma60"] is False
     assert xlv["ma120"] is False
+    assert xlv["leaders"] == "LLY·UNH·JNJ"
+    assert xlv["super_sector"] == "defensive"
+
+
+def test_us_sectors_multi_arrow():
+    """morning_report.py 가 pct 크기에 따라 ▲/▼ 를 최대 10개까지 찍는 것에 대응.
+
+    회귀: 2026-04-24 세션에서 regex `[▲▼]?` 가 ±1% 이상 등락 섹터를 놓쳐
+    7섹터 중 3섹터만 파싱되던 버그 (jvYaw `13d91a7` fix 재반영).
+    """
+    from reports.parsers.morning_data_parser import _parse_us_sectors
+
+    body = (
+        "  IT(XLK)              +2.50%  ▲▲▲▲▲  MA20✓/MA60✓/MA120✓\n"
+        "  에너지(XLE)           -2.10%  ▼▼▼▼  MA20✗/MA60✗/MA120✓\n"
+        "  부동산(XLRE)          -0.70%  ▼  MA20✗/MA60✓/MA120✓\n"
+        "  금융(XLF)             +0.20%    MA20✓/MA60✓/MA120✓\n"
+    )
+    sectors = _parse_us_sectors(body)
+    tickers = {s["ticker"]: s for s in sectors}
+    assert len(sectors) == 4, "multi-arrow 섹터가 regex 미스매치로 드롭됨"
+    assert tickers["XLK"]["change_pct"] == 2.50
+    assert tickers["XLE"]["change_pct"] == -2.10
+    assert tickers["XLRE"]["change_pct"] == -0.70
+    assert tickers["XLF"]["change_pct"] == 0.20
+
+
+def test_us_sectors_12_etf_extended():
+    """GICS 11 + SOXX 확장 포맷 파싱 — 한국 증권가 표준 명칭 전부 매칭."""
+    from reports.parsers.morning_data_parser import _parse_us_sectors
+
+    body = (
+        "  반도체(SOXX)         +2.10%  ▲▲▲▲  MA20✓/MA60✓/MA120✓\n"
+        "  IT(XLK)              +1.20%  ▲▲  MA20✓/MA60✓/MA120✓\n"
+        "  커뮤니케이션(XLC)     +0.80%  ▲  MA20✓/MA60✓/MA120✓\n"
+        "  경기소비재(XLY)       -0.40%    MA20✓/MA60✓/MA120✗\n"
+        "  필수소비재(XLP)       +0.30%    MA20✓/MA60✓/MA120✓\n"
+        "  에너지(XLE)          -0.50%  ▼  MA20✗/MA60✗/MA120✗\n"
+        "  금융(XLF)            +0.60%  ▲  MA20✓/MA60✓/MA120✓\n"
+        "  헬스케어(XLV)         +0.10%    MA20✓/MA60✓/MA120✓\n"
+        "  산업재(XLI)          +0.40%    MA20✓/MA60✓/MA120✓\n"
+        "  소재(XLB)            +0.20%    MA20✓/MA60✓/MA120✗\n"
+        "  부동산(XLRE)         -0.70%  ▼  MA20✗/MA60✓/MA120✓\n"
+        "  유틸리티(XLU)         -0.20%    MA20✗/MA60✓/MA120✓\n"
+    )
+    sectors = _parse_us_sectors(body)
+    assert len(sectors) == 12
+    tickers = {s["ticker"] for s in sectors}
+    assert tickers == {"SOXX", "XLK", "XLC", "XLY", "XLP", "XLE",
+                       "XLF", "XLV", "XLI", "XLB", "XLRE", "XLU"}
+    xlc = next(s for s in sectors if s["ticker"] == "XLC")
+    assert xlc["name"] == "커뮤니케이션"
+    assert xlc["leaders"] == "META·GOOGL·NFLX"
+    assert xlc["super_sector"] == "sensitive"
+
+
+def test_us_sector_summary_regime():
+    """super-sector 3분류 평균 + regime 판정."""
+    from reports.parsers.morning_data_parser import _build_us_sector_summary
+
+    # 민감 주도 → Risk-on
+    sectors_on = [
+        {"ticker": "XLK", "change_pct": 1.2, "super_sector": "sensitive"},
+        {"ticker": "XLC", "change_pct": 0.8, "super_sector": "sensitive"},
+        {"ticker": "XLP", "change_pct": 0.1, "super_sector": "defensive"},
+        {"ticker": "XLV", "change_pct": 0.0, "super_sector": "defensive"},
+        {"ticker": "XLF", "change_pct": 0.4, "super_sector": "cyclical"},
+    ]
+    summary = _build_us_sector_summary(sectors_on)
+    assert summary["sensitive_avg"] == 1.0
+    assert summary["defensive_avg"] == 0.05
+    assert summary["cyclical_avg"] == 0.4
+    assert "Risk-on" in summary["regime"]
+
+    # 방어 주도 → Risk-off
+    sectors_off = [
+        {"ticker": "XLK", "change_pct": -1.0, "super_sector": "sensitive"},
+        {"ticker": "XLP", "change_pct": 0.5, "super_sector": "defensive"},
+        {"ticker": "XLV", "change_pct": 0.3, "super_sector": "defensive"},
+    ]
+    assert "Risk-off" in _build_us_sector_summary(sectors_off)["regime"]
 
 
 def test_kr_indices(data):
