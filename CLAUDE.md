@@ -1,14 +1,16 @@
 # morning-report
 
-<!-- Last session branch: claude/session-start-nueAo (2026-04-25) -->
+<!-- Last session branch: claude/v3.9-data-integrity (2026-04-25) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-25, branch `claude/session-start-nueAo`)
+## 현재 상태 (2026-04-25, main `775ba0b`)
 
-**Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. 리포트 가시성·정확성 사이클 진행 중.
+**Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. 리포트 가시성·정확성·무결성
+사이클 진행 중. Claude Project Instruction v3.9 (ADR-008 반영 + Step 0 날짜
+고정 + Step 1 무결성 가드).
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -33,19 +35,32 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ ADR-009 후보 — 박스권 조건부 섹터 게이트
+#### 1️⃣ v3.9 효과 관찰 (다음 모닝리포트 세션)
+
+- Step 1 1차 경로 (`download_file_content`) 성공률 — 21KB 이상 파일에서도
+  토큰 경유 없이 통과하는지, 아니면 여전히 2차 경로 자동 진입하는지
+- 2차 경로 진입 시 `loss_pct` 수치 계산 + ALERT 11 (`⚠️ 데이터 손실 N% —
+  리포트 부분적`) 카드 노출 확인
+- Step 3 parser 스키마 힌트 효과 — smoke-test false-negative 재발 없는지
+
+#### 2️⃣ Section 04 Trend Watch 복귀 렌더 확인
+
+다음 06:00 KST cron 이후 `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMDD.pdf`
+의 §04 헤드라인 = `Grade A · Top 5`, 🆕 뱃지가 Top 5 카드 + Remaining 표에만
+잔존 확인.
+
+#### 3️⃣ ADR-009 후보 — 박스권 조건부 섹터 게이트
 
 ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득 (+3~+11%p).
 시장 regime detection (6M KOSPI return, MA200 slope) 기반으로 박스권 구간만
 게이트 활성화. 인프라(`strategy_config.yaml::sector_gate` + `precompute_sector_tiers`)
 이미 있음. 성공 조건: 전체 CAGR 유지 or 개선, MDD 악화 없음.
 
-#### 2️⃣ ADR-008 후속 검증 — Section 04 Trend Watch 복귀 반영 확인
+#### 4️⃣ 데이터 무결성 원칙 ADR 승격 여부
 
-cron 06:00 KST 이후 `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMDD.pdf`
-의 Section 04 가 Trend Watch 로 표시되는지, 🆕 뱃지가 Top 5 카드 + Remaining
-표에만 잔존하는지 확인. Claude Project Files 재업로드: **v3.7 필수 2개** —
-`v6_2_template_html.j2`, `render_report.py`.
+v3.9 에 구현된 "silent degradation 거부 / damage control canonical 화 금지"
+원칙을 ADR 로 승격할지 마스터 판단. 향후 다른 fallback 판단에도 적용될 지침
+성격이므로 ADR-010 후보.
 
 ### 모니터링 대기
 - pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원
@@ -60,7 +75,8 @@ cron 06:00 KST 이후 `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMD
 ### 잔존 정리 (UI 수동, sandbox 403)
 - 브랜치 삭제: `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
   `adr-005-006-007-entry-timing`, `resume-session-progress-8cGdH`,
-  `fix-error-handling-riAYS`, `phase3-backtest`
+  `fix-error-handling-riAYS`, `phase3-backtest`, `session-start-nueAo`,
+  `v3.9-data-integrity`
 
 ---
 
@@ -155,9 +171,10 @@ morning-report/
 ---
 
 ## 최근 세션
-- **2026-04-25 (web, `claude/session-start-nueAo`)**: ADR-008 — Section 04 Entry Candidates 폐기, Trend Watch 로 §04 복귀. 템플릿 섹션 재번호 (05→04, 05·b→04·b, 06→05, 07→06, 08→07) + `data.new_a_entries` 파생 제거 + Claude Project Instruction v3.6 → v3.7.
+- **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008 Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) + Claude Project Instruction v3.6→v3.7→v3.8→v3.9 3사이클. v3.8: Step 0 오늘 날짜 고정 + Step 1 modifiedTime 최신 선택 (D-1 리포트 사고 fix) + 슬림화 503→419. v3.9: Step 1 무결성 가드 (expected_size 검증, 불일치 시 2차 경로 자동 + loss_pct 강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift 사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
 - **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser 🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
 - **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 버그 fix + PDF 페이지 분할 + Claude Project 지침 v3.5.
+- **2026-04-23 #7 (PC)**: ADR-004 섹터 게이트 5 variant 백테 → 기각.
 - **2026-04-23 #7 (PC)**: ADR-004 섹터 게이트 5 variant 백테 → 기각.
 - **2026-04-23 #5-#6 (UZymn → main)**: KOSPI200 11섹터 전환 + plan-004 머지.
