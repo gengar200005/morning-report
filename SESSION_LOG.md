@@ -36,11 +36,29 @@
     `combine_data.py` (raw text 결합 순서, parser abstraction 으로 충분)
     제거. holdings_report.py 등 데이터 생성 단계 파일도 등록 불필요 명시.
   - 본문 분량: 172줄 → 약 140줄.
-- **운영 모델 확정** — claude.ai/projects 환경에서 자동 commit 불가능 (GitHub
-  커넥터는 연결됐지만 read-only — chat 첨부 / Projects sync / Claude Code
-  remote browse 만 지원, write 권한 없음). 따라서 v5.1 권장 운영 = **Claude
-  Code CLI 에서 7카드 작성 + commit**. 안전 필터 false-positive (어제 Opus
-  4.7 케이스) 와 도구 부재 둘 다 우회.
+- **운영 모델 확정 (1차)** — claude.ai/projects 환경에서 자동 commit 불가능
+  (GitHub 커넥터는 read-only). 따라서 v5.1 권장 운영 = **Claude Code CLI 에서
+  7카드 작성 + commit**.
+- **Claude augmentation 폐기 (A 옵션, 세션 후반 결정 — 최종)** — 마스터의
+  "단순화 시키려다 더 복잡해졌다" 통찰 + 알파 분해 냉정 평가 후 augmentation
+  자체를 폐기하기로 결정. 근거:
+  - 백테 알파 +29.55% = 100% 가 룰 (필터 +25.8%p + 체결타이밍 +6.7%p) 에서
+    옴. 자연어 해석 / narrative 의 알파 기여 0.
+  - Claude 7카드의 narrative (sector / agrade / macro 등) 가 마스터의 직관
+    필터를 자극 → 백테 외 판단 유인 → ADR-005 "추가 필터 baseline 하회" 와
+    같은 결의 위험.
+  - 모델 일관성 문제 (Sonnet 4 OCR 오류 "보호/방송", RS 73 신한지주 진입
+    후보 등장) 가 cron 자동화 시 무검증 발행 → 마스터 손해 가능.
+  - baseline PDF (v6.2 template) 이미 의사결정 데이터 (Top 5 RS, signal_age,
+    verdict, 게이트, 매크로 캘린더) 충분히 제공. augmentation 의 가독성
+    가치 < narrative 노이즈 위험.
+- **운영 변경** — `morning.yml` 끝에 Notion publish step 추가 (publish_to_notion.py
+  재사용). 매일 06:25 KST cron 으로 baseline PDF 가 Drive + Notion 까지 자동
+  발행. 마스터 손 0, 비용 0, 모바일/PC 무관.
+- **인프라 보존** — `claude_render.yml` + `publish_to_notion.py` +
+  `notion_page_template.json` 모두 그대로. `docs/claude_analysis/YYYYMMDD.json`
+  push 만 하면 즉시 augmentation 동작. v5.1 본문 첫 줄에 deprecation 메모
+  추가 ("현재 운영 X, 미래 재시도용 보존").
 
 ### 검토한 대안
 - **Notion 자동화 우회 3안**:

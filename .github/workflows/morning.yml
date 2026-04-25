@@ -173,3 +173,22 @@ jobs:
             git commit -m "Daily report PDF ${TODAY} (auto)"
             git push origin "HEAD:$GITHUB_REF_NAME"
           fi
+
+      # ─────────────────────────────────────────────────────────
+      # Phase 4: Notion 페이지 publish (baseline PDF)
+      # 매일 baseline PDF 를 Notion 부모 페이지 아래 자식 페이지로 publish.
+      # claude_analysis augmentation 은 별개 워크플로 (claude_render.yml) 에서
+      # JSON commit 트리거 시에만 추가 발행. 평소 운영은 baseline only.
+      # ─────────────────────────────────────────────────────────
+      - name: Notion 페이지 publish
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
+        run: |
+          YMD=$(TZ=Asia/Seoul date +%Y%m%d)
+          PDF="docs/archive/report_${YMD}.pdf"
+          if [ ! -f "$PDF" ]; then
+            echo "⚠️ PDF 없음 — Notion publish 스킵: $PDF"
+            exit 0
+          fi
+          python -m reports.publish_to_notion --pdf "$PDF" --date "$YMD"

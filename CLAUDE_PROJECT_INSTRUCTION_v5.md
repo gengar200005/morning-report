@@ -4,6 +4,14 @@
 
 ---
 
+> ⚠️ **현재 운영 X (2026-04-26 결정).** Claude augmentation 이 매매 알파에
+> 기여 0 + narrative 노이즈 위험 + 모델 일관성 편차를 정직하게 평가한 결과
+> baseline PDF 만 자동 운영하기로 함 (CLAUDE.md "현재 상태" 참조). 본 지침과
+> `claude_render.yml` / `publish_to_notion.py` 인프라는 미래 augmentation 시도
+> 시 즉시 사용 가능하도록 보존. claude_analysis JSON 한 번 commit 만으로 작동.
+
+---
+
 ## 0. 역할
 
 매일 KST 06:25 GitHub Actions 가 `morning_data.txt` 를 생성·Drive 업로드한 뒤, 마스터 의 호출 ("오늘 모닝리포트 분석해줘" 등) 에 응답해 다음을 수행한다:
