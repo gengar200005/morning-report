@@ -4,6 +4,104 @@
 
 ---
 
+## 2026-04-26 (PC CLI, branch `claude/interesting-kapitsa-d40f52`) — v5.0 사고 fix + Notion CI 자동화 + Instruction v5.1
+
+### 결정
+- **04-25 web 사고 fix** — 어제 web Opus 가 7카드 분석 작성 후 GitHub MCP
+  부재로 마스터 수동 commit 안내. 안내문 옵션 B 의 `cat > ... << 'EOF' ...
+  EOF` bash heredoc 코드 블록을 마스터가 GitHub 웹 UI 파일 본문에 그대로
+  붙여넣음. workflow run 24922905767 JSON 파싱 실패 (33s). 오늘 CLI 에서
+  깨끗한 7카드 JSON 으로 재push (commit `7c4bd53`), workflow SUCCESS (1m0s).
+- **Notion CI 자동화 완성 (B 옵션)** — Notion `file_uploads` API 가 Anthropic
+  MCP 패키지 (web 도 CLI 도) 에 구조적 부재 + `notion_page_template.json` 의
+  external URL 거부 정책으로 `pdf` 블록은 file_upload 타입 강제. 따라서 v5.0
+  §3.2 의 4단계 (slot 생성 → PDF 바이너리 → page create → children PATCH)
+  를 CI step 으로 이전. `reports/publish_to_notion.py` (155줄, requests 기반)
+  + `claude_render.yml` Notion publish step 추가 (commit `32bc13a`). 검증:
+  workflow_dispatch run 24933790231 → Notion step 4초 만에 통과, 자식 페이지
+  + PDF embed 정상 생성. NOTION_API_KEY / NOTION_PARENT_PAGE_ID 기존 secret
+  재사용 (마스터가 `morning-report-publisher` integration 신규 생성, 부모
+  페이지 connections 추가).
+- **Instruction v5.0 → v5.1** — Notion publish 가 CI 임무로 이전됨에 따라
+  지침 갱신:
+  - §0 역할: 4단계 → **3단계** (Drive 읽기 → 7카드 → commit). CI 자동 처리
+    한 줄 메모.
+  - §3: Claude API 호출 절차 23줄 → 짧은 메모 6줄 (CI 책임 명시).
+  - §5: "CLAUDE.md 가 단일 소스" → "전체 정의는 레포 CLAUDE.md" (Project
+    Files 등록 X 와 일관성).
+  - §6 도구 표: Notion 행 3개 (file_upload / page create / blocks append)
+    제거. CI 처리 단계 명시 1줄 추가.
+  - **Project Files: 7 → 5** — CLAUDE.md (매일 7카드 작성에 직접 인용 X,
+    핵심 5줄은 §5 인라인) + `notion_page_template.json` (CI 만 사용) 제거.
+  - 본문 분량: 172줄 → 약 140줄.
+- **운영 모델 확정** — claude.ai/projects 환경에서 자동 commit 불가능 (GitHub
+  커넥터는 연결됐지만 read-only — chat 첨부 / Projects sync / Claude Code
+  remote browse 만 지원, write 권한 없음). 따라서 v5.1 권장 운영 = **Claude
+  Code CLI 에서 7카드 작성 + commit**. 안전 필터 false-positive (어제 Opus
+  4.7 케이스) 와 도구 부재 둘 다 우회.
+
+### 검토한 대안
+- **Notion 자동화 우회 3안**:
+  - (A) HTTP 직접 호출 — 마스터가 매일 CLI 띄워야 자동화 의미 없음. 기각.
+  - **(B) CI workflow 에 Notion step 추가** — secrets 이미 있음, Drive
+    OAuth 와 동일 환경. **채택**.
+  - (C) Drive viewUrl external embed — `notion_page_template.json` usage_rules
+    2번 "external URL 방식 아님" 명시 거부 + PDF 권한이 Drive 에 묶임. 기각.
+- **Project Files 6개 vs 5개**:
+  - (a) CLAUDE.md 유지 (6개) — 풍부한 컨텍스트, ADR/세션 기록 포함
+  - **(b) CLAUDE.md 제거 (5개)** — §5 5줄로 충분, 컨텍스트 가벼움, 매일
+    갱신 부담 없음. **채택**.
+- **commit 전략 — 단일 fix vs 2 commits**: ba94ec9 삭제 commit reset 후
+  단일 "replace malformed" commit 으로 정상화 (`7c4bd53`). main history
+  깔끔.
+
+### 다음 세션에서 할 일
+- **v5.1 정상 운영 관찰** — 다음 06:00 KST cron + 마스터 호출 사이클에서:
+  - 7카드 JSON commit → workflow → Notion 페이지 자동 생성 end-to-end 재현
+  - Notion publish step 1분 내 완료 유지
+  - Drive PDF 와 Notion embed PDF 동일 파일 검증
+- **ADR 후보 3건 우선순위 결정 (마스터 판단)**:
+  - **ADR-009**: v5.0/v5.1 운영 모델 (claude.ai 환경 갭 → CI step 이전)
+  - **ADR-010**: 박스권 조건부 섹터 게이트 (전략 알파)
+  - **ADR-011**: 데이터 무결성 원칙 (silent degradation 거부)
+- **잔존 stale 브랜치 UI 수동 삭제** (sandbox 403 으로 자동 불가) — 11개:
+  `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
+  `adr-005-006-007-entry-timing`, `resume-session-progress-8cGdH`,
+  `fix-error-handling-riAYS`, `phase3-backtest`, `session-start-nueAo`,
+  `v3.9-data-integrity`, `session-start-4OzHX` (v4.0 폐기),
+  `session-start-HhsjC`, `waiting-for-instructions-6Xn3W` (v5.0 src).
+- **claude.ai 프로젝트 Project Files 갱신 (마스터)**: v5.0 → v5.1 교체
+  업로드 + CLAUDE.md / notion_page_template.json 등록 해제.
+
+### 미해결
+- **모델별 7카드 품질 편차** — Opus 4.7 (어제 본문, 채택) vs Sonnet 4 (오늘
+  안전필터 우회 시도, 섹터명 OCR 오류 + RS 73 신한지주 등장) 결과 불일치.
+  v5.1 §1.3 의 "추측 prefix 금지" / §7 "추측 prefix 금지" 만으로는 불충분
+  할 수 있음. 향후 모델 일관성 가드 (예: 데이터 인용 시 출처 키 명시) 추가
+  검토.
+- **CLAUDE.md SHA 누락** — push 후 새 SHA 로 갱신 필요할 수 있음. 또는
+  영구적으로 SHA 박지 않고 날짜+버전 표기로 단순화.
+
+### 이번 세션 생성/수정 파일
+- 신규: `reports/publish_to_notion.py` (155줄, requests 기반 v5.0 §3.2 4단계)
+- 수정: `.github/workflows/claude_render.yml` (Notion publish step 추가),
+  `CLAUDE_PROJECT_INSTRUCTION_v5.md` (v5.0 → v5.1, 172 → ~140줄),
+  `CLAUDE.md`, `SESSION_LOG.md`
+- 삭제 (커밋 시리즈 일부): `docs/claude_analysis/20260425.json` 손상본 →
+  깨끗한 7카드 JSON 으로 교체
+
+### 머지/푸시 결과 (2026-04-26 종료 시점)
+- 이번 세션 commit 시리즈 (모두 main 직접 push):
+  1. `7c4bd53` — `fix(claude_analysis): replace malformed 20260425.json`
+  2. `32bc13a` — `feat(notion): v5.0 §3 Notion publishing CI step 추가`
+  3. (pending) — v5.1 인계 commit
+- workflow SUCCESS 2건: run 24933354377 (1m0s, push trigger), run 24933790231
+  (1m6s, dispatch trigger Notion 검증).
+- main 자동 갱신 commit: `672eedd` (04-25 PDF), `06ae974` (04-26 PDF) — CI
+  auto push.
+
+---
+
 ## 2026-04-25 (web, branches `claude/session-start-nueAo` → `claude/v3.9-data-integrity`) — ADR-008 + Instruction v3.7 → v3.9 3사이클
 
 ### 결정

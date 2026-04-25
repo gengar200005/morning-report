@@ -1,4 +1,4 @@
-# Claude Project Instruction v5.0
+# Claude Project Instruction v5.1
 
 **morning-report — Korean morning report analysis (zero-base)**
 
@@ -10,10 +10,9 @@
 
 1. **Drive 에서 오늘자 `morning_data.txt` 읽기**
 2. **7개 analysis cards 작성** → `docs/claude_analysis/YYYYMMDD.json` 으로 GitHub commit
-3. **CI 완료 대기** (commit 이 `Claude 분석 재렌더` workflow 트리거)
-4. **갱신된 PDF 를 Drive 에서 가져와 Notion 부모 페이지에 신규 자식 페이지 + PDF embed**
+3. **CI 완료 확인** — commit 이 `Claude 분석 재렌더` workflow 를 트리거하면 PDF 재렌더 + Drive 업로드 + Notion 페이지 publish 까지 자동.
 
-CI 가 baseline (06:25 fallback PDF), Claude 는 augmentation layer. Claude 실패 시 fallback PDF 가 그대로 남으므로 사용자가 손해 안 봄.
+CI 가 baseline (06:25 fallback PDF), Claude 는 augmentation layer. Claude 실패 시 fallback PDF 가 그대로 남으므로 사용자가 손해 안 봄. Notion publish 도 CI 책임이므로 Claude 측 실패와 독립.
 
 ---
 
@@ -78,25 +77,16 @@ Commit 즉시 `.github/workflows/claude_render.yml` 가 자동 트리거.
 
 ---
 
-## 3. 출력 ② — Notion 페이지
+## 3. 출력 ② — Notion 페이지 (CI 자동, 참고용)
 
-### 3·1 트리거 시점
+`docs/claude_analysis/*.json` commit 후 `claude_render.yml` workflow 가 자동 처리:
 
-`docs/claude_analysis/*.json` commit → CI workflow `Claude 분석 재렌더` 실행 (~3분) → `docs/archive/report_YYYYMMDD.pdf` 가 claude_analysis 주입된 상태로 갱신 + Drive 업로드. **CI 종료 확인 후** Notion 진행.
+1. HTML 재렌더 (claude_analysis 7카드 주입)
+2. PDF 변환 (Chrome headless)
+3. Drive 업로드 (`MorningReports/` 폴더)
+4. **Notion publish** — `reports/publish_to_notion.py` 가 file_uploads → page create → children PATCH 4단계 자동 수행. 부모 페이지 `NOTION_PARENT_PAGE_ID` 아래 자식 페이지 + PDF embed + 수동 메모 heading 생성.
 
-### 3·2 Notion API 흐름
-
-부모 페이지: `33f14f343a5681a0bf2dd9920d69303f`
-
-1. PDF 슬롯 생성: `POST https://api.notion.com/v1/file_uploads` → `{id, upload_url}` 반환
-2. PDF 바이너리 전송: Drive 에서 다운로드한 갱신 PDF 를 `upload_url` 에 POST
-3. 자식 페이지 생성: `POST /v1/pages`
-   - `parent`: `{type: "page_id", page_id: "33f14f343a5681a0bf2dd9920d69303f"}`
-   - `properties.title`: `모닝리포트 YYYY-MM-DD (요일)`
-4. 페이지 children 추가: `PATCH /v1/blocks/{page_id}/children`
-   - `notion_page_template.json` 의 `children` 배열 사용
-   - `{{FILE_UPLOAD_ID}}` 를 1단계의 `id` 로 치환
-   - `__meta` / `__placeholders` 키는 전송 body 에 포함 금지
+소요 ~1분. **Claude 측 책임 아님** — 결과 확인은 Notion 부모 페이지 또는 GH Actions 로그.
 
 ---
 
@@ -120,7 +110,7 @@ Commit 즉시 `.github/workflows/claude_render.yml` 가 자동 트리거.
 
 ## 5. 분석 원칙 (T10/CD60 일관성)
 
-`CLAUDE.md` 가 단일 소스. 본 지침에서 핵심만 환기:
+T10/CD60 핵심 규약 (전체 정의는 레포 `CLAUDE.md`):
 
 - **Trail 10% / Cooldown 60거래일**, A등급 RS 정렬 Top 5 균등 가중
 - **차트 판독으로 종목 거르기 금지** — 백테 안 된 추가 필터
@@ -140,9 +130,8 @@ Commit 즉시 `.github/workflows/claude_render.yml` 가 자동 트리거.
 | Drive 다운로드 | `download_file_content` | 1차 시도. expected_size 미달 시 토큰 우회 |
 | GitHub commit | `create_or_update_file` | path: `docs/claude_analysis/YYYYMMDD.json` |
 | GitHub workflow 상태 | `list_workflow_runs` (필요시) | rerender 완료 polling |
-| Notion file_upload | `POST /v1/file_uploads` | 1시간 expire |
-| Notion page create | `POST /v1/pages` | parent = NOTION_PARENT_PAGE_ID |
-| Notion blocks append | `PATCH /v1/blocks/{id}/children` | template.json children |
+
+CI 가 처리하는 단계 (Claude 도구 불필요): PDF 렌더, Drive 업로드, Notion file_uploads / page create / children PATCH.
 
 ---
 
@@ -152,21 +141,20 @@ Commit 즉시 `.github/workflows/claude_render.yml` 가 자동 트리거.
 - **template 직접 수정 금지** — `v6.2_template.html.j2` 는 CI 영역. claude_analysis JSON 주입만이 정상 경로.
 - **추측 prefix 금지** — "아마", "추정", "보입니다" 사용 시 카드 재작성.
 - **claude_analysis JSON 외 docs/ 수정 금지** — `docs/latest.html`, `docs/archive/*` 는 CI 만 작성.
-- **`__meta` / `__placeholders` Notion API 전송 금지** — `notion_page_template.json` 의 메타 필드.
 - **silent fallback 금지** — 1차 경로 실패·키 누락·날짜 불일치 모두 ALERT 카드에 명시.
 
 ---
 
-## Project Files (Claude.ai 등록 목록)
+## Project Files (Claude.ai 등록 목록, 5개)
 
 본 지침과 함께 Claude.ai 프로젝트에 등록할 파일 (single source of truth):
 
 1. **`CLAUDE_PROJECT_INSTRUCTION_v5.md`** — 본 파일
-2. **`CLAUDE.md`** — 프로젝트 목표 + T10/CD60 전략 + 실전 규약
-3. **`reports/parsers/morning_data_parser.py`** — morning_data.txt → dict schema 단일 소스
-4. **`reports/templates/v6.2_template.html.j2`** — 7카드 키 ID + section headline 단일 소스
-5. **`reports/render_report.py`** — render 진입점 (`--claude-analysis` arg 형식)
-6. **`combine_data.py`** — morning_data.txt 결합 순서 (us → kr → sector → holdings → macro)
-7. **`notion_page_template.json`** — Notion 페이지 children 구조 + file_upload 흐름
+2. **`reports/parsers/morning_data_parser.py`** — morning_data.txt → dict schema 단일 소스
+3. **`reports/templates/v6.2_template.html.j2`** — 7카드 키 ID + section headline 단일 소스
+4. **`reports/render_report.py`** — render 진입점 (`--claude-analysis` arg 형식)
+5. **`combine_data.py`** — morning_data.txt 결합 순서 (us → kr → sector → holdings → macro)
+
+**CI 전용 (Project Files 등록 불필요)**: `notion_page_template.json`, `reports/publish_to_notion.py`, `.github/workflows/claude_render.yml`, `requirements.txt`. CLAUDE.md 도 레포에는 있지만 매일 7카드 작성에 직접 인용 안 함 → 등록 X (T10/CD60 핵심은 §5 에 인라인).
 
 레거시 (`CLAUDE_PROJECT_INSTRUCTION.md` v3.x, `claude_project_prompt.md`) 는 등록하지 말 것 — fiction 재유입 방지.

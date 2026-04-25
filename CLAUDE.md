@@ -1,16 +1,17 @@
 # morning-report
 
-<!-- Last session branch: claude/v3.9-data-integrity (2026-04-25) -->
+<!-- Last session branch: claude/interesting-kapitsa-d40f52 (2026-04-26) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-25, main `775ba0b`)
+## 현재 상태 (2026-04-26)
 
-**Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. 리포트 가시성·정확성·무결성
-사이클 진행 중. Claude Project Instruction v3.9 (ADR-008 반영 + Step 0 날짜
-고정 + Step 1 무결성 가드).
+**Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. v5.0 zero-base + Notion CI
+자동화 완성 (Instruction **v5.1**). Claude 임무 = Drive 읽기 → 7카드 → commit
+**3단계**. 이후 PDF 재렌더 + Drive 업로드 + Notion publish 모두 CI 책임
+(`claude_render.yml` + `reports/publish_to_notion.py`).
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -35,32 +36,33 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ v3.9 효과 관찰 (다음 모닝리포트 세션)
+#### 1️⃣ v5.1 정상 운영 관찰 (다음 모닝리포트 세션부터)
 
-- Step 1 1차 경로 (`download_file_content`) 성공률 — 21KB 이상 파일에서도
-  토큰 경유 없이 통과하는지, 아니면 여전히 2차 경로 자동 진입하는지
-- 2차 경로 진입 시 `loss_pct` 수치 계산 + ALERT 11 (`⚠️ 데이터 손실 N% —
-  리포트 부분적`) 카드 노출 확인
-- Step 3 parser 스키마 힌트 효과 — smoke-test false-negative 재발 없는지
+- CLI 에서 7카드 JSON commit → `claude_render.yml` 자동 트리거 → Notion 자식
+  페이지 자동 생성 end-to-end 재현성
+- workflow Notion publish step 1분 내 완료 유지
+- Drive PDF 갱신본과 Notion embed PDF 가 동일 파일 (`file_uploads` 흐름) 인지
+- Sonnet 4 시도에서 발생한 모델 일관성 문제 (섹터명 OCR-스러운 오류 / RS 73 신한지주
+  진입 후보 등장) 재발 모니터 — Opus 4.7 외 모델 사용 시 카드 품질 변동
 
-#### 2️⃣ Section 04 Trend Watch 복귀 렌더 확인
+#### 2️⃣ ADR-009 후보 — v5.0/v5.1 운영 모델 (CI 자동화) 승격 여부
 
-다음 06:00 KST cron 이후 `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMDD.pdf`
-의 §04 헤드라인 = `Grade A · Top 5`, 🆕 뱃지가 Top 5 카드 + Remaining 표에만
-잔존 확인.
+claude.ai/projects 환경의 GitHub commit / Notion file_uploads 도구 부재가
+구조적임을 확인. 대응으로 Notion publish 를 CI step 으로 이전 (B 옵션).
+이 결정을 ADR 로 승격할지 마스터 판단 — 향후 다른 외부 시스템 연동 결정에도
+적용될 지침 성격.
 
-#### 3️⃣ ADR-009 후보 — 박스권 조건부 섹터 게이트
+#### 3️⃣ ADR-010 후보 — 박스권 조건부 섹터 게이트 (전략 알파)
 
 ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득 (+3~+11%p).
 시장 regime detection (6M KOSPI return, MA200 slope) 기반으로 박스권 구간만
 게이트 활성화. 인프라(`strategy_config.yaml::sector_gate` + `precompute_sector_tiers`)
 이미 있음. 성공 조건: 전체 CAGR 유지 or 개선, MDD 악화 없음.
 
-#### 4️⃣ 데이터 무결성 원칙 ADR 승격 여부
+#### 4️⃣ ADR-011 후보 — 데이터 무결성 원칙
 
 v3.9 에 구현된 "silent degradation 거부 / damage control canonical 화 금지"
-원칙을 ADR 로 승격할지 마스터 판단. 향후 다른 fallback 판단에도 적용될 지침
-성격이므로 ADR-010 후보.
+원칙을 ADR 로 승격할지 마스터 판단. v5.1 §1.3 + §7 에도 인라인 잔존.
 
 ### 모니터링 대기
 - pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원
@@ -76,7 +78,9 @@ v3.9 에 구현된 "silent degradation 거부 / damage control canonical 화 금
 - 브랜치 삭제: `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
   `adr-005-006-007-entry-timing`, `resume-session-progress-8cGdH`,
   `fix-error-handling-riAYS`, `phase3-backtest`, `session-start-nueAo`,
-  `v3.9-data-integrity`
+  `v3.9-data-integrity`, `session-start-4OzHX` (v4.0 abandoned),
+  `session-start-HhsjC`, `waiting-for-instructions-6Xn3W` (v5.0 src),
+  `interesting-kapitsa-d40f52`
 
 ---
 
@@ -171,6 +175,7 @@ morning-report/
 ---
 
 ## 최근 세션
+- **2026-04-26 (PC CLI, branch `claude/interesting-kapitsa-d40f52`)**: v5.0 첫 사이클 정상화 + Notion CI 자동화 완성 (Instruction v5.0→**v5.1**). 어제(04-25) web 사고 (옵션 B bash heredoc 안내문이 그대로 파일 본문으로 commit, workflow run 24922905767 실패) fix → 깨끗한 7카드 JSON 으로 재push (`7c4bd53`), workflow SUCCESS. `reports/publish_to_notion.py` + `claude_render.yml` Notion publish step 추가 (`32bc13a`), workflow_dispatch 검증 1m6s 통과 (run 24933790231). v5.1: §0 4단계→3단계 (Notion CI 이전), §3 압축, §6 Notion 도구 행 제거, Project Files 7→**5** (CLAUDE.md + notion_page_template 제거).
 - **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008 Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) + Claude Project Instruction v3.6→v3.7→v3.8→v3.9 3사이클. v3.8: Step 0 오늘 날짜 고정 + Step 1 modifiedTime 최신 선택 (D-1 리포트 사고 fix) + 슬림화 503→419. v3.9: Step 1 무결성 가드 (expected_size 검증, 불일치 시 2차 경로 자동 + loss_pct 강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift 사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
 - **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser 🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
