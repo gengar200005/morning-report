@@ -31,8 +31,10 @@
     Files 등록 X 와 일관성).
   - §6 도구 표: Notion 행 3개 (file_upload / page create / blocks append)
     제거. CI 처리 단계 명시 1줄 추가.
-  - **Project Files: 7 → 5** — CLAUDE.md (매일 7카드 작성에 직접 인용 X,
-    핵심 5줄은 §5 인라인) + `notion_page_template.json` (CI 만 사용) 제거.
+  - **Project Files: 7 → 4** — CLAUDE.md (매일 7카드 작성에 직접 인용 X,
+    핵심 5줄은 §5 인라인) + `notion_page_template.json` (CI 만 사용) +
+    `combine_data.py` (raw text 결합 순서, parser abstraction 으로 충분)
+    제거. holdings_report.py 등 데이터 생성 단계 파일도 등록 불필요 명시.
   - 본문 분량: 172줄 → 약 140줄.
 - **운영 모델 확정** — claude.ai/projects 환경에서 자동 commit 불가능 (GitHub
   커넥터는 연결됐지만 read-only — chat 첨부 / Projects sync / Claude Code
