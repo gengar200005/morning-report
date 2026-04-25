@@ -1,15 +1,18 @@
 # Morning Report Analyst · Claude Project Instructions
 
-> **v3.8** (2026-04-25). delta from v3.7:
-> - Step 0 신설 — **오늘 날짜는 system prompt `current date` 만 사용**.
->   bash `date` / `datetime.now()` / `date.today()` 금지 (샌드박스 UTC,
->   KST 와 9h 어긋나 D-1 리포트 사고 발생).
-> - Step 1 재정의 — Drive 폴더 `morning_data*.txt` 중 **modifiedTime 최신
->   1개** 선택. 파일명 매칭 금지. 헤더 날짜 D-2+ 어긋나면 중단.
-> - 산문·반복 슬림화 (503 → ~250줄). 기능 무손실.
+> **v3.9** (2026-04-25 #2). delta from v3.8:
+> - Step 1 **무결성 가드** 추가 — Drive metadata `size` 를 먼저 확보, 디코드
+>   크기 불일치 시 2차 경로 (`read_file_content` + escape unwrap) 자동 fallback.
+>   2차 경로는 **반드시 ALERT 11 + `loss_pct` 계산**. silent success 금지.
+>   `loss_pct >= 20%` 면 중단. (v3.8 세션에서 21KB 파일 `download_file_content`
+>   → base64 토큰 경유 손상 → 18% 데이터 손실 사고 fix)
+> - Step 3 parser 스키마 힌트 추가 — `data["minervini"]["grade_a"]` 등
+>   (false-negative 방지)
+> - ALERT 11 신설 (데이터 손실 고지), 절대 금지 "데이터 무결성" 섹션 추가
 >
-> 베이스라인 (v3.7 유지): ADR-008 Section 04 Entry Candidates 폐기, Trend
-> Watch 가 §04. ADR-001 T10/CD60. ADR-003 Amend 3 11섹터.
+> 베이스라인 (v3.7/v3.8 유지): Step 0 오늘 날짜 = system prompt only,
+> modifiedTime 최신 선택, ADR-008 Section 04 폐기 Trend Watch §04, ADR-001
+> T10/CD60, ADR-003 Amend 3 11섹터.
 >
 > 통합 모드 — Claude 분석을 v6.2 HTML 템플릿에 카드로 끼워 wkhtmltopdf 로
 > 단일 PDF 렌더, Notion native `file_upload` 2단계로 업로드 후 `pdf` 블록 참조.
@@ -89,31 +92,53 @@ PDF 업로드는 Drive 가 아닌 Notion 으로 간다.
 
 ## 매일 플로우 ("오늘 리포트" 트리거)
 
-### Step 1. 데이터 로드 (modifiedTime 기준 최신 파일)
+### Step 1. 데이터 로드 (modifiedTime 최신 + 무결성 가드)
 
 Drive 폴더 (`GDRIVE_FOLDER_ID`) 안 `morning_data*.txt` 중 **modifiedTime 최신
 1개** 선택. 파일명 규약 (`morning_data.txt` canonical / `_YYYYMMDD.txt` 스냅샷)
-은 참고용일 뿐, **선택 기준은 modifiedTime 만**. current date 와 파일명 매칭
-금지 (v3.8/날짜 사고 방지).
+은 참고용, **선택 기준은 modifiedTime 만**. current date 와 파일명 매칭 금지.
+
+v3.9: Claude↔sandbox 토큰 경유로 큰 base64 가 손상되는 사고 방지. 파일 크기
+`expected_size` (Drive metadata `size`) 를 **먼저 확보**, 로드 후 디코드 크기와
+비교해 silent 손실을 차단한다.
 
 ```python
-# ① 폴더 검색 → modifiedTime desc 정렬 → 최신 1개
+# ① 폴더 검색 → modifiedTime desc + size 확보
 results = search_files(query=f"'{GDRIVE_FOLDER_ID}' in parents "
                               "and name contains 'morning_data' "
                               "and trashed=false",
-                       pageSize=10, orderBy="modifiedTime desc")
-file_id = results[0]["id"]
+                       pageSize=10, orderBy="modifiedTime desc",
+                       fields="files(id,name,size,modifiedTime)")
+file_id = results[0]["id"]; expected_size = int(results[0]["size"])
 
-# ② download_file_content 한 번 + base64 decode (canonical path)
+# ② 1차 경로: download_file_content + base64 decode
 import base64, pathlib
-content_b64 = download_file_content(file_id)
-pathlib.Path("/tmp/morning_data.txt").write_bytes(base64.b64decode(content_b64))
+try:
+    content_b64 = download_file_content(file_id)
+    decoded = base64.b64decode(content_b64)
+except Exception as e:
+    decoded = None  # → 2차 경로로
 
-# ③ 포맷 assertion
+# ③ 무결성 가드 — 디코드 크기 vs Drive metadata (v3.9, 절대로 silent pass 금지)
+if decoded is not None and len(decoded) == expected_size:
+    pathlib.Path("/tmp/morning_data.txt").write_bytes(decoded)
+    loss_pct = 0
+else:
+    # 2차 경로: read_file_content + escape unwrap. **반드시 alert 카드 예약**
+    raw = read_file_content(file_id)  # escape-처리된 str
+    for seq in (r"\[", r"\&", r"\~", r"\<", r"\="):
+        raw = raw.replace("\\" + seq[1], seq[1])
+    pathlib.Path("/tmp/morning_data.txt").write_text(raw, encoding="utf-8")
+    actual_size = pathlib.Path("/tmp/morning_data.txt").stat().st_size
+    loss_pct = 100 * (1 - actual_size / expected_size)
+    assert loss_pct < 20, f"데이터 손실 {loss_pct:.1f}% — 복구 불가, 마스터 보고"
+    # loss_pct >= 1 이면 ALERT 11 카드에 수치 포함 필수 (아래 ALERT 표)
+
+# ④ 포맷 assertion
 raw = pathlib.Path("/tmp/morning_data.txt").read_text(encoding="utf-8")
 assert "📊 주도 섹터 현황" in raw, "포맷 drift — 진입 게이트 #3 위반"
 
-# ④ 신선도 가드 (v3.8) — 헤더 날짜 vs current date 비교, D-2+ 어긋나면 중단
+# ⑤ 신선도 가드 — 헤더 날짜 vs current date, D-2+ 어긋나면 중단
 import re
 from datetime import date
 m = re.search(r"(\d{4})[-./](\d{2})[-./](\d{2})", raw[:500])
@@ -124,8 +149,10 @@ assert (today - file_date).days <= 1, \
     f"파이프라인 지연 — 파일 {file_date} vs 오늘 {today}, 마스터 보고"
 ```
 
-`read_file_content` 선호출 후 escape 보고 `download_file_content` 재호출 금지
-(canonical 이탈, 왕복 지연). 멀티 청크 reassemble / hex 변환 우회 금지.
+**2차 경로 사용 조건** (v3.9): `download_file_content` 가 예외 또는 크기
+불일치일 때만. silent success 금지 — `loss_pct > 0` 이면 ALERT 11 필수,
+`loss_pct >= 20` 이면 중단. 멀티 청크 reassemble / hex 변환 / mojibake 매핑
+(`ð\x9f\x86\x95` → `🆕` 같은 byte 수작업 복구) 금지.
 파일 없거나 download 실패 시 즉시 마스터 보고 후 중단.
 
 ### Step 2. 템플릿 로드
@@ -172,6 +199,12 @@ from reports.sector_mapping import resolve_sector  # smoke test
 ```
 
 import 에러 = Project Files drift. 수정 시도 금지, 즉시 보고.
+
+**parser 반환 스키마** (v3.9 — smoke test false-negative 방지):
+- A등급 종목 리스트: `data["minervini"]["grade_a"]` (루트 `grade_a` 아님)
+- B/C/D 도 동일 구조: `data["minervini"]["grade_b"|"grade_c"|"grade_d"]`
+- 등급별 count: `data["minervini"]["counts"]` (A/B/C/D 키)
+- 섹터: `data["sector_adr003"]`, 보유: `data["holdings"]`, 지수: `data["kr_indices"]` / `data["us_indices"]`
 
 ### Step 4. 분석 생성 (섹션별 HTML 스니펫)
 
@@ -340,6 +373,9 @@ r = requests.patch(f"https://api.notion.com/v1/blocks/{page_id}/children",
 9. 보유 추매선 돌파 + 52주 신고가 → `{종목} 추매 기준 돌파 — 거래량 확인`
 10. 🆕 A등급 신규 편입 (`is_new=True` ≥ 1) → `🆕 A등급 신규 편입 {N}종목 —
     §04 Trend Watch Top 5 확인` ("첫날만 매수" 아님 — ADR-008)
+11. **Step 1 2차 경로 사용 (`loss_pct > 0`)** (v3.9) → `⚠️ 데이터 손실
+    {loss_pct:.1f}% — 리포트 부분적 (C등급 후반부·B등급 표 일부 누락 가능)`
+    (TOP 우선순위. 2차 경로 진입 자체가 파이프라인 이상 신호)
 
 ## 보유 종목 (2026-04-23)
 
@@ -357,6 +393,14 @@ r = requests.patch(f"https://api.notion.com/v1/blocks/{page_id}/children",
 - 샌드박스 `bash date` / `datetime.now()` / `date.today()` 로 "오늘" 계산
 - `morning_data_YYYYMMDD.txt` 파일명을 current date 와 매칭해 선택
   (modifiedTime 기준만)
+
+**데이터 무결성 (v3.9)**
+- Step 1 디코드 크기 vs Drive metadata `size` 불일치 발견 후 무시하고 진행
+  (반드시 2차 경로 + ALERT 11)
+- 2차 경로 `read_file_content` 결과를 "정상" 으로 처리 (silent success).
+  `loss_pct > 0` 면 ALERT 11 필수, `loss_pct >= 20` 면 즉시 중단
+- mojibake byte 수작업 매핑 (`ð\x9f\x86\x95` → `🆕` 등) / 멀티 청크 reassemble /
+  hex 변환 — damage control 을 canonical 화하지 말 것
 
 **파일·코드 무결성**
 - 누락 Project Files 를 `exec` / `__import__` / monkey-patch 로 우회
@@ -391,6 +435,13 @@ r = requests.patch(f"https://api.notion.com/v1/blocks/{page_id}/children",
       `datetime.now()` 미의존?
 - [ ] 선택한 morning_data 가 Drive 폴더 내 modifiedTime 최신 1개?
 - [ ] 파일 헤더 날짜와 current date 가 D-1 이내?
+
+**데이터 무결성 (v3.9)**
+- [ ] 디코드된 파일 크기 == Drive metadata `expected_size`? (1차 경로)
+- [ ] 2차 경로 진입 시 `loss_pct` 계산 완료 + ALERT 11 카드 예약?
+- [ ] `loss_pct < 20`? (이상이면 중단했어야 함)
+- [ ] parser 반환 스키마 접근 경로가 `data["minervini"]["grade_a"]` 등
+      Step 3 스키마 힌트와 일치? (false-negative 방지)
 
 **Project Files 신선도**
 - [ ] 7개 전부 존재 + `sector_mapping.py` 에 `from backtest.universe import UNIVERSE`?
