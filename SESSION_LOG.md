@@ -4,6 +4,105 @@
 
 ---
 
+## 2026-04-25 (web, branches `claude/session-start-nueAo` → `claude/v3.9-data-integrity`) — ADR-008 + Instruction v3.7 → v3.9 3사이클
+
+### 결정
+- **ADR-008 Accepted** — Section 04 Entry Candidates 폐기, Trend Watch 단일
+  섹션(§04) 복귀. ADR-005 실증 (median signal_age=6일, fresh 1일 진입 19.5%)
+  기반으로 "🆕 = 매수 신호" 프레이밍이 왜곡임을 확인. 템플릿 섹션 재번호
+  (05→04, 05·b→04·b, 06→05, 07→06, 08→07). `data.new_a_entries` 파생 제거.
+  parser `is_new` 필드는 Trend Watch row + Remaining 표 뱃지 힌트로 유지.
+  **PR #19 rebase merge → main `de873db`**.
+- **Claude Project Instruction v3.6 → v3.7 → v3.8 → v3.9 3사이클**
+  - **v3.7** (ADR-008 반영): Section 04 Entry Candidates 제거 관련 지침 갱신
+  - **v3.8** (2026-04-25 #2 D-1 사고 fix):
+    - Step 0 신설 — 오늘 날짜는 system prompt `current date` 만 사용
+      (bash `date` / `datetime.now()` / `date.today()` 금지). 샌드박스 UTC vs
+      KST 9h 어긋남으로 D-1 리포트 (04-24 미장 7,108) 발행 사고 재발 차단.
+    - Step 1 재정의 — Drive 폴더 `morning_data*.txt` 중 modifiedTime 최신
+      1개 선택. 파일명과 current date 매칭 금지. 헤더 날짜 D-2+ 어긋나면
+      파이프라인 지연으로 판단 → 중단.
+    - 슬림화 503→419줄 (코드 블록 보존, 산문·역사적 맥락 제거).
+    - PR #19 에 포함 → main `de873db`.
+  - **v3.9** (2026-04-25 #3 18% 데이터 손실 사고 fix):
+    - Step 1 **무결성 가드** — `search_files` 에서 `expected_size` 확보 →
+      `download_file_content` decode 후 크기 검증 → 불일치/예외 시 2차 경로
+      (`read_file_content` + escape unwrap) 자동 진입. `loss_pct` 강제 계산,
+      `>= 20%` 면 중단, `> 0` 면 ALERT 11 카드 예약 필수. silent pass 차단.
+    - Step 3 parser 스키마 힌트 — `data["minervini"]["grade_a"]` 등 4줄
+      (smoke-test false-negative 방지).
+    - ALERT 11 신설 — `⚠️ 데이터 손실 {pct}% — 리포트 부분적` TOP 우선순위.
+    - 절대 금지 / 자체 체크에 "데이터 무결성" 카테고리 추가. mojibake byte
+      수작업 매핑 / 멀티 청크 reassemble / hex 변환 명시적 금지.
+    - **PR #20 rebase merge → main `775ba0b`**.
+
+### 검토한 대안
+- **Section 04 처리 3안**: (A) 재설계 "Top 5 RS 순 분산", (B) 문구 정정 "🆕
+  우선순위만 강조", (C) 폐기 → Trend Watch 복귀. **(C) 채택**.
+  - (A) 기각 — 실전 매매 규약 자연어 규칙을 템플릿에 중복 인코딩. Trend Watch
+    가 이미 RS 순 Top 5 이므로 의미 중복만 생김.
+  - (B) 기각 — 한 섹션 안에 "팩트 테이블 (🆕 only)" + "진입 규칙 (Top 5
+    전체)" 두 의미가 섞여 시각적 강조 (초록 좌측 바, 최상위 배치) 가 계속
+    🆕 쪽으로만 쏠림.
+- **Instruction 슬림화 2안**: (a) ~250줄 코드 블록 보존, (b) ~200줄 Step
+  3/5/6/9 코드를 `render_report.py` 외부 포인터화. **(a) 채택**.
+  - (b) 기각 — Project Instructions 는 한 번 로드 후 컨텍스트 유지. 외부
+    포인터화 시 Claude 가 매 세션 `render_report.py` 를 열어 canonical 스니펫
+    찾아야 함 = 오히려 컨텍스트 소비 증가 + MCP round-trip 증가. 이 파일이
+    존재하는 목적 (drift 잠금) 과 모순.
+  - 실제 결과: (a) 계획 시 추정 250 → 실측 419. 코드 블록 보존 하의 한계.
+- **v3.9 사용자 제안 3건 중 escape unwrap fallback 공식화 거부**:
+  - (1) base64 옮김 안전성 가드 **채택** (HIGH, Step 1 integrity guard)
+  - (2) parser API 형태 명시 **채택** (MEDIUM, Step 3 스키마 4줄)
+  - (3) escape unwrap + mojibake 매핑 helper 표준화 **거부**. 이유: damage
+    control 을 canonical 화하면 (i) 데이터 손실 체감이 사라짐, (ii) mojibake
+    패턴은 파일마다 달라 유지보수 불가능, (iii) 진짜 해결은 전송 안전성
+    확보지 깨진 결과 복구가 아님. v3.9 는 fallback 진입 자체를 이상 신호로
+    처리 (ALERT 11 + loss_pct 강제).
+
+### 다음 세션에서 할 일
+- **v3.9 효과 관찰**: 다음 모닝리포트 세션에서
+  - Step 1 1차 경로 (`download_file_content`) 성공률 (21KB 이상 파일에서도
+    성공하는지, 아니면 여전히 토큰 경유 손상으로 2차 경로 진입하는지)
+  - 2차 경로 진입 시 `loss_pct` 수치 + ALERT 11 카드 정상 노출
+  - Step 3 parser 스키마 힌트로 smoke-test false-negative 재발 없는지
+- **ADR-009 후보 (박스권 조건부 섹터 게이트) 진행 여부 결정** — 2015-19
+  박스권 regime detection (6M KOSPI return, MA200 slope) 기반 조건부 게이트
+  활성화. 인프라 `strategy_config.yaml::sector_gate` + `precompute_sector_tiers`
+  이미 있음.
+- **Section 04 Trend Watch 복귀 실제 렌더 확인** — 다음 06:00 KST cron 이후
+  `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMDD.pdf` 에서 §04
+  헤드라인 = `Grade A · Top 5`, 🆕 뱃지가 Top 5 카드 + Remaining 표에만
+  잔존하는지 확인.
+
+### 미해결
+- **MCP → sandbox base64 전송 근본 해결 미해결**: v3.9 는 Step 1 2차 경로
+  진입 시 ALERT 11 로 사용자에게 고지하지만 여전히 escape unwrap 손실 발생.
+  근본 해결은 MCP 가 결과를 `/tmp` 에 직접 쓰는 API 가 있어야 가능 — Claude
+  Code 범위 밖, MCP 서버 / connector 도구 확장 필요.
+- **데이터 무결성 원칙의 ADR 후보**: silent degradation 거부, damage control
+  canonical 화 금지 는 v3.9 에 구현됐지만 원칙 자체는 향후 다른 fallback
+  판단에도 적용될 것. ADR-009 후보로 승격할지 마스터 판단.
+- **5~8개 이전 세션 브랜치 UI 수동 삭제 (sandbox 403)**:
+  `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
+  `adr-005-006-007-entry-timing`, `resume-session-progress-8cGdH`,
+  `fix-error-handling-riAYS`, `phase3-backtest`, + 오늘 생성분
+  `session-start-nueAo`, `v3.9-data-integrity`.
+
+### 이번 세션 생성/수정 파일
+- 신규: `docs/decisions/008-scrap-entry-candidates-section.md`
+- 수정: `reports/templates/v6.2_template.html.j2`, `reports/render_report.py`,
+  `CLAUDE_PROJECT_INSTRUCTION.md` (v3.6 → v3.9, 405 → 470줄),
+  `CLAUDE.md`, `SESSION_LOG.md`
+
+### 머지/푸시 결과 (2026-04-25 종료 시점)
+- **main HEAD**: `775ba0b` docs(project): Claude Project Instruction v3.8 → v3.9
+- 직전 main 갱신: `de873db` v3.7 → v3.8 (PR #19 포함 ADR-008 + 슬림화)
+- 현재 브랜치: `claude/v3.9-data-integrity` @ `741cf2f` — 콘텐츠 ≡ `775ba0b`
+  (rebase merge 로 SHA 만 변경, 세션 종료 문서 커밋 예정)
+
+---
+
 ## 2026-04-24 (PC, offline, branch `claude/condescending-feynman-008ff4` — PR #16) — ADR-005/006/007 entry timing 실증 + baseline 확정
 
 ### 결정
