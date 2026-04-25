@@ -112,9 +112,19 @@ jobs:
             fi
             if git push origin "HEAD:$GITHUB_REF_NAME"; then
               echo "✅ push 성공 (attempt $attempt/5)"
-              exit 0
+              break
             fi
             echo "⏳ push 실패 — 3초 대기 (attempt $attempt/5)"
             sleep 3
+            if [ "$attempt" = "5" ]; then exit 1; fi
           done
-          exit 1
+
+      - name: Notion 페이지 publish
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
+        run: |
+          YMD="${{ steps.resolve.outputs.ymd }}"
+          python -m reports.publish_to_notion \
+            --pdf "docs/archive/report_${YMD}.pdf" \
+            --date "$YMD"
