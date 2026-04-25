@@ -894,21 +894,6 @@
     border-radius: 2px;
   }
 
-  /* Section 04 Entry Candidates — 백테 진입 규칙 일치 섹션. 강조 스타일. */
-  .entry-candidates {
-    padding: 18px 20px;
-    margin-top: 28px;
-    background: linear-gradient(180deg, var(--bull-bg-soft) 0%, #fff 60%);
-    border-left: 4px solid var(--bull);
-  }
-  .entry-candidates.empty {
-    background: var(--bg);
-    border-left-color: var(--ink-faint);
-  }
-  .entry-candidates .section-num {
-    color: var(--bull);
-  }
-
   /* ========== PORTFOLIO ========== */
   .portfolio-main {
     background: linear-gradient(135deg, var(--accent-bg) 0%, #fff 50%);
@@ -1349,6 +1334,10 @@
     </div>
   </div>
 
+  <div class="claude-card alert">
+    <div class="claude-label">🗒 Claude · 오늘의 주의사항</div>
+    <div class="claude-body"><p>게이트 통과(VIX 18.71 / KOSPI MA60 위) + KOSPI <strong>20일 신고가 +18.6%</strong>. 단일 경계는 외국인 <strong class="down">−19,497억</strong> 단일일 매도 — 기관 +8,053·개인 +11,832 가 흡수했지만 누적 추세 모니터 필요. <strong>FOMC D−11</strong> 임박, 사이징 보수 유지.</p><p style="font-size:11px;color:#8F8F8F;margin-top:6px;">데이터 무결성: Drive 1차 경로 정상, 오늘자 morning_data_20260425.txt (15.8KB) 직접 파싱.</p></div>
+  </div>
 
   <!-- ========== SECTION 1: US MARKETS ========== -->
   <section>
@@ -1530,6 +1519,10 @@
       </div>
     </div>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 시장 게이트 · 수급</div>
+      <div class="claude-body"><p>시장 게이트 <strong>2/2 통과</strong> — VIX 18.71(✓35이하) / KOSPI 6,475.81 > MA60 5,612.90 (+15.4%). KOSPI MA20/60/120 정배열 + 20일 신고가, 코스닥은 MA 정배열이지만 −0.58% 후퇴.</p><ul><li>외국인 −19,497억 단일일 대규모 매도 (전일 흐름 대비 급변)</li><li>기관 +8,053억·개인 +11,832억 — 양측이 외국인 물량 거의 1:1 흡수, KOSPI +0.90% 방어</li><li>해석: <strong>분산형 매도</strong> 가능성 (사이즈만 큰 일회성 vs 추세 전환은 다음 1~2 거래일 외국인 동향으로 판가름)</li></ul></div>
+    </div>
   </section>
 
   <!-- ========== SECTION 3: SECTOR LEADERSHIP ========== -->
@@ -1598,58 +1591,18 @@
       <div class="sector-card bear"><div class="sector-head"><div class="sector-name">바이오</div><div class="sector-score">10.8</div></div><div class="sector-perf">7종목 · breadth 14%</div><div class="sector-label">Weakening</div></div>
     </div>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 섹터 로테이션</div>
+      <div class="claude-body"><p>주도 4섹터 + 강세 1섹터 = 5섹터 risk-on 정렬. 미장 SOXX <strong>+4.67%</strong>(인텔 +23.6 / AMD +13.9) 후폭풍이 국내 반도체에 추가 동력.</p><ul><li>🔥 <strong>반도체 100.0점 / breadth 100%</strong> — 5종목 전원 MA50 위, 천장 점수</li><li>🔥 건설 89.8 (88%) · 방산 87.9 (100%) · 전력인프라 75.2 (80%)</li><li>📈 2차전지 63.6점 / breadth 100% — 전 종목 추세 양호, 점수만 leader 미달</li><li>주간 변동 없음 — 리더십 안정, 로테이션 압력 낮음</li></ul></div>
+    </div>
   </section>
 
   <hr class="decorative">
 
-  <!-- ========== SECTION 04: ENTRY CANDIDATES (🆕 A-GRADE, 백테 진입 규칙) ========== -->
-  <section class="entry-candidates">
-    <div class="section-header">
-      <div class="section-num">04</div>
-      <div class="section-title">
-        <div class="eyebrow">Today's Buy Candidates · 백테 진입 규칙 일치</div>
-        <h2>Entry Candidates · 1</h2>
-      </div>
-      <div class="section-meta">🆕 FIRST DAY A-GRADE</div>
-    </div>
-
-    <p style="margin: 16px 0 14px; font-size: 11px; color: var(--ink-muted); line-height: 1.6; padding: 12px 16px; background: var(--bull-bg-soft); border-left: 3px solid var(--bull);">
-      <strong style="color: var(--ink);">오늘 A등급 신규 편입 1종목</strong> — 백테스트 진입 규칙
-      (<code>entry: open_next_day</code>) 상 오늘 신호 확인 → <strong>익일 시가 매수</strong>가 해당됩니다.
-      차트에서 <strong>VCP 2~6회 수축·피벗 돌파·거래량 ≥ ×1.3</strong> 직접 검증 후 진입.
-    </p>
-
-    <table class="agrade-table">
-      <thead>
-        <tr>
-          <th>종목</th><th>코드</th>
-          <th class="num">현재가</th><th class="num">RS</th>
-          <th>섹터</th>
-          <th class="num">52W 고점</th>
-          <th class="num">PER</th><th class="num">ROE</th>
-          <th class="num">손절</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="name">LIG넥스원</td>
-          <td>079550</td>
-          <td class="num">989,000</td>
-          <td class="num"><span class="rs-bar rs-90">91</span></td>
-          <td>방산</td>
-          <td class="num down">−3.0%</td>
-          <td class="num">85.9×</td>
-          <td class="num">17.6%</td>
-          <td class="num down">919,770</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- ========== SECTION 05: TOP 5 TREND WATCH ========== -->
+  <!-- ========== SECTION 04: TOP 5 TREND WATCH ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">05</div>
+      <div class="section-num">04</div>
       <div class="section-title">
         <div class="eyebrow">Trend Watch · 추세 모니터링 (RS 기준)</div>
         <h2>Grade A · Top 5</h2>
@@ -1882,12 +1835,16 @@
       </div>
     </div>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · A등급 Top 5 동향</div>
+      <div class="claude-body"><p>Top 5 = RS 정렬 (효성중공업 100 / SK하이닉스 99 / 삼성전기 98 / 두산에너빌리티 96 / 두산 96). 5종목 중 <strong>4종목이 주도 섹터 소속</strong> (반도체·전력인프라·방산), 1종목(두산)은 지주.</p><ul><li><strong>I 효성중공업 (298040)</strong> RS 100, signal 16일, 52W +8.7% — 전력인프라 leader, 차트 VCP·피벗 수동 확인 필요</li><li><strong>II SK하이닉스 (000660)</strong> RS 99, 14일, 52W −0.2% (신고가 근접) — 반도체 100점 + SOXX 후폭풍, 차트 확인 후 진입 후보 1순위</li><li><strong>III 삼성전기 (009150)</strong> RS 98, 17일, MA50 위 +69% — 추세 강하나 PER 86.6×·확장 후반부 주의</li><li><strong>IV 두산에너빌리티 (034020) HELD</strong> 보유 +16.61%, 추매 기준(+5%) 이미 통과, 추가 판단 단계</li><li><strong>V 두산 (000150)</strong> RS 96, 52W +6.9%, PER 434× — 지주사, signal 17일로 후반부</li></ul></div>
+    </div>
   </section>
 
-  <!-- ========== SECTION 05·b: A-GRADE REMAINING ========== -->
+  <!-- ========== SECTION 04·b: A-GRADE REMAINING ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">05<span style="font-size: 22px;">·b</span></div>
+      <div class="section-num">04<span style="font-size: 22px;">·b</span></div>
       <div class="section-title">
         <div class="eyebrow">A-Grade · Complete Universe</div>
         <h2>Remaining 22 Tickers</h2>
@@ -1936,12 +1893,16 @@
       <strong style="color: var(--ink);">B-GRADE:</strong> 37종목 (노션 DB 참조)
     </div>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · A등급 유니버스</div>
+      <div class="claude-body"><p>A등급 <strong>27종목</strong>(전체 161 중 16.8%) — Top 5 외 22종목. 주도 섹터(반도체·건설·방산·전력인프라) 중심으로 분포, signal_age median 13일대.</p><ul><li>52주 신고가 돌파 클러스터: LIG넥스원·LG이노텍·신세계·롯데쇼핑·두산·LS·효성중공업·현대건설기계·두산에너빌리티 (9종목 +α)</li><li>주의 (52W −15% 이상): 한화솔루션 −15.6 / S-Oil −15.5 / 한화시스템 −19.9 — 추세 잔존이지만 단기 약세, 진입 우선순위 후순위</li><li>signal 4일 신규: 한화솔루션 / 한화오션류는 B로 — 신규 진입 신선도 양호한 항목 제한적</li><li>C등급 12종목(KB금융·아모레·에코프로 등)은 코어+게이트 통과지만 RS·수급 보조조건 미달, 모니터링만</li></ul></div>
+    </div>
   </section>
 
-  <!-- ========== SECTION 5: PORTFOLIO ========== -->
+  <!-- ========== SECTION 05: PORTFOLIO ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">06</div>
+      <div class="section-num">05</div>
       <div class="section-title">
         <div class="eyebrow">Portfolio · 1 Position</div>
         <h2>Holdings</h2>
@@ -1981,12 +1942,16 @@
       </div>
     </div>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 보유 종목 상태</div>
+      <div class="claude-body"><p>보유 1종목 — <strong>두산에너빌리티 (034020)</strong>, 매수가 109,000 → 현재 127,100 (<strong class="up">+16.61%</strong>), 52주 <strong>신고가</strong> 갱신.</p><ul><li>코어 8/8 · 정배열 ✓ · MA200 상승 ✓ — Minervini 트렌드 템플릿 풀 충족 유지</li><li>추매 기준(+5% = 114,450원) 이미 통과 — 다만 <strong>진입 후 +16% 도달 시점에서의 추매는 백테 검증 범위 밖</strong>, T10/CD60 원칙은 동일 종목 추가 매수 룰을 명시하지 않음</li><li><strong>Verdict: HOLD</strong> — 손절가 101,000원(매수가 −7.3%) 유지, 트레일링 고점−15% = 약 108,000원 자동 추적</li><li>등급은 B (RS 미공개·수급 보조조건 차이)지만 §04 Top 5 에서는 A등급 RS 96으로 잡혀 있음 — holdings_report 와 minervini 스크리닝 등급 산식 차이로, 보유 액션은 holdings_report 기준 따름</li></ul></div>
+    </div>
   </section>
 
-  <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
+  <!-- ========== SECTION 06: MACRO CALENDAR ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">07</div>
+      <div class="section-num">06</div>
       <div class="section-title">
         <div class="eyebrow">Upcoming Events · Next 30 Days</div>
         <h2>Macro Calendar</h2>
@@ -2018,12 +1983,16 @@
     <p style="margin-top: 16px; font-family: var(--sans); font-size: 12px; color: var(--ink-muted); line-height: 1.5; padding: 10px 14px; background: var(--bg); border-left: 3px solid var(--ink-muted);">
 5월 초까지 매크로 이벤트 집중. FOMC 전 포지션 사이징 보수적 관리, 이벤트 직전 신규 진입 자제.    </p>
 
+    <div class="claude-card">
+      <div class="claude-label">🗒 Claude · 매크로 임박도</div>
+      <div class="claude-body"><p>5월 초 매크로 3건 집중. 진입 사이징 보수 + 이벤트 직전 신규 자제.</p><ul><li><strong>FOMC D−11</strong> (5/6, Wed) — High impact, 5월 첫 이벤트</li><li><strong>NFP D−13</strong> (5/8, Fri) — High impact, FOMC 직후 고용 확인</li><li><strong>CPI D−18</strong> (5/13, Wed) — High impact, 인플레 경로 재확인</li><li>어닝시즌 진행 — 개별 변동성 동시 노출, 단일 종목 사이즈 1/5 균등 유지</li><li>전략적 함의: FOMC 까지 11거래일 내 신규 진입은 핵심 후보(SK하이닉스·효성중공업) 한정, 나머지는 이벤트 통과 후 재평가</li></ul></div>
+    </div>
   </section>
 
-  <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
+  <!-- ========== SECTION 07: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">08</div>
+      <div class="section-num">07</div>
       <div class="section-title">
         <div class="eyebrow">Market-Wide Data Points</div>
         <h2>Market Context</h2>
