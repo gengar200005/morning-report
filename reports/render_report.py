@@ -1,19 +1,22 @@
 """Morning Report v6.2 렌더러.
 
 CLI:
-    python reports/render_report.py [--input <txt>] [--date YYYY-MM-DD]
-                                    [--output-dir reports/generated]
+    python -m reports.render_report \\
+        --input morning_data.txt \\
+        --output-dir docs \\
+        [--claude-analysis docs/claude_analysis/YYYYMMDD.json]
 
 플로우:
   1) parser → dict
   2) derive (Top 5, leading sector 매칭, Exec Summary 자동 조립)
-  3) Jinja2 → HTML
+  3) Jinja2 → HTML (claude_analysis 주어지면 7카드 주입, 아니면 fallback)
   4) 두 파일 저장: archive/report_YYYYMMDD.html + latest.html
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import shutil
 from datetime import date, datetime
@@ -342,10 +345,15 @@ def _build_env(template_dir: Path) -> Environment:
     return env
 
 
-def render_html(data: dict, template_dir: Path, template_name: str = "v6.2_template.html.j2") -> str:
+def render_html(
+    data: dict,
+    template_dir: Path,
+    template_name: str = "v6.2_template.html.j2",
+    claude_analysis: dict | None = None,
+) -> str:
     env = _build_env(template_dir)
     template = env.get_template(template_name)
-    return template.render(data=data)
+    return template.render(data=data, claude_analysis=claude_analysis or {})
 
 
 def save_outputs(html: str, date_str: str, output_dir: Path) -> tuple[Path, Path]:
@@ -384,6 +392,13 @@ def main() -> int:
         default="v6.2_template.html.j2",
         help="템플릿 파일명",
     )
+    parser.add_argument(
+        "--claude-analysis",
+        type=Path,
+        default=None,
+        help="Claude 분석 JSON (7키: alert/gate_flow/sector/entry/agrade/portfolio/macro). "
+        "미지정/파일없음 시 fallback 렌더 (해당 카드 div 생략).",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 
@@ -399,8 +414,22 @@ def main() -> int:
     logger.info("Deriving render-time fields")
     data = derive(data)
 
+    claude_analysis: dict = {}
+    if args.claude_analysis:
+        if args.claude_analysis.exists():
+            claude_analysis = json.loads(args.claude_analysis.read_text(encoding="utf-8"))
+            logger.info(
+                "Loaded claude_analysis (%d keys): %s",
+                len(claude_analysis),
+                sorted(claude_analysis.keys()),
+            )
+        else:
+            logger.warning(
+                "claude_analysis 파일 없음: %s — fallback 렌더 진행", args.claude_analysis
+            )
+
     logger.info("Rendering template %s", args.template)
-    html = render_html(data, args.template_dir, args.template)
+    html = render_html(data, args.template_dir, args.template, claude_analysis=claude_analysis)
 
     archive_path, latest_path = save_outputs(html, data["date"], args.output_dir)
     logger.info("Wrote %s (%.1f KB)", archive_path, archive_path.stat().st_size / 1024)

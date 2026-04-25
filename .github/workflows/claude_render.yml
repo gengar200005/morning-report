@@ -1,0 +1,120 @@
+name: Claude 분석 재렌더
+
+# Claude (web project) 가 docs/claude_analysis/YYYYMMDD.json 을 commit 하면
+# 자동 실행. v6.2 template 에 claude_analysis 7카드를 주입해 HTML/PDF 갱신,
+# Drive 업로드, docs/ 커밋. workflow_dispatch 로 수동 재실행 가능.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/claude_analysis/*.json'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: '재렌더 대상 날짜 (YYYYMMDD, 미입력 시 오늘 KST)'
+        required: false
+        default: ''
+
+jobs:
+  rerender:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 세팅
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 날짜 + 입력 파일 결정
+        id: resolve
+        run: |
+          if [ -n "${{ inputs.date }}" ]; then
+            YMD="${{ inputs.date }}"
+          else
+            YMD=$(TZ=Asia/Seoul date +%Y%m%d)
+          fi
+          CLAUDE_JSON="docs/claude_analysis/${YMD}.json"
+
+          if [ ! -f "$CLAUDE_JSON" ]; then
+            echo "❌ claude_analysis JSON 없음: $CLAUDE_JSON"
+            ls -la docs/claude_analysis/ 2>/dev/null || echo "  (디렉토리 없음)"
+            exit 1
+          fi
+
+          echo "ymd=$YMD" >> "$GITHUB_OUTPUT"
+          echo "claude_json=$CLAUDE_JSON" >> "$GITHUB_OUTPUT"
+
+      - name: HTML 재렌더 (claude_analysis 주입)
+        run: |
+          python -m reports.render_report \
+            --input morning_data.txt \
+            --claude-analysis "${{ steps.resolve.outputs.claude_json }}" \
+            --output-dir docs
+
+      - name: Chrome 설치 (PDF 렌더링용)
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: 한글 폰트 설치
+        run: |
+          timeout 60 sudo apt-get update -qq || echo "⚠️ apt update 지연 — 캐시 진행"
+          sudo apt-get install -y -qq --no-install-recommends fonts-nanum fonts-nanum-coding
+          fc-cache -f
+
+      - name: HTML → PDF
+        run: |
+          YMD="${{ steps.resolve.outputs.ymd }}"
+          python -m reports.render_pdf \
+            --html "docs/archive/report_${YMD}.html" \
+            --pdf "docs/archive/report_${YMD}.pdf"
+
+      - name: Drive 업로드 (PDF 갱신본)
+        env:
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
+          GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
+          GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
+        run: |
+          YMD="${{ steps.resolve.outputs.ymd }}"
+          python upload_pdf_to_drive.py "docs/archive/report_${YMD}.pdf"
+
+      - name: 갱신본 커밋 + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          YMD="${{ steps.resolve.outputs.ymd }}"
+          git add "docs/latest.html" "docs/archive/report_${YMD}.html" "docs/archive/report_${YMD}.pdf"
+
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 스킵"
+            exit 0
+          fi
+
+          TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
+          git commit -m "Daily report ${TODAY} — Claude 분석 반영 (auto)"
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            if ! git rebase "origin/$GITHUB_REF_NAME"; then
+              echo "❌ rebase conflict — abort"
+              git rebase --abort
+              exit 1
+            fi
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              echo "✅ push 성공 (attempt $attempt/5)"
+              exit 0
+            fi
+            echo "⏳ push 실패 — 3초 대기 (attempt $attempt/5)"
+            sleep 3
+          done
+          exit 1
