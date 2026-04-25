@@ -4,6 +4,93 @@
 
 ---
 
+## 2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`) — 알파 추구 1차 종료: VCP 162 재검증 + ADR-010 박스권 게이트 기각
+
+### 결정
+- **VCP 자동 필터 162종목 재백테 → ADR-001 기각 재확정**. baseline T10/CD60 vs +VCP
+  비교: CAGR **+29.55% → +8.20%** (-21.35%p), 거래 **333 → 171** (-49%), 승률
+  42.3% → 33.9%, MDD -29.83% → -30.53%. 손익비 3.01x → 3.29x 개선됐지만
+  진입 -49% 가 알파 못 메움. 자동 VCP 정의 (피벗 ±5% / dry-up 10/50≤0.8 /
+  거래량×1.2) 가 단발 돌파만 잡고 다단 수축 베이스 패턴은 못 잡음. ADR-001
+  당시 103종목 결과 (+5.29% / 124건) 와 일관. 표본 1.6배 늘려도 결론 동일.
+- **ADR-010 박스권 조건부 섹터 게이트 검증 → 기각**. 6 variant 그리드 (baseline
+  / full gate / regime ±5/10/15% / slope 0.02%) 비교:
+  - 박스권 (2015-19) 보호 효과 **실재** (-2.05% → +7.98%, **+10%p 개선**)
+  - 그러나 강세장 (2025+) **-8.93%p** 손실 (160.96% → 152.03%) — false positive
+    로 강세장 초기/말기를 sideways 로 오판 → 게이트 ON → 알파 큰 종목 차단
+  - MDD 악화 -1.2%p (-29.83% → -31.0%)
+  - **Robustness FAIL**: ±5% (-2.33%p), ±15% (-1.28%p) 임계값 변경 시 baseline -1%p
+    초과 → 데이터 마이닝 의심
+  - 6M return + MA200 slope 단순 기준은 fast-moving regime 변화 못 따라잡음
+- **알파 추구 1차 종료 패턴 확정**: ADR-005 (fresh-signal) / ADR-004 (섹터 게이트
+  무조건) / ADR-001 (VCP auto) / ADR-010 (regime-conditional) — **이론적으로
+  그럴듯한 추가 필터 4번 연속 baseline 깎음**. 검증된 baseline (RS+수급+게이트+
+  체결타이밍) 외 추가 룰은 모두 알파 손실. 추가 룰 추구 자체가 ADR-005 패턴
+  (overfitting / narrative bias) 의 변종일 가능성.
+- **방향 전환 결정 — 페이퍼 트레이딩**: 알파 추구 → 실전 검증 단계로. 마스터의
+  FOMO ("강세장 6개월 안에 끝날까") 는 페이퍼 트레이딩이 측정해야 할 핵심
+  변수임을 reframe. 절충안 (자본 10-15% 실전 + 페이퍼 5종목 풀) 권장. 다음
+  세션에서 인프라 셋업.
+- **코드 변경 전부 revert**: 검증용 임시 코드 (`classify_regime`, `regime_conditional`
+  옵션, `precompute_sector_tiers` kospi_arr 인자 추가) 모두 main 에서 revert.
+  임시 파일 `99_vcp_162_oneoff.py`, `99_regime_gate.py` 둘 다 삭제. 미래 재시도
+  필요 시 git history 참조. 라이브 상태 (06:25 cron) 영향 0.
+
+### 검토한 대안
+- **VCP 162 재검증 결과 처리**:
+  - (a) ADR-001 amendment 추가
+  - **(b) SESSION_LOG 메모만 보존** — 채택. 결론 동일 (기각 강화), ADR 새 결정 X.
+  - 위 둘 다 보존 안 함 (레포 잡음)
+- **ADR-010 결과 처리**:
+  - (a) 채택 ADR 작성 — 박스권 보호 +10%p 만 보면 후보, 그러나 4 fail.
+  - (b) 기각 ADR 작성 — ADR-005/004/001 와 같은 결로 학습 가치 있으나 4번 반복.
+  - **(c) SESSION_LOG 만 보존** — 채택 (마스터 "의미 없으므로 삭제" 결정).
+- **regime detection 인프라 처리**:
+  - (a) `classify_regime` / `regime_conditional` 옵션 보존 (default false) — 미래
+    재시도 / 다른 가설 (예: 박스권 시 stop_loss 조정, 진입 슬롯 축소) 재사용.
+  - **(b) revert** — 채택. 죽은 코드 회피. 미래 필요 시 git log 참조 (commit
+    SHA 보존됐다 revert 됐으니 reflog 까지 가야 하지만 워크트리 history 에 남음).
+- **다음 알파 후보 vs 페이퍼 트레이딩**:
+  - (a) A4 시장 게이트 강화 / B1 2022 방어 분석 등 추가 알파 추구 — 4번 연속
+    fail 패턴상 우선순위 ↓
+  - (b) 페이퍼 트레이딩 즉시 시작 vs 6-12개월 모두 페이퍼만 — FOMO 강함, 강세장
+    outlier 구간이라 즉시 100% 페이퍼는 부담
+  - **(c) 절충: 자본 10-15% 실전 + 페이퍼 5종목 풀 동시 시작** — 마스터에게
+    제안한 안. 다음 세션에서 결정.
+
+### 다음 세션에서 할 일
+- **페이퍼 트레이딩 인프라 셋업** (1순위, 알파 추구 1차 종료 후 자연스러운 다음 단계):
+  - Notion DB 1개 생성 (저널 — 진입/청산/심리 점수)
+  - 자동화 미니 모듈 (`backtest/strategy.py` 실시간 모드 → 가상 포지션 추적)
+  - 일일 PDF 첫 페이지에 "현재 페이퍼 포지션 / 누적 수익률" 카드 추가 검토
+  - 자본 10-15% 실전 + 페이퍼 5종목 풀 절충안 마스터 의사결정
+- **04-27 Mon 06:25 KST cron baseline 자동 운영 1차 검증** (어제 세션 carry-over).
+  Notion 부모 페이지에 04-27 자식 페이지 + PDF embed 자동 생성 확인.
+- **ADR-011 후보 — 데이터 무결성 원칙** ADR 승격 (낮은 우선순위, 가벼운 정리).
+
+### 미해결
+- **마스터 FOMO**: 강세장 6개월 안에 끝날까 vs 페이퍼 트레이딩 시간 비용. 절충안
+  (10-15% 실전 + 페이퍼) 채택 여부 다음 세션 결정 사항.
+- **박스권 보호 효과 +10%p (ADR-010 부산물)** 는 실재함. 게이트 외 다른 채널
+  (sizing / risk parameter / 박스권 시 stop_loss 완화) 로 구현 시 알파 보존
+  가능성 있으나 후순위 (페이퍼 트레이딩 후로 미룸).
+- **publish_to_notion idempotent 처리** (04-26 #1 carry-over): 같은 날 재푸시 시
+  중복 페이지. augmentation 폐기로 발생 가능성 낮음. 미래 재시도 시 필요.
+
+### 이번 세션 생성/수정 파일
+- 신규: `docs/decisions/010-no-extra-filters-beyond-baseline.md` (ADR-010 메타
+  원칙 — 박스권 게이트 검증 결과 + 4 case 패턴 흡수)
+- 수정: `SESSION_LOG.md`, `CLAUDE.md`
+- 임시 → 삭제: `backtest/99_vcp_162_oneoff.py`, `backtest/99_regime_gate.py`,
+  `backtest/strategy.py` 변경분 (classify_regime + precompute_sector_tiers 확장),
+  `backtest/strategy_config.yaml` 변경분 (regime_conditional 옵션) — 모두 revert.
+
+### 머지/푸시 결과 (예정)
+- 워크트리 brach `claude/elated-tu-ec63ef` 에서 SESSION_LOG / CLAUDE.md 갱신 commit.
+- main 직접 push 또는 PR 머지 결정은 마스터 승인 시.
+
+---
+
 ## 2026-04-26 (PC CLI, branch `claude/interesting-kapitsa-d40f52`) — v5.0 사고 fix + Notion CI 자동화 + Instruction v5.1
 
 ### 결정

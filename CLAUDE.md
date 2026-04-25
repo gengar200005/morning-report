@@ -1,30 +1,36 @@
 # morning-report
 
-<!-- Last session branch: claude/interesting-kapitsa-d40f52 (2026-04-26) -->
+<!-- Last session branch: claude/elated-tu-ec63ef (2026-04-26 #2) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-26)
+## 현재 상태 (2026-04-26 #2)
 
-**Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. **Claude augmentation 폐기,
-baseline PDF 자동 운영 채택** (Instruction v5.1 deprecated, 인프라는 보존).
+**Phase 4 실전 준비 — 알파 추구 1차 종료, 페이퍼 트레이딩 단계 진입 임박**.
+전략 T10/CD60 확정 유지. baseline PDF 자동 운영. 추가 알파 후보 4번 연속 기각
+패턴 (ADR-005 / ADR-004 / ADR-001 / ADR-010) 확정 — 검증된 baseline 외 추가 룰은
+모두 알파 손실. 다음 단계 = 실전 검증 (페이퍼 트레이딩).
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 → HTML 렌더 →
 PDF 변환 → Drive 업로드 → **Notion publish** (자식 페이지 + PDF embed). 마스터
 손 0, PC/모바일 무관, Anthropic API 비용 0.
 
-**Claude augmentation 폐기 근거**: 백테 알파 100% 가 룰 (RS+수급+게이트+체결타이밍)
-에서 나옴 (CAGR +29.55%). Claude 7카드 의 자연어 해석은 알파 기여 0 + narrative
-끌림으로 백테 외 판단 유인 위험 (ADR-005 "추가 필터 baseline 하회" 와 같은 결).
-모델 일관성 문제 (Sonnet 4 OCR 오류 / Opus 안전필터) 도 노이즈 추가. baseline
-PDF (v6.2 template) 가 의사결정 데이터 (Top 5 RS, signal_age, verdict, 게이트,
-매크로) 충분히 제공.
+**오늘 (2026-04-26 #2) 핵심 검증 결과**:
+- **VCP 자동 필터 162 재검증** (ADR-001 기각 강화): CAGR +29.55% → +8.20%
+  (-21.35%p), 거래 -49%. 자동 VCP 정의가 단발 돌파만 잡고 다단 수축 베이스 패턴
+  못 잡음. 표본 1.6배 늘려도 결론 동일.
+- **ADR-010 박스권 조건부 게이트 — 기각**. 박스권 보호 (+10%p in 2015-19) 는
+  실재했으나 강세장 false positive (-8.93%p in 2025+) + MDD 악화 + robustness FAIL.
+  6M return + MA200 slope 단순 기준은 fast-moving regime 변화 못 따라잡음.
+- **알파 추구 패턴**: "이론적으로 그럴듯한 추가 필터" 4번 연속 baseline 깎음.
+  추가 룰 추구 자체가 ADR-005 패턴 (overfitting / narrative bias) 의 변종 가능성.
 
-**augmentation 인프라 보존**: `claude_render.yml` + `reports/publish_to_notion.py`
-+ `notion_page_template.json` 는 그대로. `docs/claude_analysis/YYYYMMDD.json`
-push 만 하면 즉시 작동. 미래 재시도 시 즉시 가용.
+**Claude augmentation 폐기 (04-26 #1)**: 백테 알파 100% 가 룰에서 나옴 (CAGR
++29.55%). Claude 7카드의 자연어 해석은 알파 기여 0 + narrative 끌림 위험. baseline
+PDF (v6.2 template) 가 의사결정 데이터 충분 제공. `claude_render.yml` +
+`publish_to_notion.py` + `notion_page_template.json` 인프라는 보존 (미래 재시도용).
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -49,39 +55,53 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ baseline 자동 운영 1차 검증 (2026-04-27 Mon 06:25 KST)
+#### 1️⃣ ★ 페이퍼 트레이딩 인프라 셋업 (1순위, 알파 추구 → 실전 검증 전환)
+
+알파 추구 4번 연속 기각 (ADR-005/004/001/010) 후 자연스러운 다음 단계.
+구성 요소:
+- Notion DB 1개 생성 (저널: 진입가/청산가/사유/심리 점수 1~5)
+- 자동화 미니 모듈 (`backtest/strategy.py` 실시간 모드 → 가상 포지션 추적,
+  STOP_LOSS/TRAIL/cooldown 자동 진행)
+- 일일 PDF 첫 페이지에 "현재 페이퍼 포지션 / 누적 수익률" 카드 추가 검토
+- **운영 모델 선택**: (a) 100% 페이퍼 6개월, (b) 자본 10-15% 실전 + 페이퍼 5종목
+  풀 절충 — 마스터 FOMO ("강세장 6개월 안에 끝날까") 감안 시 (b) 권장.
+- 통과 기준: 백테 대비 CAGR ±3-5%p / 신호→진입 지연 median ≤ 5일 / 심리 점수 ≥ 3.5
+
+#### 2️⃣ baseline 자동 운영 1차 검증 (2026-04-27 Mon 06:25 KST)
 
 `morning.yml` 의 새 Notion publish step 이 다음 거래일 cron 에서 정상 작동
-확인. 실패 시 GH Actions 로그 → 디버깅. 성공 시 자고 일어나서 Notion 부모
-페이지에 04-27 자식 페이지 + PDF embed 자동 생성.
+확인. 자고 일어나서 Notion 부모 페이지에 04-27 자식 페이지 + PDF embed 자동
+생성됐는지 확인. 실패 시 GH Actions 로그 → 디버깅.
 
-#### 2️⃣ ADR-009 후보 — Claude augmentation 폐기 결정
-
-오늘 (2026-04-26) 의 폐기 결정을 ADR 로 승격할지 마스터 판단. 알파 분해
-(룰 100% / 자연어 해석 0%) + narrative 끌림 위험 + 모델 일관성 문제를
-공식 결정으로 보존하면 향후 augmentation 재시도 유혹에 일관성 유지.
-
-#### 3️⃣ ADR-010 후보 — 박스권 조건부 섹터 게이트 (전략 알파)
-
-ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득 (+3~+11%p).
-시장 regime detection (6M KOSPI return, MA200 slope) 기반으로 박스권 구간만
-게이트 활성화. 인프라(`strategy_config.yaml::sector_gate` + `precompute_sector_tiers`)
-이미 있음. 성공 조건: 전체 CAGR 유지 or 개선, MDD 악화 없음.
-
-#### 4️⃣ ADR-011 후보 — 데이터 무결성 원칙
+#### 3️⃣ ADR-011 후보 — 데이터 무결성 원칙
 
 v3.9 에 구현된 "silent degradation 거부 / damage control canonical 화 금지"
-원칙을 ADR 로 승격할지 마스터 판단.
+원칙을 ADR 로 승격할지 마스터 판단. 가벼운 정리 작업.
 
 ### 모니터링 대기
-- pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원
+- pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원 (섹터 점수 표시용 한정,
+  진입 결정 영향 X)
 - `stocks_daily.parquet` 2026-04-30 월말 경계 outlier 재검증
 
-### 후보 작업
-- 페이퍼 트레이딩 저널 (실전 착수 전 3-6개월 검증)
-- 2025+ 이상치 검증 (+157% CAGR 재현성)
-- 2022년 방어 실패 분석 (시장 게이트 개선)
-- 생존편향 정량화 (2015 상폐주 리스트)
+### 후보 작업 (후순위 / 검증 후 우선순위 재평가)
+- **2025+ 이상치 검증** (+157% CAGR 재현성) — 실전 기댓값 신뢰도, 페이퍼 후 검토
+- **2022년 방어 실패 분석** (시장 게이트 개선) — A4 와 묶어서 검토. 4번 fail
+  패턴상 baseline 깎을 가능성 ↑.
+- **생존편향 정량화** (2015 상폐주 리스트) — 실전 기댓값 정확도, 페이퍼 후 검토
+- **박스권 보호 +10%p 의 다른 채널 구현** (sizing / risk parameter / 박스권 시
+  stop_loss 완화) — ADR-010 부산물, 페이퍼 후 검토
+
+### 기각 / 종료 (ADR 또는 SESSION_LOG 보존)
+- ❌ **VCP 자동 필터** (ADR-001, 162 재검증으로 강화 — SESSION_LOG 04-26 #2)
+- ❌ **섹터 게이트 무조건** (ADR-004)
+- ❌ **fresh-signal entry timing 필터** (ADR-005)
+- ❌ **streak≤10 필터** (ADR-006)
+- ❌ **UBATP 장중 알림** (ADR-007)
+- ❌ **Section 04 Entry Candidates UI** (ADR-008)
+- ❌ **Claude augmentation** (ADR-009)
+- ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
+- ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
+  robustness plan 둘 다 통과 시에만 백테 시도
 
 ### 잔존 정리 (UI 수동, sandbox 403)
 - 브랜치 삭제: `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
@@ -172,7 +192,8 @@ morning-report/
 ---
 
 ## 최근 주요 결정 (ADR)
-- **ADR-001** T10/CD60 재확정 (162종목, T15/CD120 과적합 철회)
+- **ADR-001** T10/CD60 재확정 (162종목, T15/CD120 과적합 철회). **162 재검증
+  04-26 #2**: VCP 자동 필터 추가 시 -21%p 알파 손실 → 기각 강화.
 - **ADR-002** strategy.py/yaml 단일 소스 아키텍처
 - **ADR-003** 섹터 강도 산정 (IBD + Weinstein + Breadth, KOSPI200 11섹터, 164 ticker_overrides)
 - **ADR-004** 섹터 게이트 통합 — **기각** (5 variant 전부 baseline 하회)
@@ -181,12 +202,37 @@ morning-report/
 - **ADR-007** UBATP 장중 알림 — **폐기** (장중 RS ≠ 종가 RS, 06:00 단일 채널)
 - **ADR-008** Section 04 Entry Candidates — **폐기** (ADR-005 반증 기반), Trend Watch 단일 섹션 복귀
 - **ADR-009** Claude augmentation — **폐기** (알파 기여 0 + narrative 끌림 위험), baseline PDF only 운영. 인프라는 보존.
+- **ADR-010** baseline 외 추가 필터 추구 자제 원칙 — **채택 (메타)**. ADR-005/004/001
+  + 박스권 조건부 게이트 검증 (04-26 #2) 4 case 공통 fail 패턴 정리. 미래
+  추가 필터는 (1) 사전 검증된 1차 출처 + (2) robustness sensitivity plan 둘 다
+  통과 시에만 백테 시도. 박스권 보호 +10%p 부산물은 게이트 외 채널 (sizing /
+  risk parameter) 로 구현 시 본 원칙 적용 대상 아님.
 
 ---
 
 ## 최근 세션
-- **2026-04-26 (PC CLI, branch `claude/interesting-kapitsa-d40f52`)**: 04-25 web 사고 fix + Notion CI 자동화 완성 + Instruction v5.0→v5.1 갱신 + **Claude augmentation 폐기 (A 옵션) 결정**. 처음에는 v5.1 운영 모델 (CLI / web 수동 / D cron) 분기로 복잡해졌으나, 마스터의 "단순화 시키려다 더 복잡해졌다" 통찰 + 알파 분해 냉정 평가 (룰 100% / 자연어 해석 0% + narrative 끌림 위험) 후 augmentation 폐기 결정. `morning.yml` 끝에 Notion publish step 추가 → baseline PDF 매일 06:25 cron 으로 Notion 까지 자동 발행. 마스터 손 0, 비용 0, 모바일/PC 무관. v5.1 + claude_render 인프라는 미래 재시도용 보존 (deprecation 메모 추가). 1차 검증은 04-27 Mon cron 자연 검증.
-- **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008 Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) + Claude Project Instruction v3.6→v3.7→v3.8→v3.9 3사이클. v3.8: Step 0 오늘 날짜 고정 + Step 1 modifiedTime 최신 선택 (D-1 리포트 사고 fix) + 슬림화 503→419. v3.9: Step 1 무결성 가드 (expected_size 검증, 불일치 시 2차 경로 자동 + loss_pct 강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
-- **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift 사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
-- **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser 🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
-- **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 버그 fix + PDF 페이지 분할 + Claude Project 지침 v3.5.
+- **2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`)**: 알파 추구 1차
+  종료. VCP 자동 필터 162 재검증 → ADR-001 기각 강화 (CAGR +29.55% → +8.20%,
+  -21.35%p, 거래 -49%). ADR-010 박스권 조건부 게이트 6 variant 그리드 → 기각
+  (박스권 보호 +10%p 실재했으나 강세장 false positive -8.93%p + MDD 악화 +
+  ±5/15% robustness FAIL). ADR-005/004/001/010 4번 연속 "추가 필터 baseline 깎음"
+  패턴 확정. 코드 변경 전부 revert (라이브 영향 0). 다음 단계 = 페이퍼 트레이딩
+  (자본 10-15% 실전 + 페이퍼 5종목 풀 절충안 권장).
+- **2026-04-26 #1 (PC CLI, branch `claude/interesting-kapitsa-d40f52`)**: 04-25 web
+  사고 fix + Notion CI 자동화 완성 + Instruction v5.0→v5.1 갱신 + **Claude
+  augmentation 폐기 (A 옵션) 결정**. 처음에는 v5.1 운영 모델 (CLI / web 수동 /
+  D cron) 분기로 복잡해졌으나, 마스터의 "단순화 시키려다 더 복잡해졌다" 통찰 +
+  알파 분해 냉정 평가 (룰 100% / 자연어 해석 0% + narrative 끌림 위험) 후
+  augmentation 폐기 결정. `morning.yml` 끝에 Notion publish step 추가 → baseline
+  PDF 매일 06:25 cron 으로 Notion 까지 자동 발행. v5.1 + claude_render 인프라는
+  미래 재시도용 보존 (deprecation 메모 추가).
+- **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008
+  Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) + Claude
+  Project Instruction v3.6→v3.7→v3.8→v3.9 3사이클. v3.8: Step 0 오늘 날짜 고정 +
+  Step 1 modifiedTime 최신 선택 (D-1 리포트 사고 fix) + 슬림화 503→419. v3.9:
+  Step 1 무결성 가드 (expected_size 검증, 불일치 시 2차 경로 자동 + loss_pct
+  강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
+- **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift
+  사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
+- **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser
+  🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
