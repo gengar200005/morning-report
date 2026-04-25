@@ -224,7 +224,6 @@ def _enrich_grade_a(data: dict) -> None:
 
     data["top5"] = top5
     data["remaining_a"] = remaining
-    data["new_a_entries"] = [s for s in grade_a_sorted if s.get("is_new")]
 
 
 def _enrich_exec_summary(data: dict) -> None:

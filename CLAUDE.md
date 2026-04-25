@@ -1,12 +1,12 @@
 # morning-report
 
-<!-- Last session branch: claude/session-start-HhsjC (2026-04-24) -->
+<!-- Last session branch: claude/session-start-nueAo (2026-04-25) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-24, main `1ce583b`)
+## 현재 상태 (2026-04-25, branch `claude/session-start-nueAo`)
 
 **Phase 4 실전 준비** — 전략 T10/CD60 확정 유지. 리포트 가시성·정확성 사이클 진행 중.
 
@@ -33,22 +33,19 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ Entry Candidates 섹션 설명 텍스트 정정 (ADR-008 후보)
-
-Section 04 의 "🆕 A등급 신규 편입 = 백테 진입 규칙" 설명을 ADR-005 가 실증 반증.
-실제 baseline median signal_age=6일, fresh(≤1일)=19.5%. 옵션:
-- (A) "Top 5 RS 순 분산, 빈 슬롯만큼" 으로 재설계
-- (B) "🆕 우선순위만 강조, 매수는 Top 5 전체" 로 문구 정정
-- (C) Section 04 폐기 → Trend Watch 로 복귀
-
-ADR-008 작성 + Claude Project 지침 v3.6 영향 검토.
-
-#### 2️⃣ ADR-008 후보 — 박스권 조건부 섹터 게이트
+#### 1️⃣ ADR-009 후보 — 박스권 조건부 섹터 게이트
 
 ADR-004 기각 후 남은 유일한 유망 방향. 2015-19 박스권에서만 게이트 이득 (+3~+11%p).
 시장 regime detection (6M KOSPI return, MA200 slope) 기반으로 박스권 구간만
 게이트 활성화. 인프라(`strategy_config.yaml::sector_gate` + `precompute_sector_tiers`)
 이미 있음. 성공 조건: 전체 CAGR 유지 or 개선, MDD 악화 없음.
+
+#### 2️⃣ ADR-008 후속 검증 — Section 04 Trend Watch 복귀 반영 확인
+
+cron 06:00 KST 이후 `docs/latest.html` 과 신규 `docs/archive/report_YYYYMMDD.pdf`
+의 Section 04 가 Trend Watch 로 표시되는지, 🆕 뱃지가 Top 5 카드 + Remaining
+표에만 잔존하는지 확인. Claude Project Files 재업로드: **v3.7 필수 2개** —
+`v6_2_template_html.j2`, `render_report.py`.
 
 ### 모니터링 대기
 - pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원
@@ -153,10 +150,12 @@ morning-report/
 - **ADR-005** Entry timing — fresh-signal 필터 **기각**, baseline median signal_age=6일
 - **ADR-006** streak≤10 walkforward — **기각** (OOS 방향 불일치)
 - **ADR-007** UBATP 장중 알림 — **폐기** (장중 RS ≠ 종가 RS, 06:00 단일 채널)
+- **ADR-008** Section 04 Entry Candidates — **폐기** (ADR-005 반증 기반), Trend Watch 단일 섹션 복귀
 
 ---
 
 ## 최근 세션
+- **2026-04-25 (web, `claude/session-start-nueAo`)**: ADR-008 — Section 04 Entry Candidates 폐기, Trend Watch 로 §04 복귀. 템플릿 섹션 재번호 (05→04, 05·b→04·b, 06→05, 07→06, 08→07) + `data.new_a_entries` 파생 제거 + Claude Project Instruction v3.6 → v3.7.
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift 사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
 - **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser 🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
 - **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 버그 fix + PDF 페이지 분할 + Claude Project 지침 v3.5.

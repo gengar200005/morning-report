@@ -894,21 +894,6 @@
     border-radius: 2px;
   }
 
-  /* Section 04 Entry Candidates — 백테 진입 규칙 일치 섹션. 강조 스타일. */
-  .entry-candidates {
-    padding: 18px 20px;
-    margin-top: 28px;
-    background: linear-gradient(180deg, var(--bull-bg-soft) 0%, #fff 60%);
-    border-left: 4px solid var(--bull);
-  }
-  .entry-candidates.empty {
-    background: var(--bg);
-    border-left-color: var(--ink-faint);
-  }
-  .entry-candidates .section-num {
-    color: var(--bull);
-  }
-
   /* ========== PORTFOLIO ========== */
   .portfolio-main {
     background: linear-gradient(135deg, var(--accent-bg) 0%, #fff 50%);
@@ -1601,63 +1586,10 @@
 
   <hr class="decorative">
 
-  <!-- ========== SECTION 04: ENTRY CANDIDATES (🆕 A-GRADE, 백테 진입 규칙) ========== -->
-  <section class="entry-candidates{% if data.new_a_entries | length == 0 %} empty{% endif %}">
-    <div class="section-header">
-      <div class="section-num">04</div>
-      <div class="section-title">
-        <div class="eyebrow">Today's Buy Candidates · 백테 진입 규칙 일치</div>
-        <h2>Entry Candidates · {{ data.new_a_entries | length }}</h2>
-      </div>
-      <div class="section-meta">🆕 FIRST DAY A-GRADE</div>
-    </div>
-
-    {% if data.new_a_entries | length > 0 %}
-    <p style="margin: 16px 0 14px; font-size: 11px; color: var(--ink-muted); line-height: 1.6; padding: 12px 16px; background: var(--bull-bg-soft); border-left: 3px solid var(--bull);">
-      <strong style="color: var(--ink);">오늘 A등급 신규 편입 {{ data.new_a_entries | length }}종목</strong> — 백테스트 진입 규칙
-      (<code>entry: open_next_day</code>) 상 오늘 신호 확인 → <strong>익일 시가 매수</strong>가 해당됩니다.
-      차트에서 <strong>VCP 2~6회 수축·피벗 돌파·거래량 ≥ ×1.3</strong> 직접 검증 후 진입.
-    </p>
-
-    <table class="agrade-table">
-      <thead>
-        <tr>
-          <th>종목</th><th>코드</th>
-          <th class="num">현재가</th><th class="num">RS</th>
-          <th>섹터</th>
-          <th class="num">52W 고점</th>
-          <th class="num">PER</th><th class="num">ROE</th>
-          <th class="num">손절</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for stock in data.new_a_entries %}
-        <tr>
-          <td class="name">{{ stock.name | replace('&', '&amp;') }}</td>
-          <td>{{ stock.code }}</td>
-          <td class="num">{{ stock.price | format_number }}</td>
-          <td class="num"><span class="rs-bar {{ stock.rs_bar_class }}">{{ stock.rs }}</span></td>
-          <td>{{ stock.leading_sector.sector or '미매핑' }}</td>
-          <td class="num{% if stock.pct_from_52w_high < 0 %} down{% endif %}">{% if stock.pct_from_52w_high >= -0.5 %}<span class="nh-badge">NH</span>{% else %}{{ stock.pct_from_52w_high | format_pct_signed(1) }}{% endif %}</td>
-          <td class="num">{% if stock.per < 0 %}—{% else %}{{ stock.per | format_number(1) }}×{% endif %}</td>
-          <td class="num">{% if stock.roe >= 0 %}{{ stock.roe | format_pct_unsigned(1) }}{% else %}<span class="down">{{ stock.roe | format_pct_signed(1) }}</span>{% endif %}</td>
-          <td class="num down">{{ stock.stop_price | format_number }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p style="margin: 16px 0; font-size: 12px; color: var(--ink-muted); line-height: 1.6; padding: 14px 18px; background: var(--bg); border-left: 3px solid var(--ink-faint);">
-      <strong style="color: var(--ink);">오늘 신규 편입 없음.</strong>
-      백테 규칙상 신규 매수 대기 — 기존 보유 유지, 추세 확인은 아래 <strong>05 Top 5 Trend Watch</strong> 참조.
-    </p>
-    {% endif %}
-  </section>
-
-  <!-- ========== SECTION 05: TOP 5 TREND WATCH ========== -->
+  <!-- ========== SECTION 04: TOP 5 TREND WATCH ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">05</div>
+      <div class="section-num">04</div>
       <div class="section-title">
         <div class="eyebrow">Trend Watch · 추세 모니터링 (RS 기준)</div>
         <h2>Grade A · Top 5</h2>
@@ -1738,10 +1670,10 @@
     {% endif %}
   </section>
 
-  <!-- ========== SECTION 05·b: A-GRADE REMAINING ========== -->
+  <!-- ========== SECTION 04·b: A-GRADE REMAINING ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">05<span style="font-size: 22px;">·b</span></div>
+      <div class="section-num">04<span style="font-size: 22px;">·b</span></div>
       <div class="section-title">
         <div class="eyebrow">A-Grade · Complete Universe</div>
         <h2>Remaining {{ data.remaining_a | length }} Tickers</h2>
@@ -1780,10 +1712,10 @@
     {% endif %}
   </section>
 
-  <!-- ========== SECTION 5: PORTFOLIO ========== -->
+  <!-- ========== SECTION 05: PORTFOLIO ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">06</div>
+      <div class="section-num">05</div>
       <div class="section-title">
         <div class="eyebrow">Portfolio · 1 Position</div>
         <h2>Holdings</h2>
@@ -1834,10 +1766,10 @@
     {% endif %}
   </section>
 
-  <!-- ========== SECTION 6: MACRO CALENDAR ========== -->
+  <!-- ========== SECTION 06: MACRO CALENDAR ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">07</div>
+      <div class="section-num">06</div>
       <div class="section-title">
         <div class="eyebrow">Upcoming Events · Next 30 Days</div>
         <h2>Macro Calendar</h2>
@@ -1872,10 +1804,10 @@
     {% endif %}
   </section>
 
-  <!-- ========== SECTION 7: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
+  <!-- ========== SECTION 07: MARKET CONTEXT (NEW, 종목별 스토리 없음) ========== -->
   <section>
     <div class="section-header">
-      <div class="section-num">08</div>
+      <div class="section-num">07</div>
       <div class="section-title">
         <div class="eyebrow">Market-Wide Data Points</div>
         <h2>Market Context</h2>
