@@ -64,24 +64,36 @@
 - **Notion 자동화 우회 3안**:
   - (A) HTTP 직접 호출 — 마스터가 매일 CLI 띄워야 자동화 의미 없음. 기각.
   - **(B) CI workflow 에 Notion step 추가** — secrets 이미 있음, Drive
-    OAuth 와 동일 환경. **채택**.
+    OAuth 와 동일 환경. **채택** (claude_render.yml).
   - (C) Drive viewUrl external embed — `notion_page_template.json` usage_rules
     2번 "external URL 방식 아님" 명시 거부 + PDF 권한이 Drive 에 묶임. 기각.
-- **Project Files 6개 vs 5개**:
-  - (a) CLAUDE.md 유지 (6개) — 풍부한 컨텍스트, ADR/세션 기록 포함
-  - **(b) CLAUDE.md 제거 (5개)** — §5 5줄로 충분, 컨텍스트 가벼움, 매일
-    갱신 부담 없음. **채택**.
+- **Project Files 6개 vs 5개 vs 4개**:
+  - (a) 6개 (CLAUDE.md 유지) — 풍부한 컨텍스트, ADR/세션 기록 포함
+  - (b) 5개 (CLAUDE.md 제거) — §5 5줄로 충분
+  - **(c) 4개 (combine_data.py 추가 제거)** — parser abstraction 으로 충분.
+    holdings_report.py 등 데이터 생성 단계 명시 제외. **채택**.
+- **운영 모델 4안** (commit 자동화 갭 메우기):
+  - (i) CLI 운영 — 매일 마스터가 Claude Code CLI 실행 (3분 손)
+  - (ii) Custom MCP 서버 직접 구축 — 호스팅 + 유지보수 부담
+  - (iii) Anthropic 공식 GitHub write MCP 출시 대기 — 통제 불가
+  - (iv) cron + Anthropic API 직접 호출 — 자동, 월 ~$2-20
+  - 처음에는 (i) 권장 → 운영 분기 복잡도로 마스터 위화감 → 옵션 자체 폐기
+- **Claude augmentation 유지 vs 폐기 (최종 결정)**:
+  - (가) v5.1 운영 유지 — 가독성 가치
+  - **(나) augmentation 폐기, baseline only — 채택**. 근거: 백테 알파 기여 0,
+    narrative 끌림 위험 (백테 외 판단 유인), 모델 일관성 편차 (Sonnet 4 OCR
+    오류). baseline PDF 가 의사결정 데이터 충분.
 - **commit 전략 — 단일 fix vs 2 commits**: ba94ec9 삭제 commit reset 후
   단일 "replace malformed" commit 으로 정상화 (`7c4bd53`). main history
   깔끔.
 
 ### 다음 세션에서 할 일
-- **v5.1 정상 운영 관찰** — 다음 06:00 KST cron + 마스터 호출 사이클에서:
-  - 7카드 JSON commit → workflow → Notion 페이지 자동 생성 end-to-end 재현
-  - Notion publish step 1분 내 완료 유지
-  - Drive PDF 와 Notion embed PDF 동일 파일 검증
-- **ADR 후보 3건 우선순위 결정 (마스터 판단)**:
-  - **ADR-009**: v5.0/v5.1 운영 모델 (claude.ai 환경 갭 → CI step 이전)
+- **baseline 자동 운영 1차 검증 (2026-04-27 Mon 06:25 KST)** — `morning.yml`
+  의 새 Notion publish step 이 cron 자연 트리거에서 정상 작동하는지. 자고
+  일어나서 Notion 부모 페이지에 04-27 자식 페이지 + PDF embed 자동 생성됐는지
+  확인. 실패 시 GH Actions 로그 → 디버깅.
+- **ADR-009 작성 완료** (`docs/decisions/009-scrap-claude-augmentation.md`).
+  남은 ADR 후보:
   - **ADR-010**: 박스권 조건부 섹터 게이트 (전략 알파)
   - **ADR-011**: 데이터 무결성 원칙 (silent degradation 거부)
 - **잔존 stale 브랜치 UI 수동 삭제** (sandbox 403 으로 자동 불가) — 11개:
@@ -89,23 +101,30 @@
   `adr-005-006-007-entry-timing`, `resume-session-progress-8cGdH`,
   `fix-error-handling-riAYS`, `phase3-backtest`, `session-start-nueAo`,
   `v3.9-data-integrity`, `session-start-4OzHX` (v4.0 폐기),
-  `session-start-HhsjC`, `waiting-for-instructions-6Xn3W` (v5.0 src).
-- **claude.ai 프로젝트 Project Files 갱신 (마스터)**: v5.0 → v5.1 교체
-  업로드 + CLAUDE.md / notion_page_template.json 등록 해제.
+  `session-start-HhsjC`, `waiting-for-instructions-6Xn3W` (v5.0 src),
+  `interesting-kapitsa-d40f52` (오늘).
+- **claude.ai 프로젝트 정리 (마스터, 선택)**: augmentation 폐기됐으므로
+  Project Files 등록 자체가 무의미. 그대로 두거나 (4개) 또는 전부 해제 가능.
+  미래 augmentation 재시도 시 v5.1 본문 + 4개 파일 (parser/template/render/INSTRUCTION)
+  재등록.
 
 ### 미해결
-- **모델별 7카드 품질 편차** — Opus 4.7 (어제 본문, 채택) vs Sonnet 4 (오늘
-  안전필터 우회 시도, 섹터명 OCR 오류 + RS 73 신한지주 등장) 결과 불일치.
-  v5.1 §1.3 의 "추측 prefix 금지" / §7 "추측 prefix 금지" 만으로는 불충분
-  할 수 있음. 향후 모델 일관성 가드 (예: 데이터 인용 시 출처 키 명시) 추가
-  검토.
-- **CLAUDE.md SHA 누락** — push 후 새 SHA 로 갱신 필요할 수 있음. 또는
-  영구적으로 SHA 박지 않고 날짜+버전 표기로 단순화.
+- **augmentation 재시도 시 idempotent 처리** — `publish_to_notion.py` 가 매번
+  새 자식 페이지 생성 (idempotent X). 그래서 augmentation 시도 시 그날 Notion
+  에 두 페이지 (baseline + augmented) 공존. 폐기 결정으로 사실상 발생 안 하나
+  미래 재시도 시 같은 날짜 페이지 덮어쓰기 / 삭제 후 재발행 로직 필요.
+- **CLAUDE.md SHA 누락** — push 후 새 SHA 로 갱신 필요할 수 있음. 영구적으로
+  SHA 박지 않고 날짜+버전 표기로 단순화 채택 (현재 "현재 상태 (2026-04-26)"
+  포맷).
 
 ### 이번 세션 생성/수정 파일
-- 신규: `reports/publish_to_notion.py` (155줄, requests 기반 v5.0 §3.2 4단계)
-- 수정: `.github/workflows/claude_render.yml` (Notion publish step 추가),
-  `CLAUDE_PROJECT_INSTRUCTION_v5.md` (v5.0 → v5.1, 172 → ~140줄),
+- 신규: `reports/publish_to_notion.py` (155줄, requests 기반 v5.0 §3.2 4단계),
+  `docs/decisions/009-scrap-claude-augmentation.md` (ADR-009)
+- 수정: `.github/workflows/morning.yml` (Notion publish step 추가, 매일 cron),
+  `.github/workflows/claude_render.yml` (Notion publish step 추가, augmentation
+  트리거 시),
+  `CLAUDE_PROJECT_INSTRUCTION_v5.md` (v5.0 → v5.1 + deprecation 메모, 172 →
+  약 145줄),
   `CLAUDE.md`, `SESSION_LOG.md`
 - 삭제 (커밋 시리즈 일부): `docs/claude_analysis/20260425.json` 손상본 →
   깨끗한 7카드 JSON 으로 교체
@@ -114,11 +133,16 @@
 - 이번 세션 commit 시리즈 (모두 main 직접 push):
   1. `7c4bd53` — `fix(claude_analysis): replace malformed 20260425.json`
   2. `32bc13a` — `feat(notion): v5.0 §3 Notion publishing CI step 추가`
-  3. (pending) — v5.1 인계 commit
-- workflow SUCCESS 2건: run 24933354377 (1m0s, push trigger), run 24933790231
-  (1m6s, dispatch trigger Notion 검증).
+  3. `1e47104` — `docs: Instruction v5.1 + 2026-04-26 세션 인계 마감`
+  4. `c6bad15` — `docs(v5.1): Project Files 5 → 4 슬림화`
+  5. `7b4e71e` — `feat(morning): Notion publish step 추가 + Claude
+     augmentation 폐기 결정` (A 옵션 채택)
+  6. (pending) — session-end 마감 commit
+- workflow SUCCESS 2건: run 24933354377 (1m0s, claude_render push trigger),
+  run 24933790231 (1m6s, claude_render dispatch — Notion 검증).
 - main 자동 갱신 commit: `672eedd` (04-25 PDF), `06ae974` (04-26 PDF) — CI
   auto push.
+- main HEAD: `7b4e71e` (session-end 마감 commit 전).
 
 ---
 

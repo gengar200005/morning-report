@@ -180,6 +180,7 @@ morning-report/
 - **ADR-006** streak≤10 walkforward — **기각** (OOS 방향 불일치)
 - **ADR-007** UBATP 장중 알림 — **폐기** (장중 RS ≠ 종가 RS, 06:00 단일 채널)
 - **ADR-008** Section 04 Entry Candidates — **폐기** (ADR-005 반증 기반), Trend Watch 단일 섹션 복귀
+- **ADR-009** Claude augmentation — **폐기** (알파 기여 0 + narrative 끌림 위험), baseline PDF only 운영. 인프라는 보존.
 
 ---
 
@@ -189,6 +190,3 @@ morning-report/
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift 사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
 - **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser 🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.
 - **2026-04-24 #1 (PC, main `7151030`)**: 체크리스트 라벨-값 버그 fix + PDF 페이지 분할 + Claude Project 지침 v3.5.
-- **2026-04-23 #7 (PC)**: ADR-004 섹터 게이트 5 variant 백테 → 기각.
-- **2026-04-23 #7 (PC)**: ADR-004 섹터 게이트 5 variant 백테 → 기각.
-- **2026-04-23 #5-#6 (UZymn → main)**: KOSPI200 11섹터 전환 + plan-004 머지.
