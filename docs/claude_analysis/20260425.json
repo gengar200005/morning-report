@@ -1,0 +1,12 @@
+cd /path/to/morning-report
+# 파일 생성
+cat > docs/claude_analysis/20260425.json << 'EOF'
+{
+  "alert": "...",
+  ...
+}
+EOF
+
+git add docs/claude_analysis/20260425.json
+git commit -m "Claude 분석 2026-04-25 (auto)"
+git push origin main
