@@ -267,7 +267,14 @@ def save_to_github(content):
 # ── 메인 ──────────────────────────────────────────
 if __name__ == "__main__":
     print("📡 노션 DB에서 보유 종목 조회 중...")
-    holdings = fetch_holdings()
+    # 노션 API 변경 (2025-09-03 data sources 분리) 등으로 조회 실패해도
+    # morning.yml 후속 step (combine_data / render / PDF / Notion publish) 이
+    # 진행되도록 fail-soft. 빈 holdings 분기가 graceful exit 처리.
+    try:
+        holdings = fetch_holdings()
+    except Exception as e:
+        print(f"⚠️ 노션 DB 조회 실패 — 빈 보유 목록으로 진행: {e}")
+        holdings = []
     print(f"  보유 종목 {len(holdings)}개 발견")
     for h in holdings:
         print(f"  - {h['종목명']} ({h['종목코드']}) 매수가={h['매수가']} 매수일={h['매수일']}")
