@@ -1,36 +1,34 @@
 # morning-report
 
-<!-- Last session branch: claude/elated-tu-ec63ef (2026-04-26 #2) -->
+<!-- Last session branch: claude/json-to-pdf-workflow-7yk63 (2026-04-27) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-26 #2)
+## 현재 상태 (2026-04-27)
 
 **Phase 4 실전 준비 — 알파 추구 1차 종료, 페이퍼 트레이딩 단계 진입 임박**.
 전략 T10/CD60 확정 유지. baseline PDF 자동 운영. 추가 알파 후보 4번 연속 기각
-패턴 (ADR-005 / ADR-004 / ADR-001 / ADR-010) 확정 — 검증된 baseline 외 추가 룰은
-모두 알파 손실. 다음 단계 = 실전 검증 (페이퍼 트레이딩).
+패턴 (ADR-005 / ADR-004 / ADR-001 / ADR-010) 확정. 다음 단계 = 실전 검증 (페이퍼
+트레이딩).
 
-**운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 → HTML 렌더 →
-PDF 변환 → Drive 업로드 → **Notion publish** (자식 페이지 + PDF embed). 마스터
-손 0, PC/모바일 무관, Anthropic API 비용 0.
+**운영 (투트랙 확정)**:
+- **트랙 1 (baseline)**: 매일 06:25 KST `morning.yml` cron → 데이터 수집 → HTML
+  → PDF → Drive 업로드 → Notion publish. 마스터 손 0.
+- **트랙 2 (Claude 카드, PC 있을 때만)**: PC 에서 `docs/claude_analysis/YYYYMMDD.json`
+  push → `claude_render.yml` 자동 트리거 → 7카드 주입 PDF 재발행. 모바일 GitHub
+  업로드는 안 됨 (마스터 시도 결과). PC 없는 날은 트랙 1 만 작동.
 
-**오늘 (2026-04-26 #2) 핵심 검증 결과**:
-- **VCP 자동 필터 162 재검증** (ADR-001 기각 강화): CAGR +29.55% → +8.20%
-  (-21.35%p), 거래 -49%. 자동 VCP 정의가 단발 돌파만 잡고 다단 수축 베이스 패턴
-  못 잡음. 표본 1.6배 늘려도 결론 동일.
-- **ADR-010 박스권 조건부 게이트 — 기각**. 박스권 보호 (+10%p in 2015-19) 는
-  실재했으나 강세장 false positive (-8.93%p in 2025+) + MDD 악화 + robustness FAIL.
-  6M return + MA200 slope 단순 기준은 fast-moving regime 변화 못 따라잡음.
-- **알파 추구 패턴**: "이론적으로 그럴듯한 추가 필터" 4번 연속 baseline 깎음.
-  추가 룰 추구 자체가 ADR-005 패턴 (overfitting / narrative bias) 의 변종 가능성.
-
-**Claude augmentation 폐기 (04-26 #1)**: 백테 알파 100% 가 룰에서 나옴 (CAGR
-+29.55%). Claude 7카드의 자연어 해석은 알파 기여 0 + narrative 끌림 위험. baseline
-PDF (v6.2 template) 가 의사결정 데이터 충분 제공. `claude_render.yml` +
-`publish_to_notion.py` + `notion_page_template.json` 인프라는 보존 (미래 재시도용).
+**오늘 (2026-04-27) 핵심 작업**:
+- **morning.yml race condition fix** (PR #25 → main `82285d3`). 04-27 에 cron-job.org
+  + 추가 트리거로 morning.yml 이 3회 실행되면서 claude_render 가 만든 카드 PDF
+  를 baseline 으로 덮어쓴 사고 fix. `morning.yml` line 88 직전에 "오늘자 JSON
+  존재 시 `--claude-analysis` 자동 주입" 분기 추가. 이후 morning.yml 재실행해도
+  카드 보존.
+- **04-27 카드 PDF 복구**: `claude_render.yml` workflow_dispatch (date=20260427)
+  수동 실행 → main `b4ba508`. repo + Drive + Notion 모두 카드 PDF 로 갱신.
+- **`.crdownload` 임시파일 정리** (Chrome 다운로드 미완 파일이 같이 업로드됐던 것).
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -67,11 +65,13 @@ strategy_config.yaml   ← 파라미터 단일 소스
   풀 절충 — 마스터 FOMO ("강세장 6개월 안에 끝날까") 감안 시 (b) 권장.
 - 통과 기준: 백테 대비 CAGR ±3-5%p / 신호→진입 지연 median ≤ 5일 / 심리 점수 ≥ 3.5
 
-#### 2️⃣ baseline 자동 운영 1차 검증 (2026-04-27 Mon 06:25 KST)
+#### 2️⃣ morning.yml fix 검증 (2026-04-28 Tue 06:25 KST)
 
-`morning.yml` 의 새 Notion publish step 이 다음 거래일 cron 에서 정상 작동
-확인. 자고 일어나서 Notion 부모 페이지에 04-27 자식 페이지 + PDF embed 자동
-생성됐는지 확인. 실패 시 GH Actions 로그 → 디버깅.
+PR #25 fix 후 첫 cron. 검증 시나리오 2개:
+- (a) JSON 없을 때: baseline 정상 생성 (회귀 없음 확인).
+- (b) PC 에서 `docs/claude_analysis/20260428.json` push → claude_render 카드 주입
+  → 이후 morning.yml 수동 dispatch 재실행 시 카드 보존되는지 (race fix 정확
+  검증). 1회만 보면 충분.
 
 #### 3️⃣ ADR-011 후보 — 데이터 무결성 원칙
 
@@ -211,6 +211,13 @@ morning-report/
 ---
 
 ## 최근 세션
+- **2026-04-27 (web, `claude/json-to-pdf-workflow-7yk63` → main `82285d3`/`b4ba508`)**:
+  Claude 분석 PDF 주입 race fix + 04-27 카드 복구. 04-27 PDF 에 카드 누락 사건 추적 →
+  morning.yml 이 cron + 추가 트리거로 3회 실행되며 claude_render 산출물을 baseline
+  으로 덮어쓴 race condition 발견. `morning.yml` 의 render_report 호출에 "오늘자
+  JSON 존재 시 `--claude-analysis` 자동 주입" 분기 추가 (PR #25). 04-27 PDF 는
+  `claude_render.yml` workflow_dispatch 수동 실행으로 복구 (`b4ba508`). 투트랙
+  운영 모델 (트랙 1 baseline cron / 트랙 2 PC 에서 JSON push) 명시적으로 확정.
 - **2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`)**: 알파 추구 1차
   종료. VCP 자동 필터 162 재검증 → ADR-001 기각 강화 (CAGR +29.55% → +8.20%,
   -21.35%p, 거래 -49%). ADR-010 박스권 조건부 게이트 6 variant 그리드 → 기각
@@ -234,5 +241,3 @@ morning-report/
   강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift
   사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
-- **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser
-  🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.

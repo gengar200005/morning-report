@@ -4,6 +4,78 @@
 
 ---
 
+## 2026-04-27 (web, branch `claude/json-to-pdf-workflow-7yk63` → main `82285d3`/`b4ba508`) — Claude 분석 PDF 주입 race fix + 04-27 카드 복구
+
+### 결정
+- **morning.yml race condition 진단 + fix**. 04-27 PDF 에 Claude 카드 누락 사건
+  추적 결과:
+  - 22:22 UTC morning.yml 1차 (cron-job.org 06:25 KST) → baseline (`e94568c`)
+  - 23:33 UTC claude_render → JSON 주입 카드 PDF (`fca2ac7`) ✅
+  - 00:22 UTC morning.yml 2차 → baseline 으로 카드 덮어씀 ❌ (`4aea467`)
+  - 03:43 UTC morning.yml 3차 → 또 덮음 (`3ddc8b5`)
+  - 근본 원인: `morning.yml` 의 render_report 호출이 `--claude-analysis` 플래그
+    없이 호출 (line 88). `morning.yml` 재실행 시 오늘자 JSON 무시하고 baseline 만 생성.
+  - Drive 도 같은 파일명 update 로 덮어씀 (`gdrive_upload._upload_binary_once`).
+- **fix**: `morning.yml` line 88 직전 분기 추가 — `docs/claude_analysis/YYYYMMDD.json`
+  존재 시 `--claude-analysis $CLAUDE_JSON` 자동 주입. claude_render 가 만든
+  카드가 morning.yml 재실행에 견디게 됨. PR #25 squash merge → main `82285d3`.
+- **04-27 카드 PDF 복구 (B 안 채택)**: GitHub Actions UI 에서 `claude_render.yml`
+  workflow_dispatch (date=20260427) 수동 실행 → repo + Drive + Notion 모두 갱신
+  (main `b4ba508` "Daily report 2026-04-27 — Claude 분석 반영").
+- **부산물 정리**: `docs/claude_analysis/claude_analysis_20260425.json.crdownload`,
+  `claude_analysis_20260427.json.crdownload` 2개 (Chrome 다운로드 미완 임시파일이
+  같이 업로드된 것) 삭제.
+- **ADR 불필요**: race condition 단순 패치 — 구조적 결정이라기보단 운영 사고
+  복구. ADR-009/010 의 "Claude augmentation 폐기" 결정과 모순 안 됨 (인프라 보존
+  + 오늘처럼 web 에서 JSON 올리면 카드 PDF 받는 옵션 그대로 살아있음).
+
+### 검토한 대안
+- **04-27 PDF 복구 방법**:
+  - (a) git checkout `fca2ac7` 의 PDF/HTML → commit + push + 수동 Drive 업로드
+    + 수동 Notion publish. 빠르지만 손이 많이 감.
+  - **(b) `claude_render.yml` workflow_dispatch 수동 실행** — 채택. 한 번 클릭
+    으로 repo + Drive + Notion 일관 갱신. Claude API 비용 0 (이미 만들어진 JSON
+    재주입만).
+- **morning.yml fix vs claude_render rerun 만**: 이번만 rerun 으로 끝내면 다음
+  날 같은 사고 재발. fix + rerun 둘 다 진행 (fix 가 영구 해법).
+- **트랙 2 모바일 업로드 우회 옵션** (대화 초반 검토):
+  - GitHub 웹 UI 모바일 업로드 — 마스터 시도 결과 안 됨.
+  - workflow_dispatch JSON 본문 입력 — 코드 추가 부담.
+  - **PC 직접 업로드만** — 채택. 마스터가 PC 있을 때만 JSON push. 트랙 1
+    (baseline cron) 은 매일 자동, 트랙 2 (Claude 카드) 는 PC 있을 때만 추가
+    주입 — 투트랙 운영 모델.
+
+### 다음 세션에서 할 일
+- **04-28 Tue 06:25 KST cron baseline 검증** (carry-over). Notion 부모 페이지에
+  04-28 자식 페이지 + PDF embed 자동 생성 확인.
+- **morning.yml fix 검증**: 04-28 JSON 업로드 후 morning.yml 재실행 시 카드
+  보존되는지 (이번 fix 의 정확한 검증 시나리오). 1차 검증으로 충분, 회귀 안 함.
+- **페이퍼 트레이딩 인프라 셋업** (1순위, 04-26 #2 carry-over):
+  - Notion DB 1개 생성 (저널 — 진입/청산/심리 점수)
+  - 자동화 미니 모듈 (`backtest/strategy.py` 실시간 모드 → 가상 포지션 추적)
+  - 자본 10-15% 실전 + 페이퍼 5종목 풀 절충안 마스터 의사결정
+- **ADR-011 후보 — 데이터 무결성 원칙** (낮은 우선순위, 가벼운 정리).
+
+### 미해결
+- **morning.yml 이 04-27 에 3회 실행된 원인** 미규명. cron-job.org retry / 마스터
+  수동 dispatch / 다른 트리거 가능성 셋. 이번 fix 로 race 영향은 무력화됐으므로
+  추적 우선순위 낮음.
+
+### 이번 세션 생성/수정 파일
+- 수정: `.github/workflows/morning.yml` (Claude analysis 자동 주입 분기)
+- 삭제: `docs/claude_analysis/claude_analysis_20260425.json.crdownload`,
+  `claude_analysis_20260427.json.crdownload` (Chrome 임시파일)
+- 수정 (예정): `SESSION_LOG.md`, `CLAUDE.md`
+
+### 머지/푸시 결과
+- PR #25 (`fix(morning): Claude 분석 JSON 자동 주입 + .crdownload 정리`) squash
+  merge → main `82285d3`.
+- 마스터가 `claude_render.yml` workflow_dispatch (date=20260427) 수동 실행 →
+  main `b4ba508` "Daily report 2026-04-27 — Claude 분석 반영 (auto)".
+- 04-27 PDF 카드 복구 완료.
+
+---
+
 ## 2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`) — 알파 추구 1차 종료: VCP 162 재검증 + ADR-010 박스권 게이트 기각
 
 ### 결정
