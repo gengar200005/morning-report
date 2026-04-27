@@ -1,31 +1,32 @@
 # morning-report
 
-<!-- Last session branch: claude/elated-tu-ec63ef (2026-04-26 #2) -->
+<!-- Last session branch: claude/new-session-BrxTg (2026-04-27) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-26 #2)
+## 현재 상태 (2026-04-27)
 
-**Phase 4 실전 준비 — 알파 추구 1차 종료, 페이퍼 트레이딩 단계 진입 임박**.
-전략 T10/CD60 확정 유지. baseline PDF 자동 운영. 추가 알파 후보 4번 연속 기각
-패턴 (ADR-005 / ADR-004 / ADR-001 / ADR-010) 확정 — 검증된 baseline 외 추가 룰은
-모두 알파 손실. 다음 단계 = 실전 검증 (페이퍼 트레이딩).
+**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 셋업 직전**. 전략 T10/CD60 확정 유지.
+baseline PDF 자동 운영. 알파 추구 종료 (4 case fail 패턴 ADR-005/004/001/010).
+오늘은 **운영 인프라 정비 + NXT 도입 검토 보류** — 모두 baseline 안 깎는 방향.
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 → HTML 렌더 →
-PDF 변환 → Drive 업로드 → **Notion publish** (자식 페이지 + PDF embed). 마스터
-손 0, PC/모바일 무관, Anthropic API 비용 0.
+PDF 변환 → Drive 업로드 → Notion publish. 단, **보유 종목 카드 표시 미작동**
+(Notion integration 권한 문제 — 마스터 액션 대기, 아래 미해결 항목 참고).
 
-**오늘 (2026-04-26 #2) 핵심 검증 결과**:
-- **VCP 자동 필터 162 재검증** (ADR-001 기각 강화): CAGR +29.55% → +8.20%
-  (-21.35%p), 거래 -49%. 자동 VCP 정의가 단발 돌파만 잡고 다단 수축 베이스 패턴
-  못 잡음. 표본 1.6배 늘려도 결론 동일.
-- **ADR-010 박스권 조건부 게이트 — 기각**. 박스권 보호 (+10%p in 2015-19) 는
-  실재했으나 강세장 false positive (-8.93%p in 2025+) + MDD 악화 + robustness FAIL.
-  6M return + MA200 slope 단순 기준은 fast-moving regime 변화 못 따라잡음.
-- **알파 추구 패턴**: "이론적으로 그럴듯한 추가 필터" 4번 연속 baseline 깎음.
-  추가 룰 추구 자체가 ADR-005 패턴 (overfitting / narrative bias) 의 변종 가능성.
+**오늘 (2026-04-27) 작업**:
+- **`holdings_report.py` Notion 2025-09-03 data_sources API 마이그레이션** (PR #24
+  → main `d4fc795`). `databases/{id}/query` (deprecated) → `data_sources/{ds_id}/query`,
+  `Notion-Version` 2022-06-28 → 2025-09-03, `NOTION_HOLDINGS_DS_ID` env + default
+  `25d578de-8e37-486d-8787-549667cae981` 추가. 코드 정상이나 cron 실행 시 404 권한
+  에러 → integration `morning-report-publisher` 가 자동매도 트래커 DB 에 connect
+  안 됨. **마스터 GUI 액션 필요**: Notion DB → ⋯ → Connections → 추가.
+- **NXT (Next Trade) 종가 후 진입 검토 — 보류**. 갭상 selection bias 가능성 +
+  NXT 유동성 1-3% + 정보 선반영 + 백테 불가 (2025-03 출범). ADR-010 통과 X.
+  페이퍼 단계에서 5종목 중 1-2종목 NXT 분기 실험 안 제시.
+- **트레일링 스탑 확인**: T10 = 최고가 대비 -10% (전략 그대로).
 
 **Claude augmentation 폐기 (04-26 #1)**: 백테 알파 100% 가 룰에서 나옴 (CAGR
 +29.55%). Claude 7카드의 자연어 해석은 알파 기여 0 + narrative 끌림 위험. baseline
@@ -55,7 +56,15 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ ★ 페이퍼 트레이딩 인프라 셋업 (1순위, 알파 추구 → 실전 검증 전환)
+#### 1️⃣ ★ Notion holdings DB 권한 복구 검증 (다음 cron 0순위)
+
+오늘 (04-27) `holdings_report.py` 신 API 마이그레이션 (PR #24) 후 cron 실행 시
+404 — integration `morning-report-publisher` 가 자동매도 트래커 DB
+(`9ff024c9-...`) 에 connect 안 됨. **마스터 액션**: Notion 에서 DB → ⋯ →
+Connections → `morning-report-publisher` 추가 (또는 재추가). 다음 cron (06:25
+KST) 에서 status 200 + 보유 종목 표시 확인. 실패 시 GH Actions 로그 → 디버깅.
+
+#### 2️⃣ ★ 페이퍼 트레이딩 인프라 셋업 (1순위, 알파 추구 → 실전 검증 전환)
 
 알파 추구 4번 연속 기각 (ADR-005/004/001/010) 후 자연스러운 다음 단계.
 구성 요소:
@@ -65,18 +74,19 @@ strategy_config.yaml   ← 파라미터 단일 소스
 - 일일 PDF 첫 페이지에 "현재 페이퍼 포지션 / 누적 수익률" 카드 추가 검토
 - **운영 모델 선택**: (a) 100% 페이퍼 6개월, (b) 자본 10-15% 실전 + 페이퍼 5종목
   풀 절충 — 마스터 FOMO ("강세장 6개월 안에 끝날까") 감안 시 (b) 권장.
+- **NXT 분기 실험 옵션**: 5종목 중 1-2종목을 NXT 종가 후 진입가 기록 → 6개월
+  데이터로 갭/슬리피지 정량화 (04-27 검토 보류 결정 검증용).
 - 통과 기준: 백테 대비 CAGR ±3-5%p / 신호→진입 지연 median ≤ 5일 / 심리 점수 ≥ 3.5
-
-#### 2️⃣ baseline 자동 운영 1차 검증 (2026-04-27 Mon 06:25 KST)
-
-`morning.yml` 의 새 Notion publish step 이 다음 거래일 cron 에서 정상 작동
-확인. 자고 일어나서 Notion 부모 페이지에 04-27 자식 페이지 + PDF embed 자동
-생성됐는지 확인. 실패 시 GH Actions 로그 → 디버깅.
 
 #### 3️⃣ ADR-011 후보 — 데이터 무결성 원칙
 
 v3.9 에 구현된 "silent degradation 거부 / damage control canonical 화 금지"
 원칙을 ADR 로 승격할지 마스터 판단. 가벼운 정리 작업.
+
+#### 4️⃣ `publish_to_notion.py` Notion-Version 일관성 점검 (선택)
+
+오늘 holdings 만 2025-09-03 으로 올라감. publish 가 `pages` (parent.page_id) 만
+쓰면 신/구 호환이라 영향 없으나 한 번 grep 으로 확인 (5분).
 
 ### 모니터링 대기
 - pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원 (섹터 점수 표시용 한정,
@@ -211,6 +221,14 @@ morning-report/
 ---
 
 ## 최근 세션
+- **2026-04-27 (web, branch `claude/new-session-BrxTg` → main `d4fc795`)**:
+  운영 인프라 정비. `holdings_report.py` Notion 2025-09-03 data_sources API
+  마이그레이션 (PR #24, `databases/{id}/query` → `data_sources/{ds_id}/query`,
+  `Notion-Version` 2022-06-28 → 2025-09-03, DS_ID
+  `25d578de-...` env+default). cron 실행 시 404 — integration
+  `morning-report-publisher` 가 자동매도 트래커 DB 에 connect 안 됨, 마스터
+  GUI 액션 대기. NXT 종가 후 진입 검토 → 보류 (selection bias / 유동성 / 정보
+  선반영 / 백테 불가, ADR-010 통과 X). 페이퍼 단계 분기 실험 안 제시.
 - **2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`)**: 알파 추구 1차
   종료. VCP 자동 필터 162 재검증 → ADR-001 기각 강화 (CAGR +29.55% → +8.20%,
   -21.35%p, 거래 -49%). ADR-010 박스권 조건부 게이트 6 variant 그리드 → 기각
@@ -234,5 +252,3 @@ morning-report/
   강제) + ALERT 11 + 데이터 무결성 금지/체크 섹션 (18% 데이터 손실 사고 fix, PR #20).
 - **2026-04-24 (PC, offline, main `339d373`)**: ADR-005/006/007 일괄 결정 + drift
   사고 복구 + session-start/end 스킬 git fetch 자동화. PR #16 머지 (`31c07b6`).
-- **2026-04-24 #2 (PC web, PR #10 → `ad6666b`)**: Entry Candidates 섹션 + parser
-  🆕 regex + ACTION 분기 + PDF 카드 보호 CSS + SessionStart hook.

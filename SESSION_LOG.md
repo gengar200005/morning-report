@@ -4,6 +4,71 @@
 
 ---
 
+## 2026-04-27 (web, branch `claude/new-session-BrxTg`) — Notion holdings API 마이그레이션 + NXT 진입 검토 보류
+
+### 결정
+- **`holdings_report.py` Notion 2025-09-03 data_sources API 마이그레이션** (PR #24 → main `d4fc795`).
+  기존 `databases/{id}/query` (Notion-Version `2022-06-28`) 가 deprecated 되어 fail-soft
+  로 빈 holdings 통과 중이던 문제 해결. 변경:
+  - URL: `/v1/databases/{db_id}/query` → `/v1/data_sources/{ds_id}/query`
+  - 헤더: `Notion-Version: 2022-06-28` → `2025-09-03`
+  - `NOTION_HOLDINGS_DS_ID` 환경변수 + 하드코드 default
+    `25d578de-8e37-486d-8787-549667cae981` 추가 (자동매도 트래커 DB 의 data_source)
+  - filter / page_size / 파싱 / fail-soft try/except 모두 그대로 유지
+  - diff 약 7줄. `publish_to_notion.py` 는 page parent 사용이라 미터치.
+- **404 디버깅 → 권한 문제 진단**: 코드 패치 후 cron 실행 시 `404 object_not_found`.
+  에러 메시지 "Make sure ... shared with your integration **morning-report-publisher**"
+  + integration_id `34d14f34-...`. 즉 코드/엔드포인트는 정상이나 GH Actions secret
+  `NOTION_API_KEY` 가 가리키는 integration 이 자동매도 트래커 DB 에 connect 안 됨.
+  → **마스터 액션 필요**: Notion DB → ⋯ → Connections → `morning-report-publisher`
+  추가 (또는 재추가). 코드 추가 변경 없음.
+- **NXT (Next Trade) 종가 후 진입 — 보류**. 마스터 제안 ("종가 신호 → 다음날 갭상
+  많아 NXT 가 유리?") 검토 결과 다음 4가지 이유로 baseline (next-day 09:00 시가)
+  유지:
+  1. **전제 미검증**: 갭 분포 / 평균 정량화 안 됨, selection bias 가능성
+  2. **NXT 유동성**: 정규장 대비 1-3% 수준 → 갭 절약분을 spread 가 먹을 위험
+  3. **정보 선반영**: NXT 호가가 다음날 시가 가격발견에 이미 참여 → 갭 절약 환상
+  4. **백테 불가**: NXT 2025-03 출범, 1년 1개월 데이터로 통계 결론 못 냄
+  → ADR-010 메타 원칙 ("사전 검증된 1차 출처 + robustness plan") 통과 못 함.
+  ADR-005 결과 (median signal_age 6일도 baseline +29.55%) 도 timing 1일이
+  알파 주성분 아님을 시사. 페이퍼 트레이딩에서 5종목 중 1-2종목을 NXT 분기로
+  배정해 6개월 데이터 모으는 실험 안 제시.
+
+### 검토한 대안
+- **Notion API 마이그레이션 방식**:
+  - **(A) 하드코드 default + 환경변수** — 채택. diff 최소, 위험 ↓.
+  - (B) 시작 시 `databases/{db_id}` GET → `data_sources[0].id` 동적 resolve — over-engineering.
+    holdings DB 는 1 source 일 가능성 높음.
+- **404 권한 문제 해결**:
+  - **(1) DB 에 morning-report-publisher integration 추가** — 권장 (작업 30초, 코드 0).
+  - (2) GH secret `NOTION_API_KEY` 를 작동하는 integration 키로 교체 — 비추 (관리 흐트러짐).
+  - (3) 코드 더 손대기 — 권한 문제라 불가.
+- **NXT 진입 시점 변경**:
+  - (a) 즉시 baseline 변경 → ADR-010 위반.
+  - (b) 페이퍼 단계에서 분기 실험 (5종목 중 1-2종목 NXT, 나머지 정규장) — 권장.
+  - (c) 무시 / 영구 보류 — 페이퍼에서 비용 0 검증 가능하므로 (b) 가 우월.
+
+### 다음 세션에서 할 일
+1. **Notion connection 결과 검증** — 마스터가 `morning-report-publisher` 를 자동매도
+   트래커 DB 에 add 한 후 다음 cron (06:25 KST) 또는 GH Actions 수동 trigger →
+   status 200 + 보유 종목 1+ 표시 확인. 실패 시 GH Actions 로그 디버깅 (재추가
+   / secret 교체 옵션 검토).
+2. **페이퍼 트레이딩 인프라 셋업 (CLAUDE.md 활성 1️⃣)** — Notion DB 1개 (저널:
+   진입가/청산가/사유/심리 1~5) + `backtest/strategy.py` 실시간 모드 가상 포지션
+   추적. 운영 모델 (a/b/c 중 b 권장) 마스터 결정 받아 시작.
+3. (선택) NXT 분기 실험 셋업 — 페이퍼 trade 5종목 중 1-2종목 NXT 진입가 기록
+   필드 추가.
+
+### 미해결
+- **morning-report-publisher integration ↔ 자동매도 트래커 DB connect** — 마스터
+  GUI 액션 대기. 자동화 영역 밖.
+- **NXT 진입가 vs 정규장 시가 갭 정량화** — 페이퍼 트레이딩 6개월로 deferred.
+- **publish_to_notion.py 의 Notion-Version 일관성 점검** — 현재 미확인. holdings
+  쪽만 2025-09-03 으로 올라간 상태. publish 가 `pages` (parent.page_id) 만 쓰면
+  영향 없으나 필요 시 다음 세션에서 grep 검토 (5분).
+
+---
+
 ## 2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`) — 알파 추구 1차 종료: VCP 162 재검증 + ADR-010 박스권 게이트 기각
 
 ### 결정
