@@ -18,6 +18,11 @@ NOTION_API_KEY = os.environ["NOTION_API_KEY"]
 NOTION_HOLDINGS_DB_ID = os.environ.get(
     "NOTION_HOLDINGS_DB_ID", "9ff024c9c4964b849a49ec501f6c3622"
 )
+# 2025-09-03 Notion API 부터 DB 가 container + data_source(s) 로 분리됨.
+# query 는 data_source ID 로 호출해야 함 (DB ID 사용 시 deprecated/실패).
+NOTION_HOLDINGS_DS_ID = os.environ.get(
+    "NOTION_HOLDINGS_DS_ID", "25d578de-8e37-486d-8787-549667cae981"
+)
 
 GITHUB_TOKEN = os.environ["MORNINGREPOT"]
 GITHUB_REPO  = "gengar200005/morning-report"
@@ -31,10 +36,10 @@ TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 # ── 노션 DB 조회 ───────────────────────────────────
 def fetch_holdings():
     """상태=In progress & 거래소∈{KRX, KOSDAQ} 필터링하여 보유 종목 조회"""
-    url = f"https://api.notion.com/v1/databases/{NOTION_HOLDINGS_DB_ID}/query"
+    url = f"https://api.notion.com/v1/data_sources/{NOTION_HOLDINGS_DS_ID}/query"
     headers = {
         "Authorization": f"Bearer {NOTION_API_KEY}",
-        "Notion-Version": "2022-06-28",
+        "Notion-Version": "2025-09-03",
         "Content-Type": "application/json",
     }
     body = {
