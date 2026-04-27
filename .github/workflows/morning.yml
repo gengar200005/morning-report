@@ -84,8 +84,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # 로컬 morning_data.txt (combine_data 가 방금 쓴 오늘자) 로 렌더
-          python -m reports.render_report --input morning_data.txt --output-dir docs
+          # 로컬 morning_data.txt (combine_data 가 방금 쓴 오늘자) 로 렌더.
+          # 오늘자 Claude 분석 JSON 이 이미 있으면 자동 주입 — morning.yml 재실행
+          # 시 claude_render 가 만든 카드가 baseline 으로 덮이는 race 방지
+          # (2026-04-27 fca2ac7 → 4aea467 덮어쓰기 사고).
+          YMD=$(TZ=Asia/Seoul date +%Y%m%d)
+          CLAUDE_JSON="docs/claude_analysis/${YMD}.json"
+          EXTRA=""
+          if [ -f "$CLAUDE_JSON" ]; then
+            EXTRA="--claude-analysis $CLAUDE_JSON"
+            echo "✅ Claude 분석 발견 → 카드 주입: $CLAUDE_JSON"
+          fi
+          python -m reports.render_report --input morning_data.txt --output-dir docs $EXTRA
 
           git add docs/
           if git diff --staged --quiet; then
