@@ -26,14 +26,17 @@
   → 298020 정식, 005870 (옛 한화생명) → 088350 정식. KOSPI 200 universe
   외이므로 라이브 영향 0. 다음 세션 정리.
 
-- **Claude augmentation 운영 재개 (Claude Code 이식)** ✅ 셋업 완료:
-  04-26 ADR-009 폐기 결정 후에도 04-27/28 main 에서 `Claude 분석 반영
-  (auto)` commit 패턴이 사실상 운영 재개됨. 마스터의 web Project 가
-  GitHub commit 권한 인식 안 되는 이슈로 막혀, **Claude Code 슬래시
-  명령 `/analyze` 로 이전**. 기반: `CLAUDE_PROJECT_INSTRUCTION_v5.md`
-  v5.1, Drive fetch → 로컬 morning_data.txt 직접 읽기, GitHub MCP →
-  git push 로 단순화. main 직접 commit 예외는 web Project 시절부터
-  동일 (04-25 `bfd73ea` 등).
-  운영 모델: 매일 cron (06:25 KST) 끝난 후 ~07:00 KST Claude Code 세션
-  열어서 `/analyze` 한 줄 → 7카드 JSON commit + push → claude_render.yml
-  자동 트리거 → PDF + Notion 갱신.
+- **Claude augmentation 운영 재개 (Claude Code 이식)** ✅ 셋업 완료 →
+  **B 옵션 채택 (저널 거울)**: 04-26 ADR-009 폐기 결정과 04-27/28 운영
+  재개의 어긋남을 **분업 frame** 으로 재정의. 룰 (백테 + 신호 + 게이트)
+  = 자동 / 인간 판단 (매크로 / 사이즈 / 페이퍼 vs 실전 / 심리) = 인간 →
+  7카드는 **인간 판단 영역의 저널 거울** (의사결정 input 아님). "객관적
+  옳음" 평가 폐기, "오늘 읽고 1분 내 의사결정 정리에 도움됐나" 만 점검.
+  마스터 1주 자체 점검 후 NO 면 즉시 A (전면 폐기) 전환.
+  ADR-009 는 "augmentation = 알파 input" 가정으로 폐기됐는데 분업 frame
+  으로 재정의하면 폐기 사유 사라짐. 다만 narrative bias 위험은 여전 →
+  매주 자체 점검 의무.
+
+- **운영 모델**: 매일 cron (06:25) 끝 ~07:00 KST Claude Code 세션 →
+  `/analyze` → `docs/claude_analysis/{YMD}.json` main commit + push →
+  `claude_render.yml` 자동 트리거 → PDF + Notion 갱신.
