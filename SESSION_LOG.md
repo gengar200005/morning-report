@@ -4,6 +4,116 @@
 
 ---
 
+## 2026-04-28 (web, branch `claude/track-kospi-200-stocks-s54c2`) — KOSPI 200 라이브 확장 + Claude augmentation 분업 frame (B) + /analyze 슬래시 명령 이식
+
+### 결정
+
+- **결정 인박스 도입** (`docs/decisions/_inbox.md`). 세션 뻗음 → 컨텍스트
+  손실 4번 연속 발생한 패턴 mitigation. "해보자" 가 굳어지는 순간 1~3줄
+  즉시 commit + push, 코드 변경 0 이어도 OK. 운영 규칙 "마스터 승인 후
+  push" 의 **유일 예외** (자동 push 허용). 다음 세션 시작 시 회수 → 정식
+  문서 흡수 → entry 삭제. CLAUDE.md 운영 규칙 섹션에 명문화.
+
+- **KOSPI 200 라이브 universe 확장** (162 → 200). 백테 universe (162) 는
+  스냅샷 그대로 유지 (페이퍼 트레이딩 우선, ADR-001 일관성). 변경:
+  - `kr_report.py::UNIVERSE` 162 → 200 (KRX [11006] 04-28 다운로드)
+  - `reports/sector_overrides.yaml::ticker_overrides` 164 → 234 (KOSPI 200
+    100% 매핑 + KOSPI 200 외 stale 34 보존). 11섹터 분포: 소재·유통 92 /
+    금융 29 / 플랫폼 18 / 전력인프라 16 / 바이오 15 / 자동차 14 / 2차전지·
+    건설 각 13 / 조선 9 / 반도체 8 / 방산 7
+  - 신규 70종목 섹터 매핑은 코드베이스 선행 분류 + 시장 정체성 기준
+    (예: 풍산 → 방산 (탄약 + 비철, 시장/ETF 정체성), 카카오뱅크 → 금융
+    (인터넷 은행, 카카오페이는 핀테크라 별개), 한진칼 → 소재·유통
+    (대한항공 지주))
+  - GH Actions workflow_dispatch 본 브랜치 실행 → KIS API 200회 호출
+    (~30~40분) → docs/archive/report_20260428.pdf + Drive + Notion 정상.
+    페이지 9 §04·b Remaining 32 에 신규 종목 (한미반도체/산일전기/대한전선/
+    HD현대일렉트릭/엘앤에프/코오롱인더/한전기술/이수스페셜티케미컬/한국카본)
+    정상 노출 확인.
+
+- **Claude augmentation 분업 frame (B 채택)** — ADR-009 (04-26 augmentation
+  폐기 결정) 의 사실상 부분 reversal. 04-27/28 main 의 "Claude 분석 반영"
+  commit 패턴이 사실상 운영 재개됐는데 결정 사고 거치지 않은 관성이라는
+  진단. 분업 frame 으로 재정의: **룰 (백테/신호/게이트) = 자동 / 인간
+  판단 (매크로/사이즈/페이퍼·실전 분기/심리) = 인간 / 7카드 = 인간 판단
+  영역의 저널 거울** (의사결정 input 아님). "객관적 옳음" 평가 폐기,
+  "오늘 읽고 1분 내 의사결정 정리에 도움됐나" 만 점검. **마스터 1주 자체
+  점검 후 NO 면 즉시 A (전면 폐기) 전환**.
+
+- **`/analyze` 슬래시 명령 도입** (`.claude/commands/analyze.md`). web
+  Project 가 GitHub commit 권한 인식 못 하는 이슈 해결 + Claude Code
+  이식. 기반: `CLAUDE_PROJECT_INSTRUCTION_v5.md` v5.1. 차이: Drive fetch
+  → 로컬 `morning_data.txt` 직접 읽기 (단, root morning_data.txt 는
+  combine_data 가 main 에 직접 PUT 하므로 Claude Code 에서는
+  `git show origin/main:morning_data.txt > /tmp/morning_data_today.txt`
+  로 우회). GitHub MCP `create_or_update_file` → `git commit/push`. main
+  직접 commit 예외 (web Project 시절 04-25 `bfd73ea` 등). 운영: 매일 cron
+  (06:25) 끝 ~07:00 KST `/analyze` 한 줄 → JSON main commit + push →
+  `claude_render.yml` 자동 트리거 → PDF + Notion 갱신.
+
+- **v3 entry 카드 패턴** (산업군 인식 + 애널리스트 컨센서스 + 출처). v1
+  (1-3 문장 dry) → v2 (Project 톤 매칭, 페이퍼·재현 의심·매크로 액션 환기)
+  → v3 (산업군 비교 펀더 + WebSearch 5종목 컨센서스 + 컨센 추월 경계 ⚠️ +
+  출처 인용). PDF 페이지 8 정상 주입 확인. /analyze 슬래시 명령 v3 가이드
+  반영은 다음 세션 후속.
+
+### 검토한 대안
+
+- **KOSPI 200 입수 경로**: pykrx (KRX_ID/PW 인증 막힘) / Naver scraping
+  (sandbox host 차단) / KODEX 200 ETF holdings → **KRX [11006] 마스터
+  수동 다운로드** 채택. pykrx 환경변수 셋업은 페이퍼 트레이딩 들어가기
+  전 후속 검토.
+- **KOSPI 200 백테 확장**: 생략 (페이퍼 트레이딩 우선, 백테는 162 시점
+  고정 스냅샷 유지)
+- **Augmentation**: A (전면 폐기, ADR-009 재확인) vs B (저널 거울, 1주
+  점검 후 재평가) → **B 채택**. NO 면 즉시 A 전환 명문화.
+- **/analyze 자동화**: 1 (수동 트리거 슬래시 명령, Claude Code 정액)
+  vs 2 (GH Actions Anthropic API, 비용 발생) → **1 채택** (ADR-009 폐기
+  사유 중 하나가 비용)
+- **세션 뻗음 mitigation**: 1 (_inbox 결정 인박스) vs 2 (session-start
+  스킬 보강) vs 3 (Stop hook 자동 commit) → **1 채택**. 자동 push 허용
+  파일 한정.
+- **카드 톤**: v5.1 instruction 의 "1-3 문장 / 서사 금지" strict vs
+  Project 톤 (한 문장 진단 + 종목별 비고 + 액션 환기) → Project 톤
+  매칭으로 명령 가이드 보강 예정.
+
+### 다음 세션에서 할 일
+
+1. **`.claude/commands/analyze.md` v3 가이드 보강** — 산업군 비교 펀더 +
+   WebSearch 5종목 컨센서스 + 출처 인용 의무 + 컨센 추월 경계 명시.
+   다음번부터 자동 동일 quality.
+2. **본 브랜치 → main PR** — KOSPI 200 universe + /analyze 슬래시 +
+   _inbox + 운영 규칙 변경 머지.
+3. **v6.2 template Top 5 자동 READINESS 코멘트 수정** — "PBR 15.6·ROE
+   22% 펀더멘털 취약" 같은 기계적 분류 부정확. ROE 임계 분리 + 산업군
+   인식 추가. 별 이슈 (낮은 우선순위, 알파 0).
+4. **KOSPI 200 외 stale tickers cleanup** — 293490 (옛 카카오뱅크) →
+   323410 정식 / 000215 (옛 DL이앤씨) → 375500 / 298000 (옛 효성티앤씨)
+   → 298020 / 005870 (옛 한화생명) → 088350. 라이브 영향 0.
+5. **Claude augmentation B 옵션 1주 자체 점검** — "오늘 분석 도움됐나"
+   체크. NO 면 즉시 A 전환.
+6. **페이퍼 트레이딩 인프라 셋업** (CLAUDE.md "다음 진입점 1순위") —
+   본 세션 우회됨. Notion DB + 가상 포지션 자동 추적 + 일일 PDF 첫
+   페이지 카드 + 자본 10-15% 실전 + 페이퍼 5종목 풀 절충안.
+7. **ADR 후보 3건** (마스터 결정):
+   - ADR-011 결정 인박스 운영 원칙
+   - ADR-012 augmentation 분업 frame (ADR-009 보완 / 부분 reversal)
+   - ADR-013 라이브 universe ↔ 백테 스냅샷 분리
+
+### 미해결
+
+- v6.2 template READINESS 자동 derive 부정확 (ROE 22% "취약" 라벨 등) —
+  별 이슈 후속.
+- v3 카드 패턴 자동화 안 됨 — 매번 WebSearch 5회 + 산업군 매핑은 수동.
+  슬래시 명령 가이드 보강하면 자동화 가능, 다음 세션 작업.
+- KIS API 200종목 호출 시간 (~30~40분) 운영 부담 — pykrx 마이그레이션
+  (KRX_ID/PW 환경변수) 검토. 페이퍼 트레이딩 들어가기 전.
+- 본 세션 augmentation 운영 재개 결정 vs ADR-009 폐기 결정의 정합성 —
+  분업 frame 으로 재정의했으나 narrative bias 위험은 여전. 1주 자체
+  점검 결과에 따라 ADR-012 정식화 or ADR-009 재확인 후 폐기.
+
+---
+
 ## 2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`) — 알파 추구 1차 종료: VCP 162 재검증 + ADR-010 박스권 게이트 기각
 
 ### 결정
