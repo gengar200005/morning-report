@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-04-28 (web, branch `claude/session-start-TvkQb`) — 04-27 Notion connect 결과 기록
+
+### 결정
+- **04-27 미해결 "`morning-report-publisher` integration ↔ 자동매도 트래커 DB
+  connect" → ✅ 해결됨**. 마스터가 Notion DB → ⋯ → Connections 에서
+  `morning-report-publisher` 추가 완료. cron 정상 동작, holdings 종목 리포트에
+  정상 표시 확인. 04-27 PR #24 (data_sources API 마이그레이션) + 권한 추가의
+  조합으로 holdings 표시 파이프라인 복구.
+- 따라서 04-27 CLAUDE.md "활성 작업 0순위 — Notion holdings DB 권한 복구 검증"
+  은 **종료**, 진입점은 원복: 1️⃣ 페이퍼 트레이딩 인프라 셋업.
+
+### 참고
+- 04-27 세션 docs 커밋 `405c5ff` (CLAUDE.md / SESSION_LOG 갱신) 는 아직 main
+  미머지 상태로 `origin/claude/new-session-BrxTg` 에만 존재. 마스터가 추후
+  로컬에 동기화 예정. 동기화 시 04-27 미해결 항목에 "✅ resolved (마스터
+  Connections 추가 완료)" 메모 보강.
+- 04-28 PR #25 (`82285d3 fix(morning): Claude 분석 JSON 자동 주입 + .crdownload
+  정리`) 도 docs 미반영. 04-27 동기화와 함께 다음 세션에서 묶어 정리.
+
+### 미해결
+- 위 docs 동기화 (04-27 cherry-pick + 04-28 PR #25 반영) — 마스터 추후 작업.
+
+---
+
 ## 2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`) — 알파 추구 1차 종료: VCP 162 재검증 + ADR-010 박스권 게이트 기각
 
 ### 결정
