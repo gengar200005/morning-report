@@ -4,6 +4,104 @@
 
 ---
 
+## 2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`) — `/analyze` v3 가이드 정식화 + 페이퍼 트레이딩 인프라 첫 단계 (Plan 005/006 + Notion DB) + 백테 가정 한계 분석
+
+### 결정
+
+- **`/analyze` v3 가이드 정식화** (PR #27 머지, main `d881bf8`). 직전 세션
+  PR #26 의 v3 entry 카드 패턴 (산업군 펀더 + WebSearch + 컨센 추월 ⚠️ +
+  출처) 을 매번 수동에서 가이드로 명문화. `.claude/commands/analyze.md` 4 변경:
+  - 표 entry row 보강 (산업군 펀더 + 컨센서스 + 출처)
+  - 절차 5번 entry 카드 v3 의무사항 sub-section (산업군 임계 / WebSearch
+    Top 5 / 컨센 추월 ⚠️ +10%/+50% / 출처 / 정합도 1위) + entry 외 6카드
+    환기 사항 분리 (톤 변경 아님)
+  - 금지 사항 4건 (WebSearch 누락 / 컨센 인용 누락 / 산업군 절대값 라벨
+    / 컨센 추월 ⚠️ 누락)
+  - 예시 섹션 (2026-04-28 entry 카드 reference + 의무 매핑)
+  다음 cron 06:25 부터 자동 동일 quality.
+
+- **페이퍼 트레이딩 인프라 첫 단계** (PR #28 머지, main `39727d5`).
+  CLAUDE.md "다음 진입점 1순위" 4번 연속 우회 후 본 세션 진입:
+  - **Plan 005** `docs/plans/005-paper-trading-db-schema.md` — Notion DB
+    24필드 spec (자동 18 + 인간 6), Views 3개, 통과 기준 (CAGR ±3-5%p /
+    Days delayed median ≤ 5일 / Entry psychology ≥ 3.5).
+  - **Plan 006** `docs/plans/006-paper-trading-auto-module.md` — 자동 모듈
+    spec (책임 4가지: 신규 신호 row / Trail stop 갱신 / 자동 청산 /
+    Cooldown 관리), 트리거 추천 (b) 별도 cron 19:00.
+  - **Notion DB 자동 생성** — 📊 모닝리포트 → 페이퍼 트레이딩 저널 →
+    Positions DB. **Data source ID `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`**
+    (Plan 006 영구 reference). Views 3개 (Open positions / Closed (recent) /
+    Stats source) + dry-run row 1개 (SK하이닉스 [DRY RUN] 사용감 검증용).
+  - 페이퍼 트레이딩 = 자동 백테 forward + 인간 행동/심리 저널. 백테 +29.55%
+    가정 vs 실전 차이를 측정.
+
+- **백테 +29.55% 가정 한계 정량화 + 예약 매수 회피 차단 발견** (대화 분석,
+  코드 변경 없음, CLAUDE.md update 1주 운영 후로 보류):
+  - 백테 매수: `entry_price = o[i] × (1 + cost)` (`strategy.py:320`),
+    cost=0.15% 편도. **시초가 무조건 100% 체결 가정** (거래량 / 호가창
+    두께 / 상한가 갭 / 인간 회피 전부 미반영).
+  - **시초가 호가 슬리피지 -1~2%p** + **시초가 미체결 -0.5~1%p** + **인간
+    회피/지연 -3~7%p** 미반영. CLAUDE.md 슬리피지 -1~2%p 차감 부족.
+  - **한국 증시 동시호가 (08:30~09:00) 시장가 매수 예약** → 09:00 단일가
+    체결. 갭상이라도 시초가 체결 가능. **인간 회피/지연 자동 차단 장치**.
+  - 예약 매수 운영 시 실전 기댓값 **+22~25%** 가능 (백테 가정 거의 살아
+    있음). 망설임 + 5일 지연 시 +12~17%. 페이퍼 6개월이 진짜 추정.
+
+### 검토한 대안
+
+- **`/analyze` 톤 변경 적용 범위**: (a) entry 카드만 vs (b) 7카드 전부 →
+  **(a) 채택**. entry 외 6카드 (alert / gate_flow / sector / agrade /
+  portfolio / macro) 는 성격 달라 strict 유지. v2 의 "페이퍼·재현 의심·
+  매크로 액션 환기" 는 톤 변경이 아닌 언급 의무 → "entry 외 6카드 환기"
+  단락으로 분리.
+- **페이퍼 운영 모델**: (a) 100% 페이퍼 6개월 vs (b) 자본 10-15% 실전 +
+  페이퍼 5종목 절충 → **일단 (a) 디폴트, 1-2개월 차에 (b) 검토**.
+- **Plan 006 트리거**: (a) `morning.yml` cron 끝 06:25 vs (b) 별도 cron
+  19:00 vs (c) PC Task Scheduler → **(b) 추천**, 마스터 결정 대기.
+- **DB Mode 필드**: (i) 일단 빼고 vs (ii) 미리 두고 PAPER 디폴트 →
+  **(ii)** 추후 LIVE 마이그 부담 0.
+- **Days delayed 측정 단위**: (i) calendar days vs (ii) 영업일 →
+  **(i)** 영업일 ±2일 차 무관, formula 쉬움.
+- **DB parent 위치**: workspace 신규 vs 📊 모닝리포트 root 아래 신규 →
+  **모닝리포트 root** (모든 자산 한 위치).
+- **PR 단위**: 한 묶음 vs 분리 → **분리** (PR #27 /analyze, PR #28 페이퍼).
+- **CLAUDE.md 차감 update 시점**: 본 세션 즉시 vs 1주 운영 후 → **1주 운영
+  후** (페이퍼 측정 + 예약 매수 사용감 반영해야 정확).
+
+### 다음 세션에서 할 일
+
+1. **마스터 1주 운영 평가** (~05-05) — 예약 매수 사용감 + DB 입력 부담 +
+   Days delayed median + Entry psychology 평균 측정.
+2. **CLAUDE.md 차감 내역 update** — 예약 매수 회피 차단 -3~7%p 효과 +
+   슬리피지 -1~2%p → -2~3%p 보정. "실전 매매 규약" 에 "08:30 동시호가
+   시장가 매수 예약" 추가 검토.
+3. **Plan 006 마스터 결정 3가지** — 트리거 (a/b/c), 구현 위치 (`strategy.py`
+   실시간 모드 vs `paper_trading.py` 신규 모듈), Notion API token 위치
+   (.env / GH Secrets / Task Scheduler env).
+4. **ADR 후보 4건** (마스터 결정):
+   - ADR-012 augmentation B 분업 frame 정식화 (1주 자체 점검 결과 반영)
+   - ADR-013 라이브 universe ↔ 백테 스냅샷 분리
+   - ADR-014 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
+   - Plan 007 (선택) PDF 첫 페이지 페이퍼 포지션 / 누적 수익률 카드
+5. **dry-run row 처리** — 마스터 Notion UI 사용감 확인 후 삭제 또는 첫
+   정식 row 활성화. Entry note 1자 깨짐 ("컨센→컴센") 같이 처리.
+6. **augmentation B 자체 점검 결과** (~05-04) — 직전 세션 결정, 매일 1회
+   "오늘 분석 도움됐나" 자체 점검 1주 누적. NO 면 즉시 A (전면 폐기) 전환.
+
+### 미해결
+
+- **백테 +29.55% "시가 무조건 체결" 가정** — 예약 매수 운영으로 회피
+  차단 가능성 발견. 1주 운영 검증 후 차감 내역 정식화.
+- **dry-run row entry note 1자 깨짐** ("컨센" → "컴센"). Notion API JSON
+  unicode escape 추정. 마이너, 마스터 UI 1초 fix 또는 삭제.
+- **거래대금 하위 종목 호가 두께** — KOSPI 200 universe 거의 무관하지만
+  소형 KOSPI 200 일부 종목 시초가 부분 체결 가능성. 1주 케이스 분석.
+- **상한가 갭 (+30%)** — 시초가 형성 안 됨, 일년 1-2번. Plan 006 자동
+  모듈에 "skip 또는 다음날 재시도" 룰 검토.
+- **Plan 006 자동 모듈 미구현** — spec 만 main. 마스터 결정 3가지 후 구현.
+
+---
+
 ## 2026-04-28 (web, branch `claude/track-kospi-200-stocks-s54c2`) — KOSPI 200 라이브 확장 + Claude augmentation 분업 frame (B) + /analyze 슬래시 명령 이식
 
 ### 결정
