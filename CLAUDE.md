@@ -237,6 +237,10 @@ morning-report/
   추가 필터는 (1) 사전 검증된 1차 출처 + (2) robustness sensitivity plan 둘 다
   통과 시에만 백테 시도. 박스권 보호 +10%p 부산물은 게이트 외 채널 (sizing /
   risk parameter) 로 구현 시 본 원칙 적용 대상 아님.
+- **ADR-011** 결정 인박스 (`_inbox.md`) 운영 원칙 — **채택**. 세션 뻗음 →
+  컨텍스트 손실 4번 연속 패턴 mitigation. "해보자" 결정 1~3줄 즉시 commit +
+  push (자동 push 예외 1건 신설), 다음 세션 회수 → 정식 문서 흡수 → entry
+  삭제. 3개월 운영 후 활용도 0 또는 자동 push 사고 시 폐기.
 
 ---
 
