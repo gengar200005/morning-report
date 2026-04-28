@@ -45,14 +45,19 @@ VOLUME_LOOKBACK = 3
 
 
 def run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
-                           sort_mode: str = "rs"):
+                           sort_mode: str = "rs",
+                           size_mode: str = "equal"):
     """
-    strategy.run_backtest 의 sort 키만 매개변수화한 버전.
+    strategy.run_backtest 의 sort 키 + sizing 키 매개변수화 버전.
 
-    sort_mode:
+    sort_mode (종목 선정):
       "rs"          → RS percentile desc (baseline)
       "vol3d_value" → 직전 3일 (close × volume) 합 desc
       "vol3d_shares"→ 직전 3일 volume 합 desc
+
+    size_mode (포지션 가중):
+      "equal"                       → 균등 (baseline, cash/open_slots 매번 재계산)
+      "vol3d_value_proportional"    → 3일 거래대금 비례 가중
     """
     risk = cfg["risk"]
     exec_cfg = cfg["execution"]
@@ -67,32 +72,65 @@ def run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
     n_days = len(all_dates)
     cash = 1.0
     positions: dict[str, dict] = {}
-    pending_entry: list[tuple[str, int]] = []
+    pending_entry: list[tuple[str, int, float]] = []  # (ticker, sig_i, sizing_score)
     pending_exit: list[tuple[str, str]] = []
     equity_curve: list[dict] = []
     trade_log: list[dict] = []
     last_exit_i: dict[str, int] = {}
 
     for i in range(warmup, n_days):
-        for tk, _sig_i in pending_entry:
-            if tk in positions:
-                continue
-            c, o, v = stock_arr[tk]
-            if i >= len(o) or o[i] <= 0:
-                continue
-            open_slots = max_pos - len(positions)
-            if open_slots <= 0:
-                break
-            entry_price = o[i] * (1 + cost)
-            alloc = cash / open_slots
-            if alloc <= 0:
-                break
-            shares = alloc / entry_price
-            positions[tk] = {
-                "entry_price": entry_price, "peak": entry_price,
-                "entry_i": i, "shares": shares,
-            }
-            cash -= shares * entry_price
+        if size_mode == "equal":
+            for tk, _sig_i, _score in pending_entry:
+                if tk in positions:
+                    continue
+                c, o, v = stock_arr[tk]
+                if i >= len(o) or o[i] <= 0:
+                    continue
+                open_slots = max_pos - len(positions)
+                if open_slots <= 0:
+                    break
+                entry_price = o[i] * (1 + cost)
+                alloc = cash / open_slots
+                if alloc <= 0:
+                    break
+                shares = alloc / entry_price
+                positions[tk] = {
+                    "entry_price": entry_price, "peak": entry_price,
+                    "entry_i": i, "shares": shares,
+                }
+                cash -= shares * entry_price
+        elif size_mode == "vol3d_value_proportional":
+            valid = []
+            for tk, sig_i, score in pending_entry:
+                if tk in positions:
+                    continue
+                c, o, v = stock_arr[tk]
+                if i >= len(o) or o[i] <= 0:
+                    continue
+                if max_pos - len(positions) - len(valid) <= 0:
+                    break
+                valid.append((tk, sig_i, score))
+            if valid:
+                total = sum(s for _, _, s in valid)
+                if total > 0:
+                    weights = [s / total for _, _, s in valid]
+                else:
+                    weights = [1.0 / len(valid)] * len(valid)
+                base_cash = cash
+                for (tk, _sig_i, _s), w in zip(valid, weights):
+                    c, o, v = stock_arr[tk]
+                    alloc = base_cash * w
+                    if alloc <= 0:
+                        continue
+                    entry_price = o[i] * (1 + cost)
+                    shares = alloc / entry_price
+                    positions[tk] = {
+                        "entry_price": entry_price, "peak": entry_price,
+                        "entry_i": i, "shares": shares,
+                    }
+                    cash -= shares * entry_price
+        else:
+            raise ValueError(f"unknown size_mode: {size_mode}")
         pending_entry = []
 
         for tk, reason in pending_exit:
@@ -176,7 +214,13 @@ def run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
 
             candidates.sort(key=lambda x: -x[1])
             for tk, _ in candidates[:open_slots]:
-                pending_entry.append((tk, i))
+                c, _o, v = stock_arr[tk]
+                if i + 1 >= VOLUME_LOOKBACK:
+                    s = i + 1 - VOLUME_LOOKBACK
+                    sizing_score = float((c[s:i + 1] * v[s:i + 1]).sum())
+                else:
+                    sizing_score = 0.0
+                pending_entry.append((tk, i, sizing_score))
 
         port_value = cash
         for tk, pos in positions.items():
@@ -284,36 +328,54 @@ def main():
     all_dates, stock_arr, kospi_arr = load_data(universe)
     print(f"[데이터] {len(stock_arr)}종목 × {len(all_dates)}영업일")
 
-    print("\n[1/3] BASELINE (RS Top 5) 백테 실행...")
-    eq_b, tr_b = run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg, "rs")
-    print_report("BASELINE — RS percentile desc Top 5", eq_b, tr_b)
+    print("\n[1/4] BASELINE (RS Top 5, 균등) 백테 실행...")
+    eq_b, tr_b = run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
+                                        sort_mode="rs", size_mode="equal")
+    print_report("BASELINE — RS percentile desc Top 5, 균등 가중", eq_b, tr_b)
 
-    print("\n[2/3] V1a (3일 거래대금 Top 5) 백테 실행...")
+    print("\n[2/4] V1a (3일 거래대금 Top 5, 균등) 백테 실행...")
     eq_va, tr_va = run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
-                                          "vol3d_value")
-    print_report("V1a — 3일 거래대금 (close×volume) desc Top 5", eq_va, tr_va)
+                                          sort_mode="vol3d_value",
+                                          size_mode="equal")
+    print_report("V1a — 3일 거래대금 desc Top 5, 균등 가중", eq_va, tr_va)
 
-    print("\n[3/3] V1b (3일 거래량 Top 5) 백테 실행...")
+    print("\n[3/4] V1b (3일 거래량 Top 5, 균등) 백테 실행...")
     eq_vb, tr_vb = run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
-                                          "vol3d_shares")
-    print_report("V1b — 3일 거래량 (shares) desc Top 5", eq_vb, tr_vb)
+                                          sort_mode="vol3d_shares",
+                                          size_mode="equal")
+    print_report("V1b — 3일 거래량 desc Top 5, 균등 가중", eq_vb, tr_vb)
 
-    diff_table("baseline", eq_b, tr_b, "V1a 거래대금", eq_va, tr_va)
-    diff_table("baseline", eq_b, tr_b, "V1b 거래량",   eq_vb, tr_vb)
+    print("\n[4/4] V1c (RS Top 5, 거래대금 비례 가중) 백테 실행...")
+    eq_vc, tr_vc = run_backtest_with_sort(all_dates, stock_arr, kospi_arr, cfg,
+                                          sort_mode="rs",
+                                          size_mode="vol3d_value_proportional")
+    print_report("V1c — RS Top 5 + 3일 거래대금 비례 가중 (sizing 채널)", eq_vc, tr_vc)
 
-    pa = pass_check("V1a 거래대금", eq_b, tr_b, eq_va, tr_va)
-    pb = pass_check("V1b 거래량",   eq_b, tr_b, eq_vb, tr_vb)
+    diff_table("baseline", eq_b, tr_b, "V1a 거래대금 sel",   eq_va, tr_va)
+    diff_table("baseline", eq_b, tr_b, "V1b 거래량 sel",    eq_vb, tr_vb)
+    diff_table("baseline", eq_b, tr_b, "V1c sizing",        eq_vc, tr_vc)
+
+    pa = pass_check("V1a 거래대금 selection", eq_b, tr_b, eq_va, tr_va)
+    pb = pass_check("V1b 거래량 selection",   eq_b, tr_b, eq_vb, tr_vb)
+    pc = pass_check("V1c sizing (RS+vol weight)", eq_b, tr_b, eq_vc, tr_vc)
 
     print(f"\n{'=' * 60}")
     print(f"  종합")
     print(f"{'=' * 60}")
-    if not pa and not pb:
-        print("  V1a/V1b 모두 FAIL → ADR-010 5번째 사례 (선정 키 변경 무효)")
-    elif pa and pb:
-        print("  V1a/V1b 모두 PASS → sensitivity (3/5/10일 lookback, cap) 진행")
+    print(f"  V1a (selection 거래대금) : {'PASS' if pa else 'FAIL'}")
+    print(f"  V1b (selection 거래량)   : {'PASS' if pb else 'FAIL'}")
+    print(f"  V1c (sizing 거래대금)    : {'PASS' if pc else 'FAIL'}")
+    print()
+    if pc and not (pa or pb):
+        print("  → sizing 채널이 알파 회수. selection 무효 + sizing 유효 패턴.")
+        print("    ADR-010 본문 명시 sizing 예외 채널 검증 성공.")
+    elif not (pa or pb or pc):
+        print("  → 모두 FAIL. selection/sizing 양 채널 무효.")
+        print("    ADR-010 5번째 사례 + 박스권 부산물도 sizing 으로 회수 안 됨.")
+    elif pc and (pa or pb):
+        print("  → sizing 도 PASS 이나 selection 도 일부 PASS — 추가 sensitivity 필요.")
     else:
-        print(f"  부분 PASS — 거래대금 {'✓' if pa else '✗'} / "
-              f"거래량 {'✓' if pb else '✗'}. 합리성 검토 후 결정.")
+        print("  → 혼재 결과. 개별 검토.")
 
 
 if __name__ == "__main__":
