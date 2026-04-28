@@ -25,3 +25,15 @@
   323410 정식, 000215 (옛 DL이앤씨) → 375500 정식, 298000 (옛 효성티앤씨)
   → 298020 정식, 005870 (옛 한화생명) → 088350 정식. KOSPI 200 universe
   외이므로 라이브 영향 0. 다음 세션 정리.
+
+- **Claude augmentation 운영 재개 (Claude Code 이식)** ✅ 셋업 완료:
+  04-26 ADR-009 폐기 결정 후에도 04-27/28 main 에서 `Claude 분석 반영
+  (auto)` commit 패턴이 사실상 운영 재개됨. 마스터의 web Project 가
+  GitHub commit 권한 인식 안 되는 이슈로 막혀, **Claude Code 슬래시
+  명령 `/analyze` 로 이전**. 기반: `CLAUDE_PROJECT_INSTRUCTION_v5.md`
+  v5.1, Drive fetch → 로컬 morning_data.txt 직접 읽기, GitHub MCP →
+  git push 로 단순화. main 직접 commit 예외는 web Project 시절부터
+  동일 (04-25 `bfd73ea` 등).
+  운영 모델: 매일 cron (06:25 KST) 끝난 후 ~07:00 KST Claude Code 세션
+  열어서 `/analyze` 한 줄 → 7카드 JSON commit + push → claude_render.yml
+  자동 트리거 → PDF + Notion 갱신.
