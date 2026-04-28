@@ -40,12 +40,32 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    | `alert` | 오늘 단 하나의 경계 | `vix`, `kr_indices`, `market_context`, `kospi_flow`, anomaly |
    | `gate_flow` | 시장 게이트 + 수급 흐름 | `market_context.kospi_above_ma60`, `kospi_flow` |
    | `sector` | leaders 변동 + ETF 동조 | `sector_adr003`, `sector_etf` |
-   | `entry` | T10/CD60 진입 후보 (RS 순) | `top5` (derive 결과) |
+   | `entry` | T10/CD60 진입 후보 (RS 순) + 산업군 펀더 + 컨센서스 + 출처 | `top5` (derive 결과) + WebSearch |
    | `agrade` | A등급 universe 광폭 | `remaining_a`, `grade_c` |
    | `portfolio` | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
    | `macro` | D-30 high impact 우선 | `macro_calendar` (dday≤30, impact="high") |
 
-   **카드 길이**: 각 1~3 문장. 데이터 인용 + 액션 한 줄. 서사 / 추측 금지.
+   **카드 길이 (entry 외 6카드)**: 각 1~3 문장. 데이터 인용 + 액션 한 줄.
+   서사 / 추측 금지.
+
+   **entry 카드 — v3 의무사항** (다른 카드와 톤 분리, 종목별 비고 + 액션 환기):
+   - **산업군 비교 펀더** — 산업별 임계 다르게 적용. 예: 반도체 ROE 30%대 우량
+     vs 유틸리티 ROE 10%대 우량, 뷰티테크 PBR 38 고성장 프리미엄 vs 금융 PBR 1
+     기준. ROE/PER/PBR 절대값 단순 라벨 (예: "PBR 15.6 = 펀더멘털 취약") ❌.
+   - **WebSearch Top 5 종목 컨센서스** — 종목별 증권사 컨센 평균/최고 + 최소
+     3-4곳 인용 (KB·하나·대신·SK·신한·Citi·Macquarie 등). 컨센 부재 시 "컨센
+     없음" 명시.
+   - **컨센 추월 경계 ⚠️** — 현재가 ≥ 컨센 평균 +10% 면 ⚠️, +50% 면 ⚠️⚠️.
+     "이미 가격 반영 / 페이퍼 우선 / 사이즈 보수" 액션 환기.
+   - **출처 인용** — 카드 마지막에 *italic* 으로 인용한 증권사 열거. 인용
+     시점 (~당월) 명시.
+   - **정합도 1위** — 산업군 펀더 ✓ + 컨센 광범위 상승 + 컨센 미추월 3개
+     조건 모두 충족 종목 1개 명시.
+
+   **entry 외 6카드** 의무 환기 사항 (톤 변경 아님, 언급 의무):
+   - `alert` / `macro`: 페이퍼·재현 의심·매크로 D-day 액션 환기
+   - `agrade`: A등급 광폭 시 강세장 재현 의심 + 페이퍼 병행 권장
+   - `portfolio`: 매크로 임박 시 추매 자제 명시
 
 6. **main 에 commit + push** (claude_render.yml 가 main 만 트리거):
    ```bash
@@ -84,3 +104,34 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 - **추측 prefix** ❌ ("아마", "추정", "보입니다" 사용 시 카드 재작성)
 - **claude_analysis JSON 외 docs/ 수정** ❌ (`docs/latest.html`, `docs/archive/*` 는 CI 만 작성)
 - **silent fallback** ❌ (1차 경로 실패·키 누락·날짜 불일치 → `alert` 카드 명시)
+- **entry 카드 WebSearch 누락** ❌ (Top 5 종목별 컨센서스 조회 의무, 부재 시 "컨센 없음" 명시)
+- **entry 카드 컨센 인용 없는 진단** ❌ (증권사 명·목표가·인용 시점 셋 다 있어야 함)
+- **entry 카드 산업군 무시 절대값 라벨** ❌ ("PBR 15.6 = 펀더멘털 취약" 류, 산업 임계 적용)
+- **entry 카드 컨센 추월 ⚠️ 누락** ❌ (현재가 ≥ 컨센 평균 +10% 시 ⚠️ 의무)
+
+---
+
+## 예시 — entry 카드 v3 (2026-04-28 기준)
+
+v3 의무 4개 (산업군 비교 펀더 / WebSearch 컨센 / 컨센 추월 ⚠️ / 출처 인용)
+모두 충족된 reference. `docs/claude_analysis/20260428.json::entry` 원본.
+
+```html
+<p>T10/CD60 진입 후보 — A등급 미보유 + check_signal RS Top 5 (균등 가중 09:00 시초가, <strong>페이퍼 우선</strong>). 펀더 평가는 <strong>산업군 비교</strong>, 리서치는 ~4월 컨센서스 기반.</p>
+<table>
+  <tr><th>Rank</th><th>종목</th><th>코드</th><th>RS</th><th>52W</th><th>산업군 펀더</th><th>리서치 (컨센 / 핵심)</th></tr>
+  <tr><td>I</td><td>SK스퀘어</td><td>402340</td><td>99</td><td>+5.6%</td><td>투자지주 — PER 12.4·ROE 31.7%, NAV 디스카운트 회복 단계</td><td>컨센 평균 743K · 최고 970K · ★ Strong Buy 9/9 · 현 833K = 평균 +12% 상회 ⚠️</td></tr>
+  <tr><td>II</td><td>효성중공업</td><td>298040</td><td>99</td><td>+1.3%</td><td>변압기/중공업 — PBR 15.6 = 수주잔고 12조 + 765kV 독점 반영, ROE 22%</td><td>하나 4.3M · 대신 4.0M · SK 3.6M · <strong>1Q26 영업익 +64% YoY 서프</strong></td></tr>
+  <tr><td>III</td><td>SK하이닉스</td><td>000660</td><td>98</td><td>+2.2%</td><td>반도체 — PER 22·ROE 33.8%, HBM 사이클 정점</td><td>KB 1.9~2.0M · Citi 1.7M · Hana 1.6M · <strong>HBM4 sole supplier ⭐</strong></td></tr>
+  <tr><td>IV</td><td>에이피알</td><td>278470</td><td>96</td><td>+3.1%</td><td>뷰티테크 — PBR 38.7 고성장 프리미엄, ROE 64.7% 우량</td><td>KB 480K (14.3% 상향) · 26년 영업익 +79% YoY 전망 · K-뷰티 美→유럽 확장</td></tr>
+  <tr><td>V</td><td>한미반도체</td><td>042700</td><td>95</td><td>-2.8%</td><td>HBM TC본더 — PER 162 사이클 정점, ROE 30.7% 우량</td><td>유진 230K · 리딩 240K · LS 180K · <strong>현 363K = 컨센 평균 187K +94% 상회</strong> ⚠️⚠️</td></tr>
+</table>
+<p><strong>정합도 1위 = III SK하이닉스</strong> (HBM4 sole supplier + 컨센 1.6~2.0M 광범위 상승 + ROE 33.8%). <strong>⚠️ 컨센 추월 경계</strong> — V 한미반도체 (+94%) / I SK스퀘어 (+12%) 이미 가격 반영, 페이퍼 우선 + 사이즈 보수. II 효성중공업·IV 에이피알은 컨센 상회 여지.</p>
+<p><em>리서치 출처 (~4월): KB·하나·대신·SK·신한·유진·리딩·LS·한국투자·Citi·Macquarie 컨센서스.</em></p>
+```
+
+**의무 매핑**:
+- 산업군 비교 펀더 ✓ — "투자지주 PER 12.4·ROE 31.7%" / "반도체 PER 22·ROE 33.8%" / "뷰티테크 PBR 38.7" 산업별 임계 다르게 적용
+- WebSearch Top 5 컨센서스 ✓ — 종목별 컨센 평균/최고 + 증권사 4-5곳 (KB·하나·대신·SK·신한·유진·리딩·LS·Citi 등)
+- 컨센 추월 ⚠️ ✓ — V 한미반도체 ⚠️⚠️ (+94%) / I SK스퀘어 ⚠️ (+12%) 명시 + "이미 가격 반영, 페이퍼 우선" 액션 환기
+- 출처 인용 ✓ — 마지막 단락 *italic* 으로 증권사 11곳 + "(~4월)" 시점 명시
