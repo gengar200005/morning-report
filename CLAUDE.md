@@ -1,6 +1,6 @@
 # morning-report
 
-<!-- Last session branch: claude/track-kospi-200-stocks-s54c2 (2026-04-28) -->
+<!-- Last session branch: claude/analyze-code-8HvmQ (2026-04-28 #2) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
@@ -34,6 +34,12 @@ augmentation 흐름**: cron 끝 ~07:00 KST 마스터가 Claude Code 세션 → `
   자동 push 예외 허용 (운영 규칙 명문화).
 - **v3 entry 카드 패턴**: 산업군 비교 펀더 + WebSearch 5종목 컨센서스 +
   컨센 추월 경계 ⚠️ + 출처 인용. PDF 페이지 8 정상 주입.
+- **거래량 기반 종목 선정 / sizing 백테 — ADR-012 기각** (#2 세션):
+  `backtest/99_volume_selection.py` 4종 비교 (baseline +30.19% / V1a sel
+  거래대금 +19.93% / V1b sel 거래량 +22.11% / V1c sizing 비례 +25.23%) 전부
+  FAIL. V1a 박스권 +4.50%p 부산물 → V1c (selection 동일) 박스권 -0.28%p 로
+  selection noise 판명. ADR-010 5번째 사례 추가. 알파 추구 자원은 페이퍼
+  트레이딩 1순위로 복귀 정당화.
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -112,7 +118,9 @@ _inbox + 운영 규칙 변경 main 머지. 마스터 명시 승인 시.
 - **2025+ 이상치 검증** (+157% CAGR 재현성) — 페이퍼 후 검토
 - **2022년 방어 실패 분석** — 페이퍼 후 검토
 - **생존편향 정량화** (2015 상폐주 리스트) — 페이퍼 후 검토
-- **박스권 보호 +10%p 의 다른 채널** (sizing / risk parameter) — 페이퍼 후
+- ~~**박스권 보호 +10%p 의 다른 채널** (sizing / risk parameter)~~ — 거래대금
+  비례 sizing 채널은 ADR-012 로 무효 확정. RS 점수 가중 / stop_loss 완화 채널은
+  페이퍼 후 검토 (잔존 후보)
 
 ### 기각 / 종료 (ADR 또는 SESSION_LOG 보존)
 - ❌ **VCP 자동 필터** (ADR-001, 162 재검증으로 강화 — SESSION_LOG 04-26 #2)
@@ -123,6 +131,8 @@ _inbox + 운영 규칙 변경 main 머지. 마스터 명시 승인 시.
 - ❌ **Section 04 Entry Candidates UI** (ADR-008)
 - ❌ **Claude augmentation** (ADR-009)
 - ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
+- ❌ **거래량 selection / sizing 양 채널** (ADR-012, V1a/V1b/V1c 모두 baseline
+  깎음 — 박스권 +4.50%p 부산물은 selection noise 로 판명)
 - ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
   robustness plan 둘 다 통과 시에만 백테 시도
 
@@ -241,10 +251,24 @@ morning-report/
   컨텍스트 손실 4번 연속 패턴 mitigation. "해보자" 결정 1~3줄 즉시 commit +
   push (자동 push 예외 1건 신설), 다음 세션 회수 → 정식 문서 흡수 → entry
   삭제. 3개월 운영 후 활용도 0 또는 자동 push 사고 시 폐기.
+- **ADR-012** 거래량 selection / sizing 양 채널 무효 — **채택** (ADR-010 5번째
+  사례). V1a (sel 거래대금) / V1b (sel 거래량) / V1c (RS sel + 거래대금 비례
+  sizing) 3종 모두 baseline (+30.19%) 깎음 — 전체 -4.96 ~ -10.26%p / V1c MDD
+  -11.0%p 악화. V1a 박스권 +4.50%p 부산물은 V1c 동일 종목 진입 (거래 104→104)
+  + 박스권 -0.28%p 로 selection noise 판명, 재현성 0. 박스권 보호 sizing 채널
+  중 거래대금 가중 항목 종료. RS 점수 가중 / stop_loss 완화는 잔존 후보.
 
 ---
 
 ## 최근 세션
+- **2026-04-28 #2 (web, branch `claude/analyze-code-8HvmQ`)**: 거래량 기반
+  종목 선정 / sizing 가설 1회 검증 → ADR-012. `backtest/99_volume_selection.py`
+  신규 (self-contained, strategy.py 단일 소스 보존). 4종 비교 (baseline /
+  V1a sel 거래대금 / V1b sel 거래량 / V1c RS sel + 거래대금 비례 sizing) 전부
+  FAIL. **핵심 발견**: V1a 박스권 +4.50%p 부산물은 V1c (selection 동일, 거래
+  104→104) 박스권 -0.28%p 로 selection noise 판명. ADR-010 본문에 미해결로
+  남았던 sizing 채널 중 거래대금 가중 항목 검증 종료. 알파 추구 5번째 fail
+  사례 + 페이퍼 트레이딩 1순위 복귀 정당화.
 - **2026-04-28 (web, branch `claude/track-kospi-200-stocks-s54c2`)**:
   KOSPI 200 라이브 universe 확장 (162 → 200, 백테 162 스냅샷 유지) +
   sector_overrides 234 (신규 70종목 11섹터 매핑) + Claude augmentation 분업
