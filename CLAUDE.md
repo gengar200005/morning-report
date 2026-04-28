@@ -140,6 +140,12 @@ morning-report/
 ### 브랜치 / 배포
 - **main**: GitHub Actions 전용 (매일 06:00 KST cron). 직접 수정 지양.
 - **Push 는 마스터 명시 승인 시에만** (세션 중 자동 push 금지)
+- **예외**: `docs/decisions/_inbox.md` 만 자동 commit + push 허용
+
+### 결정 인박스 (`docs/decisions/_inbox.md`)
+세션 중 "해보자" 가 굳어지는 순간 1~3줄 즉시 기록 + 즉시 push (코드 변경 0
+이어도 OK). 세션이 도중에 뻗어도 다음 세션이 컨텍스트 회복. 다음 세션 시작
+시 회수 → 정식 문서 흡수 → 해당 entry 삭제.
 
 ### 전략 파라미터 변경
 - `backtest/strategy_config.yaml` 한 곳만 수정
