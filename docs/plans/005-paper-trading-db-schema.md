@@ -101,3 +101,33 @@ Primary key: 종목코드 + 진입일.
 - **Cooldown end 영업일 60 → calendar days 변환** — 자동 모듈에서 KRX
   거래일 캘린더 참조 필요. pykrx 로 처리 가능.
 - **Notion API rate limit** — 5종목 × 매일 trail_stop 갱신 = 5 req/day, 무관.
+
+---
+
+## DB 생성 결과 (2026-04-28)
+
+Notion MCP 로 spec 그대로 24필드 자동 생성 완료.
+
+| 항목 | 값 |
+|---|---|
+| 페이지 | https://www.notion.so/35014f343a56814ea7f8f4d18fee2e9f |
+| DB | https://www.notion.so/ce660e8b29674ffea0a80c38ae680259 |
+| 위치 | 📊 모닝리포트 → 페이퍼 트레이딩 저널 → Positions |
+| **Page ID** | `35014f34-3a56-814e-a7f8-f4d18fee2e9f` |
+| **Database ID** | `ce660e8b-2967-4ffe-a0a8-0c38ae680259` |
+| **Data source ID** | `d02501fe-58a4-4ba1-9bed-0478ebb3e3be` |
+
+Plan 006 자동 모듈 구현 시 **Data source ID 가 영구 reference**.
+환경변수 또는 config 파일에 등록 권장.
+
+### Views 3개
+
+- **Open positions** — `FILTER Status = "OPEN"`, sort by Entry date asc
+- **Closed (recent)** — `FILTER Status = "CLOSED"`, sort by Exit date desc
+- **Stats source** — 모든 row, CSV export 용
+
+### Property name 규칙 (Notion API 입력)
+
+- Date 필드: `date:<col>:start` ISO 8601 (예: `"date:Entry date:start": "2026-04-29"`)
+- Number/Select/Text: 그대로
+- Formula 3개 (Return % / Hold days / Days delayed): API 입력 불가, 자동 계산
