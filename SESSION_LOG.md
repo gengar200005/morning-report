@@ -4,7 +4,97 @@
 
 ---
 
-## 2026-04-28 (web, branch `claude/track-kospi-200-stocks-s54c2`) — KOSPI 200 라이브 확장 + Claude augmentation 분업 frame (B) + /analyze 슬래시 명령 이식
+## 2026-04-28 #2 (PC CLI worktree `claude/sad-ritchie-f8d888`) — signal_age sweet-spot 룰 6+5 variant 백테 → 전부 baseline 하회 (5/6번째 연속 fail)
+
+### 결정
+- **signal_age sweet-spot 가설 기각** (ADR-005 실험 C 와 같은 결, but
+  새 학습). exp_a 사후 분포에서 4-7d 버킷이 trade-mean / median / win
+  모든 지표 최고 + robustness 양면 통과 (시기 3/3, 정의 6/6) — 그러나
+  hard 백테에서 11개 variant 전부 baseline (+29.55%) 하회.
+- **본 실험의 새 학습**: ADR-010 메타 원칙의 두 관문 (사전 1차 출처 +
+  robustness sensitivity) 통과해도 portfolio 단계에서 fail 가능.
+  trade-level metric 우위가 portfolio CAGR 우위로 자동 전이 안 됨.
+- **알파 추구 5+6번째 연속 fail 패턴 확정** — ADR-005 (fresh) / ADR-004
+  (섹터 게이트 무조건) / ADR-001 (VCP) / ADR-010 (박스권 게이트) +
+  exp_f (signal_streak ∈ [lo,hi]) + exp_g (Top5 → age filter).
+- **방향 확인**: baseline (T10/CD60 + check_signal RS top-5 균등 가중)
+  외 추가 룰 추구 자제. CLAUDE.md 1순위 (페이퍼 트레이딩 인프라
+  셋업) 복귀 시점 명확.
+
+### 실험 결과 (162종목 11.3년)
+
+**exp_f** (candidate pool 자체를 sweet-spot 으로 좁힘, 6 variant):
+| variant | CAGR | ΔCAGR | MDD | ΔMDD |
+|---|---:|---:|---:|---:|
+| baseline | +29.55% | 0 | -29.83% | 0 |
+| ss_3_7 | +22.13 | -7.42 | -32.06 | -2.23 |
+| ss_4_7 | +23.94 | -5.61 | -38.79 | -8.96 |
+| ss_4_8 | +29.08 | -0.47 | -31.10 | -1.27 |
+| ss_5_7 | +16.74 | -12.81 | -43.98 | -14.15 |
+| ss_3_8 | +21.34 | -8.21 | -43.19 | -13.36 |
+| ss_4_10 | +25.43 | -4.12 | -23.45 | +6.38 |
+
+**exp_g** (Top5 RS 추출 후 sweet-spot filter, 5 variant — 마스터 제안):
+| variant | CAGR | ΔCAGR | MDD | ΔMDD |
+|---|---:|---:|---:|---:|
+| top5_3_7 | +9.81 | -19.74 | -50.38 | -20.55 |
+| top5_4_7 | +12.30 | -17.25 | -38.00 | -8.17 |
+| **top5_4_8** | +19.73 | -9.82 | **-26.27** | **+3.56** |
+| top5_4_10 | +15.95 | -13.60 | -27.78 | +2.05 |
+| top5_3_10 | +16.06 | -13.49 | -34.79 | -4.96 |
+
+**11/11 variant 모두 CAGR 하회**. ss_4_10 / top5_4_8 만 MDD 개선
+(+3.56~6.38p) 하지만 CAGR -4~10p 동반 → Calmar 도 baseline 우위.
+
+### Cash drag vs 종목 선택 편향 분해 (exp_g_cash_drag.py)
+
+top5_4_8 강세장 알파 -112.8p 손실 분해:
+- 일평균 포지션 baseline 4.58/5 (92% exposure) vs top5_4_8 4.07/5 (81%)
+- **단순 cash drag (노출 -10.4%p) ~ -18p** — 비례 손실
+- **종목 선택 편향 ~ -94p (84%)** — RS 1위 = 9-15d extended = 강세장
+  진짜 leader 를 의도적으로 패스한 효과
+- 박스권 / 중립 / 강세 모두 비슷한 ~10%p exposure 차이지만 임팩트
+  +0.1 / -2.0 / -112.8p 로 천차만별 → "현금이 보호하는 게 아니라,
+  알파가 시기마다 다른 종목에 있을 뿐"
+- **ADR-005 결론 ("extended 진입이 알파의 일부, fresh 는 가짜 돌파
+  비율 높음") 의 강세장 정량 재확인**
+
+### 검토한 대안
+- (a) ADR-014 신설 (sweet-spot 기각 정식 ADR) — 학습 가치 (사전
+  robustness 통과해도 fail 한 첫 케이스). 마스터 결정 보류.
+- (b) ADR-010 amendment (3번째 관문 = portfolio 백테 추가) — 마스터
+  결정 보류.
+- **(c) SESSION_LOG only** — 채택. 실패 기록 가볍게.
+- top5_4_8 MDD 개선 +3.56p 의 sizing 채널 reframing — 페이퍼 후
+  검토. ADR-010 박스권 게이트 footnote 와 같은 함정 주의.
+
+### 다음 세션에서 할 일
+- **페이퍼 트레이딩 인프라 셋업** (CLAUDE.md 1순위, 04-26 #2 부터
+  carry-over). 알파 추구 6번 연속 fail 후 자연스러운 다음 단계.
+- ADR 후보 보류건 2개 (ADR-014 / ADR-010 amendment) 마스터 결정 시
+  복귀.
+
+### 미해결
+- 본 실험 산출물 (analysis 스크립트 + parquet/csv) push 여부 마스터
+  결정 사항. 운영 규칙상 명시 승인 후 push.
+- top5_4_8 MDD 개선 +3.56p 의 sizing 채널 검토 — 페이퍼 후.
+
+### 이번 세션 생성/수정 파일
+- 신규 (worktree):
+  - `backtest/experiments/exp_a_age_returns.py` (사후 버킷 분포)
+  - `backtest/experiments/exp_a_age_walkforward.py` (시기 + 정의 sensitivity)
+  - `backtest/experiments/exp_f_sweet_spot_backtest.py` (pool filter 6 variant)
+  - `backtest/experiments/exp_g_top5_then_age_filter.py` (Top5 filter 5 variant)
+  - `backtest/experiments/exp_g_cash_drag.py` (cash drag 분해)
+- 신규 결과 (main checkout 에 생성, worktree 일부 복사):
+  - `results/exp_a_age_*.csv` (3 파일)
+  - `results/exp_f_*.csv + parquet` (7 variant equity/trades)
+  - `results/exp_g_*.csv + parquet` (6 variant equity/trades)
+- 수정: `SESSION_LOG.md`, `CLAUDE.md`
+
+---
+
+## 2026-04-28 #1 (web, branch `claude/track-kospi-200-stocks-s54c2`) — KOSPI 200 라이브 확장 + Claude augmentation 분업 frame (B) + /analyze 슬래시 명령 이식
 
 ### 결정
 

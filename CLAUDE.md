@@ -123,8 +123,17 @@ _inbox + 운영 규칙 변경 main 머지. 마스터 명시 승인 시.
 - ❌ **Section 04 Entry Candidates UI** (ADR-008)
 - ❌ **Claude augmentation** (ADR-009)
 - ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
+- ❌ **signal_age sweet-spot 룰** (SESSION_LOG 04-28 #2). 11 variant
+  (exp_f 6 pool filter + exp_g 5 Top5 filter) 전부 baseline (+29.55%)
+  하회. 사전 trade-level robustness 양면 통과 (시기 3/3, 정의 6/6) 했으나
+  portfolio 단계 fail. 강세장 -112.8p 손실 분해: cash drag ~18p + 종목
+  선택 편향 ~94p (RS Top1 = 9-15d extended leader 회피 효과). ADR-005
+  "extended 진입이 알파" 결론 강세장 정량 재확인.
 - ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
-  robustness plan 둘 다 통과 시에만 백테 시도
+  robustness plan 둘 다 통과 시에만 백테 시도. **04-28 #2 보강 후보**:
+  3번째 관문 = portfolio CAGR + Calmar 모두 baseline 동률 이상.
+  trade-level robustness 통과해도 portfolio 단계 fail 가능 (cash drag
+  + 종목 선택 편향). 정식 amendment 마스터 결정 사항.
 
 ### 잔존 정리 (UI 수동, sandbox 403)
 - 브랜치 삭제: `session-start-hook-Lv8YN`, `session-end-2026-04-24-3`,
@@ -245,7 +254,16 @@ morning-report/
 ---
 
 ## 최근 세션
-- **2026-04-28 (web, branch `claude/track-kospi-200-stocks-s54c2`)**:
+- **2026-04-28 #2 (PC CLI worktree `claude/sad-ritchie-f8d888`)**:
+  signal_age sweet-spot 가설 11 variant 백테 → 전부 baseline 하회 (5+6번째
+  연속 fail). exp_a 사후 분포에서 4-7d 가 trade-mean / median / win 모든
+  지표 최고 + robustness 양면 통과 (시기 3/3, 정의 6/6) 했으나 hard 백테
+  fail. exp_f 6 variant (pool filter) + exp_g 5 variant (Top5 → age filter,
+  마스터 제안) 전부 CAGR baseline 깎음. cash drag 분해: 강세장 -112.8p
+  중 cash drag ~18p + 종목 선택 편향 ~94p (RS Top1 = 9-15d extended
+  leader 회피 효과). ADR-005 "extended 진입이 알파" 강세장 정량 재확인.
+  코드 변경 0 (실험 스크립트만 추가). 페이퍼 트레이딩 인프라 1순위 재확정.
+- **2026-04-28 #1 (web, branch `claude/track-kospi-200-stocks-s54c2`)**:
   KOSPI 200 라이브 universe 확장 (162 → 200, 백테 162 스냅샷 유지) +
   sector_overrides 234 (신규 70종목 11섹터 매핑) + Claude augmentation 분업
   frame (B 채택, ADR-009 부분 reversal — 7카드=인간 판단 영역 저널 거울,
