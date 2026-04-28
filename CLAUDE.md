@@ -1,14 +1,17 @@
 # morning-report
 
-<!-- Last session branch: claude/condescending-roentgen-c7ae37 (2026-04-28 #2) -->
+<!-- Last session branch: claude/crazy-kirch-06c1d1 (2026-04-28 #3) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-28 #2)
+## 현재 상태 (2026-04-28 #3)
 
-**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 첫 단계 진입 (Plan 005/006 + Notion DB) + `/analyze` v3 가이드 정식화 + 백테 가정 한계 발견**. 1주 운영 후 정식화 (CLAUDE.md 차감 / 운영 모델 / 자동 모듈 구현).
+**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 첫 단계 (#2) + NDX 필터
+가설 진단 종결 (#3, ADR-010 4번째 case) + 백테 시가 체결 가정 데이터로
+정량 검증 (#3)**. 1주 운영 후 정식화 (CLAUDE.md 차감 / 운영 모델 / 자동
+모듈 구현).
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 (KIS API 200종목,
 ~30~40분) → HTML 렌더 → PDF 변환 → Drive 업로드 → Notion publish. **+
@@ -16,25 +19,23 @@ augmentation 흐름**: cron 끝 ~07:00 KST 마스터가 Claude Code 세션 → `
 한 줄 → 7카드 JSON main commit → `claude_render.yml` 자동 트리거 → PDF
 재렌더 + Drive + Notion 갱신.
 
-**오늘 #2 (2026-04-28 PC CLI worktree) 핵심 작업**:
-- **`/analyze` v3 가이드 정식화** (PR #27 머지). `.claude/commands/analyze.md`
-  에 entry 카드 v3 의무 4개 (산업군 임계 분리 / WebSearch Top 5 / 컨센 추월
-  ⚠️ +10%/+50% / 출처) sub-section + entry 외 6카드 환기 사항 분리 + 금지
-  사항 4건 + 예시 섹션 (2026-04-28 reference). 다음 cron 06:25 부터 자동
-  동일 quality.
-- **페이퍼 트레이딩 인프라 첫 단계** (PR #28 머지). Plan 005 (DB 스키마
-  24필드 spec) + Plan 006 (자동 모듈 spec) + Notion DB 자동 생성 (📊 모닝
-  리포트 → 페이퍼 트레이딩 저널 → Positions). **Data source ID
-  `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`** (Plan 006 영구 reference).
-  Views 3개 + dry-run row 1개.
-- **백테 +29.55% 가정 한계 정량화** (대화 분석, 코드 미변경). `strategy.py:320`
-  `entry_price = o[i] × (1 + 0.15%)` — 시초가 무조건 100% 체결 가정.
-  거래량 / 호가창 / 상한가 갭 / 인간 회피 전부 미반영. 슬리피지 -1~2%p →
-  -2~3%p 보정 필요 + 인간 회피/지연 -3~7%p 미반영.
-- **예약 매수 회피 차단 발견**. 한국 증시 동시호가 (08:30~09:00) 시장가
-  매수 예약 → 09:00 단일가 체결, 갭상이라도 시초가 매수 가능. **인간
-  회피/지연 자동 차단 장치**. 운영 시 실전 +22~25% 가능 (백테 가정 거의
-  살아있음). 망설임 + 5일 지연 시 +12~17%. 1주 운영 검증.
+**오늘 #3 (2026-04-28 PC CLI worktree `claude/crazy-kirch-06c1d1`) 핵심 작업**:
+- **NDX -2% 필터 가설 진단 종결** (ADR-010 4번째 적용 case). 마스터
+  직관 "전일 NDX 폭락 → KOSPI 폭락 → 매수 차단 시 알파 향상" 가설을
+  2단계 진단으로 반증:
+  1. **인덱스 차원** (`backtest/99_ndx_filter_diagnosis.py`, n=2,773):
+     KOSPI 시가→시가, NDX 전일 -2% 다음날 +0.255% (전체 +0.051% 대비
+     +0.20%p, win% 53→61%). NDX -3% → +0.322% (win% 71.6%). 반대도
+     단조 — NDX +2% → -0.229%, +3% → -0.441%. 양방향 mean reversion.
+  2. **개별 시그널 종목** (`backtest/99_signal_gap_diagnosis.py`, 333
+     trade): 평균 갭 **+0.173%**, 중앙 **0.000%**, 갭상 49.2%. "시그널
+     = 갭상 종목" 직관 데이터에서 부정.
+- **백테 "시가 100% 체결" 가정 우려도 부정**. 직전 세션 #2 에서 제기된
+  "백테 +29.55% 가정 부풀림" 우려에 직접 답: 시그널 평균 갭 +0.17%
+  (거의 0) 라 어긋남 효과 작음. 슬리피지 -1~2%p 보정 유효.
+- **갭상 ≥3% 회피 룰 후보 발견**. 갭 버킷 분석에서 +3~5% (12 trade,
+  -5.47%) / +5~10% (3 trade, -10.46%) 음수 수익 명확. 4.5% trade 차단
+  ROI 검토 — ADR-014 후보, 페이퍼 1주 운영 후 sensitivity test.
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -92,11 +93,14 @@ ADR-014 + Plan 007/008 정식화. 운영 항목:
 누적. NO 면 즉시 A (전면 폐기) 전환. 정식 평가 후 ADR-012 정식화 또는
 ADR-009 재확인.
 
-#### 4️⃣ ADR 후보 4건 (마스터 결정)
+#### 4️⃣ ADR 후보 5건 (마스터 결정)
 
 - ADR-012 augmentation B 분업 frame (1주 자체 점검 결과 반영)
 - ADR-013 라이브 universe ↔ 백테 스냅샷 분리
 - ADR-014 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
+- **ADR-015 갭상 ≥3% 회피 룰** (신규, 04-28 #3 발견). 백테 333 trade
+  중 +3~5% 갭상 12 trade 평균 -5.47% / +5~10% 갭상 3 trade -10.46%.
+  ADR-010 메타 원칙 적용 — sensitivity test + 페이퍼 1주 운영 측정 후.
 - Plan 007 (선택) PDF 첫 페이지 페이퍼 포지션 / 누적 수익률 카드
 
 #### 5️⃣ dry-run row 처리
@@ -116,6 +120,11 @@ ADR-009 재확인.
   취약" 같은 기계적 분류) — ROE 임계 분리 + 산업군 인식. 알파 0, 별 이슈.
 - **KOSPI 200 외 stale tickers cleanup**: 293490 (옛 카카오뱅크) → 323410 /
   000215 → 375500 / 298000 → 298020 / 005870 → 088350. 라이브 영향 0.
+- **NXT 종가 매수 모델 검토** (04-28 #3 마스터 제안, 본 세션 종결).
+  D 종가 신호 → NXT 정규외 (15:30~20:00) 즉시 매수로 오버나잇 갭 회피.
+  검토 결과 — NXT 2025-03 출범 14개월 데이터로 백테 통계 유의성 비교
+  불가 + 정규외 유동성 5~10% 슬리피지 의심. 1주 페이퍼 운영 슬리피지
+  실측 후 본격 검토 여부 결정.
 - **2025+ 이상치 검증** (+157% CAGR 재현성) — 페이퍼 후 검토
 - **2022년 방어 실패 분석** — 페이퍼 후 검토
 - **생존편향 정량화** (2015 상폐주 리스트) — 페이퍼 후 검토
@@ -130,6 +139,9 @@ ADR-009 재확인.
 - ❌ **Section 04 Entry Candidates UI** (ADR-008)
 - ❌ **Claude augmentation** (ADR-009)
 - ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
+- ❌ **NDX -2% 매수 차단 필터** (ADR-010 4번째 case, SESSION_LOG 04-28 #3)
+  — 인덱스 mean reversion 양방향 단조 + 시그널 종목 평균 갭 +0.17%
+  (갭상 49.2%) 로 가설 양쪽 다 데이터에서 반박
 - ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
   robustness plan 둘 다 통과 시에만 백테 시도
 
@@ -252,19 +264,26 @@ morning-report/
 ---
 
 ## 최근 세션
+- **2026-04-28 #3 (PC CLI worktree `claude/crazy-kirch-06c1d1`)**: NDX -2%
+  매수 차단 필터 가설 진단 종결 (ADR-010 4번째 case). 2단계 진단 — (1)
+  인덱스 차원 KOSPI 시가→시가 mean reversion 양방향 단조 (NDX -2%
+  → +0.255% / +2% → -0.229%, n=2,773), (2) 개별 시그널 종목 갭 분포
+  (백테 333 trade, 평균 +0.173% / 갭상 49.2% / "갭상 종목" 직관 부정).
+  부산물: 백테 "시가 100% 체결" 가정의 알파 부풀림 우려도 데이터로 부정
+  (직전 #2 의문에 답) + 갭상 ≥3% 회피 룰 후보 발견 (15 trade -5~10%
+  음수, ADR-015 후보). 산출: `backtest/99_ndx_filter_diagnosis.py`,
+  `backtest/99_signal_gap_diagnosis.py`.
 - **2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`)**:
-  `/analyze` v3 가이드 정식화 (PR #27, `d881bf8` — entry 카드 v3 의무 4개
-  sub-section + 6카드 환기 분리 + 금지 4건 + 예시 섹션) + 페이퍼 트레이딩
-  인프라 첫 단계 (PR #28, `39727d5` — Plan 005/006 spec + Notion DB
-  자동 생성, data_source_id `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`,
-  Views 3개 + dry-run row 1개) + 백테 가정 한계 정량화 (시초가 무조건 체결
-  가정, cost 0.15% + 인간 회피 -3~7%p 미반영) + 예약 매수 회피 차단 발견
-  (08:30~09:00 동시호가 시장가, 1주 운영 검증 대기).
+  `/analyze` v3 가이드 정식화 (PR #27, `d881bf8`) + 페이퍼 트레이딩
+  인프라 첫 단계 (PR #28, `39727d5` — Plan 005/006 + Notion DB,
+  data_source_id `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`) + 백테 가정
+  한계 정량화 + 예약 매수 회피 차단 발견 (08:30~09:00 동시호가, 1주
+  운영 검증 대기).
 - **2026-04-28 #1 (web, branch `claude/track-kospi-200-stocks-s54c2`)**:
   KOSPI 200 라이브 universe 확장 (162 → 200, 백테 162 스냅샷 유지) +
-  sector_overrides 234 (신규 70종목 11섹터 매핑) + Claude augmentation 분업
-  frame (B 채택, ADR-009 부분 reversal) + `/analyze` 슬래시 명령 도입 +
-  결정 인박스 (`_inbox.md`, 자동 push 예외) + v3 entry 카드 패턴 도입.
+  sector_overrides 234 + Claude augmentation 분업 frame (B 채택,
+  ADR-009 부분 reversal) + `/analyze` 슬래시 + 결정 인박스 + v3 entry
+  카드 패턴 도입.
 - **2026-04-26 #2 (PC CLI worktree `claude/elated-tu-ec63ef`)**: 알파 추구 1차
   종료. VCP 162 재검증 → ADR-001 기각 강화 (-21.35%p). ADR-010 박스권
   조건부 게이트 6 variant → 기각. ADR-005/004/001/010 4번 연속 "추가 필터
@@ -272,6 +291,3 @@ morning-report/
 - **2026-04-26 #1 (PC CLI, `claude/interesting-kapitsa-d40f52`)**: 04-25 web
   사고 fix + Notion CI 자동화 + Instruction v5.0→v5.1 + Claude augmentation
   폐기 (A 옵션) 결정. v5.1 + claude_render 인프라 미래 재시도용 보존.
-- **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008
-  Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) +
-  Instruction v3.6→v3.9 3사이클 (PR #20).
