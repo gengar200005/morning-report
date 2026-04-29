@@ -67,6 +67,23 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    - `agrade`: A등급 광폭 시 강세장 재현 의심 + 페이퍼 병행 권장
    - `portfolio`: 매크로 임박 시 추매 자제 명시
 
+   **macro 카드 — v2 의무사항** (2026-04-30 정식화. 04-30 리포트 "FOMC D-6
+   임박" 가짜 narrative 사고 = 하드코딩 `combine_data.py:MACRO_EVENTS` 신뢰
+   + 1차 출처 재검증 누락 → 본 의무 신설):
+   - **1차 출처 당일 검증** — 다음 FOMC 발표일은 federalreserve.gov 공식
+     일정, NFP/CPI 발표일은 bls.gov release schedule. **하드코딩된
+     `combine_data.py:MACRO_EVENTS` 또는 `morning_data.txt` 매크로 블록은
+     fallback skeleton 으로만 취급, 그대로 신뢰 ❌**. 매일 1차 출처 재확인
+     후 덮어쓰기.
+   - **직전 결과 + 시장 반응** — 어제·이번 주에 FOMC/NFP/CPI 발표가 있었으면
+     결과 + 시장 반응 (Reuters / CNBC / Bloomberg / WSJ 등 신뢰 보도사)
+     인용. 단순 D-day 카운트만 ❌.
+   - **시장 급변 원인 1차 출처** — WTI / 환율 / 미국채 금리 1%+ 급변 시
+     원인 (지정학 / 공급충격 / 정책) 신뢰 출처 (IEA / Reuters / Bloomberg /
+     World Bank 등) 검증 후 인용. "지정학·공급 충격 신호" 류 추측 라벨 ❌.
+   - **출처 인용** — 카드 마지막에 *italic* 으로 인용 출처 (federalreserve.gov
+     / bls.gov / 보도사 명) 열거. 인용 시점 (당일 / ~당주) 명시.
+
 6. **main 에 commit + push** (claude_render.yml 가 main 만 트리거):
    ```bash
    # 현재 브랜치가 main 아니면 main 으로 체크아웃
@@ -108,6 +125,13 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 - **entry 카드 컨센 인용 없는 진단** ❌ (증권사 명·목표가·인용 시점 셋 다 있어야 함)
 - **entry 카드 산업군 무시 절대값 라벨** ❌ ("PBR 15.6 = 펀더멘털 취약" 류, 산업 임계 적용)
 - **entry 카드 컨센 추월 ⚠️ 누락** ❌ (현재가 ≥ 컨센 평균 +10% 시 ⚠️ 의무)
+- **macro 카드 하드코딩 일정 그대로 신뢰** ❌ (`combine_data.py:MACRO_EVENTS`
+  / `morning_data.txt` 매크로 블록은 fallback skeleton, `/analyze` 가
+  federalreserve.gov / bls.gov 1차 출처 재검증 후 덮어쓰기 의무)
+- **macro 카드 1차 출처 누락** ❌ (FOMC = federalreserve.gov, NFP/CPI =
+  bls.gov 인용 의무. 부재 시 "1차 출처 검증 실패" 명시)
+- **macro 카드 시장 급변 추측 라벨** ❌ (WTI / 환율 / 금리 1%+ 급변 시
+  원인 신뢰 출처 검증 후 인용, "지정학·공급 충격 신호" 류 추측 ❌)
 
 ---
 
