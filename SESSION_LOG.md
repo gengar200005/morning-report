@@ -4,6 +4,55 @@
 
 ---
 
+## 2026-04-28 (web 병렬 3개 — `analyze-code-8HvmQ` / `sad-ritchie-f8d888` / `crazy-kirch-06c1d1`) — 기각 가설 정리 흡수 + 작업 브랜치 폐기 (코드 변경 0)
+
+본 entry 는 04-29 세션 시작 시 회수. 3개 병렬 작업 모두 ADR-010 메타 원칙
+fail 사례 누적. ADR 기록만 main 흡수, 백테 스크립트/experiments 코드 + 작업
+브랜치는 **모두 폐기**.
+
+### 흡수 결과
+
+- **ADR-012 채택** (analyze-code-8HvmQ, `bb3e443`): 거래량 (3일 거래대금/
+  거래량) 기반 selection 및 sizing 양 채널 무효 확정. ADR-010 메타 원칙
+  사례 1건 (V1a/V1b/V1c 4종 백테, 162종목 11.3년, baseline 대비 전체
+  CAGR -5~10%p / V1c MDD -11.0%p 악화). 박스권 +4.50%p 부산물은 selection
+  noise 로 재현성 0 입증. 정식 ADR `docs/decisions/012-volume-selection-
+  sizing-rejected.md`. baseline (RS percentile desc Top 5, 균등 가중) 유지.
+
+- **NDX -2% 필터 가설 종결** (crazy-kirch-06c1d1, `caf96a5`): KOSPI 시가→
+  시가 mean reversion 데이터로 가설 방향 자체 반박 (NDX -2% 이하 다음날
+  +0.255% / -3% 이하 +0.322%, win% 우상향). 시그널 종목 평균 갭 +0.173%
+  (n=333) 로 백테 시가 100% 체결 가정의 알파 부풀림 우려도 부정 — CLAUDE.md
+  슬리피지 -1~2%p 보정 유효, -10%p 큰 보정 불필요. ADR-010 메타 원칙 사례.
+  부산물: 갭 ≥3% 회피 룰 후보 (3-5%구간 12 trade 평균 -5.47%, 5-10%구간
+  3 trade 평균 -10.46%) — sensitivity + 페이퍼 1주 후 검토.
+
+- **signal_age sweet-spot 기각** (sad-ritchie-f8d888, `547ce80`): exp_a
+  사후 분포 4-7d 버킷이 trade-mean / median / win 모든 지표 최고 + 시기
+  3/3 + 정의 6/6 robustness 통과했으나, exp_f (pool filter, 6 variant) +
+  exp_g (Top5 → age filter, 5 variant) **11 variant 전부 baseline CAGR
+  +29.55% 하회**. 가장 가까운 ss_4_8 도 -0.47%p, 가장 좁은 ss_5_7
+  -12.81%p / MDD -14.15%p. cash drag 분해 — 강세장 -112.8%p 중 종목 선택
+  편향 ~94%p (RS Top1 = 9-15d extended = 강세장 leader 회피). **ADR-005
+  "extended 진입이 알파" 강세장 정량 재확인**. ADR-010 메타 원칙 사례.
+
+### 폐기
+
+- **작업 브랜치 3개 삭제** (origin/local 모두): `analyze-code-8HvmQ` /
+  `crazy-kirch-06c1d1` / `sad-ritchie-f8d888`.
+- **백테 스크립트 폐기**: `backtest/99_volume_selection.py` /
+  `backtest/99_ndx_filter_diagnosis.py` / `backtest/99_signal_gap_diagnosis.py`
+  / `backtest/experiments/exp_*` 일체 main 미흡수.
+- **재현 정책**: 본 SESSION_LOG entry + ADR-012 4종 비교 표 / Pass 기준
+  기록만으로 strategy.py 매개변수화 재구성 가능.
+
+### 미해결
+
+- 갭 ≥3% 회피 룰 후보 (crazy-kirch 부산물) — 페이퍼 1주 후 sensitivity
+  test 시 재검토. ADR-010 사전 게이트 통과 못하면 자제.
+
+---
+
 ## 2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`) — `/analyze` v3 가이드 정식화 + 페이퍼 트레이딩 인프라 첫 단계 (Plan 005/006 + Notion DB) + 백테 가정 한계 분석
 
 ### 결정

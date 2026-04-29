@@ -130,6 +130,9 @@ ADR-009 재확인.
 - ❌ **Section 04 Entry Candidates UI** (ADR-008)
 - ❌ **Claude augmentation** (ADR-009)
 - ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
+- ❌ **거래량 selection / sizing** (ADR-012, ADR-010 사례)
+- ❌ **NDX -2% 필터** (04-28 SESSION_LOG, ADR-010 사례, 시가 mean reversion 으로 방향 자체 반박)
+- ❌ **signal_age sweet-spot 4-7d** (04-28 SESSION_LOG, ADR-005 강화, 11 variant 전부 baseline 하회)
 - ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
   robustness plan 둘 다 통과 시에만 백테 시도
 
@@ -248,6 +251,15 @@ morning-report/
   컨텍스트 손실 4번 연속 패턴 mitigation. "해보자" 결정 1~3줄 즉시 commit +
   push (자동 push 예외 1건 신설), 다음 세션 회수 → 정식 문서 흡수 → entry
   삭제. 3개월 운영 후 활용도 0 또는 자동 push 사고 시 폐기.
+- **ADR-012** 거래량 selection / sizing 양 채널 무효 — **채택 (기각 결정)**.
+  V1a/V1b/V1c 4종 백테 (162종목 11.3년) 전부 baseline 하회, V1c MDD
+  -11.0%p 악화. 박스권 +4.50%p 부산물은 selection noise 재현성 0. ADR-010
+  메타 원칙 사례. baseline (RS Top 5 균등 가중) 유지. **04-28 web 병렬 3개
+  기각 가설 정리 (SESSION_LOG)**: ADR-012 + NDX 필터 종결 (KOSPI 시가
+  mean reversion 으로 가설 방향 자체 반박, 시그널 종목 평균 갭 +0.17%
+  로 백테 시가 가정 부풀림 우려도 부정) + signal_age sweet-spot 11 variant
+  전부 baseline 하회 (ADR-005 강세장 정량 재확인). 작업 브랜치 3개 +
+  백테 스크립트/experiments 일체 폐기.
 
 ---
 
