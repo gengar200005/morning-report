@@ -671,6 +671,7 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
         r"\s*정배열:([✓✗])\s*MA200상승:([✓✗])\s*코어\s+(\d+)/(\d+)\s*\n"
         r"\s*52주고점\s+([\d,]+)\s*\(대비\s+([+\-−]?[\d.]+)%\)\s*\n"
         r"\s*손절가\s+([\d,]+)\s*\|\s*수급20일\s+([+\-−]?[\d,]+)주\s*\n"
+        r"(?:\s*🎯\s*\[(HOLD|TRAIL|STOP|STALE)\][^\n]*\n)?"  # ADR-013 청산 평가 줄 (optional)
         r"\s*⇒\s*(.+?)(?=\n|$)",
         re.MULTILINE,
     )
@@ -694,6 +695,7 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
             high_pct,
             stop_price,
             supply_20d,
+            liquidation_status,
             verdict,
         ) = match.groups()
         holdings.append(
@@ -715,6 +717,7 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
                 "pct_from_52w_high": _to_float(high_pct),
                 "stop_price": _to_int(stop_price),
                 "supply_20d": _to_int(supply_20d),
+                "liquidation_status": liquidation_status,  # ADR-013 EOD tracker (HOLD/TRAIL/STOP/STALE/None)
                 "verdict": verdict.strip(),
             }
         )
