@@ -57,19 +57,73 @@
   거래량 selection/sizing / NDX 필터 / signal_age sweet-spot. 4 작업 브랜치
   + 백테 스크립트/experiments 폐기. 자세한 내용 SESSION_LOG 04-28 entry 참조.
 
+- **parser regex hotfix** (commit `20756ce`): 작업 브랜치 ref 로 morning.yml
+  dispatch 테스트 결과 PDF 의 보유 종목 카드 미렌더 회귀 발견. 원인은
+  `reports/parsers/morning_data_parser.py` 의 `_parse_holdings` 정규식이
+  손절가 줄과 ⇒ 줄 사이에 끼어든 🎯 청산 평가 줄을 인식 못 해 finditer
+  매치 0건 → holdings = [] 빈 리스트. 수정: optional capture group
+  `(?:\s*🎯\s*\[(HOLD|TRAIL|STOP|STALE)\][^\n]*\n)?` 추가 (옛 형식 호환)
+  + holdings dict 에 `liquidation_status` 키 (HOLD/TRAIL/STOP/STALE/None)
+  추출. 단위 테스트 3 case (옛 형식 None / HOLD / STALE) 통과.
+
 ### 검증
 
 - `holdings_report.py` `liquidation_line()` 단위 테스트 (5 case): HOLD /
   TRAIL / STOP / STALE (no 갱신시각) / STALE (48h ago) 모두 예상 출력.
 - AST syntax check 통과.
+- **morning.yml 작업 브랜치 dispatch 1회** (마스터, 17:14 KST): morning-data
+  레포 (`gengar200005/morning-data`) 의 morning_data_20260429.txt 에 🎯
+  청산 평가 줄 정상 push 확인. 단 PDF 회귀 발견 (parser 원인) → hotfix
+  commit `20756ce` push. **재dispatch 미완** (다음 세션).
+- parser regex 단위 테스트: 옛 형식 (None) / HOLD (`liquidation_status =
+  'HOLD'`) / STALE (`liquidation_status = 'STALE'`) 3 case 통과.
+
+### 검토한 대안
+
+- **04-28 web 병렬 기각 브랜치 처리**: (a) 그냥 삭제 — ADR-012 영구 손실,
+  ADR-010 메타 원칙 fail 사례 누적이 핵심이라 거부 vs **(b) ADR 기록만
+  main 흡수 후 브랜치 삭제** ✓ 채택. 백테 스크립트/experiments 코드는
+  폐기 (재현 필요 시 ADR-012 4종 비교 표 + Pass 기준만으로 재구성 가능).
+- **morning.yml 테스트 방법**: **(A) 작업 브랜치 ref 로 dispatch** ✓ 채택
+  (즉시 검증) vs (B) PR 머지 후 main dispatch (정식, 안전) vs (C) 04-30
+  정상 cron 기다림 (가장 안전, 14h 후). 마스터 (A) 선택, 부작용은 PR
+  머지 후 main dispatch 로 정상 04-29 본 복원 가능.
+- **parser hotfix 범위**: **(A) regex optional 매치만** ✓ 채택 (최소 fix
+  + holdings dict 에 liquidation_status 정보 보존, /analyze portfolio
+  카드가 인용 시 augmentation PDF 에 표시 가능) vs (B) template 까지
+  변경하여 baseline PDF 에도 청산 평가 표시. (B) 는 scope 늘어나 본 PR
+  보류.
+
+### 다음 세션에서 할 일
+
+1. **작업 브랜치 재dispatch** (parser hotfix 검증) — `claude/session-start-UnRlh`
+   ref 로 morning.yml dispatch → 새 PDF 의 보유 종목 카드 정상 렌더 확인.
+2. PDF 정상이면 **PR 생성 + 머지** — 작업 브랜치 → main. 04-29 본 dispatch
+   결과 (Drive / Notion publish 가 baseline+inherit 본으로 갈아끼운 상태)
+   복원이 필요하면 main 머지 후 재dispatch + `/analyze` 재실행.
+3. **04-30 (목) 06:25 정상 cron 1차 통합 검증** — 주말 휴장 없는 평일이라
+   stock-automation D 19:00 cron + morning-report D+1 06:25 cron 정상 흐름.
+4. 정상 시 1주 운영 진입 → ADR-013 측정 항목 (마스터 매도 예약 누락 0 /
+   stale 발생률 ≤ 5% / 백테 vs 실전 portfolio 추적) 누적.
+5. 원격 기각 브랜치 4개 (`analyze-code-8HvmQ` / `crazy-kirch-06c1d1` /
+   `sad-ritchie-f8d888` / `session-start-bGCen`) GitHub UI 수동 삭제
+   (sandbox 403).
 
 ### 미해결
 
 - **PR 머지 후 stock-automation 레포 통합 테스트** — D+1 06:25 morning
   cron 이 D 19:00 EOD tracker 출력을 정상 inherit 하는지. 04-30 (목)
   cron 결과로 1차 검증.
+- **첫 dispatch 시 main 에 holdings_data.txt push 안 된 원인 미진단**
+  (`save_to_github` 호출 결과 main 에 새 commit 없음). 가능성: dispatch
+  ref 가 작업 브랜치라 GITHUB_TOKEN 권한 또는 race. PR 머지 후 main
+  dispatch 로 우회되니 추적 우선순위 낮음. 1주 운영 중 재현 시 진단.
 - **휴장일 처리** — 24h stale 임계가 1일 휴장 보호. 연휴 (3일+) 시
   D-2 데이터 inherit + STALE 분기. 1주 운영 후 정밀화 (ADR-015 후보).
+- **PDF 의 baseline 보유 종목 카드 청산 평가 표시 미구현** — 본 PR 은
+  parser dict 에 `liquidation_status` 만 보존. template 측 시각화는
+  scope 밖. /analyze augmentation portfolio 카드가 인용하는 흐름으로 우선
+  운영. 1주 후 baseline 카드도 표시 필요성 검토.
 - **ADR-014 라이브 universe ↔ 백테 스냅샷 분리** — bGCen 진입점 7️⃣ 후보,
   본 세션 미처리.
 
