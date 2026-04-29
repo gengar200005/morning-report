@@ -4,6 +4,121 @@
 
 ---
 
+## 2026-04-29 #2 (PC CLI worktree `claude/session-start-UnRlh`) — ADR-013 자동매매 룰 정합화 정식화 + holdings_report EOD inherit + analyze.md spec 보강 + 04-28 web 병렬 3개 기각 정리
+
+직전 04-29 #1 (web `bGCen`) 의 자동매매 룰 합의 결정을 정식 ADR + 코드
+구현으로 흡수. 동시에 04-28 web 병렬 3개 미머지 브랜치 기각 가설 정리
+(SESSION_LOG entry 1건 + ADR-012 흡수, 코드 폐기) 도 본 세션에서 처리.
+
+### 결정
+
+- **ADR-013 채택** (`docs/decisions/013-auto-trailing-rule-alignment.md`):
+  사용자 장중 trailing 룰 (M-STOCK +15% 활성화 → 장중 -10% peak 즉시
+  시장가) 폐기, 백테 룰 (`종가 ≤ peak_close × 0.90 → D+1 시초가 시장가`)
+  채택. 알파 손실 추정 -10~17%p CAGR (장중 노이즈 슬립아웃 winner 가짜
+  트리거 -10~15%p + 거래 수 증가 -1~2%p, 청산 시점 wash). EOD tracker
+  (별도 `stock-automation` 레포 D 19:00 KST cron) = 단일 진실의 원천.
+  stop_loss -7% 룰만 유지.
+
+- **운영 흐름 정합화 명문화** (ADR-013 본문):
+  ```
+  D 19:00 cron (stock-automation) → Notion 5 필드 갱신
+  D+1 06:25 cron (morning-report) → holdings_report inherit + 🎯 청산 평가
+  D+1 ~07:00 마스터 /analyze → alert/portfolio 카드에 trigger 명시
+  D+1 08:30~09:00 마스터 동시호가 시장가 예약주문
+  ```
+  EOD tracker 정상 작동 확인 (마스터 04-29 15:35 장종료 후 테스트 1회).
+
+- **`holdings_report.py` EOD tracker 4+1 필드 inherit**:
+  - `fetch_holdings()` dict 에 `최고종가` / `트레일선` / `동적손절선` /
+    `청산상태` (HOLD/TRAIL/STOP) / `갱신시각` 추가
+  - `is_eod_stale()` 24h 임계 판정 헬퍼 (D+1 06:25 cron 시점 11.5h
+    경과 정상, 휴장일 1일 보호 마진)
+  - `liquidation_line()` 4 분기 출력: HOLD (피크/트레일/손절선 거리
+    + EOD 시각) / TRAIL (⚠️ 익일 시초가 매도 예약) / STOP (⚠️ 익일
+    시초가 매도 예약) / STALE (⚠️ 갱신 누락)
+  - `build_text()` 에 🎯 청산 평가 줄 1줄 추가 (`⇒ 추매시그널` 직전)
+
+- **stale 코드 정리** (`holdings_report.py`):
+  - `TS활성화` (현재 schema 부재 + ADR-013 자동 trailing 폐기로 의미 0) 제거
+  - `최고가_노션` (현재 schema 는 `최고종가`) 제거
+  - `get_check()` 헬퍼 (TS활성화 전용) 제거
+
+- **`.claude/commands/analyze.md` ADR-013 반영**:
+  - 7카드 데이터 소스 표 — `alert` / `portfolio` 카드에 `holdings[i]` 의
+    4 필드 명시
+  - "entry 외 6카드" 환기 의무 추가 — `alert` 자동매도 trigger 명시
+    (`[STOP]/[TRAIL] 종목명 — 익일 시초가 매도 예약` 1줄), `portfolio`
+    자동매도트래커 단일 진실의 원천 + STALE 환기
+  - 금지 사항 추가 — "자동매도트래커 외 trail/stop 임의 재계산 ❌" /
+    "alert 카드 자동매도 trigger 누락 ❌"
+
+- **04-28 web 병렬 3개 기각 가설 정리** (직전 commit `01cc9a5`): ADR-012
+  거래량 selection/sizing / NDX 필터 / signal_age sweet-spot. 4 작업 브랜치
+  + 백테 스크립트/experiments 폐기. 자세한 내용 SESSION_LOG 04-28 entry 참조.
+
+### 검증
+
+- `holdings_report.py` `liquidation_line()` 단위 테스트 (5 case): HOLD /
+  TRAIL / STOP / STALE (no 갱신시각) / STALE (48h ago) 모두 예상 출력.
+- AST syntax check 통과.
+
+### 미해결
+
+- **PR 머지 후 stock-automation 레포 통합 테스트** — D+1 06:25 morning
+  cron 이 D 19:00 EOD tracker 출력을 정상 inherit 하는지. 04-30 (목)
+  cron 결과로 1차 검증.
+- **휴장일 처리** — 24h stale 임계가 1일 휴장 보호. 연휴 (3일+) 시
+  D-2 데이터 inherit + STALE 분기. 1주 운영 후 정밀화 (ADR-015 후보).
+- **ADR-014 라이브 universe ↔ 백테 스냅샷 분리** — bGCen 진입점 7️⃣ 후보,
+  본 세션 미처리.
+
+---
+
+## 2026-04-29 #1 (web `claude/session-start-bGCen`) — 자동매매 룰 정합화 합의 + EOD tracker 흐름 설계 + Top 5 MFE 백테 분석 (코드 변경 0)
+
+본 세션 결과는 04-29 #2 에서 ADR-013 + 코드 (`holdings_report.py` /
+`analyze.md`) 로 정식 흡수.
+
+### 결정
+
+- **사용자 자동 trailing 룰 폐기 결정 — 백테 정합 운영 전환**.
+  사용자 룰 (`+15% 활성화 → 장중 -10% peak 즉시 시장가`) vs 백테 룰
+  (`종가 ≤ peak × 0.90 → 다음날 시초가`) 3 곳 다름 (체크 시점 / peak
+  정의 / 청산 시점). 알파 손실 추정 -10~15%p CAGR. 자동 trailing 즉시
+  폐기, **stop_loss -7% 룰만 유지**. 마스터 즉시 M-STOCK 자동매도 룰
+  5종목 삭제.
+
+- **운영 흐름 합의** (ADR-013 으로 정식화):
+  D 19:00 KST cron (별도 stock-automation 레포) → D+1 06:00 cron
+  (morning-report inherit) → D+1 ~07:00 마스터 /analyze → D+1 08:30~09:00
+  동시호가 시장가 예약주문.
+
+- **Plan 006 자동 모듈 마스터 결정 3가지 합의**:
+  - 트리거: **(b) 별도 cron 19:00 KST 평일** ✓
+  - 구현 위치: **stock-automation 별도 레포** (Notion DB = 단일 진실의
+    원천, 코드 직접 의존 없음) ✓
+  - Notion API token 위치: **stock-automation GH Secrets** ✓
+
+- **eod_tracker.py + .yml 드롭인 스크립트 작성** (마스터가 stock-automation
+  레포에 commit). 본 morning-report 레포 코드 변경 0.
+
+- **Top 5 MFE 백테 분석** (Colab + KRX 로그인 + pykrx 1.2.7, 335 거래):
+  - **(a) MFE Top 5**: 미래에셋증권 25-12-30 +212% / 동국제강 21-03-12
+    +157% / 삼양식품 24-04-25 +146% / 포스코인터 23-06-16 +132% /
+    에코프로 20-05-08 +122%. 시기/산업 분산, 재현성 시그널 ✓.
+  - **(b) 환불 폭 Top 5**: 포스코인터 -55%p / 에스엠 -55%p / 한화에어로
+    -42%p (126일) / 동국제강 -38%p / 두산에너빌리티 -37%p (단 5일!).
+  - **통계**: peak_ret p90 **46.9%** / mfe_to_exit median **12.4%p** /
+    p90 **20.0%p**. 청산 사유 trailing 65% / stop_loss 33% / final 5
+    / max_hold 0.
+
+### 미해결 (04-29 #2 에서 처리)
+
+- ADR-013 정식화 + holdings_report inherit + analyze.md spec 보강 → 04-29 #2 완료.
+
+---
+
 ## 2026-04-28 (web 병렬 3개 — `analyze-code-8HvmQ` / `sad-ritchie-f8d888` / `crazy-kirch-06c1d1`) — 기각 가설 정리 흡수 + 작업 브랜치 폐기 (코드 변경 0)
 
 본 entry 는 04-29 세션 시작 시 회수. 3개 병렬 작업 모두 ADR-010 메타 원칙

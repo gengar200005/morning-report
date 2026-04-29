@@ -2,7 +2,7 @@ import os
 import base64
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 from kr_report import (
@@ -75,9 +75,6 @@ def fetch_holdings():
         d = prop.get("date") or {}
         return d.get("start")
 
-    def get_check(prop):
-        return bool(prop.get("checkbox", False))
-
     holdings = []
     for page in r.json().get("results", []):
         p = page["properties"]
@@ -88,12 +85,84 @@ def fetch_holdings():
             "매수일":    get_date(p.get("매수일", {})),
             "거래소":    get_select(p.get("거래소", {})),
             "손절가":    get_num(p.get("손절가", {})),
-            "TS활성화":  get_check(p.get("TS 활성화", {})),
             "현재가_노션": get_num(p.get("현재가", {})),
-            "최고가_노션": get_num(p.get("최고가", {})),
             "손익률_노션": get_num(p.get("현재 손익률(%)", {})),
+            # ADR-013 EOD tracker inherit (stock-automation D 19:00 cron)
+            "최고종가":   get_num(p.get("최고종가", {})),
+            "트레일선":   get_num(p.get("트레일선", {})),
+            "동적손절선": get_num(p.get("동적손절선", {})),
+            "청산상태":   get_select(p.get("청산상태", {})),
+            "갱신시각":   get_date(p.get("갱신시각", {})),
         })
     return holdings
+
+
+# ── EOD tracker stale 판정 ──────────────────────────
+def is_eod_stale(updated_iso, hours=24):
+    """갱신시각이 hours 시간 초과 시 STALE.
+
+    EOD tracker 는 D 19:00 KST cron 에서 정상 갱신. D+1 06:25 morning cron
+    시점 약 11.5h 경과 → 24h 임계가 휴장일 1일은 봐주는 안전 마진.
+    """
+    if not updated_iso:
+        return True
+    try:
+        dt = datetime.fromisoformat(updated_iso.replace("Z", "+00:00"))
+    except Exception:
+        return True
+    if dt.tzinfo is None:
+        dt = KST.localize(dt)
+    delta = datetime.now(KST) - dt.astimezone(KST)
+    return delta > timedelta(hours=hours)
+
+
+def format_eod_time(updated_iso):
+    """ISO 시각 → 'MM-DD HH:MM' 표시용 (KST)."""
+    if not updated_iso:
+        return "N/A"
+    try:
+        dt = datetime.fromisoformat(updated_iso.replace("Z", "+00:00"))
+    except Exception:
+        return updated_iso[:16]
+    if dt.tzinfo is None:
+        dt = KST.localize(dt)
+    return dt.astimezone(KST).strftime("%m-%d %H:%M")
+
+
+def liquidation_line(h):
+    """ADR-013 🎯 청산 평가 한 줄. EOD tracker = 단일 진실의 원천.
+
+    HOLD: 트레일/손절 거리 + EOD 시각
+    TRAIL/STOP: 익일 시초가 매도 예약 ⚠️
+    STALE: 갱신 누락 ⚠️
+    """
+    status = h.get("청산상태")
+    trail = h.get("트레일선")
+    stop_lvl = h.get("동적손절선")
+    peak = h.get("최고종가")
+    updated = h.get("갱신시각")
+    cur = h.get("현재가") or h.get("현재가_노션") or 0
+
+    if not status or is_eod_stale(updated):
+        return f"🎯 [STALE] ⚠️ 자동매도트래커 갱신 누락 (최종: {format_eod_time(updated)})"
+
+    if status == "STOP":
+        s = f"🎯 [STOP] ⚠️ 종가 동적손절선({stop_lvl:,.0f}) 하향 — 익일 시초가 매도 예약" if stop_lvl else "🎯 [STOP] ⚠️ 익일 시초가 매도 예약"
+        return s
+    if status == "TRAIL":
+        s = f"🎯 [TRAIL] ⚠️ 종가 트레일선({trail:,.0f}) 하향 — 익일 시초가 매도 예약" if trail else "🎯 [TRAIL] ⚠️ 익일 시초가 매도 예약"
+        return s
+
+    # HOLD
+    parts = ["🎯 [HOLD]"]
+    if peak:
+        parts.append(f"피크 {peak:,.0f}")
+    if trail and cur:
+        parts.append(f"트레일 {(cur/trail - 1)*100:+.1f}%")
+    if stop_lvl and cur:
+        parts.append(f"손절선 {(cur/stop_lvl - 1)*100:+.1f}%")
+    parts.append(f"EOD {format_eod_time(updated)}")
+    return " | ".join(parts)
 
 
 # ── 종목 분석 (Minervini 지표) ──────────────────────
@@ -237,6 +306,7 @@ def build_text(analyses, mkt_ctx):
         lines.append(
             f"    손절가 {stop:,.0f} | 수급20일 {h['수급20일']:+,}주"
         )
+        lines.append(f"    {liquidation_line(h)}")
         lines.append(f"    ⇒ {h['추매시그널']}")
 
     lines.append("\n" + "=" * 52)

@@ -37,12 +37,12 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 
    | 키 | 1줄 질문 | 데이터 소스 (parser dict 키) |
    |---|---|---|
-   | `alert` | 오늘 단 하나의 경계 | `vix`, `kr_indices`, `market_context`, `kospi_flow`, anomaly |
+   | `alert` | 오늘 단 하나의 경계 + 자동매도 trigger | `vix`, `kr_indices`, `market_context`, `kospi_flow`, anomaly, `holdings[i].청산상태` |
    | `gate_flow` | 시장 게이트 + 수급 흐름 | `market_context.kospi_above_ma60`, `kospi_flow` |
    | `sector` | leaders 변동 + ETF 동조 | `sector_adr003`, `sector_etf` |
    | `entry` | T10/CD60 진입 후보 (RS 순) + 산업군 펀더 + 컨센서스 + 출처 | `top5` (derive 결과) + WebSearch |
    | `agrade` | A등급 universe 광폭 | `remaining_a`, `grade_c` |
-   | `portfolio` | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
+   | `portfolio` | verdict + 청산 평가 액션 | `holdings`, `holdings[i].verdict`, `holdings[i].{청산상태,트레일선,동적손절선,최고종가,갱신시각}` |
    | `macro` | D-30 high impact 우선 | `macro_calendar` (dday≤30, impact="high") |
 
    **카드 길이 (entry 외 6카드)**: 각 1~3 문장. 데이터 인용 + 액션 한 줄.
@@ -64,7 +64,14 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 
    **entry 외 6카드** 의무 환기 사항 (톤 변경 아님, 언급 의무):
    - `alert` / `macro`: 페이퍼·재현 의심·매크로 D-day 액션 환기
+   - `alert` 자동매도 trigger 명시 의무 (ADR-013): 보유 종목 중 `청산상태 ∈
+     {TRAIL, STOP}` 1건 이상이면 종목명 + 상태 1줄 명시 (예:
+     `[STOP] 삼양식품 — 익일 시초가 매도 예약`). STALE 발생 시 ⚠️ 명시.
    - `agrade`: A등급 광폭 시 강세장 재현 의심 + 페이퍼 병행 권장
+   - `portfolio` 자동매도트래커 단일 진실의 원천 (ADR-013): 4 필드
+     (최고종가/트레일선/동적손절선/청산상태) 그대로 인용, **Claude 임의
+     trail/stop 재계산 ❌**. STALE 시 "EOD tracker 갱신 누락 — 마스터
+     stock-automation 레포 확인 필요" 환기.
    - `portfolio`: 매크로 임박 시 추매 자제 명시
 
 6. **main 에 commit + push** (claude_render.yml 가 main 만 트리거):
@@ -108,6 +115,11 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 - **entry 카드 컨센 인용 없는 진단** ❌ (증권사 명·목표가·인용 시점 셋 다 있어야 함)
 - **entry 카드 산업군 무시 절대값 라벨** ❌ ("PBR 15.6 = 펀더멘털 취약" 류, 산업 임계 적용)
 - **entry 카드 컨센 추월 ⚠️ 누락** ❌ (현재가 ≥ 컨센 평균 +10% 시 ⚠️ 의무)
+- **자동매도트래커 외 trail/stop 임의 재계산** ❌ (ADR-013 — `holdings[i]`
+  의 4 필드 = 단일 진실의 원천. Claude 가 peak/trail/stop 다시 계산해서
+  카드에 쓰면 EOD tracker 와 불일치, 마스터 혼선)
+- **alert 카드 자동매도 trigger 누락** ❌ (ADR-013 — `청산상태 ∈ {TRAIL, STOP}`
+  보유 종목 1건 이상이면 종목명 + 상태 1줄 명시 의무)
 
 ---
 

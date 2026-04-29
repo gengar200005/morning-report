@@ -1,40 +1,46 @@
 # morning-report
 
-<!-- Last session branch: claude/condescending-roentgen-c7ae37 (2026-04-28 #2) -->
+<!-- Last session branch: claude/session-start-UnRlh (2026-04-29 #2) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-28 #2)
+## 현재 상태 (2026-04-29 #2)
 
-**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 첫 단계 진입 (Plan 005/006 + Notion DB) + `/analyze` v3 가이드 정식화 + 백테 가정 한계 발견**. 1주 운영 후 정식화 (CLAUDE.md 차감 / 운영 모델 / 자동 모듈 구현).
+**Phase 4 실전 준비 — 자동매매 룰 정합화 (ADR-013) + EOD tracker 흐름
+구현 완료**. 04-29 EOD tracker 1회 테스트 작동 확인 (마스터, 15:35 장
+종료 후). 04-30 (목) cron 결과로 1차 통합 검증 → 1주 운영 후 정식화.
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 (KIS API 200종목,
 ~30~40분) → HTML 렌더 → PDF 변환 → Drive 업로드 → Notion publish. **+
 augmentation 흐름**: cron 끝 ~07:00 KST 마스터가 Claude Code 세션 → `/analyze`
 한 줄 → 7카드 JSON main commit → `claude_render.yml` 자동 트리거 → PDF
-재렌더 + Drive + Notion 갱신.
+재렌더 + Drive + Notion 갱신. **+ EOD tracker 흐름** (ADR-013):
+D 19:00 KST cron (별도 `stock-automation` 레포) → Notion 보유 DB 5 필드
+갱신 → D+1 06:25 morning-report inherit + 🎯 청산 평가 줄 → D+1 ~07:00
+`/analyze` alert/portfolio 카드 trigger 명시 → D+1 08:30~09:00 마스터
+동시호가 시장가 예약주문.
 
-**오늘 #2 (2026-04-28 PC CLI worktree) 핵심 작업**:
-- **`/analyze` v3 가이드 정식화** (PR #27 머지). `.claude/commands/analyze.md`
-  에 entry 카드 v3 의무 4개 (산업군 임계 분리 / WebSearch Top 5 / 컨센 추월
-  ⚠️ +10%/+50% / 출처) sub-section + entry 외 6카드 환기 사항 분리 + 금지
-  사항 4건 + 예시 섹션 (2026-04-28 reference). 다음 cron 06:25 부터 자동
-  동일 quality.
-- **페이퍼 트레이딩 인프라 첫 단계** (PR #28 머지). Plan 005 (DB 스키마
-  24필드 spec) + Plan 006 (자동 모듈 spec) + Notion DB 자동 생성 (📊 모닝
-  리포트 → 페이퍼 트레이딩 저널 → Positions). **Data source ID
-  `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`** (Plan 006 영구 reference).
-  Views 3개 + dry-run row 1개.
-- **백테 +29.55% 가정 한계 정량화** (대화 분석, 코드 미변경). `strategy.py:320`
-  `entry_price = o[i] × (1 + 0.15%)` — 시초가 무조건 100% 체결 가정.
-  거래량 / 호가창 / 상한가 갭 / 인간 회피 전부 미반영. 슬리피지 -1~2%p →
-  -2~3%p 보정 필요 + 인간 회피/지연 -3~7%p 미반영.
-- **예약 매수 회피 차단 발견**. 한국 증시 동시호가 (08:30~09:00) 시장가
-  매수 예약 → 09:00 단일가 체결, 갭상이라도 시초가 매수 가능. **인간
-  회피/지연 자동 차단 장치**. 운영 시 실전 +22~25% 가능 (백테 가정 거의
-  살아있음). 망설임 + 5일 지연 시 +12~17%. 1주 운영 검증.
+**오늘 #2 (2026-04-29 PC CLI worktree `claude/session-start-UnRlh`) 핵심 작업**:
+- **ADR-013 자동매매 룰 정합화 정식화**. 사용자 장중 trailing 룰 (M-STOCK
+  +15% 활성화 → 장중 -10% peak 즉시 시장가) 폐기, 백테 룰 (`종가 ≤ peak ×
+  0.90 → D+1 시초가 시장가`) 채택. 알파 손실 추정 -10~17%p CAGR (장중
+  노이즈 슬립아웃 winner 가짜 트리거 + 거래 수 증가). EOD tracker
+  (stock-automation D 19:00 cron) = 단일 진실의 원천. stop_loss -7% 룰만 유지.
+- **`holdings_report.py` EOD tracker 4+1 필드 inherit**. `fetch_holdings()`
+  에 `최고종가`/`트레일선`/`동적손절선`/`청산상태`/`갱신시각` 추가 +
+  `liquidation_line()` 4 분기 (HOLD/TRAIL/STOP/STALE) + `is_eod_stale()`
+  24h 임계. `build_text()` 에 🎯 청산 평가 줄 추가. stale 코드 정리
+  (`TS활성화` / `최고가_노션` / `get_check()` 제거).
+- **`.claude/commands/analyze.md` ADR-013 반영**. 7카드 데이터 소스 표
+  alert/portfolio 에 4 필드 명시 + entry 외 6카드 환기 의무 추가
+  (`alert` 자동매도 trigger 명시 / `portfolio` 자동매도트래커 단일
+  진실의 원천 + STALE 환기) + 금지 사항 추가 (trail/stop 임의 재계산 ❌).
+- **04-28 web 병렬 3개 기각 가설 정리** (이전 commit `01cc9a5`). ADR-012
+  거래량 selection/sizing 기각 + NDX 필터 종결 + signal_age sweet-spot
+  11 variant baseline 하회. 4 작업 브랜치 + 백테 스크립트/experiments
+  폐기 (UI 수동 삭제 대기).
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -61,45 +67,53 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ ★ 마스터 1주 운영 후 페이퍼 트레이딩 정식화 (~05-05)
+#### 1️⃣ ★ 04-30 (목) cron 통합 검증
 
-본 세션에서 인프라 첫 단계 (Plan 005/006 + Notion DB) 완료. 1주 운영 후
-ADR-014 + Plan 007/008 정식화. 운영 항목:
+본 세션 ADR-013 + holdings inherit 머지 후 첫 morning cron. 검증 항목:
+- D 19:00 EOD tracker (stock-automation) → Notion 5 필드 갱신 정상?
+- D+1 06:25 morning-report `holdings_report.py` 4 필드 inherit 정상?
+- `holdings_data.txt` 의 🎯 청산 평가 줄 정상 출력? (HOLD / TRAIL / STOP /
+  STALE 분기)
+- `/analyze` 카드 alert/portfolio 에 trigger / 4 필드 인용 정상?
+
+이상 발견 시 즉시 hotfix. 정상 시 1주 운영 진입.
+
+#### 2️⃣ ★ 마스터 1주 운영 후 페이퍼 트레이딩 정식화 (~05-06)
+
+ADR-013 운영 흐름 + Plan 005/006 첫 운영. 1주 후 ADR-015 (페이퍼 트레이딩
+운영 모델) + Plan 007/008 정식화. 운영 항목:
+- **자동매도 즉시 폐기 후 운영** (오늘부터): M-STOCK 5종목 자동 trailing
+  룰 삭제 완료, stop_loss -7% 룰 유지, 동시호가 시장가 매도 예약 (TRAIL/STOP)
 - **예약 매수 운영** (08:30~09:00 동시호가 시장가) — 갭 회피 자동 차단
-  장치, 백테 가정 거의 그대로 실현 가능 가설 검증
 - **DB 입력 부담** (한 사이클 6필드: Entry date/price/note/psychology +
   Exit note/psychology) — 5종목 동시 운영 부담 적정성
 - **측정**: Days delayed median ≤ 5일 / Entry psychology 평균 ≥ 3.5 /
-  CAGR ±3-5%p (6개월 누적 후)
-- **운영 모델 결정**: (a) 100% 페이퍼 6개월 디폴트 vs (b) 자본 10-15% 실전
-  + 페이퍼 5종목 절충 — 1-2개월 차에 결정.
-- **CLAUDE.md 차감 update**: 슬리피지 -1~2%p → -2~3%p 보정 + 예약 매수
-  회피 차단 -3~7%p 효과 반영. "실전 매매 규약" 에 동시호가 예약 매수 추가.
+  EOD tracker stale 발생률 ≤ 5% / CAGR ±3-5%p (6개월 누적)
+- **운영 모델 결정**: (a) 100% 페이퍼 6개월 vs (b) 자본 10-15% 실전 +
+  페이퍼 5종목 절충 — 1-2개월 차 결정
+- **CLAUDE.md 차감 update**: 슬리피지 -1~2%p → -2~3%p + 예약 매수 회피
+  차단 -3~7%p + 자동매매 정합화 +10~17%p 효과 반영. "실전 매매 규약" 에
+  동시호가 예약 매수/매도 + 자동매도 폐기 + 종가 기반 수동 trail 추가.
 
-#### 2️⃣ Plan 006 자동 모듈 마스터 결정 3가지
+#### 3️⃣ Plan 006 책임 #3 자동 매도 예약 자동화 (1주 후 결정)
 
-`docs/plans/006-paper-trading-auto-module.md` spec 만 main, 미구현. 결정 후
-구현:
-- **트리거**: (a) `morning.yml` cron 끝 06:25 vs (b) 별도 cron 19:00 vs
-  (c) PC Task Scheduler — 추천 (b) 종가 정확 + market gate 정확
-- **구현 위치**: `backtest/strategy.py` 실시간 모드 추가 vs `paper_trading.py`
-  신규 모듈
-- **Notion API token 위치**: `.env` 로컬 vs GH Secrets vs Task Scheduler env
+마스터 동시호가 매도 예약 수동 1분 부담이 누적되면 자동화. morning-report
+trigger 알림 → KIS 매도 예약주문 endpoint 자동 등록. 1주 운영 후 부담
+측정 → 결정.
 
-#### 3️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-04)
+#### 4️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-05)
 
-직전 세션 (04-28 #1) 결정. "오늘 분석 도움됐나" 매일 1회 자체 점검 1주
-누적. NO 면 즉시 A (전면 폐기) 전환. 정식 평가 후 ADR-012 정식화 또는
-ADR-009 재확인.
+04-28 #1 결정. "오늘 분석 도움됐나" 매일 1회 자체 점검 1주 누적. NO 면
+즉시 A (전면 폐기) 전환. 정식 평가 후 ADR-016 정식화 또는 ADR-009 재확인.
 
-#### 4️⃣ ADR 후보 4건 (마스터 결정)
+#### 5️⃣ ADR / Plan 후보 (마스터 결정)
 
-- ADR-012 augmentation B 분업 frame (1주 자체 점검 결과 반영)
-- ADR-013 라이브 universe ↔ 백테 스냅샷 분리
-- ADR-014 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
+- ADR-014 라이브 universe ↔ 백테 스냅샷 분리
+- ADR-015 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
+- ADR-016 augmentation B 분업 frame (1주 자체 점검 결과 반영)
 - Plan 007 (선택) PDF 첫 페이지 페이퍼 포지션 / 누적 수익률 카드
 
-#### 5️⃣ dry-run row 처리
+#### 6️⃣ dry-run row 처리
 
 [SK하이닉스 [DRY RUN]](https://www.notion.so/35014f343a5681f0ad86fe7c22185b37)
 1개 — 마스터 사용감 확인 후 삭제 또는 첫 정식 row 활성화. Entry note
@@ -145,7 +159,9 @@ ADR-009 재확인.
   `interesting-kapitsa-d40f52`, `elated-tu-ec63ef`, `claude-pub`,
   `claude-pub-v3` (04-28 임시 publish 브랜치),
   **`analyze-code-8HvmQ` / `crazy-kirch-06c1d1` / `sad-ritchie-f8d888`**
-  (04-29 #1 ADR-012 흡수 후 폐기, ADR 기록만 main 흡수)
+  (04-29 #1 ADR-012 흡수 후 폐기, ADR 기록만 main 흡수),
+  **`session-start-bGCen`** (04-29 #2 ADR-013 흡수 후 폐기, 결정/흐름/
+  Top 5 MFE 분석 main 흡수)
 
 ---
 
@@ -262,10 +278,36 @@ morning-report/
   로 백테 시가 가정 부풀림 우려도 부정) + signal_age sweet-spot 11 variant
   전부 baseline 하회 (ADR-005 강세장 정량 재확인). 작업 브랜치 3개 +
   백테 스크립트/experiments 일체 폐기.
+- **ADR-013** 자동매매 룰 정합화 — **채택**. 사용자 장중 trailing 룰
+  (M-STOCK +15% 활성화 → 장중 -10% peak 즉시 시장가) 폐기, 백테 룰
+  (`종가 ≤ peak × 0.90 → D+1 시초가`) 채택. 알파 손실 추정 -10~17%p
+  CAGR (장중 노이즈 슬립아웃 winner 가짜 트리거 -10~15%p + 거래 수
+  증가 -1~2%p). EOD tracker (별도 `stock-automation` 레포 D 19:00 KST
+  cron) = 단일 진실의 원천. stop_loss -7% 룰만 유지. 운영 흐름 D 19:00
+  → D+1 06:25 inherit → D+1 ~07:00 /analyze trigger 명시 → D+1
+  08:30~09:00 동시호가 시장가 예약. **morning-report 측 구현**:
+  `holdings_report.py` 4+1 필드 inherit + 🎯 청산 평가 줄 / `analyze.md`
+  alert·portfolio 카드 spec 보강 + 금지 사항 (trail/stop 임의 재계산 ❌).
 
 ---
 
 ## 최근 세션
+- **2026-04-29 #2 (PC CLI worktree `claude/session-start-UnRlh`)**:
+  ADR-013 자동매매 룰 정합화 정식화 (장중 trailing 폐기, 백테 종가 룰 채택,
+  알파 손실 추정 -10~17%p) + `holdings_report.py` EOD tracker 4+1 필드
+  inherit + 🎯 청산 평가 줄 (HOLD/TRAIL/STOP/STALE 4 분기, 24h stale
+  임계) + `analyze.md` alert/portfolio 카드 spec 보강 (자동매도 trigger
+  명시 의무 + 단일 진실의 원천 + trail/stop 임의 재계산 금지) +
+  04-28 web 병렬 3개 기각 가설 정리 (ADR-012 흡수 + 4 브랜치/스크립트
+  폐기, commit `01cc9a5`).
+- **2026-04-29 #1 (web `claude/session-start-bGCen`, 코드 변경 0)**:
+  자동매매 룰 정합화 합의 (장중 trailing 폐기 결정, 마스터 M-STOCK 5종목
+  자동매도 즉시 삭제) + 운영 흐름 합의 (D 19:00 / D+1 06:25 / D+1 08:30
+  3 layer) + Plan 006 마스터 결정 3가지 (트리거 b 19:00 cron / 위치
+  stock-automation 별도 레포 / token GH Secrets) + eod_tracker.py +
+  .yml 드롭인 작성 (마스터 stock-automation 레포 commit) + Top 5 MFE
+  백테 분석 (335 거래, peak_ret p90 46.9% / mfe_to_exit p90 20%p).
+  04-29 #2 에서 ADR-013 + 코드로 정식 흡수.
 - **2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`)**:
   `/analyze` v3 가이드 정식화 (PR #27, `d881bf8` — entry 카드 v3 의무 4개
   sub-section + 6카드 환기 분리 + 금지 4건 + 예시 섹션) + 페이퍼 트레이딩
