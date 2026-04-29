@@ -1,14 +1,16 @@
 # morning-report
 
-<!-- Last session branch: claude/condescending-roentgen-c7ae37 (2026-04-28 #2) -->
+<!-- Last session branch: claude/session-start-bGCen (2026-04-29) -->
 
 한국 모닝리포트 자동 생성 + Phase 3 백테스트 (Minervini+수급+게이트 전략) 프로젝트.
 
 ---
 
-## 현재 상태 (2026-04-28 #2)
+## 현재 상태 (2026-04-29)
 
-**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 첫 단계 진입 (Plan 005/006 + Notion DB) + `/analyze` v3 가이드 정식화 + 백테 가정 한계 발견**. 1주 운영 후 정식화 (CLAUDE.md 차감 / 운영 모델 / 자동 모듈 구현).
+**Phase 4 실전 준비 — 자동매매 룰 정합화 합의 + EOD tracker 흐름 설계 완료
++ Top 5 MFE 백테 분석으로 trail 10% 적정성 데이터 확립**. 코드 변경 0,
+다음 세션부터 stock-automation 레포 작업 + morning-report inherit PR.
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 (KIS API 200종목,
 ~30~40분) → HTML 렌더 → PDF 변환 → Drive 업로드 → Notion publish. **+
@@ -16,25 +18,36 @@ augmentation 흐름**: cron 끝 ~07:00 KST 마스터가 Claude Code 세션 → `
 한 줄 → 7카드 JSON main commit → `claude_render.yml` 자동 트리거 → PDF
 재렌더 + Drive + Notion 갱신.
 
-**오늘 #2 (2026-04-28 PC CLI worktree) 핵심 작업**:
-- **`/analyze` v3 가이드 정식화** (PR #27 머지). `.claude/commands/analyze.md`
-  에 entry 카드 v3 의무 4개 (산업군 임계 분리 / WebSearch Top 5 / 컨센 추월
-  ⚠️ +10%/+50% / 출처) sub-section + entry 외 6카드 환기 사항 분리 + 금지
-  사항 4건 + 예시 섹션 (2026-04-28 reference). 다음 cron 06:25 부터 자동
-  동일 quality.
-- **페이퍼 트레이딩 인프라 첫 단계** (PR #28 머지). Plan 005 (DB 스키마
-  24필드 spec) + Plan 006 (자동 모듈 spec) + Notion DB 자동 생성 (📊 모닝
-  리포트 → 페이퍼 트레이딩 저널 → Positions). **Data source ID
-  `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`** (Plan 006 영구 reference).
-  Views 3개 + dry-run row 1개.
-- **백테 +29.55% 가정 한계 정량화** (대화 분석, 코드 미변경). `strategy.py:320`
-  `entry_price = o[i] × (1 + 0.15%)` — 시초가 무조건 100% 체결 가정.
-  거래량 / 호가창 / 상한가 갭 / 인간 회피 전부 미반영. 슬리피지 -1~2%p →
-  -2~3%p 보정 필요 + 인간 회피/지연 -3~7%p 미반영.
-- **예약 매수 회피 차단 발견**. 한국 증시 동시호가 (08:30~09:00) 시장가
-  매수 예약 → 09:00 단일가 체결, 갭상이라도 시초가 매수 가능. **인간
-  회피/지연 자동 차단 장치**. 운영 시 실전 +22~25% 가능 (백테 가정 거의
-  살아있음). 망설임 + 5일 지연 시 +12~17%. 1주 운영 검증.
+**오늘 (2026-04-29 web `claude/session-start-bGCen`) 핵심 결정**:
+- **사용자 자동 trailing 룰 폐기 결정 — 백테 정합 운영 전환**. 사용자
+  M-STOCK 자동매도 룰 (`+15% 활성화 → 장중 -10% peak 즉시 시장가`) 이
+  백테 룰 (`종가 ≤ peak × 0.90 → 다음날 시초가`) 과 3 곳 다름 (체크
+  시점 / peak 정의 / 청산 시점). 장중 노이즈 슬립아웃 → +100% peak
+  winner 가짜 트리거. **알파 손실 추정 -10~15%p CAGR**. 자동 trailing
+  즉시 폐기, **stop_loss -7% 룰만 유지**.
+- **운영 흐름 합의** (백테 가정 100% 정합):
+  ```
+  D 15:30 장 마감
+   ↓ D 19:00 cron (stock-automation 별도 레포) — 자동매도트래커 DB 갱신
+   ↓ D+1 06:00 cron (morning-report) — holdings_report inherit + 청산 평가 줄
+   ↓ D+1 ~07:00 마스터 /analyze — 7카드 통합
+   ↓ D+1 08:30~09:00 동시호가 시장가 예약주문 (매수/매도)
+  ```
+  Plan 006 마스터 결정 3가지 본 세션 합의: 트리거 (b) 19:00 cron / 구현
+  위치 별도 레포 / Notion token GH Secrets.
+- **eod_tracker.py + eod_tracker.yml 드롭인 스크립트 작성** (마스터가
+  stock-automation 레포에 commit 예정, 본 레포 코드 변경 0). 보유 DB 5
+  신규 필드 spec (최고종가 / 트레일선 / 동적손절선 / 청산상태 / 갱신시각).
+- **Top 5 MFE 백테 분석** (Colab + KRX 로그인 + pykrx 1.2.7, 335 거래 산출):
+  - **(a) MFE Top 5**: 미래에셋증권 +212% / 동국제강 +157% / 삼양식품 +146% /
+    포스코인터 +132% / 에코프로 +122% — 시기/산업 분산, 재현성 시그널 ✓
+  - **(b) 환불 폭 Top 5**: 포스코인터 -55%p / 에스엠 -55%p / 한화에어로 -42%p /
+    동국제강 -38%p / 두산에너빌리티 -37%p (단 5일!)
+  - **통계**: peak_ret p90 46.9% / **mfe_to_exit p90 20%p** / 청산 사유
+    trailing 65% stop_loss 33%
+  - **Trail 10% 환불 메커니즘**: ① 종가 자체가 갭다운 ② 다음날 시초가
+    추가 갭다운 ③ 슬리피지 ④ Peak = 종가 정의. 약속 -10%p 가 실제
+    median -12.4%p, p90 -20%p.
 
 **확정 전략**: T10/CD60 (Trail 10% / Cooldown 60거래일)
 - 백테 CAGR **+29.55%** (11.3년, 162종목), MDD -29.83%
@@ -61,45 +74,69 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ ★ 마스터 1주 운영 후 페이퍼 트레이딩 정식화 (~05-05)
+#### 1️⃣ ★ 노션 자동매도트래커 스키마 확인 (마스터, 5분)
 
-본 세션에서 인프라 첫 단계 (Plan 005/006 + Notion DB) 완료. 1주 운영 후
-ADR-014 + Plan 007/008 정식화. 운영 항목:
+다음 세션 시작 시 즉시. eod_tracker.py 의 F_* 상수 매핑 정확히 잡기 위함.
+
+- 자동매도트래커 view 컬럼 헤더 스크린샷 또는 dump 텍스트
+- "최고가" 필드 = peak_close 인지 vs 장중 high 인지 vs 52주고점인지 확인
+- "TS 활성화" = +15% 자동 vs 마스터 수동 확인
+- 현재 갱신 cron 시점 (지금 아침이면 D-1 stale)
+
+#### 2️⃣ stock-automation 레포에 eod_tracker 드롭인 (마스터, ~1시간)
+
+- Notion DB 5 신규 필드 추가 (없으면): 최고종가 / 트레일선 / 동적손절선 /
+  청산상태(Select HOLD/TRAIL/STOP) / 갱신시각(Date)
+- `eod_tracker.py` (본 세션 작성) + `.github/workflows/eod_tracker.yml`
+  drop-in. F_* 상수 실제 컬럼명 매핑.
+- GH Secrets 4건 확인: KIS_APP_KEY / KIS_APP_SECRET / NOTION_API_KEY /
+  NOTION_HOLDINGS_DS_ID (=`25d578de-8e37-486d-8787-549667cae981`)
+- workflow_dispatch 수동 trigger 테스트 → 보유 종목 1건 갱신 확인.
+
+#### 3️⃣ morning-report inherit PR (Claude 작업, ~1시간)
+
+- `holdings_report.py`: 4 필드 inherit + build_text() 에 🎯 청산 평가
+  줄 추가
+- `.claude/commands/analyze.md`: alert / portfolio 카드 spec 보강
+  (trigger 종목 명시 의무 + 자동매도트래커 단일 진실의 원천 명시)
+
+#### 4️⃣ ★ 마스터 1주 운영 평가 (~05-05)
+
+페이퍼 트레이딩 정식화 + 본 세션 흐름 (D 19:00 / D+1 06:00 / D+1 09:00)
+부담 측정. 운영 항목:
+- **자동매도 즉시 폐기 후 운영** (오늘부터): M-STOCK 5종목 자동 trailing
+  룰 삭제 + stop_loss -7% 유지
 - **예약 매수 운영** (08:30~09:00 동시호가 시장가) — 갭 회피 자동 차단
-  장치, 백테 가정 거의 그대로 실현 가능 가설 검증
-- **DB 입력 부담** (한 사이클 6필드: Entry date/price/note/psychology +
-  Exit note/psychology) — 5종목 동시 운영 부담 적정성
+- **DB 입력 부담** (한 사이클 6필드)
 - **측정**: Days delayed median ≤ 5일 / Entry psychology 평균 ≥ 3.5 /
   CAGR ±3-5%p (6개월 누적 후)
-- **운영 모델 결정**: (a) 100% 페이퍼 6개월 디폴트 vs (b) 자본 10-15% 실전
-  + 페이퍼 5종목 절충 — 1-2개월 차에 결정.
-- **CLAUDE.md 차감 update**: 슬리피지 -1~2%p → -2~3%p 보정 + 예약 매수
-  회피 차단 -3~7%p 효과 반영. "실전 매매 규약" 에 동시호가 예약 매수 추가.
+- **운영 모델 결정**: (a) 100% 페이퍼 6개월 vs (b) 자본 10-15% 실전 +
+  페이퍼 절충 — 1-2개월 차 결정.
+- **CLAUDE.md 차감 update**: 슬리피지 -1~2%p → -2~3%p + 예약 매수 회피
+  차단 -3~7%p 효과. "실전 매매 규약" 에 동시호가 예약 매수 + 자동매도
+  폐기 + 종가 기반 수동 trail 추가.
 
-#### 2️⃣ Plan 006 자동 모듈 마스터 결정 3가지
+#### 5️⃣ Plan 006 책임 #3 자동 매도 예약 자동화 (1주 후 결정)
 
-`docs/plans/006-paper-trading-auto-module.md` spec 만 main, 미구현. 결정 후
-구현:
-- **트리거**: (a) `morning.yml` cron 끝 06:25 vs (b) 별도 cron 19:00 vs
-  (c) PC Task Scheduler — 추천 (b) 종가 정확 + market gate 정확
-- **구현 위치**: `backtest/strategy.py` 실시간 모드 추가 vs `paper_trading.py`
-  신규 모듈
-- **Notion API token 위치**: `.env` 로컬 vs GH Secrets vs Task Scheduler env
+수동 1분 부담이 누적되면 자동화. 모닝리포트 trigger 알림 → KIS 매도
+예약주문 endpoint 자동 등록. 1주 운영 후 부담 측정 → 결정.
 
-#### 3️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-04)
+#### 6️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-04)
 
 직전 세션 (04-28 #1) 결정. "오늘 분석 도움됐나" 매일 1회 자체 점검 1주
-누적. NO 면 즉시 A (전면 폐기) 전환. 정식 평가 후 ADR-012 정식화 또는
-ADR-009 재확인.
+누적. NO 면 즉시 A (전면 폐기) 전환. ADR-012 정식화 또는 ADR-009 재확인.
 
-#### 4️⃣ ADR 후보 4건 (마스터 결정)
+#### 7️⃣ ADR 후보 4건 (마스터 결정)
 
-- ADR-012 augmentation B 분업 frame (1주 자체 점검 결과 반영)
-- ADR-013 라이브 universe ↔ 백테 스냅샷 분리
-- ADR-014 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
+- **ADR-012 자동매매 룰 정합화** (★ 본 세션 결정 기반) — 장중 -10% trail
+  폐기, 종가 기반 백테 룰 채택. 되돌리면 알파 -10~15%p 잠재 손실.
+  구조적 결정 → ADR 정식화 가치 큼.
+- ADR-013 augmentation B 분업 frame (1주 자체 점검 결과 반영)
+- ADR-014 라이브 universe ↔ 백테 스냅샷 분리
+- ADR-015 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
 - Plan 007 (선택) PDF 첫 페이지 페이퍼 포지션 / 누적 수익률 카드
 
-#### 5️⃣ dry-run row 처리
+#### 8️⃣ dry-run row 처리
 
 [SK하이닉스 [DRY RUN]](https://www.notion.so/35014f343a5681f0ad86fe7c22185b37)
 1개 — 마스터 사용감 확인 후 삭제 또는 첫 정식 row 활성화. Entry note
@@ -252,6 +289,15 @@ morning-report/
 ---
 
 ## 최근 세션
+- **2026-04-29 (web `claude/session-start-bGCen`)**: 사용자 자동 trailing
+  룰 (장중 -10% peak) ↔ 백테 룰 (종가 → 다음날 시초가) 차이 발견 →
+  자동 trailing 즉시 폐기 결정 + stop_loss -7% 유지. EOD tracker 운영
+  흐름 합의 (D 19:00 stock-automation cron → D+1 06:00 morning-report
+  inherit → D+1 ~07:00 /analyze → D+1 09:00 동시호가 예약). Plan 006
+  마스터 결정 3가지 합의 ((b) 19:00 / 별도 레포 / GH Secrets).
+  eod_tracker.py + .yml 드롭인 작성 (마스터 stock-automation commit
+  대기). Top 5 MFE 백테 분석 (Colab/pykrx, 335 거래) — peak_ret p90
+  46.9% / mfe_to_exit p90 20%p / 청산 사유 trailing 65%. 코드 변경 0.
 - **2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`)**:
   `/analyze` v3 가이드 정식화 (PR #27, `d881bf8` — entry 카드 v3 의무 4개
   sub-section + 6카드 환기 분리 + 금지 4건 + 예시 섹션) + 페이퍼 트레이딩
@@ -272,6 +318,3 @@ morning-report/
 - **2026-04-26 #1 (PC CLI, `claude/interesting-kapitsa-d40f52`)**: 04-25 web
   사고 fix + Notion CI 자동화 + Instruction v5.0→v5.1 + Claude augmentation
   폐기 (A 옵션) 결정. v5.1 + claude_render 인프라 미래 재시도용 보존.
-- **2026-04-25 (web, `claude/v3.9-data-integrity` → main `775ba0b`)**: ADR-008
-  Section 04 Entry Candidates 폐기 (Trend Watch §04 복귀, PR #19) +
-  Instruction v3.6→v3.9 3사이클 (PR #20).
