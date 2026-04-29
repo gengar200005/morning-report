@@ -4,6 +4,135 @@
 
 ---
 
+## 2026-04-29 (web `claude/session-start-bGCen`) — 자동매매 룰 정합화 + Top 5 MFE 백테 분석 + EOD tracker 흐름 합의 (코드 변경 0)
+
+### 결정
+
+- **사용자 자동 trailing 룰 폐기 결정 — 백테 정합 운영으로 전환**.
+  현재 사용자 룰: `+15% 수익 도달 시 트레일링 활성화 → 장중 -10% peak 기준
+  즉시 시장가 매도`. 백테 룰: `종가 ≤ peak_close × 0.90 트리거 → 다음날
+  시초가 시장가 매도`. **3 곳이 다름** (체크 시점 / peak 정의 / 청산 시점):
+  - 장중 노이즈 슬립아웃 → +100% peak winner 들이 +30~70% 수준에서 가짜
+    트리거에 일찍 잡힘
+  - **알파 손실 추정 -10~15%p CAGR** (winner 5건이 백테 알파의 큰 부분)
+  - 갭다운 회피 효과 +1~3%p (Top 5 환불 케이스 한정)
+  → Net 큰 마이너스. 자동 trailing 룰 즉시 폐기, **stop_loss -7% 룰만
+  유지** (백테 stop_loss 와 정합). 마스터 즉시 M-STOCK 자동매도 룰
+  5종목 삭제 + 종가 기반 수동 + cron 자동 갱신 흐름 전환.
+
+- **운영 흐름 합의** (백테 가정 100% 정합):
+  ```
+  D 15:30 장 마감
+   ↓
+  D 19:00 KST cron (gengar200005/stock-automation 별도 레포)
+   ├ 자동매도트래커 DB 갱신 (peak_close / trail_level / stop_level / trigger_status)
+   ↓
+  D+1 06:00 KST cron (morning-report)
+   ├ holdings_report.py inherit 4 필드 + 🎯 청산 평가 줄 추가
+   ↓
+  D+1 ~07:00 마스터 /analyze
+   ├ 7카드 통합 (alert / portfolio 카드에 trigger 명시)
+   ↓
+  D+1 08:30~09:00 마스터 동시호가 시장가 예약주문 (매수/매도)
+  ```
+  Plan 006 자동 모듈 마스터 결정 3가지 본 세션에서 합의:
+  - 트리거: **(b) 별도 cron 19:00 KST 평일** ✓
+  - 구현 위치: **stock-automation 별도 레포** (Notion DB 가 단일 진실의
+    원천, 코드 직접 의존 없음) ✓
+  - Notion API token 위치: **stock-automation GH Secrets** (morning-report
+    와 동일 키 복사) ✓
+
+- **eod_tracker.py + eod_tracker.yml 드롭인 스크립트 작성** (마스터가
+  stock-automation 레포에 commit 예정). 코드 변경 0 (본 레포). 핵심:
+  - cron `'0 10 * * 1-5'` UTC = 19:00 KST 평일
+  - KIS API `inquire-daily-itemchartprice` 페이지 분할 (진입일~D)
+  - 산출: `peak_close = max(close[entry:D])`, `trail = peak × 0.90`,
+    `stop = entry × 0.93`, `status = STOP/TRAIL/HOLD`
+  - 보유 DB row 5 신규 필드 갱신: 최고종가 / 트레일선 / 동적손절선 /
+    청산상태 / 갱신시각
+
+- **Top 5 MFE 백테 분석 — Colab + KRX 로그인 + pykrx 1.2.7 → 백테
+  335 거래 산출** (코드 변경 0, 분석만):
+  - **(a) MFE Top 5** (peak_ret 큰 순):
+    1. 미래에셋증권 25-12-30 — peak +212% / exit +176% / 환불 -36%p
+    2. 동국제강    21-03-12 — peak +157% / exit +119% / 환불 -38%p
+    3. 삼양식품    24-04-25 — peak +146% / exit +109% / 환불 -37%p
+    4. 포스코인터  23-06-16 — peak +132% / exit +76%  / 환불 -55%p
+    5. 에코프로    20-05-08 — peak +122% / exit +103% / 환불 -19%p
+    → 시기 분산 (2020/21/23/24/25-26) + 산업 분산 → **재현성 시그널 ✓**.
+  - **(b) MFE→exit 후퇴 폭 Top 5**:
+    포스코인터 -55%p / 에스엠 -55%p / 한화에어로 -42%p (126일) / 동국제강
+    -38%p / 두산에너빌리티 -37%p (단 5일!).
+  - **통계**:
+    - peak_ret: mean 18.6% / median 8.9% / **p90 46.9%** (상위 10%만 +47% 이상)
+    - mfe_to_exit: **mean 13.4%p / median 12.4%p / p90 20.0%p**
+      → trail 10% 약속 + 슬리피지 ≈ 12-13%p 가 표준 환불 폭
+    - 청산 사유: trailing 219 (65%) / stop_loss 111 (33%) / final 5 / max_hold 0
+  - **트레일 환불 메커니즘 4가지** 정리 (대화):
+    ① 종가 자체가 trail level 아래로 갭다운 (가장 큼)
+    ② 트리거 후 다음날 시초가 추가 갭다운
+    ③ 슬리피지 왕복 0.3%p
+    ④ Peak 정의 = 종가 기준 (장중 high 무시)
+
+- **운영 가이드 (대화)**: 미래에셋 M-STOCK 동시호가 매수 예약주문 절차 +
+  시장가 증거금 = 현재가 × 1.30 메커니즘 + peak_close 기준 -10% trail
+  의미 명확화.
+
+### 검토한 대안
+
+- **Trail 10% → 8% 좁히기**: mfe_to_exit p90 = 20%p 가 신경쓰임. 단
+  ADR-010 메타 원칙 적용 시 robustness 통과 필요 + 직관적으로 winner
+  손실 더 큼 (5건 +100%급 winner 가 +60~80% 에서 일찍 잡힐 위험) →
+  **trail 10% 유지**, 추가 sensitivity 백테 시도 보류.
+- **자동매도트래커 갱신 시점 (a) 06:00 vs (b) 19:00**: (a) 는 D-1 종가
+  기준이라 1일 stale + 모닝리포트 cron 실패 시 청산 액션도 못 함. (b)
+  는 D 종가 기준 + 마음의 준비 14시간 + cron 분리. **(b) 19:00 채택**.
+- **eod_tracker 구현 위치 — morning-report 안 vs 별도 레포**: 별도 레포가
+  이미 운영 중 (stock-automation) + Notion DB 가 단일 진실의 원천이라
+  cross-repo 코드 의존 0. **별도 레포 채택**.
+- **자동매도 예약주문까지 자동화 (Plan 006 책임 #3)**: 1주 수동 운영
+  부담 측정 → 자동화 결정. 본 세션 범위 X.
+- **데이터 소스 — KIS vs pykrx vs yfinance** (Colab 백테용): pykrx 가
+  가장 빠름 (1분 50초) + KRX 무료 가입으로 KRX_ID/PW 만 세팅하면 동작
+  (사용자 네이버 로그인 → KRX 일반 ID 추가). KIS 7-10분, yfinance
+  데이터 차이. **pykrx 1.2.7 채택**.
+- **백테 패치 방식 — strategy.py peak_ret 추가 vs 후처리 함수**: stock_arr
+  + dates 가 메모리에 있으니 trade_log 의 entry/exit_date 로 peak 후처리
+  가능. **strategy.py 수정 없이 후처리** (Colab 셀 3 에서).
+
+### 다음 세션에서 할 일
+
+1. **★ 노션 DB 스키마 확인** (마스터). 자동매도트래커 view 컬럼 헤더
+   스크린샷 또는 dump 텍스트. eod_tracker.py 의 F_* 상수 매핑 정확히
+   잡으려고. 핵심 의문 3건:
+   - "최고가" 필드 = peak_close 인지 vs 장중 high 인지 vs 52주고점인지
+   - "TS 활성화" = +15% 자동 인지 마스터 수동인지
+   - 현재 갱신 cron 시점 (지금 아침이라 D-1 stale)
+2. **stock-automation 레포에 eod_tracker.py + .yml 드롭인** (마스터):
+   - Notion DB 5 신규 필드 추가 (없으면)
+   - F_* 상수 실제 컬럼명 매핑
+   - GH Secrets 4건 (KIS_APP_KEY/SECRET, NOTION_API_KEY, NOTION_HOLDINGS_DS_ID)
+   - 수동 trigger 테스트 (workflow_dispatch)
+3. **morning-report 측 PR** (Claude 작업):
+   - `holdings_report.py` 4 필드 inherit + 🎯 청산 평가 줄
+   - `.claude/commands/analyze.md` alert / portfolio 카드 spec 보강
+4. **ADR-012 자동매매 룰 정합화** 정식화 (선택). 본 결정이 되돌리면
+   알파 -10~15%p 잠재 → 구조적 결정. ADR 후보 ★.
+5. **마스터 1주 운영 평가** (~05-05) — 페이퍼 트레이딩 정식화 (기존
+   1순위 그대로) + 본 세션 흐름 (D 19:00 / D+1 06:00 / D+1 09:00) 부담
+   측정.
+
+### 미해결
+
+- 노션 자동매도트래커 view 실제 컬럼 list 미확인 (마스터 보내주기 대기)
+- 자동 매도 예약주문 자동화 (Plan 006 책임 #3) — 1주 수동 부담 측정 후 결정
+- mfe_to_exit p90 = 20%p 가 trail 10% 약속(-10%p) 두 배 — robustness
+  백테 (trail 8/10/12/15) 시도 가치 ADR-010 통과 가능성 낮아 보류
+- 백테 pykrx 데이터로 본 세션 산출한 +29.55% 가 마스터 PC 결과와 정확히
+  일치하는지 미확인 (사소, 데이터 소스 동일하니 일치 가정)
+
+---
+
 ## 2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`) — `/analyze` v3 가이드 정식화 + 페이퍼 트레이딩 인프라 첫 단계 (Plan 005/006 + Notion DB) + 백테 가정 한계 분석
 
 ### 결정
