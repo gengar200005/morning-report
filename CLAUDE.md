@@ -143,7 +143,9 @@ ADR-009 재확인.
   `v3.9-data-integrity`, `session-start-4OzHX` (v4.0 abandoned),
   `session-start-HhsjC`, `waiting-for-instructions-6Xn3W` (v5.0 src),
   `interesting-kapitsa-d40f52`, `elated-tu-ec63ef`, `claude-pub`,
-  `claude-pub-v3` (04-28 임시 publish 브랜치)
+  `claude-pub-v3` (04-28 임시 publish 브랜치),
+  **`analyze-code-8HvmQ` / `crazy-kirch-06c1d1` / `sad-ritchie-f8d888`**
+  (04-29 #1 ADR-012 흡수 후 폐기, ADR 기록만 main 흡수)
 
 ---
 
