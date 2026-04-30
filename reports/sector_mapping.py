@@ -36,14 +36,14 @@ def _load_name_to_ticker() -> dict[str, str]:
     return {name: code for code, name in UNIVERSE}
 
 
-def resolve_sector(stock_name: str, sector_adr003: dict) -> dict:
+def resolve_sector(stock_name: str, sector_adr003: dict, code: str | None = None) -> dict:
     """종목명 → 섹터명 매핑 후 신 11섹터 등급/점수 포함해 반환.
 
     Args:
         stock_name: universe 에 등록된 종목명 (예: "삼성SDI").
         sector_adr003: morning_data_parser 의 sector_adr003 dict.
-            키: leaders / strong / neutral / weak / na (list of items),
-                각 item = {"name": "반도체", "score": 100.0, "n_stocks": 5, "breadth_pct": 1.0}.
+        code: 종목코드 (optional). backtest/universe.py 에 없는 신규 종목
+              (라이브 200 확장분) 을 위한 fallback — 이름 매핑 실패 시 사용.
 
     Returns:
         {
@@ -56,7 +56,7 @@ def resolve_sector(stock_name: str, sector_adr003: dict) -> dict:
     name_to_ticker = _load_name_to_ticker()
     ticker_to_sector = _load_ticker_to_sector()
 
-    ticker = name_to_ticker.get(stock_name)
+    ticker = name_to_ticker.get(stock_name) or code
     sector = ticker_to_sector.get(ticker) if ticker else None
     if not sector:
         return {"sector": None, "tier": None, "score": None, "in_leading": False}

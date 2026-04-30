@@ -233,7 +233,7 @@ def _enrich_grade_a(data: dict) -> None:
 
     for i, stock in enumerate(grade_a_sorted):
         stock["is_held"] = stock["code"] in held_codes
-        leading = resolve_sector(stock["name"], data["sector_adr003"])
+        leading = resolve_sector(stock["name"], data["sector_adr003"], code=stock.get("code"))
         stock["leading_sector"] = leading
 
         # check mark for AUTO column '주도 섹터 소속'
