@@ -1,4 +1,4 @@
-# /analyze — 모닝리포트 7카드 분석 + main publish
+# /analyze — 모닝리포트 7카드 + macro_events 분석 + main publish
 
 오늘자 `morning_data.txt` → `docs/claude_analysis/{YMD}.json` (main) → `claude_render.yml`
 자동 트리거 → PDF 재렌더 + Drive 업로드 + Notion publish.
@@ -29,21 +29,36 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    마스터에게 덮어쓰기 / 스킵 / 신규 분석 여부 확인. 동일 날짜 중복 commit
    해도 claude_render 다시 돌아 PDF 갱신.
 
-5. **7카드 작성** → `docs/claude_analysis/{YMD}.json`. 각 값은 짧은
-   HTML snippet (`<p>...` 또는 `<p>...</p><ul><li>...</li></ul>`). Jinja
-   `| safe` 그대로 주입되므로 escape 책임은 작성자.
+5. **7카드 + macro_events 작성** → `docs/claude_analysis/{YMD}.json`. 7카드
+   값은 짧은 HTML snippet (`<p>...` 또는 `<p>...</p><ul><li>...</li></ul>`).
+   Jinja `| safe` 그대로 주입되므로 escape 책임은 작성자.
 
-   **키 7개 모두 채울 것** (누락 = template fallback, 무결성 가드 위반):
+   **키 8개 모두 채울 것** (7카드 HTML + `macro_events` 구조체):
 
-   | 키 | 1줄 질문 | 데이터 소스 (parser dict 키) |
-   |---|---|---|
-   | `alert` | 오늘 단 하나의 경계 | `vix`, `kr_indices`, `market_context`, `kospi_flow`, anomaly |
-   | `gate_flow` | 시장 게이트 + 수급 흐름 | `market_context.kospi_above_ma60`, `kospi_flow` |
-   | `sector` | leaders 변동 + ETF 동조 | `sector_adr003`, `sector_etf` |
-   | `entry` | T10/CD60 진입 후보 (RS 순) + 산업군 펀더 + 컨센서스 + 출처 | `top5` (derive 결과) + WebSearch |
-   | `agrade` | A등급 universe 광폭 | `remaining_a`, `grade_c` |
-   | `portfolio` | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
-   | `macro` | 신뢰 경제지 뉴스 기반 narrative (D-30 분기점 + 시장 반응 + 한국 함의) | **WebSearch 100%** (Reuters / Bloomberg / WSJ / CNBC / FT / 한경 / 매경 등) — 하드코딩 `macro_calendar` 미사용 |
+   | 키 | 형식 | 1줄 질문 | 데이터 소스 |
+   |---|---|---|---|
+   | `alert` | HTML | 오늘 단 하나의 경계 | `vix`, `kr_indices`, `market_context`, `kospi_flow`, anomaly |
+   | `gate_flow` | HTML | 시장 게이트 + 수급 흐름 | `market_context.kospi_above_ma60`, `kospi_flow` |
+   | `sector` | HTML | leaders 변동 + ETF 동조 | `sector_adr003`, `sector_etf` |
+   | `entry` | HTML | T10/CD60 진입 후보 (RS 순) + 산업군 펀더 + 컨센서스 + 출처 | `top5` (derive 결과) + WebSearch |
+   | `agrade` | HTML | A등급 universe 광폭 | `remaining_a`, `grade_c` |
+   | `portfolio` | HTML | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
+   | `macro` | HTML | 신뢰 경제지 뉴스 기반 narrative (D-30 분기점 + 시장 반응 + 한국 함의) | **WebSearch 100%** — 하드코딩 미사용 |
+   | `macro_events` | JSON array | Section 06 캘린더용 구조체 — `macro` 카드와 동일 WebSearch 결과에서 추출 | **WebSearch 100%** (federalreserve.gov / bls.gov / Reuters 등) |
+
+   **`macro_events` 형식** — `macro` 카드 WebSearch 와 동일 세션에서 작성.
+   D-30 이내 + 임박순 정렬. Section 06 캘린더 그대로 렌더링됨:
+   ```json
+   "macro_events": [
+     {"event": "NFP",  "date": "2026-05-08", "impact": "high"},
+     {"event": "CPI",  "date": "2026-05-13", "impact": "high"},
+     {"event": "FOMC", "date": "2026-06-17", "impact": "high"}
+   ]
+   ```
+   - `event` 키: `FOMC` / `NFP` / `CPI` / `PCE` (MACRO_EVENT_FULLNAME 매핑 자동)
+   - `date`: `YYYY-MM-DD` (신뢰 출처 일정 페이지 직접 확인 의무)
+   - `impact`: `"high"` (FOMC/NFP/CPI/PCE) / `"medium"` (어닝시즌 등)
+   - 이벤트 없으면 `"macro_events": []` (빈 배열 명시, 키 누락 ❌)
 
    **카드 길이 (entry 외 6카드)**: 각 1~3 문장. 데이터 인용 + 액션 한 줄.
    서사 / 추측 금지.
@@ -101,8 +116,8 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    전용이지만 **claude_analysis JSON 은 예외 허용** (web Project 시절부터
    동일 패턴, 04-25 `bfd73ea` 등).
 
-7. **완료 보고**: 7카드 요약 1줄씩 + commit 해시 + workflow 트리거 안내
-   (claude_render run id 는 마스터가 GH Actions 에서 확인).
+7. **완료 보고**: 7카드 요약 1줄씩 + `macro_events` 이벤트 목록 + commit 해시
+   + workflow 트리거 안내 (claude_render run id 는 마스터가 GH Actions 에서 확인).
 
 ---
 
