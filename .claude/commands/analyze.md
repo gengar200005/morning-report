@@ -44,21 +44,35 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    | `agrade` | HTML | A등급 universe 광폭 | `remaining_a`, `grade_c` |
    | `portfolio` | HTML | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
    | `macro` | HTML | 신뢰 경제지 뉴스 기반 narrative (D-30 분기점 + 시장 반응 + 한국 함의) | **WebSearch 100%** — 하드코딩 미사용 |
-   | `macro_events` | JSON array | Section 06 캘린더용 구조체 — `macro` 카드와 동일 WebSearch 결과에서 추출 | **WebSearch 100%** (federalreserve.gov / bls.gov / Reuters 등) |
+   | `macro_events` | JSON array | Section 06 캘린더용 구조체 — `macro` 카드와 동일 WebSearch 결과에서 추출 | **WebSearch 100%** — Reuters Calendar / Bloomberg ECO / Investing.com Economic Calendar 등 |
 
-   **`macro_events` 형식** — `macro` 카드 WebSearch 와 동일 세션에서 작성.
-   D-30 이내 + 임박순 정렬. Section 06 캘린더 그대로 렌더링됨:
+   **`macro_events` 선정 기준** — `macro` 카드 WebSearch 와 동일 세션에서 작성.
+   **D-14 (2주) 이내** 이벤트만. 고정 카테고리 없음. 아래 기준으로 시장
+   이슈몰이가 클 것으로 예상되는 이벤트를 신뢰 경제지 커버리지 기준으로 선정:
+
+   **선정 우선순위** (Reuters / Bloomberg / CNBC / FT 보도 빈도 + 시장 반응 크기 기준):
+   1. 중앙은행 결정 (FOMC / ECB / BOK 금통위 / BOJ)
+   2. 고용 (NFP / JOLTS / 실업수당청구)
+   3. 물가 (CPI / PPI / PCE)
+   4. 성장 (GDP / ISM 제조업 / 소매판매)
+   5. 지정학 / 무역 (관세 발효일 / G7 / 주요국 정상회담)
+   6. 빅테크 어닝 (시장 전체 센티먼트 영향 시 포함)
+   - 위 외에도 당주 시장을 주도하는 이슈가 있으면 포함 (예: OPEC 회의, 부채한도 데드라인)
+
    ```json
    "macro_events": [
-     {"event": "NFP",  "date": "2026-05-08", "impact": "high"},
-     {"event": "CPI",  "date": "2026-05-13", "impact": "high"},
-     {"event": "FOMC", "date": "2026-06-17", "impact": "high"}
+     {"event": "NFP",       "date": "2026-05-08", "impact": "high"},
+     {"event": "CPI",       "date": "2026-05-13", "impact": "high"},
+     {"event": "ISM 제조업", "date": "2026-05-04", "impact": "medium"},
+     {"event": "BOK 금통위", "date": "2026-05-09", "impact": "high"}
    ]
    ```
-   - `event` 키: `FOMC` / `NFP` / `CPI` / `PCE` (MACRO_EVENT_FULLNAME 매핑 자동)
-   - `date`: `YYYY-MM-DD` (신뢰 출처 일정 페이지 직접 확인 의무)
-   - `impact`: `"high"` (FOMC/NFP/CPI/PCE) / `"medium"` (어닝시즌 등)
-   - 이벤트 없으면 `"macro_events": []` (빈 배열 명시, 키 누락 ❌)
+   - `event` 값: 독자가 바로 알 수 있는 약칭 (FOMC / NFP / CPI / GDP / ISM 제조업 / BOK 금통위 등)
+   - `date`: `YYYY-MM-DD` — 신뢰 출처 일정 페이지에서 직접 확인 의무
+     (Reuters Calendar / Investing.com / federalreserve.gov / bls.gov / 한국은행 공식)
+   - `impact`: `"high"` (중앙은행·고용·물가 등 1~3순위) / `"medium"` (4~6순위)
+   - **D-14 이내 없으면** `"macro_events": []` (빈 배열 명시, 키 누락 ❌)
+   - 이벤트 수 제한 없음 — 시장 영향 있는 것 전부 포함 (통상 2~6건)
 
    **카드 길이 (entry 외 6카드)**: 각 1~3 문장. 데이터 인용 + 액션 한 줄.
    서사 / 추측 금지.
@@ -92,11 +106,8 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
      Financial Times / 한경 / 매경 / 연합인포맥스 / Investing.com 등
      당일·당주 보도 WebSearch. **무엇이 일어났고 / 시장이 어떻게 반응했고 /
      다음 무엇을 봐야 하는가** narrative 우선, 단순 D-day 카운트만 ❌.
-   - **다음 분기점 1-3건** — FOMC / NFP / CPI / 주요 경제지표 / 지정학
-     이벤트 중 향후 D-30 이내 실제 임박한 것을 신뢰 출처 일정 페이지
-     (Reuters Calendar / Bloomberg ECO / federalreserve.gov / bls.gov
-     release schedule) 에서 직접 확인 후 인용. 일정만 ❌, **시장 반응 예상
-     + 한국 주식 시장 함의** 동반.
+   - **다음 분기점** — `macro_events` 에 기재한 D-14 이내 이벤트 기준으로
+     서술. 일정만 ❌, **시장 반응 예상 + 한국 주식 시장 함의** 동반.
    - **WTI / 환율 / 미국채 금리 1%+ 급변** — 원인 (지정학 / 공급충격 /
      정책) 신뢰 보도 (IEA / World Bank / Reuters / Bloomberg) 검증 후
      인용. "지정학·공급 충격 신호" 류 추측 라벨 ❌.

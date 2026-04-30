@@ -62,12 +62,27 @@ def _normalize_claude_macro_events(events: list[dict], base_date: str) -> list[d
 
 
 MACRO_EVENT_FULLNAME = {
+    # 중앙은행
     "FOMC": "FOMC · Federal Reserve 금리 결정",
-    "CPI": "CPI · 미국 소비자물가지수",
-    "CPI(미)": "CPI · 미국 소비자물가지수",
-    "PCE": "PCE · 미국 개인소비지출",
+    "ECB": "ECB · 유럽중앙은행 금리 결정",
+    "BOJ": "BOJ · 일본은행 금리 결정",
+    "BOK 금통위": "BOK 금통위 · 한국은행 기준금리 결정",
+    "FOMC 의사록": "FOMC Minutes · 연준 의사록 공개",
+    # 고용
     "NFP": "NFP · 미국 고용 지표",
     "NFP(고용)": "NFP · 미국 고용 지표",
+    "JOLTS": "JOLTS · 미국 구인·이직 보고서",
+    "실업수당": "실업수당청구건수 · 미국 주간 고용",
+    # 물가
+    "CPI": "CPI · 미국 소비자물가지수",
+    "CPI(미)": "CPI · 미국 소비자물가지수",
+    "PPI": "PPI · 미국 생산자물가지수",
+    "PCE": "PCE · 미국 개인소비지출",
+    # 성장
+    "GDP": "GDP · 미국 국내총생산",
+    "ISM 제조업": "ISM 제조업 PMI · 미국 제조업 경기",
+    "ISM 서비스업": "ISM 서비스업 PMI · 미국 서비스업 경기",
+    "소매판매": "소매판매 · 미국 소비 동향",
 }
 
 
