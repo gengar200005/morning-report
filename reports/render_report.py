@@ -9,7 +9,7 @@ CLI:
 플로우:
   1) parser → dict
   2) derive (Top 5, leading sector 매칭, Exec Summary 자동 조립)
-  3) Jinja2 → HTML (claude_analysis 주어지면 7카드 주입, 아니면 fallback)
+  3) Jinja2 → HTML (claude_analysis 주어지면 8키 주입, 아니면 fallback)
   4) 두 파일 저장: archive/report_YYYYMMDD.html + latest.html
 """
 
@@ -31,6 +31,35 @@ from reports.sector_mapping import resolve_sector
 logger = logging.getLogger(__name__)
 
 ROMAN = ["I", "II", "III", "IV", "V"]
+
+def _normalize_claude_macro_events(events: list[dict], base_date: str) -> list[dict]:
+    """claude_analysis.macro_events → parser 호환 macro_calendar 리스트.
+
+    입력: [{"event": "FOMC", "date": "2026-06-17", "impact": "high"}, ...]
+    출력: 파서 dict 형식 (dday / weekday / month / day 자동 산출).
+    """
+    from datetime import timedelta
+
+    y, m, d = (int(x) for x in base_date.split("-"))
+    base = date(y, m, d)
+    result = []
+    for ev in events:
+        event_date = date.fromisoformat(ev["date"])
+        dday = (event_date - base).days
+        result.append(
+            {
+                "event": ev["event"],
+                "month": event_date.month,
+                "day": event_date.day,
+                "dday": dday,
+                "impact": ev.get("impact", "medium"),
+                "date": ev["date"],
+                "weekday": event_date.strftime("%a").upper(),
+            }
+        )
+    result.sort(key=lambda e: e["dday"])
+    return result
+
 
 MACRO_EVENT_FULLNAME = {
     "FOMC": "FOMC · Federal Reserve 금리 결정",
@@ -411,9 +440,6 @@ def main() -> int:
     data = parse_morning_data(args.input)
     logger.info("Report date: %s (%s)", data["date"], data["weekday"])
 
-    logger.info("Deriving render-time fields")
-    data = derive(data)
-
     claude_analysis: dict = {}
     if args.claude_analysis:
         if args.claude_analysis.exists():
@@ -423,10 +449,21 @@ def main() -> int:
                 len(claude_analysis),
                 sorted(claude_analysis.keys()),
             )
+            if "macro_events" in claude_analysis:
+                data["macro_calendar"] = _normalize_claude_macro_events(
+                    claude_analysis["macro_events"], data["date"]
+                )
+                logger.info(
+                    "macro_calendar overridden from claude_analysis.macro_events (%d events)",
+                    len(data["macro_calendar"]),
+                )
         else:
             logger.warning(
                 "claude_analysis 파일 없음: %s — fallback 렌더 진행", args.claude_analysis
             )
+
+    logger.info("Deriving render-time fields")
+    data = derive(data)
 
     logger.info("Rendering template %s", args.template)
     html = render_html(data, args.template_dir, args.template, claude_analysis=claude_analysis)
