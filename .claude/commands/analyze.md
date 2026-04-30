@@ -43,7 +43,7 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    | `entry` | T10/CD60 진입 후보 (RS 순) + 산업군 펀더 + 컨센서스 + 출처 | `top5` (derive 결과) + WebSearch |
    | `agrade` | A등급 universe 광폭 | `remaining_a`, `grade_c` |
    | `portfolio` | verdict 별 액션 | `holdings`, `holdings[i].verdict` |
-   | `macro` | D-30 high impact 우선 | `macro_calendar` (dday≤30, impact="high") |
+   | `macro` | 신뢰 경제지 뉴스 기반 narrative (D-30 분기점 + 시장 반응 + 한국 함의) | **WebSearch 100%** (Reuters / Bloomberg / WSJ / CNBC / FT / 한경 / 매경 등) — 하드코딩 `macro_calendar` 미사용 |
 
    **카드 길이 (entry 외 6카드)**: 각 1~3 문장. 데이터 인용 + 액션 한 줄.
    서사 / 추측 금지.
@@ -67,22 +67,26 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
    - `agrade`: A등급 광폭 시 강세장 재현 의심 + 페이퍼 병행 권장
    - `portfolio`: 매크로 임박 시 추매 자제 명시
 
-   **macro 카드 — v2 의무사항** (2026-04-30 정식화. 04-30 리포트 "FOMC D-6
-   임박" 가짜 narrative 사고 = 하드코딩 `combine_data.py:MACRO_EVENTS` 신뢰
-   + 1차 출처 재검증 누락 → 본 의무 신설):
-   - **1차 출처 당일 검증** — 다음 FOMC 발표일은 federalreserve.gov 공식
-     일정, NFP/CPI 발표일은 bls.gov release schedule. **하드코딩된
-     `combine_data.py:MACRO_EVENTS` 또는 `morning_data.txt` 매크로 블록은
-     fallback skeleton 으로만 취급, 그대로 신뢰 ❌**. 매일 1차 출처 재확인
-     후 덮어쓰기.
-   - **직전 결과 + 시장 반응** — 어제·이번 주에 FOMC/NFP/CPI 발표가 있었으면
-     결과 + 시장 반응 (Reuters / CNBC / Bloomberg / WSJ 등 신뢰 보도사)
-     인용. 단순 D-day 카운트만 ❌.
-   - **시장 급변 원인 1차 출처** — WTI / 환율 / 미국채 금리 1%+ 급변 시
-     원인 (지정학 / 공급충격 / 정책) 신뢰 출처 (IEA / Reuters / Bloomberg /
-     World Bank 등) 검증 후 인용. "지정학·공급 충격 신호" 류 추측 라벨 ❌.
-   - **출처 인용** — 카드 마지막에 *italic* 으로 인용 출처 (federalreserve.gov
-     / bls.gov / 보도사 명) 열거. 인용 시점 (당일 / ~당주) 명시.
+   **macro 카드 — v3 의무사항** (2026-04-30 옵션 A 정식화. v2 [하드코딩
+   검증] 시도가 mechanical D-day 카운트 narrative 양산 → **신뢰 경제지
+   뉴스 기반 100% live 작성** 으로 전면 교체):
+   - **하드코딩 완전 무시** — `combine_data.py:MACRO_EVENTS` (현재 빈
+     dict) / `morning_data.txt` 매크로 캘린더 블록 (현재 stub 안내문) 은
+     **참고조차 하지 말 것**. 데이터 소스 아님.
+   - **신뢰 경제지 뉴스 우선** — Reuters / Bloomberg / WSJ / CNBC /
+     Financial Times / 한경 / 매경 / 연합인포맥스 / Investing.com 등
+     당일·당주 보도 WebSearch. **무엇이 일어났고 / 시장이 어떻게 반응했고 /
+     다음 무엇을 봐야 하는가** narrative 우선, 단순 D-day 카운트만 ❌.
+   - **다음 분기점 1-3건** — FOMC / NFP / CPI / 주요 경제지표 / 지정학
+     이벤트 중 향후 D-30 이내 실제 임박한 것을 신뢰 출처 일정 페이지
+     (Reuters Calendar / Bloomberg ECO / federalreserve.gov / bls.gov
+     release schedule) 에서 직접 확인 후 인용. 일정만 ❌, **시장 반응 예상
+     + 한국 주식 시장 함의** 동반.
+   - **WTI / 환율 / 미국채 금리 1%+ 급변** — 원인 (지정학 / 공급충격 /
+     정책) 신뢰 보도 (IEA / World Bank / Reuters / Bloomberg) 검증 후
+     인용. "지정학·공급 충격 신호" 류 추측 라벨 ❌.
+   - **출처 인용** — 카드 마지막에 *italic* 으로 인용 보도사 + 인용
+     일자 (당일 / 당주) 열거. 일정 페이지 인용 시 직접 URL 도메인 명시.
 
 6. **main 에 commit + push** (claude_render.yml 가 main 만 트리거):
    ```bash
@@ -125,11 +129,14 @@ GitHub MCP `create_or_update_file` → `git commit/push`.
 - **entry 카드 컨센 인용 없는 진단** ❌ (증권사 명·목표가·인용 시점 셋 다 있어야 함)
 - **entry 카드 산업군 무시 절대값 라벨** ❌ ("PBR 15.6 = 펀더멘털 취약" 류, 산업 임계 적용)
 - **entry 카드 컨센 추월 ⚠️ 누락** ❌ (현재가 ≥ 컨센 평균 +10% 시 ⚠️ 의무)
-- **macro 카드 하드코딩 일정 그대로 신뢰** ❌ (`combine_data.py:MACRO_EVENTS`
-  / `morning_data.txt` 매크로 블록은 fallback skeleton, `/analyze` 가
-  federalreserve.gov / bls.gov 1차 출처 재검증 후 덮어쓰기 의무)
-- **macro 카드 1차 출처 누락** ❌ (FOMC = federalreserve.gov, NFP/CPI =
-  bls.gov 인용 의무. 부재 시 "1차 출처 검증 실패" 명시)
+- **macro 카드 하드코딩 참조** ❌ (`combine_data.py:MACRO_EVENTS` 빈 dict /
+  `morning_data.txt` 매크로 블록 stub 은 데이터 소스 아님. WebSearch 신뢰
+  경제지 뉴스 100% 기반 작성 의무)
+- **macro 카드 mechanical D-day 나열** ❌ ("FOMC D-X / NFP D-Y / CPI D-Z"
+  형식 단순 카운트만 ❌. **무엇이 일어났고 / 시장 반응 / 한국 함의**
+  narrative 동반 의무)
+- **macro 카드 출처 인용 누락** ❌ (보도사 + 인용 일자 italic 열거 의무.
+  부재 시 "출처 검증 실패" 명시)
 - **macro 카드 시장 급변 추측 라벨** ❌ (WTI / 환율 / 금리 1%+ 급변 시
   원인 신뢰 출처 검증 후 인용, "지정학·공급 충격 신호" 류 추측 ❌)
 

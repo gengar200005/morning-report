@@ -19,46 +19,22 @@ YEAR     = NOW.strftime("%Y")
 MONTH    = NOW.strftime("%m")
 
 # ── 3순위: 매크로 캘린더 ────────────────────────────
-# 발표일 기준 (FOMC: 성명서 공개일=2일차, CPI/NFP: 발표일)
-# 출처: Federal Reserve 공식 2026 일정 / BLS release schedule
-# ※ 변경 시 1차 출처 (federalreserve.gov / bls.gov) 재확인
-MACRO_EVENTS = {
-    # FOMC 2026 (federalreserve.gov, 2일차 성명일):
-    # Jan 27-28 / Mar 17-18 / Apr 28-29 / Jun 16-17 /
-    # Jul 28-29 / Sept 15-16 / Oct 27-28 / Dec 8-9
-    "FOMC":    [date(2026,1,28), date(2026,3,18), date(2026,4,29),
-                date(2026,6,17), date(2026,7,29), date(2026,9,16),
-                date(2026,10,28), date(2026,12,9)],
-    "CPI(미)": [date(2026,1,14), date(2026,2,11), date(2026,3,11),
-                date(2026,4,10), date(2026,5,12), date(2026,6,10),
-                date(2026,7,15), date(2026,8,12), date(2026,9,9),
-                date(2026,10,14), date(2026,11,11), date(2026,12,9)],
-    "NFP(고용)":[date(2026,1,9),  date(2026,2,6),  date(2026,3,6),
-                date(2026,4,3),  date(2026,5,8),  date(2026,6,5),
-                date(2026,7,10), date(2026,8,7),  date(2026,9,4),
-                date(2026,10,2), date(2026,11,6), date(2026,12,4)],
-}
+# 2026-04-30 ADR (옵션 A): 하드코딩 일정 신뢰 못함 (FOMC 5/6 가짜 사고).
+# 매크로 카드는 `/analyze` 가 신뢰 경제지 뉴스 (Reuters / Bloomberg / WSJ /
+# CNBC / FT / 한경 / 매경 / 연합인포맥스 등) 기반으로 100% live 작성.
+# 본 함수는 parser/template 호환을 위한 빈 stub 만 emit.
+MACRO_EVENTS: dict = {}  # 의도적 빈 dict — 하드코딩 폐기
 
 # 어닝시즌 월 (1월·4월·7월·10월 시작 후 약 6주)
 EARNING_MONTHS = {1,2,4,5,7,8,10,11}
 
 def build_macro_section():
-    lines = ["【 매크로 캘린더 】"]
-    for event, dates in MACRO_EVENTS.items():
-        upcoming = sorted(d for d in dates if d >= TODAY)
-        if not upcoming:
-            continue
-        nxt  = upcoming[0]
-        days = (nxt - TODAY).days
-        if   days == 0: tag = "오늘 ⚠️"
-        elif days <= 3: tag = f"D-{days} ⚠️"
-        elif days <= 7: tag = f"D-{days} (이번 주)"
-        else:           tag = f"D-{days}"
-        lines.append(f"  {event:<10} {nxt.strftime('%m/%d')}  {tag}")
-
     season = "진행 중 ⚠️  개별 변동성 주의" if TODAY.month in EARNING_MONTHS else "비수기"
-    lines.append(f"  어닝시즌   {season}")
-    return "\n".join(lines)
+    return "\n".join([
+        "【 매크로 캘린더 】",
+        "  (FOMC/NFP/CPI 일정·해석은 /analyze 가 신뢰 경제지 뉴스 기반 작성 — 하드코딩 폐기 ADR-015)",
+        f"  어닝시즌   {season}",
+    ])
 
 # ── 데이터 파일 합치기 ──────────────────────────────
 FILES = ["us_data.txt", "kr_data.txt", "sector_data.txt", "holdings_data.txt"]
