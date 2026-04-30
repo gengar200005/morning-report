@@ -19,14 +19,18 @@ YEAR     = NOW.strftime("%Y")
 MONTH    = NOW.strftime("%m")
 
 # ── 3순위: 매크로 캘린더 ────────────────────────────
-# 발표일 기준 (FOMC: 성명서 공개일, CPI/NFP: 발표일)
-# ※ 아래 날짜는 2026년 예정 일정 — 변경 시 직접 수정
+# 발표일 기준 (FOMC: 성명서 공개일=2일차, CPI/NFP: 발표일)
+# 출처: Federal Reserve 공식 2026 일정 / BLS release schedule
+# ※ 변경 시 1차 출처 (federalreserve.gov / bls.gov) 재확인
 MACRO_EVENTS = {
-    "FOMC":    [date(2026,1,28), date(2026,3,18), date(2026,5,6),
+    # FOMC 2026 (federalreserve.gov, 2일차 성명일):
+    # Jan 27-28 / Mar 17-18 / Apr 28-29 / Jun 16-17 /
+    # Jul 28-29 / Sept 15-16 / Oct 27-28 / Dec 8-9
+    "FOMC":    [date(2026,1,28), date(2026,3,18), date(2026,4,29),
                 date(2026,6,17), date(2026,7,29), date(2026,9,16),
-                date(2026,11,4), date(2026,12,16)],
+                date(2026,10,28), date(2026,12,9)],
     "CPI(미)": [date(2026,1,14), date(2026,2,11), date(2026,3,11),
-                date(2026,4,10), date(2026,5,13), date(2026,6,10),
+                date(2026,4,10), date(2026,5,12), date(2026,6,10),
                 date(2026,7,15), date(2026,8,12), date(2026,9,9),
                 date(2026,10,14), date(2026,11,11), date(2026,12,9)],
     "NFP(고용)":[date(2026,1,9),  date(2026,2,6),  date(2026,3,6),
