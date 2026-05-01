@@ -82,14 +82,42 @@ def save_screening_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
 
 
-def update_screening_state(state, high_grade_today, today_str):
-    """오늘 A/B 등급 상태를 기반으로 state 갱신.
+def read_current_holdings(path="holdings_data.txt"):
+    """holdings_data.txt 에서 현재 보유 종목코드 set 파싱."""
+    import re
+    try:
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        return set(re.findall(r'\((\d{6})\)', content))
+    except Exception:
+        return set()
+
+
+def update_screening_state(state, high_grade_today, today_str,
+                            held_tickers=None):
+    """오늘 A/B 등급 상태 + 실제 보유 이탈을 기반으로 state 갱신.
 
     Rules:
     - (A/B→out) 이전에 A/B였으나 오늘 빠진 종목: last_exit_date = today
     - (A/B 유지) 오늘 A/B 종목: last_high_grade_date = today
+    - (held→not held) 어제 보유였으나 오늘 없는 종목: last_exit_date = today
+      (포지션 청산이 등급 이탈보다 먼저 감지될 수 있도록)
     """
+    # 포지션 청산 감지: 어제 보유 목록(_held) 과 오늘 실제 보유 비교
+    if held_tickers is not None:
+        prev_held = set(state.get("_held_tickers", []))
+        exited = prev_held - held_tickers
+        for tk in exited:
+            state.setdefault(tk, {})
+            # 이미 더 최근 exit_date 가 있으면 덮어쓰지 않음
+            existing = state[tk].get("last_exit_date", "")
+            if not existing or existing < today_str:
+                state[tk]["last_exit_date"] = today_str
+        state["_held_tickers"] = sorted(held_tickers)
+
     for tk, info in list(state.items()):
+        if tk.startswith("_"):
+            continue
         if tk in high_grade_today:
             continue
         last_hg = info.get("last_high_grade_date")
@@ -107,7 +135,11 @@ def update_screening_state(state, high_grade_today, today_str):
 
 def compute_cooldown_remaining(state, ticker, today_date,
                                 threshold=STRATEGY_COOLDOWN_D):
-    """쿨다운 잔여 거래일 근사값. 쿨다운 없음이면 None."""
+    """쿨다운 잔여 거래일 근사값. 쿨다운 없음이면 None.
+
+    last_exit_date 기준으로만 계산. 등급 복귀 여부로 해제하지 않음 —
+    등급(A/B)은 포지션 청산과 무관하게 유지될 수 있어 오탐 원인이 됨.
+    """
     info = state.get(ticker, {})
     exit_str = info.get("last_exit_date")
     if not exit_str:
@@ -115,10 +147,6 @@ def compute_cooldown_remaining(state, ticker, today_date,
     try:
         exit_date = datetime.strptime(exit_str, "%Y-%m-%d").date()
     except ValueError:
-        return None
-    # 청산 이후 다시 A/B 복귀한 적 있으면 쿨다운 해제
-    last_hg = info.get("last_high_grade_date")
-    if last_hg and last_hg > exit_str:
         return None
     days_since = (today_date - exit_date).days
     if days_since >= threshold:
@@ -880,7 +908,9 @@ def screen_stocks(token, mkt_ctx):
 
     # state 업데이트 + 저장 (쿨다운 추적용)
     high_grade_today = {r["종목코드"] for r in results if r["등급"] in ("A", "B")}
-    state = update_screening_state(state, high_grade_today, today_str)
+    held_tickers = read_current_holdings()
+    state = update_screening_state(state, high_grade_today, today_str,
+                                   held_tickers=held_tickers or None)
     save_screening_state(state)
     print(f"  screening state 저장: {STATE_PATH}")
 
