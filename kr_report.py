@@ -93,28 +93,37 @@ def read_current_holdings(path="holdings_data.txt"):
         return set()
 
 
-def update_screening_state(state, high_grade_today, today_str,
-                            held_tickers=None):
-    """오늘 A/B 등급 상태 + 실제 보유 이탈을 기반으로 state 갱신.
+def update_screening_state_holdings(state, today_str, held_tickers):
+    """Layer 1 — holdings 기반 청산 감지 (cooldown 계산 **전**에 호출).
 
-    Rules:
-    - (A/B→out) 이전에 A/B였으나 오늘 빠진 종목: last_exit_date = today
-    - (A/B 유지) 오늘 A/B 종목: last_high_grade_date = today
-    - (held→not held) 어제 보유였으나 오늘 없는 종목: last_exit_date = today
-      (포지션 청산이 등급 이탈보다 먼저 감지될 수 있도록)
+    어제 보유 (state["_held_tickers"]) 와 오늘 holdings_data.txt 의 보유 set
+    을 비교해 청산 종목의 last_exit_date 를 즉시 기록. compute_cooldown_remaining
+    이 같은 cron 안에서 갱신된 state 를 보도록 분리 (ADR-015 Layer 2).
+
+    held_tickers=None 이면 (read_current_holdings 가 빈 set 반환 후 `or None`
+    패턴) 본 함수 자체를 스킵.
     """
-    # 포지션 청산 감지: 어제 보유 목록(_held) 과 오늘 실제 보유 비교
-    if held_tickers is not None:
-        prev_held = set(state.get("_held_tickers", []))
-        exited = prev_held - held_tickers
-        for tk in exited:
-            state.setdefault(tk, {})
-            # 이미 더 최근 exit_date 가 있으면 덮어쓰지 않음
-            existing = state[tk].get("last_exit_date", "")
-            if not existing or existing < today_str:
-                state[tk]["last_exit_date"] = today_str
-        state["_held_tickers"] = sorted(held_tickers)
+    if held_tickers is None:
+        return state
+    prev_held = set(state.get("_held_tickers", []))
+    exited = prev_held - held_tickers
+    for tk in exited:
+        state.setdefault(tk, {})
+        existing = state[tk].get("last_exit_date", "")
+        if not existing or existing < today_str:
+            state[tk]["last_exit_date"] = today_str
+    state["_held_tickers"] = sorted(held_tickers)
+    return state
 
+
+def update_screening_state_grades(state, high_grade_today, today_str):
+    """Layer 2 — 등급 기반 갱신 (results 작성 후 호출).
+
+    A/B → C/D 이탈 종목의 last_exit_date 기록 (fallback) + 오늘 A/B 종목의
+    last_high_grade_date 갱신. 등급 분류는 results 가 만들어진 뒤에야 결정
+    되므로 cooldown 계산 후에 적용. 이 fallback 으로 잡히는 "A/B → C/D
+    이탈" 종목은 오늘 A/B/C list 에 안 나오므로 same-day 표시 누락 위험 없음.
+    """
     for tk, info in list(state.items()):
         if tk.startswith("_"):
             continue
@@ -122,14 +131,25 @@ def update_screening_state(state, high_grade_today, today_str,
             continue
         last_hg = info.get("last_high_grade_date")
         last_ex = info.get("last_exit_date")
-        # 마지막 A/B 이후 exit 기록이 없으면 오늘을 exit으로 기록
         if last_hg and (not last_ex or last_hg > last_ex):
             state[tk]["last_exit_date"] = today_str
 
     for tk in high_grade_today:
         state.setdefault(tk, {})
         state[tk]["last_high_grade_date"] = today_str
+    return state
 
+
+def update_screening_state(state, high_grade_today, today_str,
+                            held_tickers=None):
+    """레거시 wrapper — 회귀 테스트 + 외부 호출자 호환.
+
+    실시간 운영 (screen_stocks) 은 holdings 단계와 grades 단계를 직접 분리
+    호출해 cooldown 계산 사이에 끼우는 게 정확. 본 wrapper 는 두 단계를
+    한 번에 묶어 호출하므로 cooldown timing 보장이 안 됨.
+    """
+    state = update_screening_state_holdings(state, today_str, held_tickers)
+    state = update_screening_state_grades(state, high_grade_today, today_str)
     return state
 
 
@@ -782,6 +802,16 @@ def screen_stocks(token, mkt_ctx):
     today_str  = NOW.strftime("%Y-%m-%d")
     today_date = NOW.date()
 
+    # ── 청산 감지 (cooldown 계산 **전**, ADR-015 Layer 2) ──
+    # holdings_data.txt 가 already today's (morning.yml step 순서로 보장,
+    # ADR-015 Layer 1) 이므로 어제 _held_tickers 와 비교해 청산된 종목의
+    # last_exit_date 를 즉시 기록. compute_cooldown_remaining 이 같은 cron
+    # 안에서 갱신된 state 를 보도록 함.
+    held_tickers_today = read_current_holdings()
+    state = update_screening_state_holdings(
+        state, today_str, held_tickers_today or None,
+    )
+
     # 1단계: 전 종목 OHLCV 수집 + 52주 수익률 (RS 계산용)
     stock_data  = {}   # code -> (name, closes, volumes)
     returns_52w = {}   # code -> 52주 수익률
@@ -906,11 +936,10 @@ def screen_stocks(token, mkt_ctx):
 
     results.sort(key=lambda x: ({"A": 0, "B": 1, "C": 2}.get(x["등급"], 3), -x["점수"]))
 
-    # state 업데이트 + 저장 (쿨다운 추적용)
+    # 등급 기반 state 갱신 + 저장 (last_high_grade_date / 등급 이탈 fallback).
+    # holdings 기반 청산 감지는 본 함수 진입 직후 이미 처리됨 (ADR-015 Layer 2).
     high_grade_today = {r["종목코드"] for r in results if r["등급"] in ("A", "B")}
-    held_tickers = read_current_holdings()
-    state = update_screening_state(state, high_grade_today, today_str,
-                                   held_tickers=held_tickers or None)
+    state = update_screening_state_grades(state, high_grade_today, today_str)
     save_screening_state(state)
     print(f"  screening state 저장: {STATE_PATH}")
 
