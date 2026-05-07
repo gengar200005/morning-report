@@ -10,6 +10,7 @@ from pathlib import Path
 from pykrx import stock as krx
 from datetime import datetime, timedelta
 import pytz
+import holidays as _holidays_lib
 
 # backtest/ 를 import path 에 추가 — strategy 모듈 공유 (single source of truth)
 BASE = Path(__file__).resolve().parent
@@ -34,14 +35,26 @@ KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
 
+def _build_kr_market_holidays():
+    """KRX 휴장일 = 관공서 공휴일 + 근로자의 날(5/1). 전후 2년 범위."""
+    from datetime import date as _date
+    year = NOW.year
+    years = range(year - 1, year + 3)
+    h = _holidays_lib.KR(years=years)
+    for y in years:
+        h[_date(y, 5, 1)] = "근로자의 날"
+    return h
+
+_KR_HOLIDAYS = _build_kr_market_holidays()
+
 def latest_trading_day():
-    """장 마감(15:30) 이후면 오늘, 이전이면 전 거래일 반환"""
+    """장 마감(15:30) 이후면 오늘, 이전이면 전 거래일 반환 (주말·공휴일 제외)"""
     market_close = NOW.replace(hour=15, minute=30, second=0, microsecond=0)
-    if NOW >= market_close and NOW.weekday() < 5:
+    if NOW >= market_close and NOW.weekday() < 5 and NOW.date() not in _KR_HOLIDAYS:
         d = NOW.date()
     else:
         d = NOW.date() - timedelta(days=1)
-        while d.weekday() >= 5:
+        while d.weekday() >= 5 or d in _KR_HOLIDAYS:
             d -= timedelta(days=1)
     return d.strftime("%Y%m%d")
 
