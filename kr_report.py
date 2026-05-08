@@ -795,6 +795,9 @@ def screen_stocks(token, mkt_ctx):
     today_str  = NOW.strftime("%Y-%m-%d")
     today_date = NOW.date()
 
+    # 현재 보유 종목 (holdings_data.txt — holdings_report.py 가 먼저 실행된 후 기록)
+    held_tickers = read_current_holdings()
+
     # 1단계: 전 종목 OHLCV 수집 + 52주 수익률 (RS 계산용)
     stock_data  = {}   # code -> (name, closes, volumes)
     returns_52w = {}   # code -> 52주 수익률
@@ -911,6 +914,7 @@ def screen_stocks(token, mkt_ctx):
                 "ROE":        detail["roe"],
                 "손절가":     int(stop),
                 "쿨다운잔여":  cooldown_rem,   # 거래일 수 (None이면 없음)
+                "보유중":      code in held_tickers,
             })
 
         except Exception as e:
@@ -921,7 +925,6 @@ def screen_stocks(token, mkt_ctx):
 
     # state 업데이트 + 저장 (쿨다운 추적용)
     high_grade_today = {r["종목코드"] for r in results if r["등급"] in ("A", "B")}
-    held_tickers = read_current_holdings()
     state = update_screening_state(state, high_grade_today, today_str,
                                    held_tickers=held_tickers or None)
     save_screening_state(state)
@@ -986,15 +989,18 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             lines.append(f"    52주 고점 {t['hi52']:,.0f}  대비 {t['pct_hi52']:+.1f}%")
             lines.append(f"    52주 저점 {t['lo52']:,.0f}  대비 +{t['pct_lo52']:.1f}%")
 
-    ab_grade  = [c for c in candidates if c["등급"] in ("A", "B")]
-    c_grade   = [c for c in candidates if c["등급"] == "C"]
-    d_grade   = [c for c in candidates if c["등급"] == "D"]
+    ab_grade  = [c for c in candidates if c["등급"] in ("A", "B") and not c.get("보유중")]
+    held_ab   = [c for c in candidates if c["등급"] in ("A", "B") and c.get("보유중")]
+    c_grade   = [c for c in candidates if c["등급"] == "C" and not c.get("보유중")]
+    d_grade   = [c for c in candidates if c["등급"] == "D" and not c.get("보유중")]
 
     lines.append(f"\n【 Minervini 스크리닝 결과 】")
     lines.append(f"  전략: Minervini + 수급 + KOSPI MA60 게이트 + 쿨다운 {STRATEGY_CFG['cooldown_days']}거래일")
     lines.append(f"  리스크: 손절 -{int(STRATEGY_STOP_LOSS*100)}% / 트레일링 -{int(STRATEGY_TRAIL_STOP*100)}% / 최대 {STRATEGY_MAX_POS}종목 / 최대 보유 {STRATEGY_MAX_HOLD}일")
     lines.append(f"  백테(2015~2026, 162종목) CAGR +29.29%, MDD -29.8%, PF 2.22 (실전 기댓값 +15-20%)")
-    lines.append(f"  전체 {len(candidates)}종목 — A:{len([c for c in candidates if c['등급']=='A'])} B:{len(ab_grade) - len([c for c in candidates if c['등급']=='A'])} C:{len(c_grade)} D:{len(d_grade)}")
+    all_a = len([c for c in candidates if c["등급"] == "A"])
+    all_b = len([c for c in candidates if c["등급"] == "B"])
+    lines.append(f"  전체 {len(candidates)}종목 — A:{all_a} B:{all_b} C:{len(c_grade)} D:{len(d_grade)}")
 
     a_grade = [c for c in ab_grade if c["등급"] == "A"]
     b_grade = [c for c in ab_grade if c["등급"] == "B"]
@@ -1027,6 +1033,13 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
 
     if not a_grade and not b_grade:
         lines.append("  진입 신호 없음 (A/B등급 0개)")
+
+    if held_ab:
+        lines.append(f"\n  ── 보유중 A/B ({len(held_ab)}개) — 진입 후보 제외 ──")
+        for c in held_ab:
+            cd_rem = c.get("쿨다운잔여")
+            cd_tag = f" ⚠ 쿨다운 {cd_rem}일" if cd_rem else ""
+            lines.append(f"  {c['종목명']} ({c['종목코드']}) [{c['등급']}] RS {c['RS']:.0f}%{cd_tag} — 보유중")
 
     if c_grade:
         lines.append(f"\n  C등급 {len(c_grade)}개 (코어+게이트 통과, 보조 미충족): "
