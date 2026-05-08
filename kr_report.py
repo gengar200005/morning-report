@@ -541,7 +541,7 @@ def get_index(token):
             if not rows:
                 raise ValueError(f"빈 응답 rt_cd={data.get('rt_cd')} msg={data.get('msg1')}")
 
-            row   = rows[0]
+            row   = rows[-1]  # output2 오름차순(오래된→최신) — 마지막 행이 prev_day
             close = float(row.get("bstp_nmix_prpr") or row.get("stck_clpr") or 0)
             open_ = float(row.get("bstp_nmix_oprc") or row.get("stck_oprc") or 0)
             if close <= 0:
