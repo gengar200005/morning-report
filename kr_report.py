@@ -378,7 +378,24 @@ def kis_get(token, path, tr_id, params):
         params=params,
         timeout=15,
     )
-    return r.json()
+    try:
+        return r.json()
+    except ValueError as e:
+        # JSON 파싱 실패 시 진단 정보 출력 (2026-05-12 KIS 지수 endpoint 빈 body 사고 추적용).
+        # HTTP status / content-type / body 앞 200자 / 핵심 params 를 한 줄로 토하면
+        # 다음 cron 실행에서 root cause (4xx/5xx / 빈 200 / endpoint deprecated / TR_ID 오류) 가 즉시 보임.
+        endpoint = path.rsplit("/", 1)[-1]
+        key_params = {k: params.get(k) for k in (
+            "FID_INPUT_ISCD", "FID_INPUT_DATE_1", "FID_INPUT_DATE_2",
+            "FID_COND_MRKT_DIV_CODE", "FID_PERIOD_DIV_CODE",
+        ) if k in params}
+        print(
+            f"  ❌ KIS JSON 파싱 실패 — endpoint={endpoint} tr_id={tr_id} "
+            f"HTTP={r.status_code} content-type={r.headers.get('content-type', '?')!r} "
+            f"body_len={len(r.text)} body[:200]={r.text[:200]!r} "
+            f"params={key_params}"
+        )
+        raise
 
 # ── MA 계산 ───────────────────────────────────────
 def calc_ma(prices, n):
