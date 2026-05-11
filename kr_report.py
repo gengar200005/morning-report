@@ -440,14 +440,58 @@ def check_60d_high(closes):
     current  = closes[-1]
     return current >= high_60d * 0.98, int(high_60d)
 
+# ── 한국 지수 데이터 fetcher (Naver Finance siseJson 1차 / yfinance 폴백) ──
+# 2026-05-12 yfinance ^KS11 1거래일 stale (5/11 +4.3% 폭등 누락) 사고 후 도입.
+# Naver siseJson 은 KRX 직접 데이터 (지연 거의 무) — 외부 의존 단일 소스 회피.
+_NAVER_INDEX_SYMBOL = {"^KS11": "KOSPI", "^KQ11": "KOSDAQ"}
+
+def _fetch_naver_index_history(naver_symbol: str, days: int):
+    """Naver Finance siseJson 으로 KOSPI/KOSDAQ 일봉 종가 시계열 반환 (pandas.Series)."""
+    import urllib.request as _u, json as _j, pandas as _pd
+    end   = NOW.date()
+    start = end - timedelta(days=int(days * 1.6) + 14)  # 주말·휴일 여유
+    url = (
+        "https://api.finance.naver.com/siseJson.naver"
+        f"?symbol={naver_symbol}&requestType=1"
+        f"&startTime={start.strftime('%Y%m%d')}"
+        f"&endTime={end.strftime('%Y%m%d')}&timeframe=day"
+    )
+    req = _u.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+        "Referer":    "https://finance.naver.com/",
+    })
+    raw = _u.urlopen(req, timeout=10).read().decode("utf-8", "ignore").strip()
+    # 응답: [["날짜","시가","고가","저가","종가","거래량","외국인소진율"], ["20260511",7700,7830,7690,7822.24,...], ...]
+    data = _j.loads(raw.replace("'", '"'))
+    if not isinstance(data, list) or len(data) < 2:
+        raise ValueError(f"Naver siseJson 응답 비정상: {raw[:120]}")
+    rows = data[1:]
+    dates  = [_pd.Timestamp(str(r[0])) for r in rows]
+    closes = [float(r[4]) for r in rows]
+    return _pd.Series(closes, index=dates, name="Close").sort_index()
+
+def _fetch_kr_index_history(ticker: str, days: int = 200):
+    """KOSPI/KOSDAQ 종가 시계열. Naver 1차 → yfinance 폴백. 그 외 ticker 는 yfinance 직결."""
+    naver = _NAVER_INDEX_SYMBOL.get(ticker)
+    if naver:
+        try:
+            s = _fetch_naver_index_history(naver, days)
+            if len(s) >= 2:
+                return s
+            raise ValueError(f"행 부족 len={len(s)}")
+        except Exception as e:
+            print(f"  [{ticker}] Naver 1차 실패 → yfinance 폴백: {e}")
+    hist = yf.Ticker(ticker).history(period=f"{days}d")
+    return hist["Close"].dropna()
+
+
 # ── 지수 추세 분석 (1순위/2순위) ─────────────────────
 def get_index_trend():
     """KOSPI/KOSDAQ 5일·20일 수익률 + 52주 고저점 대비 위치 + 20일 신고가 여부"""
     result = {}
     for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
         try:
-            hist   = yf.Ticker(ticker).history(period="400d")
-            closes = hist["Close"].dropna().values
+            closes = _fetch_kr_index_history(ticker, days=400).values
             if len(closes) < 21:
                 continue
             cur = float(closes[-1])
@@ -496,8 +540,7 @@ def get_market_context():
 
     for ticker, prefix in [("^KS11", "kospi"), ("^KQ11", "kosdaq")]:
         try:
-            hist   = yf.Ticker(ticker).history(period="200d")
-            closes = hist["Close"].dropna()
+            closes = _fetch_kr_index_history(ticker, days=200)
             if len(closes) >= 2:
                 cur = round(float(closes.iloc[-1]), 2)
                 ctx[f"{prefix}_cur"] = cur
@@ -558,15 +601,33 @@ def get_index(token):
             else:
                 chg = pct = 0
 
+            # Sentinel: KIS 값 ↔ Naver siseJson cross-check (0.5% 초과 시 Naver 채택)
+            try:
+                naver_sym = yf_map.get(name)
+                if naver_sym:
+                    naver_closes = _fetch_naver_index_history(_NAVER_INDEX_SYMBOL[naver_sym], days=5)
+                    if len(naver_closes) >= 1:
+                        naver_close = float(naver_closes.iloc[-1])
+                        deviation = abs(naver_close - close) / close * 100 if close else 0
+                        if deviation > 0.5:
+                            print(f"  ⚠️ {name} KIS={close:,.2f} vs Naver={naver_close:,.2f} dev={deviation:.2f}% → Naver 채택")
+                            if len(naver_closes) >= 2:
+                                prev = float(naver_closes.iloc[-2])
+                                close = naver_close
+                                chg   = round(close - prev, 2)
+                                pct   = round((close - prev) / prev * 100, 2)
+                        else:
+                            print(f"    cross-check ✓ Naver={naver_close:,.2f} dev={deviation:.2f}%")
+            except Exception as _ce:
+                print(f"  {name} cross-check 실패 (KIS 값 유지): {_ce}")
+
             result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
             print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [KIS {prev_day}]")
 
         except Exception as e:
-            print(f"  {name} KIS 지수 오류: {e} — yfinance 백업")
+            print(f"  {name} KIS 지수 오류: {e} — Naver/yfinance 백업")
             try:
-                import yfinance as yf
-                hist   = yf.Ticker(yf_map[name]).history(period="30d")
-                closes = hist["Close"].dropna()
+                closes = _fetch_kr_index_history(yf_map[name], days=30)
                 if len(closes) >= 2:
                     prev  = float(closes.iloc[-2])
                     close = float(closes.iloc[-1])
@@ -575,9 +636,9 @@ def get_index(token):
                 else:
                     close = chg = pct = 0
                 result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
-                print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [yfinance 백업]")
+                print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [Naver/yfinance 백업]")
             except Exception as e2:
-                print(f"  {name} yfinance도 실패: {e2}")
+                print(f"  {name} 백업 fetch 실패: {e2}")
                 result[name] = {"close": None, "chg": None, "pct": None}
     return result
 
