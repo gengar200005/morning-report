@@ -1,33 +1,33 @@
 {
   "000150": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000210": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000215": {
     "last_exit_date": "2026-04-28",
     "last_high_grade_date": "2026-04-28"
   },
   "000660": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000670": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000720": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "000880": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000990": {
     "last_exit_date": "2026-04-28",
     "last_high_grade_date": "2026-04-28"
   },
   "001040": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "001120": {
     "last_exit_date": "2026-04-28",
@@ -43,26 +43,26 @@
   },
   "001440": {
     "last_exit_date": "2026-05-07",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "001800": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-11"
   },
   "002380": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "003550": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "003670": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "004000": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "004170": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "004800": {
     "last_exit_date": "2026-04-28",
@@ -70,92 +70,94 @@
   },
   "005380": {
     "last_exit_date": "2026-04-24",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "005490": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "005850": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "005930": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "005940": {
     "last_exit_date": "2026-05-04",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "005960": {
     "last_exit_date": "2026-04-28",
     "last_high_grade_date": "2026-04-28"
   },
   "006260": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "006360": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-11"
   },
   "006400": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "006650": {
+    "last_exit_date": "2026-05-13",
     "last_high_grade_date": "2026-05-12"
   },
   "006800": {
     "last_exit_date": "2026-05-01",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "007070": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "007340": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "007660": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "009150": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "009830": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "010060": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "010120": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "010130": {
     "last_exit_date": "2026-05-08",
     "last_high_grade_date": "2026-05-07"
   },
   "010140": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "010950": {
     "last_exit_date": "2026-05-11",
     "last_high_grade_date": "2026-05-08"
   },
   "011070": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "011170": {
+    "last_exit_date": "2026-05-13",
     "last_high_grade_date": "2026-05-12"
   },
   "011210": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "011780": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "012330": {
     "last_exit_date": "2026-05-11",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "012450": {
     "last_exit_date": "2026-05-08",
@@ -167,56 +169,56 @@
   },
   "014680": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "016360": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "017670": {
     "last_exit_date": "2026-05-11",
     "last_high_grade_date": "2026-05-08"
   },
   "017800": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "017960": {
     "last_exit_date": "2026-05-08",
     "last_high_grade_date": "2026-05-08"
   },
   "018880": {
-    "last_exit_date": "2026-05-11",
+    "last_exit_date": "2026-05-13",
     "last_high_grade_date": "2026-05-12"
   },
   "023530": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "028050": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "028260": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "028670": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "032640": {
     "last_exit_date": "2026-04-29",
     "last_high_grade_date": "2026-04-29"
   },
   "032830": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "033780": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "034020": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "034730": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "036570": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "039490": {
     "last_exit_date": "2026-05-12",
@@ -228,11 +230,11 @@
   },
   "042700": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "047040": {
     "last_exit_date": "2026-05-06",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "047050": {
     "last_exit_date": "2026-05-12",
@@ -247,7 +249,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "055550": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "057050": {
     "last_exit_date": "2026-04-28",
@@ -255,53 +257,53 @@
   },
   "062040": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "064350": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "066570": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "066970": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "069960": {
     "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-11"
   },
   "071050": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "078930": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "079550": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "079960": {
     "last_exit_date": "2026-04-23",
     "last_high_grade_date": "2026-04-22"
   },
   "082740": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "086280": {
     "last_exit_date": "2026-05-01",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "086790": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "088350": {
     "last_exit_date": "2026-05-08",
     "last_high_grade_date": "2026-05-07"
   },
   "093370": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "096770": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "105560": {
     "last_exit_date": "2026-05-12",
@@ -312,36 +314,36 @@
     "last_high_grade_date": "2026-05-07"
   },
   "120110": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "139130": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "139480": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "204320": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "241560": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "247540": {
     "last_exit_date": "2026-04-28",
     "last_high_grade_date": "2026-04-28"
   },
   "267250": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "267260": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "267270": {
     "last_exit_date": "2026-04-28",
     "last_high_grade_date": "2026-04-28"
   },
   "271560": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "272210": {
     "last_exit_date": "2026-04-27",
@@ -349,40 +351,43 @@
   },
   "278470": {
     "last_exit_date": "2026-04-30",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "282330": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "298020": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "298040": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "298050": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "307950": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "316140": {
     "last_exit_date": "2026-04-27",
     "last_high_grade_date": "2026-04-27"
   },
+  "329180": {
+    "last_high_grade_date": "2026-05-13"
+  },
   "375500": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "402340": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "454910": {
     "last_exit_date": "2026-05-07",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "457190": {
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "_held_tickers": [
     "000660",
