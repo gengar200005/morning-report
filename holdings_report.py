@@ -2,7 +2,7 @@ import os
 import base64
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import pytz
 
 from kr_report import (
@@ -11,7 +11,24 @@ from kr_report import (
     get_supply_20d,
     calc_ma,
     get_market_context,
+    STRATEGY_STOP_LOSS,
+    STRATEGY_TRAIL_STOP,
+    STRATEGY_MAX_HOLD,
+    _KR_HOLIDAYS,
 )
+
+
+def _count_trading_days(start_d: date, end_d: date) -> int:
+    """KRX 거래일 수 (start 제외, end 포함). 주말 + 공휴일 제외."""
+    if not start_d or not end_d or start_d >= end_d:
+        return 0
+    days = 0
+    d = start_d + timedelta(days=1)
+    while d <= end_d:
+        if d.weekday() < 5 and d not in _KR_HOLIDAYS:
+            days += 1
+        d += timedelta(days=1)
+    return days
 
 # ── 설정 ──────────────────────────────────────────
 NOTION_API_KEY = os.environ["NOTION_API_KEY"]
@@ -149,7 +166,7 @@ def analyze_holding(token, h, mkt_ctx):
         grade = "B" if supply_ok else "C"
 
     # ── Hard Gate 간이 판정 ──
-    stop_loss = h.get("손절가") or round(close_now * 0.93)
+    stop_loss = h.get("손절가") or round(close_now * (1 - STRATEGY_STOP_LOSS))
     h4 = (close_now >= entry * 1.05) if entry else False
     h5 = (close_now >= stop_loss * 1.05) if stop_loss else False
     hard_ok = core_ok and gate_ok and h4 and h5
@@ -171,6 +188,56 @@ def analyze_holding(token, h, mkt_ctx):
     pnl_pct = (close_now / entry - 1) * 100 if entry else 0
     hi52_pct = (close_now / hi52 - 1) * 100
 
+    # ── Stop / Trail / 매도 신호 (백테 룰 close-mode) ──
+    # 보유 일수 (거래일) — 매수일 → 오늘
+    entry_date_str = h.get("매수일") or ""
+    try:
+        entry_date = date.fromisoformat(entry_date_str)
+    except (ValueError, TypeError):
+        entry_date = None
+    today_d = NOW.date()
+    hold_days_trading = _count_trading_days(entry_date, today_d) if entry_date else 0
+
+    # Peak: 보유 후 최고 종가 (closes 시계열 tail 기반)
+    # closes 마지막이 오늘 종가, 그 앞으로 hold_days_trading 개 거래일이 보유 기간
+    if entry and hold_days_trading > 0:
+        window_len = min(hold_days_trading + 1, len(closes))
+        peak = max(closes[-window_len:])
+    else:
+        peak = max(h.get("최고가_노션") or 0, close_now, entry or 0)
+
+    # Stop level = max(매수가 -7%, peak -10%)
+    stop_line  = entry * (1 - STRATEGY_STOP_LOSS) if entry else stop_loss
+    trail_line = peak * (1 - STRATEGY_TRAIL_STOP) if peak else 0
+    stop_level = max(stop_line, trail_line)
+
+    # 매도 신호 판정 (종가 기준)
+    if entry and close_now <= stop_level:
+        if trail_line >= stop_line and trail_line > 0:
+            reason = "TRAIL"
+            reason_kr = f"고점({int(peak):,}) -{int(STRATEGY_TRAIL_STOP*100)}% Trail"
+        else:
+            reason = "STOP_LOSS"
+            reason_kr = f"매수가({int(entry):,}) -{int(STRATEGY_STOP_LOSS*100)}% Stop"
+        sell_signal = f"🚨 {reason} 발동 ({reason_kr}) — 다음날 09:00 시초가 시장가 매도"
+        sell_status = "TRIGGER"
+    elif hold_days_trading >= STRATEGY_MAX_HOLD:
+        sell_signal = (
+            f"🚨 MAX_HOLD 도달 ({hold_days_trading}/{STRATEGY_MAX_HOLD} 거래일) — 다음날 시초가 매도"
+        )
+        sell_status = "TRIGGER"
+    else:
+        dist_pct = (close_now / stop_level - 1) * 100 if stop_level > 0 else 99
+        if dist_pct < 3:
+            sell_signal = f"🟠 매도 발동 근접 (라인까지 +{dist_pct:.2f}%p 여유)"
+            sell_status = "WARN"
+        elif dist_pct < 7:
+            sell_signal = f"🟡 매도 라인 주의 (라인까지 +{dist_pct:.2f}%p 여유)"
+            sell_status = "CAUTION"
+        else:
+            sell_signal = f"🟢 매도 라인 안전 (라인까지 +{dist_pct:.2f}%p 여유)"
+            sell_status = "SAFE"
+
     return {
         **h,
         "현재가":     int(close_now),
@@ -186,6 +253,14 @@ def analyze_holding(token, h, mkt_ctx):
         "등급":       grade,
         "손익률":     round(pnl_pct, 2),
         "추매시그널": signal,
+        # 매도 신호 필드 (신규)
+        "Peak":         int(peak) if peak else 0,
+        "Stop_라인":    int(stop_line) if stop_line else 0,
+        "Trail_라인":   int(trail_line) if trail_line else 0,
+        "매도발동라인": int(stop_level) if stop_level else 0,
+        "보유일수":     hold_days_trading,
+        "매도신호":     sell_signal,
+        "매도상태":     sell_status,
     }
 
 
@@ -210,6 +285,18 @@ def build_text(analyses, mkt_ctx):
         f"코스피 60MA {'✓ 위' if mkt_ctx.get('kospi_above_ma60') else '✗ 아래'}"
     )
 
+    # 매도 신호 TRIGGER 종목 먼저 요약 (최상단)
+    triggers = [h for h in analyses if h.get("매도상태") == "TRIGGER"]
+    if triggers:
+        lines.append(f"\n【 🚨 매도 신호 발동 ({len(triggers)}개) — 다음 거래일 09:00 시초가 매도 】")
+        for h in triggers:
+            lines.append(
+                f"  ▶ {h['종목명']} ({h['종목코드']}) — {h.get('매도신호','')}"
+            )
+        lines.append(
+            "  ※ 운영: 08:30~09:00 동시호가 시장가 매도 예약 / broker 자동 stop-order ❌ (백테 위반)"
+        )
+
     lines.append(f"\n【 보유 종목 ({len(analyses)}개) 】")
     for h in analyses:
         lines.append("")
@@ -218,10 +305,17 @@ def build_text(analyses, mkt_ctx):
             continue
 
         entry = h.get("매수가") or 0
-        stop  = h.get("손절가") or 0
+        peak = h.get("Peak") or 0
+        stop_line = h.get("Stop_라인") or 0
+        trail_line = h.get("Trail_라인") or 0
+        exit_line = h.get("매도발동라인") or 0
+        hold_d = h.get("보유일수") or 0
+        exit_kind = "Trail" if trail_line >= stop_line and trail_line > 0 else "Stop"
+
         lines.append(f"  ▶ {h['종목명']} ({h['종목코드']}) [{h['등급']}등급]")
         lines.append(
             f"    매수가 {entry:,.0f} → 현재 {h['현재가']:,} ({h['손익률']:+.2f}%)"
+            f"  보유 {hold_d}/{STRATEGY_MAX_HOLD} 거래일"
         )
         lines.append(
             f"    MA50 {h['MA50']:,} / MA150 {h['MA150']:,} / MA200 {h['MA200']:,}"
@@ -235,10 +329,21 @@ def build_text(analyses, mkt_ctx):
             f"    52주고점 {h['52주고점']:,} (대비 {h['52주고점대비']:+.1f}%)"
         )
         lines.append(
-            f"    손절가 {stop:,.0f} | 수급20일 {h['수급20일']:+,}주"
+            f"    Peak {peak:,} (보유 후 최고종가) | Stop {stop_line:,} | Trail {trail_line:,}"
         )
+        lines.append(
+            f"    매도 발동 라인 {exit_line:,} ({exit_kind} 우선) | 수급20일 {h['수급20일']:+,}주"
+        )
+        lines.append(f"    ⇒ {h.get('매도신호', '')}")
         lines.append(f"    ⇒ {h['추매시그널']}")
 
+    lines.append(
+        f"\n  매도 룰 (백테 close-mode): 종가 ≤ max(매수가×{1-STRATEGY_STOP_LOSS:.2f}, peak×{1-STRATEGY_TRAIL_STOP:.2f})"
+        f" 또는 {STRATEGY_MAX_HOLD}거래일 경과 → 다음날 09:00 시초가 매도"
+    )
+    lines.append(
+        "  ❌ broker 자동 stop-order 사용 금지 (백테 -40%p alpha drag, 한미반도체 5/12 사고 참조)"
+    )
     lines.append("\n" + "=" * 52)
     return "\n".join(lines)
 
