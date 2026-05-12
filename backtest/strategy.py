@@ -149,6 +149,9 @@ def load_data(universe: list[tuple[str, str]]):
                  .values.astype(float))
 
     stock_arr = {}
+    # intraday stop 시뮬용 high/low — stock_arr 튜플 구조는 변경 없이 별도 dict.
+    # close 모드에서는 미사용, intraday 모드에서만 참조 → close 모드 결과 byte-exact 보존.
+    _INTRADAY_DATA.clear()
     for ticker, _name in universe:
         path = OHLCV_DIR / f"{ticker}.parquet"
         if not path.exists():
@@ -157,11 +160,17 @@ def load_data(universe: list[tuple[str, str]]):
         df.index = pd.to_datetime(df.index)
         c = df["close"].reindex(idx).ffill().fillna(0).values.astype(float)
         o = df["open"].reindex(idx).ffill().fillna(0).values.astype(float)
-        h = df["high"].reindex(idx).ffill().fillna(0).values.astype(float)
-        l = df["low"].reindex(idx).ffill().fillna(0).values.astype(float)
         v = df["volume"].reindex(idx).ffill().fillna(0).values.astype(float)
-        stock_arr[ticker] = (c, o, h, l, v)
+        stock_arr[ticker] = (c, o, v)
+        if "high" in df.columns and "low" in df.columns:
+            h = df["high"].reindex(idx).ffill().fillna(0).values.astype(float)
+            lo = df["low"].reindex(idx).ffill().fillna(0).values.astype(float)
+            _INTRADAY_DATA[ticker] = (h, lo)
     return all_dates, stock_arr, kospi_arr
+
+
+# intraday stop 시뮬을 위한 high/low 시계열 (load_data 에서 채움).
+_INTRADAY_DATA: dict[str, tuple[np.ndarray, np.ndarray]] = {}
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -179,7 +188,7 @@ def _build_stocks_daily_long(all_dates, stock_arr) -> pd.DataFrame:
     """
     dates = pd.to_datetime(all_dates)
     frames = []
-    for ticker, (c, _o, _h, _l, _v) in stock_arr.items():
+    for ticker, (c, _o, _v) in stock_arr.items():
         mask = c > 0
         if not mask.any():
             continue
@@ -315,7 +324,7 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
         for tk, _sig_i in pending_entry:
             if tk in positions:
                 continue
-            c, o, h, l, v = stock_arr[tk]
+            c, o, v = stock_arr[tk]
             if i >= len(o) or o[i] <= 0:
                 continue
             open_slots = max_pos - len(positions)
@@ -338,7 +347,7 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
             if tk not in positions:
                 continue
             pos = positions[tk]
-            c, o, h, l, v = stock_arr[tk]
+            c, o, v = stock_arr[tk]
             if i >= len(o) or o[i] <= 0:
                 continue
             exit_price = o[i] * (1 - cost)
@@ -356,32 +365,25 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
 
         # 3) 보유 청산 체크
         for tk, pos in list(positions.items()):
-            c, o, h, l, v = stock_arr[tk]
+            c, o, v = stock_arr[tk]
             if i >= len(c) or c[i] <= 0:
                 continue
-            # Peak 갱신 — intraday 모드는 당일 고가 (h[i]) 까지 추적해야 broker trailing stop 룰과 정합
-            if stop_trigger == "intraday" and i < len(h) and h[i] > 0:
-                pos["peak"] = max(pos["peak"], h[i])
-            else:
-                pos["peak"] = max(pos["peak"], c[i])
-            stop = pos["entry_price"] * (1 - sl)
-            trail = pos["peak"] * (1 - ts)
-            stop_level = max(stop, trail)
 
-            if stop_trigger == "intraday":
-                # 당일 저가 hit 시 즉시 발동
-                # - 시가가 stop_level 이하 (gap down) → 시가 매도 (백테와 실전 모두 갭다운 가격 매도)
-                # - 그 외 → stop_level 에서 매도 + intraday_slip_extra 추가 슬리피지 (호가 흡수 반영)
-                if i >= len(l) or l[i] <= 0:
-                    if i - pos["entry_i"] >= max_hold:
-                        pending_exit.append((tk, "max_hold"))
-                    continue
-                if l[i] <= stop_level:
+            if stop_trigger == "intraday" and tk in _INTRADAY_DATA:
+                # Intraday 모드: 당일 고가 peak 추적 + 당일 저가 hit 즉시 매도
+                h, lo = _INTRADAY_DATA[tk]
+                if i < len(h) and h[i] > 0:
+                    pos["peak"] = max(pos["peak"], h[i])
+                else:
+                    pos["peak"] = max(pos["peak"], c[i])
+                stop = pos["entry_price"] * (1 - sl)
+                trail = pos["peak"] * (1 - ts)
+                stop_level = max(stop, trail)
+                if i < len(lo) and lo[i] > 0 and lo[i] <= stop_level:
+                    # 갭다운 (시가 ≤ stop_level) 이면 시가 매도, 일반이면 stop_level + 추가 슬리피지
                     if o[i] > 0 and o[i] <= stop_level:
-                        # Gap down — 시가 매도 (실전 시장가 stop 도 시가에 trigger)
                         exit_price = o[i] * (1 - cost)
                     else:
-                        # Intraday touch — stop_level + 추가 슬리피지
                         exit_price = stop_level * (1 - cost - intraday_slip_extra)
                     ret = exit_price / pos["entry_price"] - 1
                     reason = "trailing" if trail >= stop else "stop_loss"
@@ -397,8 +399,12 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
                 elif i - pos["entry_i"] >= max_hold:
                     pending_exit.append((tk, "max_hold"))
             else:
-                # 기존 종가 기준 (호환) — 종가가 stop/trail 깨면 다음날 시가 매도 flag
-                if c[i] <= stop_level:
+                # Close 모드 (기존, byte-exact 보존)
+                price = c[i]
+                pos["peak"] = max(pos["peak"], price)
+                stop = pos["entry_price"] * (1 - sl)
+                trail = pos["peak"] * (1 - ts)
+                if price <= max(stop, trail):
                     reason = "trailing" if trail >= stop else "stop_loss"
                     pending_exit.append((tk, reason))
                 elif i - pos["entry_i"] >= max_hold:
@@ -410,7 +416,7 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
         if open_slots > 0 and i + 1 < n_days and gate_open:
             # RS 백분위 계산 (252일 수익률)
             rets = {}
-            for tk, (c, _, _, _, _) in stock_arr.items():
+            for tk, (c, _, _) in stock_arr.items():
                 if (i < len(c) and c[i] > 0
                         and i >= 252 and c[i-252] > 0):
                     rets[tk] = c[i] / c[i-252] - 1
@@ -422,7 +428,7 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
                           for t, r in rets.items()}
 
             candidates = []
-            for tk, (c, o, h, l, v) in stock_arr.items():
+            for tk, (c, o, v) in stock_arr.items():
                 if tk in positions or i >= len(c) or c[i] <= 0:
                     continue
                 if any(tk == e[0] for e in pending_entry):
@@ -442,14 +448,14 @@ def run_backtest(all_dates, stock_arr, kospi_arr, cfg: dict,
         # 5) Equity curve
         port_value = cash
         for tk, pos in positions.items():
-            c, o, h, l, v = stock_arr[tk]
+            c, o, v = stock_arr[tk]
             if i < len(c) and c[i] > 0:
                 port_value += pos["shares"] * c[i]
         equity_curve.append({"date": all_dates[i], "equity": port_value})
 
     # 최종 강제 청산
     for tk, pos in list(positions.items()):
-        c, o, h, l, v = stock_arr[tk]
+        c, o, v = stock_arr[tk]
         if n_days-1 < len(c) and c[n_days-1] > 0:
             ret = c[n_days-1]*(1-cost) / pos["entry_price"] - 1
             trade_log.append({
