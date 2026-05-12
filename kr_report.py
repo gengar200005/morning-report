@@ -378,6 +378,8 @@ def kis_get(token, path, tr_id, params):
         params=params,
         timeout=15,
     )
+    if not r.text:
+        raise ValueError(f"KIS 빈 응답 (HTTP {r.status_code}) tr_id={tr_id}")
     return r.json()
 
 # ── MA 계산 ───────────────────────────────────────
@@ -521,6 +523,10 @@ def get_index(token):
     prev_day = prev_trading_day()
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
+    # prev_day 기준 10일 전 (주말/공휴일 여유분 포함) — DATE_1==DATE_2 시 KIS 빈 응답 버그 회피
+    prev_day_dt  = datetime.strptime(prev_day, "%Y%m%d")
+    date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
+
     for iscd, name in [("0001", "코스피"), ("1001", "코스닥")]:
         try:
             data = kis_get(token,
@@ -529,7 +535,7 @@ def get_index(token):
                 {
                     "FID_COND_MRKT_DIV_CODE": "U",
                     "FID_INPUT_ISCD":         iscd,
-                    "FID_INPUT_DATE_1":        prev_day,
+                    "FID_INPUT_DATE_1":        date_from,
                     "FID_INPUT_DATE_2":        prev_day,
                     "FID_PERIOD_DIV_CODE":     "D",
                     "FID_ORG_ADJ_PRC":        "0",
@@ -565,13 +571,19 @@ def get_index(token):
             print(f"  {name} KIS 지수 오류: {e} — yfinance 백업")
             try:
                 import yfinance as yf
-                hist   = yf.Ticker(yf_map[name]).history(period="30d")
+                hist   = yf.Ticker(yf_map[name]).history(period="10d")
                 closes = hist["Close"].dropna()
-                if len(closes) >= 2:
-                    prev  = float(closes.iloc[-2])
-                    close = float(closes.iloc[-1])
+                # prev_day 기준으로 명시적 날짜 필터 (iloc[-1] 의존 시 새벽에 stale 위험)
+                prev_day_date = prev_day_dt.date()
+                day_closes = closes[[d.date() <= prev_day_date for d in closes.index]]
+                if len(day_closes) >= 2:
+                    prev  = float(day_closes.iloc[-2])
+                    close = float(day_closes.iloc[-1])
                     chg   = round(close - prev, 2)
                     pct   = round((close - prev) / prev * 100, 2)
+                elif len(day_closes) == 1:
+                    close = float(day_closes.iloc[-1])
+                    chg = pct = 0
                 else:
                     close = chg = pct = 0
                 result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
