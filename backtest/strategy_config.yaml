@@ -39,6 +39,11 @@ risk:
   trail_stop: 0.10                   # 최고가 대비 -10% (T15 → T10 재확정)
   max_hold_days: 252                 # 1년
   max_positions: 5                   # 균등 가중
+  # Stop 발동 방식 — broker 룰과 백테 가정 정합
+  # "close"    = 종가 stop 깨면 flag → 다음날 시가 매도 (기존 디폴트, 백테 +29.55%)
+  # "intraday" = 당일 저가 hit 즉시 발동, stop_level 에서 매도 (broker 시장가 stop 시뮬)
+  stop_trigger: "close"
+  intraday_extra_slippage: 0.005     # stop_trigger="intraday" 시 매도가에 추가 슬리피지 (시장가 stop 의 호가 흡수)
 
 # ── 쿨다운 ──
 cooldown_days: 60                    # 청산 후 60 거래일 재진입 금지 (CD120 → CD60 재확정)
