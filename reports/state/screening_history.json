@@ -16,7 +16,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "000720": {
-    "last_exit_date": "2026-05-08",
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "000880": {
@@ -38,6 +38,7 @@
     "last_high_grade_date": "2026-04-28"
   },
   "001430": {
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "001440": {
@@ -75,7 +76,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "005850": {
-    "last_exit_date": "2026-04-29",
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "005930": {
@@ -120,6 +121,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "009830": {
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "010060": {
@@ -217,7 +219,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "039490": {
-    "last_exit_date": "2026-04-29",
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "042660": {
@@ -225,6 +227,7 @@
     "last_high_grade_date": "2026-05-12"
   },
   "042700": {
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "047040": {
@@ -240,6 +243,7 @@
     "last_high_grade_date": "2026-04-24"
   },
   "052690": {
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "055550": {
@@ -250,6 +254,7 @@
     "last_high_grade_date": "2026-04-28"
   },
   "062040": {
+    "last_exit_date": "2026-05-12",
     "last_high_grade_date": "2026-05-12"
   },
   "064350": {
@@ -381,8 +386,6 @@
   },
   "_held_tickers": [
     "000660",
-    "034020",
-    "042700",
-    "062040"
+    "034020"
   ]
 }
