@@ -17,7 +17,7 @@
   },
   "000720": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "000880": {
     "last_high_grade_date": "2026-05-13"
@@ -39,7 +39,7 @@
   },
   "001430": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "001440": {
     "last_exit_date": "2026-05-07",
@@ -77,13 +77,13 @@
   },
   "005850": {
     "last_exit_date": "2026-05-12",
-    "last_high_grade_date": "2026-05-12"
+    "last_high_grade_date": "2026-05-13"
   },
   "005930": {
     "last_high_grade_date": "2026-05-13"
   },
   "005940": {
-    "last_exit_date": "2026-05-04",
+    "last_exit_date": "2026-05-13",
     "last_high_grade_date": "2026-05-13"
   },
   "005960": {
@@ -179,6 +179,7 @@
     "last_high_grade_date": "2026-05-08"
   },
   "017800": {
+    "last_exit_date": "2026-05-13",
     "last_high_grade_date": "2026-05-13"
   },
   "017960": {
@@ -390,7 +391,10 @@
     "last_high_grade_date": "2026-05-13"
   },
   "_held_tickers": [
+    "000150",
     "000660",
-    "034020"
+    "034020",
+    "034730",
+    "307950"
   ]
 }
