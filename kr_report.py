@@ -34,6 +34,20 @@ GITHUB_FILE  = "kr_data.txt"
 KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
+# ── LTD: 실행 시각과 무관하게 항상 전일 거래일 기준 (장 열리기 전 포지션 정리 목적)
+# latest_trading_day()는 아래에 정의되므로 모듈 로드 완료 후 main()에서 초기화됨
+_LTD: str | None = None  # "YYYYMMDD" 문자열, main() 진입 시 설정
+
+def _get_ltd() -> str:
+    """전역 LTD 반환. main() 이전에 호출되면 즉시 계산."""
+    global _LTD
+    if _LTD is None:
+        _LTD = latest_trading_day()
+    return _LTD
+
+def _ltd_dt() -> "datetime":
+    """LTD를 datetime 객체로 반환."""
+    return datetime.strptime(_get_ltd(), "%Y%m%d").replace(tzinfo=KST)
 
 def _build_kr_market_holidays():
     """KRX 휴장일 = 관공서 공휴일 + 근로자의 날(5/1). 전후 2년 범위."""
@@ -415,8 +429,8 @@ def get_etf_ma60(etf_info):
         return None, "N/A"
     etf_code, etf_name = etf_info
     try:
-        end   = NOW.strftime("%Y%m%d")
-        start = (NOW - timedelta(days=100)).strftime("%Y%m%d")
+        end   = _get_ltd()
+        start = (datetime.strptime(end, "%Y%m%d") - timedelta(days=100)).strftime("%Y%m%d")
         df = krx.get_etf_ohlcv_by_date(start, end, etf_code)
         if len(df) < 60:
             return None, etf_name
@@ -716,11 +730,12 @@ def get_ohlcv(token, code):
     closes  = []
     volumes = []
     try:
-        end   = NOW.strftime("%Y%m%d")
-        p1    = (NOW - timedelta(days=100)).strftime("%Y%m%d")
-        p2    = (NOW - timedelta(days=200)).strftime("%Y%m%d")
-        p3    = (NOW - timedelta(days=300)).strftime("%Y%m%d")
-        start = (NOW - timedelta(days=400)).strftime("%Y%m%d")
+        end   = _get_ltd()
+        _ltd_base = datetime.strptime(end, "%Y%m%d")
+        p1    = (_ltd_base - timedelta(days=100)).strftime("%Y%m%d")
+        p2    = (_ltd_base - timedelta(days=200)).strftime("%Y%m%d")
+        p3    = (_ltd_base - timedelta(days=300)).strftime("%Y%m%d")
+        start = (_ltd_base - timedelta(days=400)).strftime("%Y%m%d")
 
         for s, e in [(start, p3), (p3, p2), (p2, p1), (p1, end)]:
             data = kis_get_safe(token,
@@ -766,10 +781,12 @@ def get_supply_20d(token, code):
         out = data.get("output") or data.get("output1") or []
         if isinstance(out, dict):
             out = [out]
-        today_str = NOW.strftime("%Y%m%d")
+        # LTD 기준: 전일 거래일 이후 데이터는 없으므로 필터 불필요
+        # 혹시 당일 미완성 데이터가 포함될 경우를 대비해 LTD 초과 날짜 제외
+        _ltd_str = _get_ltd()
         total, count = 0, 0
         for item in out:
-            if item.get("stck_bsop_date") == today_str:
+            if item.get("stck_bsop_date", "0") > _ltd_str:
                 continue
             frgn = item.get("frgn_ntby_qty", "0") or "0"
             orgn = item.get("orgn_ntby_qty", "0") or "0"
@@ -822,8 +839,9 @@ def screen_stocks(token, mkt_ctx):
 
     # 쿨다운 state 로드 (strategy_config.yaml 기반, T10/CD60)
     state = load_screening_state()
-    today_str  = NOW.strftime("%Y-%m-%d")
-    today_date = NOW.date()
+    # LTD 기준으로 쿨다운 및 state 날짜 통일 (실행 시각 무관)
+    today_str  = datetime.strptime(_get_ltd(), "%Y%m%d").strftime("%Y-%m-%d")
+    today_date = datetime.strptime(_get_ltd(), "%Y%m%d").date()
 
     # 현재 보유 종목 (holdings_data.txt — holdings_report.py 가 먼저 실행된 후 기록)
     held_tickers = read_current_holdings()
@@ -1106,6 +1124,9 @@ def save_to_github(content):
 
 # ── 메인 ──────────────────────────────────────────
 if __name__ == "__main__":
+    # LTD 초기화 — 이후 모든 날짜 계산의 기준점
+    _LTD = latest_trading_day()
+    print(f"[LTD] 기준 거래일: {_LTD} (실행 시각: {NOW.strftime('%H:%M KST')})")
     print("🔑 KIS 토큰 발급 중...")
     token = get_token()
     print("✅ 토큰 발급 완료")
