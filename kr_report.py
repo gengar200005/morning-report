@@ -523,7 +523,7 @@ def get_index(token):
     prev_day = prev_trading_day()
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
-    # prev_day 기준 10일 전 (주말/공휴일 여유분 포함) — DATE_1==DATE_2 시 KIS 빈 응답 버그 회피
+    # prev_day 기준 14일 전 (주말/공휴일 여유분 포함)
     prev_day_dt  = datetime.strptime(prev_day, "%Y%m%d")
     date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
 
@@ -547,7 +547,19 @@ def get_index(token):
             if not rows:
                 raise ValueError(f"빈 응답 rt_cd={data.get('rt_cd')} msg={data.get('msg1')}")
 
-            row   = rows[-1]  # output2 오름차순(오래된→최신) — 마지막 행이 prev_day
+            # [수정] 날짜 매칭 검증 로직 추가
+            target_row = None
+            for r in reversed(rows):
+                if r.get("stck_bsop_date") == prev_day:
+                    target_row = r
+                    break
+            
+            if not target_row:
+                target_row = rows[-1]
+                actual_date = target_row.get("stck_bsop_date")
+                print(f"  [warn] {name} KIS 데이터에 {prev_day} 없음. 가장 최근 날짜({actual_date}) 사용.")
+            
+            row = target_row
             close = float(row.get("bstp_nmix_prpr") or row.get("stck_clpr") or 0)
             open_ = float(row.get("bstp_nmix_oprc") or row.get("stck_oprc") or 0)
             if close <= 0:
@@ -565,35 +577,41 @@ def get_index(token):
                 chg = pct = 0
 
             result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
-            print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [KIS {prev_day}]")
+            print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [KIS {row.get('stck_bsop_date')}]")
 
         except Exception as e:
             print(f"  {name} KIS 지수 오류: {e} — yfinance 백업")
             try:
                 import yfinance as yf
-                hist   = yf.Ticker(yf_map[name]).history(period="10d")
+                ticker_obj = yf.Ticker(yf_map[name])
+                hist = ticker_obj.history(period="10d")
+                if hist.empty:
+                    raise ValueError("yfinance 데이터 없음")
+                
                 closes = hist["Close"].dropna()
-                # prev_day 기준으로 명시적 날짜 필터 (iloc[-1] 의존 시 새벽에 stale 위험)
                 prev_day_date = prev_day_dt.date()
-                day_closes = closes[[d.date() <= prev_day_date for d in closes.index]]
+                day_closes = closes[closes.index.date <= prev_day_date]
+                
                 if len(day_closes) >= 2:
                     prev  = float(day_closes.iloc[-2])
                     close = float(day_closes.iloc[-1])
                     chg   = round(close - prev, 2)
                     pct   = round((close - prev) / prev * 100, 2)
+                    actual_date = day_closes.index[-1].date()
                 elif len(day_closes) == 1:
                     close = float(day_closes.iloc[-1])
                     chg = pct = 0
+                    actual_date = day_closes.index[-1].date()
                 else:
-                    close = chg = pct = 0
+                    raise ValueError(f"{prev_day_date} 이전 데이터 없음")
+
                 result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
-                print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [yfinance 백업]")
+                print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [yfinance 백업 {actual_date}]")
             except Exception as e2:
                 print(f"  {name} yfinance도 실패: {e2}")
                 result[name] = {"close": None, "chg": None, "pct": None}
     return result
 
-# ── 2. 수급 (KIS 시장별 투자자 → pykrx 백업) ──────────────────
 def get_trading(token):
     result   = {"외국인": 0, "기관": 0, "개인": 0, "단위": "억원"}
     prev_day = prev_trading_day()
