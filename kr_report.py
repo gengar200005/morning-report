@@ -537,9 +537,12 @@ def get_index(token):
     prev_day = prev_trading_day()
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
-    # prev_day 기준 14일 전 (주말/공휴일 여유분 포함)
+    # DATE_2를 오늘(크론 실행일)로 설정: KIS API가 DATE_2를 exclusive로 처리해
+    # DATE_2=prev_day 이면 prev_day 하루 전까지만 반환 (2일 전 데이터 bug).
+    # DATE_2=오늘로 설정하면 prev_day 데이터가 결과에 포함됨.
     prev_day_dt  = datetime.strptime(prev_day, "%Y%m%d")
     date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
+    date_to      = NOW.strftime("%Y%m%d")   # 크론 실행일 (장 열리기 전)
 
     for iscd, name in [("0001", "코스피"), ("1001", "코스닥")]:
         try:
@@ -550,7 +553,7 @@ def get_index(token):
                     "FID_COND_MRKT_DIV_CODE": "U",
                     "FID_INPUT_ISCD":         iscd,
                     "FID_INPUT_DATE_1":        date_from,
-                    "FID_INPUT_DATE_2":        prev_day,
+                    "FID_INPUT_DATE_2":        date_to,
                     "FID_PERIOD_DIV_CODE":     "D",
                     "FID_ORG_ADJ_PRC":        "0",
                 }
