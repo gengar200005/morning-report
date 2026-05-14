@@ -120,28 +120,27 @@ def read_current_holdings(path="holdings_data.txt"):
         return set()
 
 
-def update_screening_state(state, high_grade_today, today_str,
-                            held_tickers=None):
-    """오늘 A/B 등급 상태 + 실제 보유 이탈을 기반으로 state 갱신.
+def apply_holdings_exit(state, held_tickers, today_str):
+    """보유 이탈 종목 last_exit_date 기록. 처리 루프 전에 호출해야 당일 쿨다운 반영."""
+    prev_held = set(state.get("_held_tickers", []))
+    exited = prev_held - held_tickers
+    for tk in exited:
+        state.setdefault(tk, {})
+        existing = state[tk].get("last_exit_date", "")
+        if not existing or existing < today_str:
+            state[tk]["last_exit_date"] = today_str
+    state["_held_tickers"] = sorted(held_tickers)
+    return state
+
+
+def update_screening_state(state, high_grade_today, today_str):
+    """오늘 A/B 등급 상태 기반으로 state 갱신. 처리 루프 후에 호출.
 
     Rules:
     - (A/B→out) 이전에 A/B였으나 오늘 빠진 종목: last_exit_date = today
     - (A/B 유지) 오늘 A/B 종목: last_high_grade_date = today
-    - (held→not held) 어제 보유였으나 오늘 없는 종목: last_exit_date = today
-      (포지션 청산이 등급 이탈보다 먼저 감지될 수 있도록)
+    - held_tickers 청산 감지는 apply_holdings_exit 에서 루프 전에 처리.
     """
-    # 포지션 청산 감지: 어제 보유 목록(_held) 과 오늘 실제 보유 비교
-    if held_tickers is not None:
-        prev_held = set(state.get("_held_tickers", []))
-        exited = prev_held - held_tickers
-        for tk in exited:
-            state.setdefault(tk, {})
-            # 이미 더 최근 exit_date 가 있으면 덮어쓰지 않음
-            existing = state[tk].get("last_exit_date", "")
-            if not existing or existing < today_str:
-                state[tk]["last_exit_date"] = today_str
-        state["_held_tickers"] = sorted(held_tickers)
-
     for tk, info in list(state.items()):
         if tk.startswith("_"):
             continue
@@ -846,6 +845,9 @@ def screen_stocks(token, mkt_ctx):
     # 현재 보유 종목 (holdings_data.txt — holdings_report.py 가 먼저 실행된 후 기록)
     held_tickers = read_current_holdings()
 
+    # 보유 이탈 즉시 exit 기록 — 루프 전에 실행해야 당일 쿨다운이 리포트에 반영됨
+    state = apply_holdings_exit(state, held_tickers, today_str)
+
     # 1단계: 전 종목 OHLCV 수집 + 52주 수익률 (RS 계산용)
     stock_data  = {}   # code -> (name, closes, volumes)
     returns_52w = {}   # code -> 52주 수익률
@@ -973,8 +975,7 @@ def screen_stocks(token, mkt_ctx):
 
     # state 업데이트 + 저장 (쿨다운 추적용)
     high_grade_today = {r["종목코드"] for r in results if r["등급"] in ("A", "B")}
-    state = update_screening_state(state, high_grade_today, today_str,
-                                   held_tickers=held_tickers or None)
+    state = update_screening_state(state, high_grade_today, today_str)
     save_screening_state(state)
     print(f"  screening state 저장: {STATE_PATH}")
 
