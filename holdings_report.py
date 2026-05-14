@@ -11,7 +11,10 @@ from kr_report import (
     get_supply_20d,
     calc_ma,
     get_market_context,
+    kis_get_safe,
+    _get_ltd,
 )
+from datetime import timedelta
 
 # ── 설정 ──────────────────────────────────────────
 NOTION_API_KEY = os.environ["NOTION_API_KEY"]
@@ -96,16 +99,60 @@ def fetch_holdings():
     return holdings
 
 
+STOP_LOSS_PCT  = 0.07   # strategy_config.yaml risk.stop_loss
+TRAIL_STOP_PCT = 0.10   # strategy_config.yaml risk.trail_stop
+
+
+def get_ohlcv_with_dates(token, code):
+    """날짜 포함 OHLCV. 매수일 이후 고점 계산에 사용."""
+    closes, dates = [], []
+    try:
+        end      = _get_ltd()
+        ltd_base = datetime.strptime(end, "%Y%m%d")
+        p1    = (ltd_base - timedelta(days=100)).strftime("%Y%m%d")
+        p2    = (ltd_base - timedelta(days=200)).strftime("%Y%m%d")
+        p3    = (ltd_base - timedelta(days=300)).strftime("%Y%m%d")
+        start = (ltd_base - timedelta(days=400)).strftime("%Y%m%d")
+
+        for s, e in [(start, p3), (p3, p2), (p2, p1), (p1, end)]:
+            data  = kis_get_safe(token,
+                "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+                "FHKST03010100",
+                {
+                    "FID_COND_MRKT_DIV_CODE": "J",
+                    "FID_INPUT_ISCD":      code,
+                    "FID_INPUT_DATE_1":    s,
+                    "FID_INPUT_DATE_2":    e,
+                    "FID_PERIOD_DIV_CODE": "D",
+                    "FID_ORG_ADJ_PRC":    "0",
+                }
+            )
+            items = data.get("output2", []) or data.get("output1", [])
+            for item in reversed(items):
+                try:
+                    c = float(item.get("stck_clpr", 0))
+                    d = item.get("stck_bsop_date", "")
+                    if c > 0 and d:
+                        closes.append(c)
+                        dates.append(d)   # "YYYYMMDD"
+                except:
+                    continue
+            time.sleep(0.3)
+    except Exception as e:
+        print(f"  {code} 일봉(날짜) 오류: {e}")
+    return closes, dates
+
+
 # ── 종목 분석 (Minervini 지표) ──────────────────────
 def analyze_holding(token, h, mkt_ctx):
-    code = h["종목코드"]
-    name = h["종목명"]
+    code  = h["종목코드"]
+    name  = h["종목명"]
     entry = h.get("매수가") or 0
 
     if not code or not code.isdigit() or len(code) != 6:
         return {**h, "error": f"종목코드 형식 오류: '{code}'"}
 
-    closes, _ = get_ohlcv(token, code)
+    closes, dates = get_ohlcv_with_dates(token, code)
     if len(closes) < 200:
         return {**h, "error": f"일봉 데이터 부족 ({len(closes)}개)"}
 
@@ -168,8 +215,23 @@ def analyze_holding(token, h, mkt_ctx):
             fails.append("손절가+5% 미달")
         signal = "❌ 추매 금지 (" + ", ".join(fails) + ")"
 
-    pnl_pct = (close_now / entry - 1) * 100 if entry else 0
+    pnl_pct  = (close_now / entry - 1) * 100 if entry else 0
     hi52_pct = (close_now / hi52 - 1) * 100
+
+    # ── 손절 판정 ──
+    sl_price = h.get("손절가") or (round(entry * (1 - STOP_LOSS_PCT)) if entry else 0)
+    sl_hit   = bool(sl_price and close_now <= sl_price)
+
+    # ── TS 판정 (매수일 이후 고점 기준) ──
+    entry_date_str = (h.get("매수일") or "").replace("-", "")  # "2026-03-01" → "20260301"
+    if entry_date_str and dates:
+        since_entry = [c for c, d in zip(closes, dates) if d >= entry_date_str]
+    else:
+        since_entry = []
+    peak = max(since_entry) if since_entry else close_now
+    ts_price = round(peak * (1 - TRAIL_STOP_PCT))
+    # TS는 고점이 진입가보다 높을 때만(수익 발생 후) 의미 있음
+    ts_hit = bool(entry and peak > entry and close_now <= ts_price)
 
     return {
         **h,
@@ -186,6 +248,11 @@ def analyze_holding(token, h, mkt_ctx):
         "등급":       grade,
         "손익률":     round(pnl_pct, 2),
         "추매시그널": signal,
+        "손절가":     int(sl_price),
+        "sl_hit":     sl_hit,
+        "고점_진입후": int(peak),
+        "ts_price":   int(ts_price),
+        "ts_hit":     ts_hit,
     }
 
 
@@ -218,7 +285,15 @@ def build_text(analyses, mkt_ctx):
             continue
 
         entry = h.get("매수가") or 0
-        stop  = h.get("손절가") or 0
+        # 손절/TS 알림
+        if h.get("sl_hit"):
+            lines.append(f"  🔴 손절 도달  현재 {h['현재가']:,} ≤ 손절가 {h['손절가']:,}")
+        if h.get("ts_hit"):
+            lines.append(
+                f"  🔴 TS 도달   현재 {h['현재가']:,} ≤ TS선 {h['ts_price']:,}"
+                f"  (진입후 고점 {h['고점_진입후']:,})"
+            )
+
         lines.append(f"  ▶ {h['종목명']} ({h['종목코드']}) [{h['등급']}등급]")
         lines.append(
             f"    매수가 {entry:,.0f} → 현재 {h['현재가']:,} ({h['손익률']:+.2f}%)"
@@ -232,10 +307,12 @@ def build_text(analyses, mkt_ctx):
             f"코어 {h['코어통과']}/8"
         )
         lines.append(
-            f"    52주고점 {h['52주고점']:,} (대비 {h['52주고점대비']:+.1f}%)"
+            f"    진입후 고점 {h['고점_진입후']:,} / TS선 {h['ts_price']:,}"
+            f" | 손절가 {h['손절가']:,}"
         )
         lines.append(
-            f"    손절가 {stop:,.0f} | 수급20일 {h['수급20일']:+,}주"
+            f"    52주고점 {h['52주고점']:,} (대비 {h['52주고점대비']:+.1f}%)"
+            f" | 수급20일 {h['수급20일']:+,}주"
         )
         lines.append(f"    ⇒ {h['추매시그널']}")
 
