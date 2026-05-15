@@ -6,12 +6,17 @@ import yaml
 from datetime import datetime
 import pytz
 
+import json
+from datetime import timedelta
+
 from kr_report import (
     get_token,
     get_ohlcv,
     get_supply_20d,
     calc_ma,
     get_market_context,
+    kis_get,
+    prev_trading_day,
 )
 
 _cfg_path = os.path.join(os.path.dirname(__file__), "backtest", "strategy_config.yaml")
@@ -38,6 +43,71 @@ GITHUB_FILE  = "holdings_data.txt"
 KST       = pytz.timezone("Asia/Seoul")
 NOW       = datetime.now(KST)
 TODAY_STR = NOW.strftime("%Y년 %m월 %d일 (%a)")
+
+
+INDEX_SNAPSHOT_PATH = "index_snapshot.json"
+
+
+# ── KOSPI/KOSDAQ 종가 스냅샷 ───────────────────────
+def save_index_snapshot(token):
+    """
+    KIS 토큰을 재활용해 KOSPI/KOSDAQ 전일 종가를 취득, index_snapshot.json 저장.
+    holdings_report(step 40) → kr_report(step 47) 순서를 이용한 캐시 구조.
+    두 가지 KIS 경로를 순서대로 시도하고 둘 다 실패 시 스냅샷 미생성.
+    """
+    prev_day = prev_trading_day()
+    prev_day_dt = datetime.strptime(prev_day, "%Y%m%d")
+    date_from = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
+
+    result = {}
+    for iscd, name in [("0001", "코스피"), ("1001", "코스닥")]:
+        for path, tr_id, mkt in [
+            # 1순위: 주식 일봉 경로를 업종코드로 시도 (FHKUP 404 우회)
+            ("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+             "FHKST03010100", "U"),
+            # 2순위: 업종 일봉 전용 경로 (현재 404 — 엔드포인트 복구 시 자동 복원)
+            ("/uapi/domestic-stock/v1/quotations/inquire-index-daily-chartprice",
+             "FHKUP03500100", "U"),
+        ]:
+            try:
+                data = kis_get(token, path, tr_id, {
+                    "FID_COND_MRKT_DIV_CODE": mkt,
+                    "FID_INPUT_ISCD":         iscd,
+                    "FID_INPUT_DATE_1":       date_from,
+                    "FID_INPUT_DATE_2":       prev_day,
+                    "FID_PERIOD_DIV_CODE":    "D",
+                    "FID_ORG_ADJ_PRC":        "0",
+                })
+                rows = data.get("output2") or data.get("output1") or []
+                if isinstance(rows, dict):
+                    rows = [rows]
+                if not rows:
+                    raise ValueError(f"빈 응답 rt_cd={data.get('rt_cd')}")
+                row = next(
+                    (r for r in reversed(rows) if r.get("stck_bsop_date") == prev_day),
+                    rows[-1]
+                )
+                close = float(row.get("bstp_nmix_prpr") or row.get("stck_clpr") or 0)
+                if close <= 0:
+                    raise ValueError("종가 0")
+                pct_raw = str(row.get("bstp_nmix_prdy_ctrt") or row.get("prdy_ctrt") or "")
+                if pct_raw and pct_raw not in ("", "0", "0.00"):
+                    pct = round(float(pct_raw), 2)
+                    chg = round(close * pct / 100, 2)
+                else:
+                    chg = pct = 0
+                result[name] = {"close": round(close, 2), "chg": chg, "pct": pct, "source": tr_id}
+                print(f"  [index] {name}: {close:,.2f} ({pct:+.2f}%) [{tr_id}]")
+                break
+            except Exception as e:
+                print(f"  [index] {name} {tr_id} 실패: {e}")
+
+    if result:
+        with open(INDEX_SNAPSHOT_PATH, "w", encoding="utf-8") as f:
+            json.dump({"date": prev_day, "indices": result}, f, ensure_ascii=False)
+        print(f"  [index] 스냅샷 저장 → {INDEX_SNAPSHOT_PATH}")
+    else:
+        print("  [index] 스냅샷 미생성 — KIS 업종 API 전부 실패")
 
 
 # ── 노션 DB 조회 ───────────────────────────────────
@@ -349,6 +419,9 @@ if __name__ == "__main__":
     print("\n🔑 KIS 토큰 발급 중...")
     token = get_token()
     print("✅ 토큰 발급 완료")
+
+    print("\n📡 KOSPI/KOSDAQ 지수 스냅샷 저장 중...")
+    save_index_snapshot(token)
 
     print("\n📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
     mkt_ctx = get_market_context()

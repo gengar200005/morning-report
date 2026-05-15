@@ -536,6 +536,20 @@ def get_index(token):
     prev_day = prev_trading_day()
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
+    # 0순위: holdings_report(step 40)가 저장한 스냅샷 — 당일 거래일 일치 시 즉시 반환
+    _snapshot_path = "index_snapshot.json"
+    if os.path.exists(_snapshot_path):
+        try:
+            with open(_snapshot_path, encoding="utf-8") as _f:
+                _snap = json.load(_f)
+            if _snap.get("date") == prev_day and len(_snap.get("indices", {})) == 2:
+                for _name, _v in _snap["indices"].items():
+                    result[_name] = {"close": _v["close"], "chg": _v["chg"], "pct": _v["pct"]}
+                    print(f"  {_name}: {_v['close']:,.2f} ({_v['pct']:+.2f}%) [스냅샷 {_v.get('source','')}]")
+                return result
+        except Exception as _e:
+            print(f"  [index_snapshot] 읽기 실패: {_e}")
+
     # prev_day 기준 14일 전 (주말/공휴일 여유분 포함)
     prev_day_dt  = datetime.strptime(prev_day, "%Y%m%d")
     date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
