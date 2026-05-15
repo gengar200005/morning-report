@@ -2,6 +2,7 @@ import os
 import base64
 import requests
 import time
+import yaml
 from datetime import datetime
 import pytz
 
@@ -12,6 +13,12 @@ from kr_report import (
     calc_ma,
     get_market_context,
 )
+
+_cfg_path = os.path.join(os.path.dirname(__file__), "backtest", "strategy_config.yaml")
+with open(_cfg_path) as _f:
+    _STRATEGY_CFG = yaml.safe_load(_f)
+TRAIL_STOP_PCT  = _STRATEGY_CFG["risk"]["trail_stop"]   # 0.10
+HARD_STOP_PCT   = _STRATEGY_CFG["risk"]["stop_loss"]    # 0.07
 
 # ── 설정 ──────────────────────────────────────────
 NOTION_API_KEY = os.environ["NOTION_API_KEY"]
@@ -82,18 +89,36 @@ def fetch_holdings():
     for page in r.json().get("results", []):
         p = page["properties"]
         holdings.append({
+            "page_id":   page["id"],
             "종목명":    get_title(p.get("종목명", {})),
             "종목코드":  get_rich(p.get("종목코드", {})),
             "매수가":    get_num(p.get("매수가", {})),
             "매수일":    get_date(p.get("매수일", {})),
             "거래소":    get_select(p.get("거래소", {})),
             "손절가":    get_num(p.get("손절가", {})),
-            "TS활성화":  get_check(p.get("TS 활성화", {})),
-            "현재가_노션": get_num(p.get("현재가", {})),
-            "최고가_노션": get_num(p.get("최고가", {})),
-            "손익률_노션": get_num(p.get("현재 손익률(%)", {})),
+            "트레일선":  get_num(p.get("트레일선", {})),
+            "최고종가":  get_num(p.get("최고종가", {})),
         })
     return holdings
+
+
+# ── Notion 트레일선 갱신 ────────────────────────────
+def update_notion_trailing(page_id, 최고종가, 트레일선, 동적손절선):
+    """신고가 갱신 시 Notion 자동매도 트래커 row 업데이트."""
+    url = f"https://api.notion.com/v1/pages/{page_id}"
+    headers = {
+        "Authorization": f"Bearer {NOTION_API_KEY}",
+        "Notion-Version": "2025-09-03",
+        "Content-Type": "application/json",
+    }
+    body = {"properties": {
+        "최고종가":   {"number": 최고종가},
+        "트레일선":   {"number": 트레일선},
+        "동적손절선": {"number": 동적손절선},
+        "갱신시각":   {"date": {"start": datetime.now(KST).strftime("%Y-%m-%d")}},
+    }}
+    r = requests.patch(url, headers=headers, json=body, timeout=15)
+    return r.status_code == 200
 
 
 # ── 종목 분석 (Minervini 지표) ──────────────────────
@@ -148,8 +173,22 @@ def analyze_holding(token, h, mkt_ctx):
     else:
         grade = "B" if supply_ok else "C"
 
+    # ── 손절·TS 도달 감지 + 트레일선 갱신 ──────────────
+    stop_loss   = h.get("손절가")   or round(entry * (1 - HARD_STOP_PCT))
+    trail_now   = h.get("트레일선") or 0
+    max_close   = h.get("최고종가") or entry or close_now
+
+    # 신고가(종가) 갱신 시 트레일선 재계산
+    high_updated = close_now > max_close
+    new_max   = close_now if high_updated else max_close
+    new_trail = round(new_max * (1 - TRAIL_STOP_PCT))
+    dyn_stop  = max(stop_loss or 0, new_trail or 0)
+
+    # 전일 종가 기준 도달 여부
+    breach_stop  = bool(stop_loss  and close_now < stop_loss)
+    breach_trail = bool(trail_now  and close_now < trail_now)
+
     # ── Hard Gate 간이 판정 ──
-    stop_loss = h.get("손절가") or round(close_now * 0.93)
     h4 = (close_now >= entry * 1.05) if entry else False
     h5 = (close_now >= stop_loss * 1.05) if stop_loss else False
     hard_ok = core_ok and gate_ok and h4 and h5
@@ -173,19 +212,26 @@ def analyze_holding(token, h, mkt_ctx):
 
     return {
         **h,
-        "현재가":     int(close_now),
-        "MA50":       int(ma50)  if ma50  else 0,
-        "MA150":      int(ma150) if ma150 else 0,
-        "MA200":      int(ma200) if ma200 else 0,
-        "코어통과":   sum(core_list),
-        "MA정배열":   aligned,
-        "MA200상승":  c6,
-        "52주고점":   int(hi52),
+        "현재가":       int(close_now),
+        "MA50":         int(ma50)  if ma50  else 0,
+        "MA150":        int(ma150) if ma150 else 0,
+        "MA200":        int(ma200) if ma200 else 0,
+        "코어통과":     sum(core_list),
+        "MA정배열":     aligned,
+        "MA200상승":    c6,
+        "52주고점":     int(hi52),
         "52주고점대비": round(hi52_pct, 1),
-        "수급20일":   supply_20d,
-        "등급":       grade,
-        "손익률":     round(pnl_pct, 2),
-        "추매시그널": signal,
+        "수급20일":     supply_20d,
+        "등급":         grade,
+        "손익률":       round(pnl_pct, 2),
+        "추매시그널":   signal,
+        "손절가":       int(stop_loss) if stop_loss else 0,
+        "트레일선_new": int(new_trail),
+        "최고종가_new": int(new_max),
+        "동적손절선":   int(dyn_stop),
+        "고점갱신":     high_updated,
+        "손절_도달":    breach_stop,
+        "TS_도달":      breach_trail,
     }
 
 
@@ -234,9 +280,16 @@ def build_text(analyses, mkt_ctx):
         lines.append(
             f"    52주고점 {h['52주고점']:,} (대비 {h['52주고점대비']:+.1f}%)"
         )
+        trail = h.get("트레일선_new", 0)
         lines.append(
-            f"    손절가 {stop:,.0f} | 수급20일 {h['수급20일']:+,}주"
+            f"    손절가 {stop:,.0f} | 트레일선 {trail:,.0f} | 수급20일 {h['수급20일']:+,}주"
         )
+        if h.get("손절_도달"):
+            lines.append(f"    🚨 손절 도달 — 현재 {h['현재가']:,} < 손절가 {stop:,.0f}")
+        if h.get("TS_도달"):
+            lines.append(f"    🚨 TS 도달 — 현재 {h['현재가']:,} < 트레일선 {trail:,.0f}")
+        if h.get("고점갱신"):
+            lines.append(f"    ★ 신고가 갱신 → 트레일선 {trail:,.0f}으로 상향")
         lines.append(f"    ⇒ {h['추매시그널']}")
 
     lines.append("\n" + "=" * 52)
@@ -305,6 +358,15 @@ if __name__ == "__main__":
     for h in holdings:
         print(f"  → {h['종목명']} ({h['종목코드']}) 분석 중...")
         analyses.append(analyze_holding(token, h, mkt_ctx))
+
+    # 신고가 갱신 종목 → Notion 트레일선 자동 업데이트
+    for a in analyses:
+        if a.get("고점갱신") and a.get("page_id"):
+            ok = update_notion_trailing(
+                a["page_id"], a["최고종가_new"], a["트레일선_new"], a["동적손절선"]
+            )
+            tag = "✅" if ok else "⚠️"
+            print(f"  {tag} {a['종목명']} 트레일선 갱신 → {a['트레일선_new']:,}원")
 
     print("\n📝 텍스트 생성 중...")
     text = build_text(analyses, mkt_ctx)
