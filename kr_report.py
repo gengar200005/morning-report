@@ -455,27 +455,89 @@ def check_60d_high(closes):
     current  = closes[-1]
     return current >= high_60d * 0.98, int(high_60d)
 
+# ── 지수 이력: KIS API로 종가 시계열 반환 (yfinance 대체) ────────────────
+def _fetch_kr_index_closes_kis(token, iscd, n_days=260):
+    """KIS 지수 일봉 API로 종가 배열 반환 (오래된→최신, 최대 n_days 거래일).
+    yfinance ^KS11/^KQ11 는 Yahoo Finance 서버측 지연으로 T-2 데이터를 반환하는
+    문제가 있어 KIS API(신뢰도 높음)로 대체.
+    """
+    closes: dict[str, float] = {}
+    end_dt = datetime.strptime(prev_trading_day(), "%Y%m%d")
+
+    for _ in range(3):  # 최대 3 청크로 충분한 이력 확보
+        start_dt = end_dt - timedelta(days=200)
+        try:
+            data = kis_get(token,
+                "/uapi/domestic-stock/v1/quotations/inquire-index-daily-chartprice",
+                "FHKUP03500100",
+                {
+                    "FID_COND_MRKT_DIV_CODE": "U",
+                    "FID_INPUT_ISCD":         iscd,
+                    "FID_INPUT_DATE_1":        start_dt.strftime("%Y%m%d"),
+                    "FID_INPUT_DATE_2":        end_dt.strftime("%Y%m%d"),
+                    "FID_PERIOD_DIV_CODE":     "D",
+                    "FID_ORG_ADJ_PRC":        "0",
+                }
+            )
+            rows = data.get("output2") or data.get("output1") or []
+            if isinstance(rows, dict):
+                rows = [rows]
+            for r in rows:
+                d = r.get("stck_bsop_date", "")
+                try:
+                    c = float(r.get("bstp_nmix_prpr") or r.get("stck_clpr") or 0)
+                    if d and c > 0:
+                        closes[d] = c
+                except (ValueError, TypeError):
+                    pass
+        except Exception as e:
+            print(f"  KIS 지수이력 오류 ({iscd}): {e}")
+            break
+
+        if len(closes) >= n_days:
+            break
+        end_dt = start_dt - timedelta(days=1)
+
+    sorted_dates = sorted(closes.keys())
+    result = [closes[d] for d in sorted_dates]
+    return result[-n_days:] if len(result) > n_days else result
+
+
 # ── 지수 추세 분석 (1순위/2순위) ─────────────────────
-def get_index_trend():
+def get_index_trend(token=None):
     """KOSPI/KOSDAQ 5일·20일 수익률 + 52주 고저점 대비 위치 + 20일 신고가 여부"""
     result = {}
-    for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
+    for iscd, name, yf_ticker in [
+        ("0001", "코스피", "^KS11"),
+        ("1001", "코스닥", "^KQ11"),
+    ]:
         try:
-            hist   = yf.Ticker(ticker).history(period="400d")
-            closes = hist["Close"].dropna().values
-            if len(closes) < 21:
+            closes = None
+            # 1순위: KIS API (T+0 신선 데이터)
+            if token:
+                raw = _fetch_kr_index_closes_kis(token, iscd, n_days=260)
+                if len(raw) >= 21:
+                    closes = raw
+            # 2순위: yfinance (explicit dates — period= 보다 덜 오래된 데이터)
+            if not closes:
+                from datetime import timezone as _tz
+                _today = datetime.now(_tz.utc).date()
+                _end   = (_today + timedelta(days=1)).isoformat()
+                _start = (_today - timedelta(days=500)).isoformat()
+                hist = yf.Ticker(yf_ticker).history(start=_start, end=_end)
+                if not hist.empty:
+                    closes = hist["Close"].dropna().values.tolist()
+
+            if not closes or len(closes) < 21:
                 continue
-            cur = float(closes[-1])
 
-            ret5d  = (cur / float(closes[-6])  - 1) * 100 if len(closes) > 5  else None
-            ret20d = (cur / float(closes[-21]) - 1) * 100 if len(closes) > 20 else None
+            cur    = float(closes[-1])
+            ret5d  = (cur / closes[-6]  - 1) * 100 if len(closes) > 5  else None
+            ret20d = (cur / closes[-21] - 1) * 100 if len(closes) > 20 else None
 
-            # 52주 고저 (거래일 기준 252일)
-            hi52 = float(closes[-252:].max()) if len(closes) >= 252 else float(closes.max())
-            lo52 = float(closes[-252:].min()) if len(closes) >= 252 else float(closes.min())
-
-            # 20일 신고가: 오늘 종가 > 직전 20거래일 최고가
-            hi20_prev = float(closes[-21:-1].max())
+            hi52      = max(closes[-252:]) if len(closes) >= 252 else max(closes)
+            lo52      = min(closes[-252:]) if len(closes) >= 252 else min(closes)
+            hi20_prev = max(closes[-21:-1])
             new_hi20  = cur > hi20_prev
 
             result[name] = {
@@ -495,11 +557,12 @@ def get_index_trend():
     return result
 
 
-def get_market_context():
+def get_market_context(token=None):
     ctx = {
         "vix": None, "vix_ok": False,
         "kospi_ma60": None, "kospi_above_ma60": False,
     }
+    # VIX: yfinance (미국 데이터, 지연 없음)
     try:
         hist = yf.Ticker("^VIX").history(period="5d")
         if not hist.empty:
@@ -509,24 +572,50 @@ def get_market_context():
     except Exception as e:
         print(f"  VIX 오류: {e}")
 
-    for ticker, prefix in [("^KS11", "kospi"), ("^KQ11", "kosdaq")]:
+    # KOSPI/KOSDAQ MA: KIS API 우선, yfinance 백업
+    for iscd, prefix, yf_ticker in [
+        ("0001", "kospi",  "^KS11"),
+        ("1001", "kosdaq", "^KQ11"),
+    ]:
         try:
-            hist   = yf.Ticker(ticker).history(period="200d")
-            closes = hist["Close"].dropna()
-            if len(closes) >= 2:
-                cur = round(float(closes.iloc[-1]), 2)
-                ctx[f"{prefix}_cur"] = cur
-                for n in [20, 60, 120]:
-                    if len(closes) >= n:
-                        ma = round(float(closes.tail(n).mean()), 2)
-                        ctx[f"{prefix}_ma{n}"]       = ma
-                        ctx[f"{prefix}_above_ma{n}"] = cur > ma
-                if prefix == "kospi" and "kospi_ma60" in ctx:
-                    ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
-                ma_info = " / ".join([f"MA{n}={'✓' if ctx.get(f'{prefix}_above_ma{n}') else '✗'}" for n in [20,60,120] if f"{prefix}_ma{n}" in ctx])
-                print(f"  {ticker}: {cur:,.2f}  {ma_info}")
+            closes = None
+            src    = "?"
+            # 1순위: KIS API
+            if token:
+                raw = _fetch_kr_index_closes_kis(token, iscd, n_days=200)
+                if len(raw) >= 20:
+                    closes = raw
+                    src    = "KIS"
+            # 2순위: yfinance explicit dates
+            if not closes:
+                from datetime import timezone as _tz
+                _today = datetime.now(_tz.utc).date()
+                _end   = (_today + timedelta(days=1)).isoformat()
+                _start = (_today - timedelta(days=300)).isoformat()
+                hist = yf.Ticker(yf_ticker).history(start=_start, end=_end)
+                if not hist.empty:
+                    closes = hist["Close"].dropna().values.tolist()
+                    src    = "yfinance"
+
+            if not closes or len(closes) < 2:
+                continue
+
+            cur = round(closes[-1], 2)
+            ctx[f"{prefix}_cur"] = cur
+            for n in [20, 60, 120]:
+                if len(closes) >= n:
+                    ma = round(sum(closes[-n:]) / n, 2)
+                    ctx[f"{prefix}_ma{n}"]       = ma
+                    ctx[f"{prefix}_above_ma{n}"] = cur > ma
+            if prefix == "kospi" and "kospi_ma60" in ctx:
+                ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
+            ma_info = " / ".join([
+                f"MA{n}={'✓' if ctx.get(f'{prefix}_above_ma{n}') else '✗'}"
+                for n in [20, 60, 120] if f"{prefix}_ma{n}" in ctx
+            ])
+            print(f"  {yf_ticker}: {cur:,.2f}  {ma_info}  [{src}]")
         except Exception as e:
-            print(f"  {ticker} MA 오류: {e}")
+            print(f"  {yf_ticker} MA 오류: {e}")
 
     return ctx
 
@@ -1133,10 +1222,10 @@ if __name__ == "__main__":
     print("✅ 토큰 발급 완료")
 
     print("📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
-    mkt_ctx = get_market_context()
+    mkt_ctx = get_market_context(token)
 
     print("📡 지수 추세 분석 중 (5일·20일 수익률 / 52주 고저)...")
-    trend = get_index_trend()
+    trend = get_index_trend(token)
 
     print("📡 코스피·코스닥 지수 수집 중...")
     indices = get_index(token)
