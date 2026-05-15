@@ -670,7 +670,8 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
         r"\s*MA50\s+([\d,]+)\s*/\s*MA150\s+([\d,]+)\s*/\s*MA200\s+([\d,]+)\s*\n"
         r"\s*정배열:([✓✗])\s*MA200상승:([✓✗])\s*코어\s+(\d+)/(\d+)\s*\n"
         r"\s*52주고점\s+([\d,]+)\s*\(대비\s+([+\-−]?[\d.]+)%\)\s*\n"
-        r"\s*손절가\s+([\d,]+)\s*\|\s*수급20일\s+([+\-−]?[\d,]+)주\s*\n"
+        r"\s*손절가\s+([\d,]+)\s*\|\s*트레일선\s+([\d,]+)\s*\|\s*수급20일\s+([+\-−]?[\d,]+)주\s*\n"
+        r"(?:\s*[🚨★].+\n)*"
         r"\s*⇒\s*(.+?)(?=\n|$)",
         re.MULTILINE,
     )
@@ -693,6 +694,7 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
             high_52w,
             high_pct,
             stop_price,
+            trail_price,
             supply_20d,
             verdict,
         ) = match.groups()
@@ -714,6 +716,7 @@ def _parse_holdings(text: str) -> list[dict[str, Any]]:
                 "high_52w": _to_int(high_52w),
                 "pct_from_52w_high": _to_float(high_pct),
                 "stop_price": _to_int(stop_price),
+                "trail_price": _to_int(trail_price),
                 "supply_20d": _to_int(supply_20d),
                 "verdict": verdict.strip(),
             }

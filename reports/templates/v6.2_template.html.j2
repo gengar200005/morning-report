@@ -1739,7 +1739,9 @@
           <div class="pg-label">52주 고점</div>
           <div class="pg-value">{{ h.high_52w | format_number }}{% if h.pct_from_52w_high >= -0.5 %} <span class="nh-badge" style="margin-left: 5px;">NEW HIGH</span>{% endif %}</div>
           <div class="pg-label">손절가</div>
-          <div class="pg-value" style="color: var(--bear);">{{ h.stop_price | format_number }} 원</div>
+          <div class="pg-value" style="color: var(--bear);">{{ h.stop_price | format_number }} 원{% if h.breach_stop %} <span class="pill-down" style="margin-left:6px;font-size:11px;">🚨 도달</span>{% endif %}</div>
+          <div class="pg-label">트레일선</div>
+          <div class="pg-value" style="color: var(--bear);">{{ h.trail_price | format_number }} 원{% if h.breach_trail %} <span class="pill-down" style="margin-left:6px;font-size:11px;">🚨 도달</span>{% endif %}</div>
         </div>
 
         <div class="portfolio-stats">

@@ -314,9 +314,14 @@ def _enrich_holdings(data: dict) -> None:
     """보유 종목에 추매 기준가 + verdict parsing."""
     for h in data["holdings"]:
         h["add_threshold"] = int(h["buy_price"] * 1.05)
+        cur = h.get("current_price", 0)
+        h["breach_stop"]  = bool(h.get("stop_price")  and cur > 0 and cur < h["stop_price"])
+        h["breach_trail"] = bool(h.get("trail_price")  and cur > 0 and cur < h["trail_price"])
         # verdict 문자열에서 마크/라벨 추출
         verdict = h["verdict"]
-        if "금지" in verdict:
+        if h["breach_stop"] or h["breach_trail"]:
+            h["action_label"] = "🚨 손절 · TS 도달"
+        elif "금지" in verdict:
             h["action_label"] = "추매 금지 · HOLD"
         elif "가능" in verdict:
             h["action_label"] = "추매 가능"
