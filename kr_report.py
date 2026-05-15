@@ -536,6 +536,27 @@ def get_index(token):
     prev_day = prev_trading_day()
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
+    # 0순위: holdings_report(step 40)가 저장한 holdings_data.txt 캐시
+    # holdings_report가 먼저 실행되어 지수 종가를 기록해두면 KIS/yfinance 재호출 불필요
+    try:
+        import re as _re
+        with open("holdings_data.txt", encoding="utf-8") as _f:
+            _hdata = _f.read()
+        _m_date = _re.search(r"【 지수 종가 】 \[(\d{8})\]", _hdata)
+        if _m_date and _m_date.group(1) == prev_day:
+            for _name in ["코스피", "코스닥"]:
+                _m = _re.search(rf"{_name}: ([\d,]+\.?\d*) \(([+\-−]?[\d.]+)%\)", _hdata)
+                if _m:
+                    _close = float(_m.group(1).replace(",", ""))
+                    _pct   = float(_m.group(2).replace("−", "-"))
+                    _chg   = round(_close * _pct / 100, 2)
+                    result[_name] = {"close": _close, "chg": _chg, "pct": _pct}
+            if len(result) == 2:
+                print(f"  [index] holdings_data.txt 캐시 사용 ({prev_day})")
+                return result
+    except Exception:
+        pass
+
     # prev_day 기준 14일 전 (주말/공휴일 여유분 포함)
     prev_day_dt  = datetime.strptime(prev_day, "%Y%m%d")
     date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")

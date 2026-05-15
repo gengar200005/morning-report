@@ -8,6 +8,7 @@ import pytz
 
 from kr_report import (
     get_token,
+    get_index,
     get_ohlcv,
     get_supply_20d,
     calc_ma,
@@ -236,7 +237,7 @@ def analyze_holding(token, h, mkt_ctx):
 
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(analyses, mkt_ctx):
+def build_text(analyses, mkt_ctx, indices=None):
     lines = []
     lines.append("=" * 52)
     lines.append(f"  보유 종목 현황 — {TODAY_STR}")
@@ -246,6 +247,16 @@ def build_text(analyses, mkt_ctx):
         lines.append("\n  보유 종목 없음 (노션 '상태=In progress' 미발견)")
         lines.append("\n" + "=" * 52)
         return "\n".join(lines)
+
+    # ── 지수 종가 (kr_report.get_index 캐시) ──────────
+    if indices:
+        prev_day = NOW.strftime("%Y%m%d")  # holdings_report 실행 기준 당일 = kr_report 기준 전일
+        lines.append(f"\n【 지수 종가 】 [{prev_day}]")
+        for name, v in indices.items():
+            close = v.get("close")
+            pct   = v.get("pct")
+            if close is not None and pct is not None:
+                lines.append(f"  {name}: {close:,.2f} ({pct:+.2f}%)")
 
     gate_ok = mkt_ctx.get("kospi_above_ma60", False) and mkt_ctx.get("vix_ok", False)
     vix = mkt_ctx.get("vix")
@@ -353,6 +364,13 @@ if __name__ == "__main__":
     print("\n📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
     mkt_ctx = get_market_context()
 
+    print("\n📡 지수 종가 수집 중 (KOSPI/KOSDAQ — holdings_data.txt 캐시용)...")
+    try:
+        indices = get_index(token)
+    except Exception as e:
+        print(f"  ⚠️ 지수 종가 수집 실패 — 캐시 생략: {e}")
+        indices = {}
+
     print("\n📡 각 보유 종목 Minervini 분석 중...")
     analyses = []
     for h in holdings:
@@ -369,7 +387,7 @@ if __name__ == "__main__":
             print(f"  {tag} {a['종목명']} 트레일선 갱신 → {a['트레일선_new']:,}원")
 
     print("\n📝 텍스트 생성 중...")
-    text = build_text(analyses, mkt_ctx)
+    text = build_text(analyses, mkt_ctx, indices=indices)
     print(text)
 
     print("\n💾 저장 중...")
