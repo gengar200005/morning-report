@@ -530,10 +530,41 @@ def get_market_context():
 
     return ctx
 
-# ── 1. 코스피·코스닥 지수 (KIS 업종 일봉 — 전거래일 시가/종가 직접 조회) ──
+# ── 1. 코스피·코스닥 지수 (0순위: index_snapshot.json → KIS → yfinance) ──
+def _load_index_snapshot(prev_day: str) -> dict:
+    """index_snapshot.json 이 prev_day 와 날짜 일치하면 결과 dict 반환, 아니면 {}."""
+    snap_path = Path("index_snapshot.json")
+    if not snap_path.exists():
+        return {}
+    try:
+        with open(snap_path, encoding="utf-8") as f:
+            snap = json.load(f)
+        if snap.get("date") != prev_day:
+            print(f"  [index_snapshot] 날짜 불일치 (snap={snap.get('date')}, prev_day={prev_day}) — 스킵")
+            return {}
+        result = {}
+        for name, vals in snap.get("indices", {}).items():
+            if vals.get("close"):
+                result[name] = {
+                    "close": float(vals["close"]),
+                    "chg":   float(vals.get("chg", 0)),
+                    "pct":   float(vals.get("pct", 0)),
+                }
+                print(f"  {name}: {vals['close']:,.2f} ({vals.get('pct', 0):+.2f}%) [index_snapshot {prev_day}]")
+        return result
+    except Exception as e:
+        print(f"  [index_snapshot] 로드 실패: {e}")
+        return {}
+
 def get_index(token):
-    result   = {}
     prev_day = prev_trading_day()
+
+    # 0순위: 전일 저녁 stock-automation 이 기록한 index_snapshot.json
+    snap = _load_index_snapshot(prev_day)
+    if len(snap) == 2:  # 코스피 + 코스닥 둘 다 있으면 바로 반환
+        return snap
+
+    result   = snap.copy()  # 일부만 있으면 나머지만 KIS/yf 로 보완
     yf_map   = {"코스피": "^KS11", "코스닥": "^KQ11"}
 
     # prev_day 기준 14일 전 (주말/공휴일 여유분 포함)
@@ -541,6 +572,8 @@ def get_index(token):
     date_from    = (prev_day_dt - timedelta(days=14)).strftime("%Y%m%d")
 
     for iscd, name in [("0001", "코스피"), ("1001", "코스닥")]:
+        if name in result:
+            continue  # 스냅샷에서 이미 채워진 항목 스킵
         try:
             data = kis_get(token,
                 "/uapi/domestic-stock/v1/quotations/inquire-index-daily-chartprice",
