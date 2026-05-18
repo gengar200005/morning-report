@@ -1101,7 +1101,7 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
             lines.append(f"    {c['현재가']:,}원 | MA50 {c['MA50']:,} / MA150 {c['MA150']:,} / MA200 {c['MA200']:,}")
             lines.append(f"    RS {c['RS']:.0f}% | 수급 {c['수급20일']}({c['수급누적']:+,}주) | 52주고점 {c['52주고점대비']:+.1f}%")
             lines.append(f"    PER {per_str} PBR {pbr_str} ROE {roe_str}")
-            lines.append(f"    손절 {c['손절가']:,}원(-7%) | 트레일링(고점-15%)")
+            lines.append(f"    손절 {c['손절가']:,}원(-{int(STRATEGY_STOP_LOSS*100)}%) | 트레일링(고점-{int(STRATEGY_TRAIL_STOP*100)}%)")
 
     if b_grade:
         lines.append(f"\n  ── B등급 ({len(b_grade)}개) — 조건부 대기 ──")
