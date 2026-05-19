@@ -1029,10 +1029,10 @@ def screen_stocks(token, mkt_ctx):
     save_screening_state(state)
     print(f"  screening state 저장: {STATE_PATH}")
 
-    return results
+    return results, sell_actions
 
 # ── 텍스트 포맷 ────────────────────────────────────
-def build_text(indices, trading, candidates, mkt_ctx, trend=None):
+def build_text(indices, trading, candidates, mkt_ctx, trend=None, sell_actions=None):
     lines = []
     lines.append(f"{'='*52}")
     lines.append(f"  국장 데이터 브리핑 — {TODAY_STR}")
@@ -1207,11 +1207,11 @@ if __name__ == "__main__":
     print(f"  외국인: {trading['외국인']:,} | 기관: {trading['기관']:,} | 개인: {trading['개인']:,}")
 
     print("📡 체크리스트 스크리닝 중...")
-    candidates = screen_stocks(token, mkt_ctx)
+    candidates, sell_actions = screen_stocks(token, mkt_ctx)
     print(f"  → A/B등급 종목 {len(candidates)}개")
 
     print("📝 텍스트 생성 중...")
-    text = build_text(indices, trading, candidates, mkt_ctx, trend)
+    text = build_text(indices, trading, candidates, mkt_ctx, trend, sell_actions)
     print(text)
 
     print("💾 저장 중...")
