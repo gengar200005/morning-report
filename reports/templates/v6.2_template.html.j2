@@ -1752,7 +1752,7 @@
       <div class="portfolio-action">
         <div class="label">Action</div>
         <div class="verdict">{{ h.action_label }}</div>
-        <div class="detail">매수가 +5% 기준 <strong>{{ h.add_threshold | format_number }}원</strong> {{ '미달' if h.change_pct < 5 else '도달' }} (현재 {{ h.change_pct | format_pct_signed(2) }}). 도달 시 거래량 확장 동반 여부 확인 후 1차 추매. <strong>{{ h.stop_price | format_number }}원</strong> 하회 시 전량 손절.</div>
+        <div class="detail">{% if h.ts_hit %}트레일선 <strong>{{ h.trail_price | format_number }}원</strong> 하회 (현재 {{ h.change_pct | format_pct_signed(2) }}). 동시호가 시장가 매도 예약 (08:30~09:00).{% elif h.stop_hit %}손절선 <strong>{{ h.stop_price | format_number }}원</strong> 하회 (현재 {{ h.change_pct | format_pct_signed(2) }}). 동시호가 시장가 매도 예약 (08:30~09:00).{% else %}매수가 +5% 기준 <strong>{{ h.add_threshold | format_number }}원</strong> {{ '미달' if h.change_pct < 5 else '도달' }} (현재 {{ h.change_pct | format_pct_signed(2) }}). 도달 시 거래량 확장 동반 여부 확인 후 1차 추매. <strong>{{ h.stop_price | format_number }}원</strong> 하회 시 전량 손절.{% endif %}</div>
       </div>
     </div>
     {% endfor %}
