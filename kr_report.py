@@ -110,14 +110,31 @@ def save_screening_state(state):
 
 
 def read_current_holdings(path="holdings_data.txt"):
-    """holdings_data.txt 에서 현재 보유 종목코드 set 파싱."""
+    """holdings_data.txt 에서 현재 보유 종목코드 set 및 매도 액션 목록 파싱."""
     import re
     try:
         with open(path, encoding="utf-8") as f:
             content = f.read()
-        return set(re.findall(r'\((\d{6})\)', content))
+        codes = set(re.findall(r'\((\d{6})\)', content))
+
+        # TS/손절 도달 종목 파싱 — 블록 단위로 읽어 종목명+코드+사유 추출
+        sell_actions = []
+        blocks = re.split(r'(?=▶ )', content)
+        for block in blocks:
+            name_match = re.search(r'▶ (.+?) \((\d{6})\)', block)
+            if not name_match:
+                continue
+            name, code = name_match.group(1), name_match.group(2)
+            ts   = re.search(r'🚨 TS 도달 — (.+)', block)
+            stop = re.search(r'🛑 손절 도달 — (.+)', block)
+            if ts:
+                sell_actions.append({"종목명": name, "종목코드": code, "사유": "TRAIL", "메시지": ts.group(1)})
+            elif stop:
+                sell_actions.append({"종목명": name, "종목코드": code, "사유": "STOP",  "메시지": stop.group(1)})
+
+        return codes, sell_actions
     except Exception:
-        return set()
+        return set(), []
 
 
 def apply_holdings_exit(state, held_tickers, today_str):
@@ -876,7 +893,7 @@ def screen_stocks(token, mkt_ctx):
     today_date = datetime.strptime(_get_ltd(), "%Y%m%d").date()
 
     # 현재 보유 종목 (holdings_data.txt — holdings_report.py 가 먼저 실행된 후 기록)
-    held_tickers = read_current_holdings()
+    held_tickers, sell_actions = read_current_holdings()
 
     # 보유 이탈 즉시 exit 기록 — 루프 전에 실행해야 당일 쿨다운이 리포트에 반영됨
     state = apply_holdings_exit(state, held_tickers, today_str)
@@ -1021,6 +1038,17 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None):
     lines.append(f"  국장 데이터 브리핑 — {TODAY_STR}")
     lines.append(f"  전일 마감 기준")
     lines.append(f"{'='*52}")
+
+    if sell_actions:
+        lines.append(f"\n{'!'*52}")
+        lines.append(f"  ⚡ 오늘 장 시작 전 액션 (09:00 전 처리)")
+        lines.append(f"{'!'*52}")
+        for a in sell_actions:
+            label = "트레일링스탑 도달" if a["사유"] == "TRAIL" else "손절선 도달"
+            lines.append(f"  🚨 {a['종목명']} ({a['종목코드']}) — {label}")
+            lines.append(f"     {a['메시지']}")
+            lines.append(f"     → 동시호가 시장가 매도 예약 (08:30~09:00)")
+        lines.append(f"{'!'*52}")
 
     lines.append(f"\n【 주요 지수 】")
     for name, d in indices.items():
