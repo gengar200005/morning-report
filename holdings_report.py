@@ -3,7 +3,7 @@ import base64
 import requests
 import time
 import yaml
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import pytz
 
 from kr_report import (
@@ -98,6 +98,7 @@ def fetch_holdings():
             "손절가":    get_num(p.get("손절가", {})),
             "트레일선":  get_num(p.get("트레일선", {})),
             "최고종가":  get_num(p.get("최고종가", {})),
+            "갱신시각":  get_date(p.get("갱신시각", {})),
         })
     return holdings
 
@@ -235,6 +236,35 @@ def analyze_holding(token, h, mkt_ctx):
     }
 
 
+# ── EOD 트래커 갱신 점검 ────────────────────────────
+def _last_business_day():
+    d = datetime.now(KST).date() - timedelta(days=1)
+    while d.weekday() >= 5:  # Sat=5, Sun=6
+        d -= timedelta(days=1)
+    return d
+
+
+def _stale_holdings(analyses):
+    """갱신시각이 마지막 영업일 이전인 항목 목록 반환."""
+    last_biz = _last_business_day()
+    stale = []
+    for h in analyses:
+        if "error" in h:
+            continue
+        ts = h.get("갱신시각")  # "YYYY-MM-DD" 또는 "YYYY-MM-DDTHH:MM:SS+09:00" 또는 None
+        if not ts:
+            stale.append((h["종목명"], h["종목코드"], "갱신 기록 없음"))
+            continue
+        try:
+            ts_date = date.fromisoformat(ts[:10])
+        except ValueError:
+            stale.append((h["종목명"], h["종목코드"], ts))
+            continue
+        if ts_date < last_biz:
+            stale.append((h["종목명"], h["종목코드"], ts[:10]))
+    return stale
+
+
 # ── 텍스트 포맷 ────────────────────────────────────
 def build_text(analyses, mkt_ctx):
     lines = []
@@ -246,6 +276,18 @@ def build_text(analyses, mkt_ctx):
         lines.append("\n  보유 종목 없음 (노션 '상태=In progress' 미발견)")
         lines.append("\n" + "=" * 52)
         return "\n".join(lines)
+
+    # ── EOD 트래커 stale 경고 ──
+    stale = _stale_holdings(analyses)
+    if stale:
+        lines.append("")
+        lines.append("⚠️ " * 10)
+        lines.append("  EOD 자동매도트래커 갱신 누락 의심")
+        lines.append(f"  트레일선/청산상태가 {_last_business_day()} 기준으로 stale일 수 있음")
+        for name, code, ts in stale:
+            lines.append(f"  ⚠️ {name} ({code}) 마지막 갱신: {ts}")
+        lines.append("  → stock-automation GitHub Actions 확인 필요")
+        lines.append("⚠️ " * 10)
 
     gate_ok = mkt_ctx.get("kospi_above_ma60", False) and mkt_ctx.get("vix_ok", False)
     vix = mkt_ctx.get("vix")
