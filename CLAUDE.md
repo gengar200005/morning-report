@@ -6,9 +6,9 @@
 
 ---
 
-## 현재 상태 (2026-04-28 #2)
+## 현재 상태 (2026-05-20)
 
-**Phase 4 실전 준비 — 페이퍼 트레이딩 인프라 첫 단계 진입 (Plan 005/006 + Notion DB) + `/analyze` v3 가이드 정식화 + 백테 가정 한계 발견**. 1주 운영 후 정식화 (CLAUDE.md 차감 / 운영 모델 / 자동 모듈 구현).
+**Phase 4 실전 운영 중 — 자동매도트래커로 매매 기록 통합 (페이퍼 트레이딩 저널 Notion DB 폐기) + `/analyze` v3 가이드 정식화 완료 + 백테 가정 한계 파악**.
 
 **운영**: 매일 06:25 KST `morning.yml` cron 단발 → 데이터 수집 (KIS API 200종목,
 ~30~40분) → HTML 렌더 → PDF 변환 → Drive 업로드 → Notion publish. **+
@@ -22,11 +22,6 @@ augmentation 흐름**: cron 끝 ~07:00 KST 마스터가 Claude Code 세션 → `
   ⚠️ +10%/+50% / 출처) sub-section + entry 외 6카드 환기 사항 분리 + 금지
   사항 4건 + 예시 섹션 (2026-04-28 reference). 다음 cron 06:25 부터 자동
   동일 quality.
-- **페이퍼 트레이딩 인프라 첫 단계** (PR #28 머지). Plan 005 (DB 스키마
-  24필드 spec) + Plan 006 (자동 모듈 spec) + Notion DB 자동 생성 (📊 모닝
-  리포트 → 페이퍼 트레이딩 저널 → Positions). **Data source ID
-  `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`** (Plan 006 영구 reference).
-  Views 3개 + dry-run row 1개.
 - **백테 +29.55% 가정 한계 정량화** (대화 분석, 코드 미변경). `strategy.py:320`
   `entry_price = o[i] × (1 + 0.15%)` — 시초가 무조건 100% 체결 가정.
   거래량 / 호가창 / 상한가 갭 / 인간 회피 전부 미반영. 슬리피지 -1~2%p →
@@ -61,55 +56,22 @@ strategy_config.yaml   ← 파라미터 단일 소스
 
 ### ⏭️ 다음 진입점
 
-#### 1️⃣ ★ 마스터 1주 운영 후 페이퍼 트레이딩 정식화 (~05-05)
-
-본 세션에서 인프라 첫 단계 (Plan 005/006 + Notion DB) 완료. 1주 운영 후
-ADR-014 + Plan 007/008 정식화. 운영 항목:
-- **예약 매수 운영** (08:30~09:00 동시호가 시장가) — 갭 회피 자동 차단
-  장치, 백테 가정 거의 그대로 실현 가능 가설 검증
-- **DB 입력 부담** (한 사이클 6필드: Entry date/price/note/psychology +
-  Exit note/psychology) — 5종목 동시 운영 부담 적정성
-- **측정**: Days delayed median ≤ 5일 / Entry psychology 평균 ≥ 3.5 /
-  CAGR ±3-5%p (6개월 누적 후)
-- **운영 모델 결정**: (a) 100% 페이퍼 6개월 디폴트 vs (b) 자본 10-15% 실전
-  + 페이퍼 5종목 절충 — 1-2개월 차에 결정.
-- **CLAUDE.md 차감 update**: 슬리피지 -1~2%p → -2~3%p 보정 + 예약 매수
-  회피 차단 -3~7%p 효과 반영. "실전 매매 규약" 에 동시호가 예약 매수 추가.
-
-#### 2️⃣ Plan 006 자동 모듈 마스터 결정 3가지
-
-`docs/plans/006-paper-trading-auto-module.md` spec 만 main, 미구현. 결정 후
-구현:
-- **트리거**: (a) `morning.yml` cron 끝 06:25 vs (b) 별도 cron 19:00 vs
-  (c) PC Task Scheduler — 추천 (b) 종가 정확 + market gate 정확
-- **구현 위치**: `backtest/strategy.py` 실시간 모드 추가 vs `paper_trading.py`
-  신규 모듈
-- **Notion API token 위치**: `.env` 로컬 vs GH Secrets vs Task Scheduler env
-
-#### 3️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-04)
+#### 1️⃣ Claude augmentation B 옵션 1주 자체 점검 (~05-04)
 
 직전 세션 (04-28 #1) 결정. "오늘 분석 도움됐나" 매일 1회 자체 점검 1주
 누적. NO 면 즉시 A (전면 폐기) 전환. 정식 평가 후 ADR-012 정식화 또는
 ADR-009 재확인.
 
-#### 4️⃣ ADR 후보 4건 (마스터 결정)
+#### 2️⃣ ADR 후보 2건 (마스터 결정)
 
 - ADR-012 augmentation B 분업 frame (1주 자체 점검 결과 반영)
 - ADR-013 라이브 universe ↔ 백테 스냅샷 분리
-- ADR-014 페이퍼 트레이딩 운영 모델 (a/b 결정, 1주 운영 후)
-- Plan 007 (선택) PDF 첫 페이지 페이퍼 포지션 / 누적 수익률 카드
-
-#### 5️⃣ dry-run row 처리
-
-[SK하이닉스 [DRY RUN]](https://www.notion.so/35014f343a5681f0ad86fe7c22185b37)
-1개 — 마스터 사용감 확인 후 삭제 또는 첫 정식 row 활성화. Entry note
-1자 깨짐 ("컨센→컴센") 같이 처리.
 
 ### 모니터링 대기
 - pykrx 인덱스 API 복구 → Weinstein Stage 25점 복원
 - `stocks_daily.parquet` 2026-04-30 월말 경계 outlier 재검증
 - **KIS API 200종목 호출 시간** (~30~40분) — pykrx 마이그레이션 (KRX_ID/PW
-  환경변수 셋업) 검토. 페이퍼 트레이딩 들어가기 전.
+  환경변수 셋업) 검토.
 
 ### 후보 작업 (후순위)
 - **v6.2 template Top 5 자동 READINESS 코멘트 부정확** ("ROE 22% 펀더멘털
@@ -128,6 +90,7 @@ ADR-009 재확인.
 - ❌ **streak≤10 필터** (ADR-006)
 - ❌ **UBATP 장중 알림** (ADR-007)
 - ❌ **Section 04 Entry Candidates UI** (ADR-008)
+- ❌ **페이퍼 트레이딩 저널 Notion DB** (Plan 005/006) — 자동매도트래커로 통합 (2026-05-20). data_source_id `d02501fe` 폐기.
 - ❌ **Claude augmentation** (ADR-009)
 - ❌ **박스권 조건부 게이트** (ADR-010 안에 흡수 — 검증 결과 + 메타 원칙)
 - ✅ **메타 원칙** (ADR-010): baseline 외 추가 필터는 사전 검증된 1차 출처 +
@@ -254,12 +217,10 @@ morning-report/
 ## 최근 세션
 - **2026-04-28 #2 (PC CLI worktree `claude/condescending-roentgen-c7ae37`)**:
   `/analyze` v3 가이드 정식화 (PR #27, `d881bf8` — entry 카드 v3 의무 4개
-  sub-section + 6카드 환기 분리 + 금지 4건 + 예시 섹션) + 페이퍼 트레이딩
-  인프라 첫 단계 (PR #28, `39727d5` — Plan 005/006 spec + Notion DB
-  자동 생성, data_source_id `d02501fe-58a4-4ba1-9bed-0478ebb3e3be`,
-  Views 3개 + dry-run row 1개) + 백테 가정 한계 정량화 (시초가 무조건 체결
-  가정, cost 0.15% + 인간 회피 -3~7%p 미반영) + 예약 매수 회피 차단 발견
-  (08:30~09:00 동시호가 시장가, 1주 운영 검증 대기).
+  sub-section + 6카드 환기 분리 + 금지 4건 + 예시 섹션) + 백테 가정 한계
+  정량화 (시초가 무조건 체결 가정, cost 0.15% + 인간 회피 -3~7%p 미반영)
+  + 예약 매수 회피 차단 발견 (08:30~09:00 동시호가 시장가). ※ Plan 005/006
+  Notion DB (PR #28)는 이후 자동매도트래커 통합으로 폐기.
 - **2026-04-28 #1 (web, branch `claude/track-kospi-200-stocks-s54c2`)**:
   KOSPI 200 라이브 universe 확장 (162 → 200, 백테 162 스냅샷 유지) +
   sector_overrides 234 (신규 70종목 11섹터 매핑) + Claude augmentation 분업
