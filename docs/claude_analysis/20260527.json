@@ -1,0 +1,23 @@
+{
+  "alert": "<p><strong>내일(5/28) BOK 금통위(신현송 신임총재 첫 회의) + US GDP 2차 추정, 5/29 US 4월 PCE 연이어 발표</strong>. KOSPI 8,047 사상 최고(20일 +22.3%) 직후 — 1Q PCE 4.5% 급등 후 4월 수치 방향이 연준 인상론 좌우. 페이퍼 보유분 trail 점검, 신규 진입 5/29 이후 재검토. <strong>+157% CAGR 재현 의심 구간, 페이퍼 우선</strong>.</p>",
+
+  "gate_flow": "<p>시장 게이트 <strong>✓ 통과</strong> (KOSPI 8,047 &gt; MA60 6,229, +29.2%). VIX 17.01 안정. 수급(5/26): 기관 <strong>+8,167억 대규모 순매수</strong> 주도 · 외국인 -1,321억 · 개인 -5,746억. 기관 매수 지속, 외국인 매도 강도 전주(-5.7조) 대비 현저 약화.</p>",
+
+  "sector": "<p>주도 4섹터: 반도체 100.0점(breadth 100%) · 건설 89.8 · 방산 87.9 · 전력인프라 75.2. 2차전지 63.6 강세 진입. 바이오 10.8점 최약세(breadth 14%). 미국 SOXX +6.1% 반도체 폭등(AMD +7.8%), 에너지 XLE -2.8% US-Iran 평화 기대 유가 급락 반영.</p>",
+
+  "entry": "<p>T10/CD60 진입 후보 — A등급 미보유·쿨다운 해제·check_signal RS Top 5 (균등 가중 09:00 시초가, <strong>페이퍼 우선</strong>). <strong>전 슬롯 사용 중(5/5) — 신규 진입 불가, 참조용</strong>. 펀더 평가는 <strong>산업군 비교</strong>, 리서치는 ~5월 컨센서스 기반.</p>\n<table>\n<tr><th>Rank</th><th>종목</th><th>코드</th><th>RS</th><th>52W</th><th>산업군 펀더</th><th>리서치 (컨센 / 핵심)</th></tr>\n<tr><td>I</td><td>후성</td><td>093370</td><td>85</td><td>-8.7%</td><td>불소화합물/소재 — PER 258·ROE 1.6%, LiPF6 흑자전환 초기 + 반도체 특수가스 AI 수요 성장</td><td>유진 20K BUY (5/18 상향) · 커버 1사 · 현 12.9K = 컨센 대폭 하회</td></tr>\n<tr><td>II</td><td>LIG디펜스앤에어로스페이스</td><td>079550</td><td>78</td><td>-10.5%</td><td>방산/미사일 — PER 78.7·ROE 17.7% 우량, 천궁-II UAE 실전 96% 요격 검증 후 수주 확대</td><td>DB 120만 · SK·메리츠 115만 · KB 110만 · 키움 105만 · 유진 104만 · 평균 ~112만 · 현 913K = 컨센 -18% 하회</td></tr>\n<tr><td>III</td><td>한올바이오파마</td><td>009420</td><td>77</td><td>-8.2%</td><td>바이오/제약 — ROE -3.4% R&D 단계 적자(업종 정상), FcRn 저해제 파이프라인 가치</td><td>유진 100K · 현대차 83K · IBK 64K · 평균 63.7K · 현 59.1K = 컨센 하회 · IMVT-1402 2H26 임상</td></tr>\n<tr><td>IV</td><td>DN오토모티브</td><td>007340</td><td>76</td><td>-8.6%</td><td>자동차부품/지주 — PER 8.6·PBR 1.21·ROE 14.0% 저평가 가치주, Heller 인수 + 중복상장 금지 수혜</td><td>키움 50K (커버 1사) · 현 46.8K = 컨센 하회 · 커버리지 부족</td></tr>\n<tr><td>V</td><td>롯데쇼핑</td><td>023530</td><td>74</td><td>-9.8%</td><td>유통/백화점 — PBR 0.30 자산 대비 극저, ROE 0.3% 턴어라운드 초기(1Q26 OP 컨센 +22%)</td><td>삼성 185K · NH 190K · 키움 136K · 평균 143K(12사) · 현 158.5K = <strong>평균 +10.8% ⚠️</strong></td></tr>\n</table>\n<p><strong>정합도 1위 = II LIG디펜스앤에어로스페이스</strong> (방산 ROE 17.7% 우량 ✓ + 6개사 104만~120만 광범위 상향 ✓ + 현재가 913K 컨센 -18% 미추월 ✓). <strong>⚠️ 컨센 추월 경계</strong> — V 롯데쇼핑 (+10.8%) 이미 가격 반영, 페이퍼 우선 + 사이즈 보수. I 후성·IV DN오토모티브 커버리지 1사 — 컨센 부족, 추월 판정 보류.</p>\n<p><em>리서치 출처 (~5월): 유진·DB금융·SK·KB·키움·메리츠·현대차·IBK·삼성·NH투자 컨센서스.</em></p>",
+
+  "agrade": "<p>A등급 <strong>23개</strong> (전체 199, B:46 C:6 D:124). 미보유 18개 중 쿨다운 12개 → 실질 진입 가능 6개. <strong>전 슬롯 사용 중(5/5) 신규 진입 불가</strong>. 5/22 14개 → 5/27 23개 급증(+64%) — 20일 +22.3% 급등 후 A등급 대폭 확대는 강세장 재현 신호이나 <strong>+157% CAGR 재현 의심 + 페이퍼 병행 권장</strong>.</p>",
+
+  "portfolio": "<p>5종목 전 보유 (빈 슬롯 0). <strong>SK +24.0% 52주 신고가</strong> · 삼성SDI +8.5%·삼성생명 +5.3% 추매 조건 일부 충족 · 삼성물산 +3.0%·신세계 +2.1% 추매 금지(매수가+5% 미달). 내일 BOK 금통위 + 5/29 PCE 통과 전 <strong>추매 자제</strong>.</p>",
+
+  "macro": "<p>US-Iran 평화 협상 낙관으로 <strong>WTI -3.1%($93.59)·브렌트 -6.7%($96.62) 급락</strong> — 호르무즈 해협 재개방 기대, 주간 -10% 이상 하락 (Reuters, Fortune 5/26). SOXX +6.1% 반도체 폭등(AMD +7.8%) 주도로 S&P +0.6%, 나스닥 +1.2%. KOSPI 8,047 사상 최고 — 7일 만에 7,000→8,000 돌파, 삼성전자·SK하이닉스 YTD 각각 +149%·+215% (Bloomberg 5/15, Seoul Economic Daily 5/26).</p>\n<p><strong>다음 분기점</strong>: (1) 내일(5/28) <strong>BOK 금통위</strong> — 신현송 신임총재 첫 회의, 기준금리 2.5%, 원/달러 1,507원 환율 부담 vs 유가 하락 인플레 완화 교차. (2) 5/28 US GDP 2차 추정(advance +2.0%) + 5/29 <strong>US 4월 PCE</strong>(1Q 4.5% 급등 후 4월 방향 핵심) — FOMC 의사록(5/20 공개) 4명 소수의견(1992년 이후 최다), 인하·동결·인상 3파전(Federal Reserve 공식). PCE 상회 시 6/16-17 Warsh 의장 첫 FOMC 인상 시그널 가능. (3) 6/1 ISM 제조업, 6/5 NFP.</p>\n<p><strong>한국 함의</strong>: Goldman — MSCI Korea 내 삼성전자·SK하이닉스 비중 분산투자 규제 캡 초과, 글로벌 Korea 전용 펀드 기계적 매도 필요 경고 (Seoul Economic Daily 5/26). 유가 하락 무역수지 개선 요인이나 WTI $90+ 에너지 인플레 잔존. 환율 1,507원 — 달러 약세(DXY 99.15)에도 원화 강세 제한적.</p>\n<p><em>출처 (~5/26): Reuters · Bloomberg (5/15) · CNBC · Seoul Economic Daily (5/26) · Fortune (5/26) · IEA Oil Market Report (5월) · Federal Reserve FOMC Minutes (4/29 회의, 5/20 공개) · 한국은행 공식 일정.</em></p>",
+
+  "macro_events": [
+    {"event": "BOK 금통위", "date": "2026-05-28", "impact": "high"},
+    {"event": "US GDP 2차 추정", "date": "2026-05-28", "impact": "medium"},
+    {"event": "US PCE (4월)", "date": "2026-05-29", "impact": "high"},
+    {"event": "ISM 제조업", "date": "2026-06-01", "impact": "medium"},
+    {"event": "NFP", "date": "2026-06-05", "impact": "high"}
+  ]
+}
