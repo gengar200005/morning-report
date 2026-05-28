@@ -154,21 +154,10 @@ def update_screening_state(state, high_grade_today, today_str):
     """오늘 A/B 등급 상태 기반으로 state 갱신. 처리 루프 후에 호출.
 
     Rules:
-    - (A/B→out) 이전에 A/B였으나 오늘 빠진 종목: last_exit_date = today
     - (A/B 유지) 오늘 A/B 종목: last_high_grade_date = today
     - held_tickers 청산 감지는 apply_holdings_exit 에서 루프 전에 처리.
+    - A/B 이탈 자체로는 last_exit_date 기록 안 함 — 실제 청산(apply_holdings_exit)만 쿨다운 발동.
     """
-    for tk, info in list(state.items()):
-        if tk.startswith("_"):
-            continue
-        if tk in high_grade_today:
-            continue
-        last_hg = info.get("last_high_grade_date")
-        last_ex = info.get("last_exit_date")
-        # 마지막 A/B 이후 exit 기록이 없으면 오늘을 exit으로 기록
-        if last_hg and (not last_ex or last_hg > last_ex):
-            state[tk]["last_exit_date"] = today_str
-
     for tk in high_grade_today:
         state.setdefault(tk, {})
         state[tk]["last_high_grade_date"] = today_str
