@@ -1,16 +1,16 @@
 {
-  "date": "20260529",
+  "date": "20260602",
   "indices": {
     "코스피": {
-      "close": 8476.15,
-      "chg": 290.86,
-      "pct": 3.55,
+      "close": NaN,
+      "chg": NaN,
+      "pct": NaN,
       "source": "KIS"
     },
     "코스닥": {
-      "close": 1074.8,
-      "chg": -29.56,
-      "pct": -2.68,
+      "close": NaN,
+      "chg": NaN,
+      "pct": NaN,
       "source": "KIS"
     }
   }
