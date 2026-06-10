@@ -1,0 +1,30 @@
+# 일회성 진단용 — GH Actions 러너에서 KIS OpenAPI (9443) 연결 가능 여부 확인.
+# 2026-06-09/10 morning.yml 연속 실패 (ConnectTimeout) 원인 분리:
+# KIS 서버 다운 vs 러너(해외 클라우드 IP) 차단. 진단 후 삭제 예정.
+name: KIS connectivity test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 연결 테스트
+        run: |
+          echo "== control: google.com (443) =="
+          curl -sS -o /dev/null -w "%{http_code} connect=%{time_connect}s\n" --connect-timeout 10 https://www.google.com || echo "FAILED"
+
+          echo "== KIS apiportal (443) =="
+          curl -sS -o /dev/null -w "%{http_code} connect=%{time_connect}s\n" --connect-timeout 15 https://apiportal.koreainvestment.com || echo "FAILED"
+
+          echo "== KIS openapi tokenP (9443) x3 =="
+          for i in 1 2 3; do
+            curl -sS -o /dev/null \
+              -w "attempt $i: %{http_code} connect=%{time_connect}s total=%{time_total}s\n" \
+              --connect-timeout 15 \
+              -X POST https://openapi.koreainvestment.com:9443/oauth2/tokenP \
+              -H 'Content-Type: application/json' -d '{}' \
+              || echo "attempt $i: CONNECT FAILED"
+            sleep 2
+          done
