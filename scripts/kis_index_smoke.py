@@ -8,7 +8,11 @@ publish 부작용 없음 — 데이터 조회/출력만. GH Actions workflow_dis
   3. get_market_context() 게이트가 LTD 종가 기준으로 판정되는가
      (kospi_data_date == LTD, stale=False)
 """
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root
 
 import kr_report as kr
 
