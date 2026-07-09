@@ -153,9 +153,43 @@ morning-report/
 - 단독 종목 집중 ❌ (백테는 5종목 포트폴리오 통계 기반 알파)
 
 ### 데이터 인프라
-- **한국 지수**: yfinance `^KS11`, `^KQ11` (pykrx index API 깨짐)
+- **한국 지수 LTD 종가**: `get_index()` 체인 (index_snapshot → KIS
+  `inquire-daily-indexchartprice` → yfinance 백업) — 07-09 수정으로 KIS 복구.
+- **⚠ yfinance `^KS11`/`^KQ11` 는 06:00 KST 에 상시 1거래일 지연** (6~7월
+  로그 전수 재현). MA 계산용 시계열 전용, LTD 종가로 신뢰 금지 —
+  `_index_closes_with_fresh()` 가 fresh 종가 append 로 보정. **"yfinance 가
+  한국 지수 소스" 라고 단독 신뢰하는 코드/판단 금지.**
 - **미국 시장**: NY 마감 확정가만 사용 / **KIS API**: rate limit 주의
 - **pykrx**: 백테 수집. 거래정지일 OHLV=0, 라운딩 편차 1~6원 (validation 처리)
+
+### 진단 프로토콜 (증상 보고 시 의무)
+07-09 게이트 stale 사고까지 "날짜 밀림" 증상에 4개 세션 연속 오진한 패턴
+차단용. 마스터가 데이터 이상 (날짜 밀림 / 값 불일치 / 게이트 오판 등) 을
+보고하면:
+1. **코드 추측·패치 금지, 로그 대조 선행** — GH Actions 해당 run 로그에서
+   실제 값 + 소스 라벨 (`[index_snapshot]` / `[KIS]` / `[yfinance 백업 날짜]`)
+   을 뽑아 리포트 값과 대조. 코드는 올바르게 "읽히는" 상태에서 런타임만
+   거짓말하는 버그 클래스 (silent fallback / stale 소스) 가 이 시스템의
+   주력 장애 모드.
+2. **같은 증상의 원인 경로 전부 열거 후 종료** — 하나 고치고 "해결" 선언
+   금지. "날짜 밀림" 하나에 원인 4개 (bash date UTC / Drive 파일 선택 /
+   snapshot+KIS 404 / yfinance 지연) 가 겹쳐 있었음.
+3. **간헐 증상에서 "다음날 정상" 은 검증이 아님** — 재현 조건을 특정하고
+   그 조건에서 확인하거나, 스모크 테스트 (`kis_index_smoke.yml`) 로 검증.
+4. **수정 실패 시 아래 헛다리 원장에 기록** — 다음 세션이 같은 가설을
+   반복하지 않도록.
+
+### 헛다리 원장 (증상별 "이거 아니었음" 누적)
+- **증상 "리포트 날짜/데이터 하루 밀림"** (2026-04~07 반복 보고):
+  - ~~bash date UTC/KST 어긋남~~ → v3.8 에서 수정 (진짜 버그였으나 **분석
+    레이어 한정**, 수집 레이어 밀림과 무관)
+  - ~~Drive 옛 파일 선택~~ → v3.8 에서 수정 (동일 — 분석 레이어 한정)
+  - **진짜 근본 원인 (07-09 확정)**: ① KIS 지수 엔드포인트 경로 오타로
+    상시 404 (`inquire-index-daily-chartprice` ❌ → `inquire-daily-indexchartprice`
+    ✅) ② yfinance 06:00 KST 상시 1거래일 지연 ③ 게이트 (`get_market_context`)
+    가 fallback 체인 밖에서 yfinance 단독 사용. 셋 다 07-09 수정 (`8fb771e`).
+  - 교훈: SESSION_LOG 의 "fix 완료" 기록은 **그 레이어의 그 원인** 에만
+    유효. 증상 재발 = 이전 진단 전체를 백지에서 재검토.
 
 ### Windows/한글
 - Console cp949 기본 → `PYTHONIOENCODING=utf-8` / 파일 경로 공백 시 따옴표
