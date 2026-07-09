@@ -297,6 +297,8 @@ def build_text(analyses, mkt_ctx):
         f"  VIX {vix_str} ({'✓' if mkt_ctx.get('vix_ok') else '✗'} 35이하) / "
         f"코스피 60MA {'✓ 위' if mkt_ctx.get('kospi_above_ma60') else '✗ 아래'}"
     )
+    if mkt_ctx.get("kospi_stale"):
+        lines.append("  ⚠ 코스피 LTD 종가 미확보 — 게이트 미통과로 보수 처리")
 
     lines.append(f"\n【 보유 종목 ({len(analyses)}개) 】")
     for h in analyses:
@@ -393,7 +395,7 @@ if __name__ == "__main__":
     print("✅ 토큰 발급 완료")
 
     print("\n📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
-    mkt_ctx = get_market_context()
+    mkt_ctx = get_market_context(token)
 
     print("\n📡 각 보유 종목 Minervini 분석 중...")
     analyses = []
