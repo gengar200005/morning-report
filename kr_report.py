@@ -472,16 +472,49 @@ def check_60d_high(closes):
     current  = closes[-1]
     return current >= high_60d * 0.98, int(high_60d)
 
+# ── yfinance 지수 시계열 + LTD 종가 보정 ─────────────
+def _index_closes_with_fresh(ticker, kname, indices, period="200d"):
+    """yfinance 일봉 종가 리스트를 LTD 기준으로 보정해 반환.
+
+    yfinance 는 06:00 KST 시점에 KRX 전일(LTD) 일봉이 아직 없는 경우가
+    상시라서 (2026-06~07 GH Actions 로그 전수 재현), 마지막 봉 날짜가
+    LTD 미달이면 get_index() 결과(snapshot → KIS → yfinance)의 LTD 종가를
+    시리즈 끝에 append 한다. 어느 소스에서도 LTD 종가를 못 구하면
+    stale=True 로 알린다 (silent fallback 금지).
+
+    returns (vals: list[float], data_date: "YYYYMMDD", stale: bool)
+    """
+    ltd = _get_ltd()
+    ltd_date = datetime.strptime(ltd, "%Y%m%d").date()
+    hist = yf.Ticker(ticker).history(period=period)
+    closes = hist["Close"].dropna()
+    vals = [float(v) for v in closes.values]
+    last_date = closes.index[-1].date() if len(closes) else None
+
+    if last_date == ltd_date:
+        return vals, ltd, False
+
+    fresh = (indices or {}).get(kname) or {}
+    if fresh.get("close") and fresh.get("date") == ltd:
+        vals.append(float(fresh["close"]))
+        return vals, ltd, False
+
+    data_date = last_date.strftime("%Y%m%d") if last_date else "N/A"
+    return vals, data_date, True
+
+
 # ── 지수 추세 분석 (1순위/2순위) ─────────────────────
-def get_index_trend():
+def get_index_trend(indices=None):
     """KOSPI/KOSDAQ 5일·20일 수익률 + 52주 고저점 대비 위치 + 20일 신고가 여부"""
     result = {}
     for ticker, name in [("^KS11", "코스피"), ("^KQ11", "코스닥")]:
         try:
-            hist   = yf.Ticker(ticker).history(period="400d")
-            closes = hist["Close"].dropna().values
+            vals, data_date, stale = _index_closes_with_fresh(ticker, name, indices, period="400d")
+            closes = np.asarray(vals, dtype=float)
             if len(closes) < 21:
                 continue
+            if stale:
+                print(f"  ⚠ {name} 추세: LTD 종가 미확보 — {data_date} 종가 기준 산출")
             cur = float(closes[-1])
 
             ret5d  = (cur / float(closes[-6])  - 1) * 100 if len(closes) > 5  else None
@@ -512,7 +545,14 @@ def get_index_trend():
     return result
 
 
-def get_market_context():
+def get_market_context(token=None, indices=None):
+    """VIX + 코스피/코스닥 MA 컨텍스트 (시장 게이트 입력).
+
+    코스피/코스닥 종가는 _index_closes_with_fresh() 로 LTD 보정 —
+    yfinance 단독 사용 시 06:00 KST 에 상시 1거래일 지연되어 게이트가
+    D-2 종가로 판정되는 문제 (2026-07-09 게이트 오판 사고) 차단.
+    LTD 종가를 어느 소스에서도 못 구하면 게이트 미통과로 보수 처리.
+    """
     ctx = {
         "vix": None, "vix_ok": False,
         "kospi_ma60": None, "kospi_above_ma60": False,
@@ -526,24 +566,35 @@ def get_market_context():
     except Exception as e:
         print(f"  VIX 오류: {e}")
 
-    for ticker, prefix in [("^KS11", "kospi"), ("^KQ11", "kosdaq")]:
+    if indices is None:
+        indices = get_index(token)
+
+    for ticker, prefix, kname in [("^KS11", "kospi", "코스피"), ("^KQ11", "kosdaq", "코스닥")]:
         try:
-            hist   = yf.Ticker(ticker).history(period="200d")
-            closes = hist["Close"].dropna()
-            if len(closes) >= 2:
-                cur = round(float(closes.iloc[-1]), 2)
-                ctx[f"{prefix}_cur"] = cur
+            vals, data_date, stale = _index_closes_with_fresh(ticker, kname, indices, period="200d")
+            if len(vals) >= 2:
+                cur = round(float(vals[-1]), 2)
+                ctx[f"{prefix}_cur"]       = cur
+                ctx[f"{prefix}_data_date"] = data_date
+                ctx[f"{prefix}_stale"]     = stale
                 for n in [20, 60, 120]:
-                    if len(closes) >= n:
-                        ma = round(float(closes.tail(n).mean()), 2)
+                    if len(vals) >= n:
+                        ma = round(float(np.mean(vals[-n:])), 2)
                         ctx[f"{prefix}_ma{n}"]       = ma
                         ctx[f"{prefix}_above_ma{n}"] = cur > ma
                 if prefix == "kospi" and "kospi_ma60" in ctx:
                     ctx["kospi_above_ma60"] = cur > ctx["kospi_ma60"]
                 ma_info = " / ".join([f"MA{n}={'✓' if ctx.get(f'{prefix}_above_ma{n}') else '✗'}" for n in [20,60,120] if f"{prefix}_ma{n}" in ctx])
-                print(f"  {ticker}: {cur:,.2f}  {ma_info}")
+                stale_tag = f"  ⚠ {data_date} 종가 (LTD {_get_ltd()} 미확보)" if stale else ""
+                print(f"  {ticker}: {cur:,.2f}  {ma_info}{stale_tag}")
         except Exception as e:
             print(f"  {ticker} MA 오류: {e}")
+
+    # LTD 종가 미확보 → 게이트 강제 미통과 (stale 데이터로 진입 판단 금지)
+    if ctx.get("kospi_stale"):
+        if ctx.get("kospi_above_ma60"):
+            print("  ⚠ 코스피 LTD 종가 미확보 — 시장 게이트 미통과로 보수 처리")
+        ctx["kospi_above_ma60"] = False
 
     return ctx
 
@@ -566,6 +617,8 @@ def _load_index_snapshot(prev_day: str) -> dict:
                     "close": float(vals["close"]),
                     "chg":   float(vals.get("chg", 0)),
                     "pct":   float(vals.get("pct", 0)),
+                    "date":  prev_day,
+                    "source": "snapshot",
                 }
                 print(f"  {name}: {vals['close']:,.2f} ({vals.get('pct', 0):+.2f}%) [index_snapshot {prev_day}]")
         return result
@@ -593,7 +646,7 @@ def get_index(token):
             continue  # 스냅샷에서 이미 채워진 항목 스킵
         try:
             data = kis_get(token,
-                "/uapi/domestic-stock/v1/quotations/inquire-index-daily-chartprice",
+                "/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice",
                 "FHKUP03500100",
                 {
                     "FID_COND_MRKT_DIV_CODE": "U",
@@ -639,7 +692,10 @@ def get_index(token):
             else:
                 chg = pct = 0
 
-            result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
+            result[name] = {
+                "close": round(close, 2), "chg": chg, "pct": pct,
+                "date": row.get("stck_bsop_date") or prev_day, "source": "KIS",
+            }
             print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [KIS {row.get('stck_bsop_date')}]")
 
         except Exception as e:
@@ -668,11 +724,14 @@ def get_index(token):
                 else:
                     raise ValueError(f"{prev_day_date} 이전 데이터 없음")
 
-                result[name] = {"close": round(close, 2), "chg": chg, "pct": pct}
+                result[name] = {
+                    "close": round(close, 2), "chg": chg, "pct": pct,
+                    "date": actual_date.strftime("%Y%m%d"), "source": "yfinance백업",
+                }
                 print(f"  {name}: {close:,.2f} ({pct:+.2f}%) [yfinance 백업 {actual_date}]")
             except Exception as e2:
                 print(f"  {name} yfinance도 실패: {e2}")
-                result[name] = {"close": None, "chg": None, "pct": None}
+                result[name] = {"close": None, "chg": None, "pct": None, "date": None, "source": None}
     return result
 
 def get_trading(token):
@@ -1051,13 +1110,17 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None, sell_actions=N
         lines.append(f"{'!'*52}")
 
     lines.append(f"\n【 주요 지수 】")
+    ltd = _get_ltd()
     for name, d in indices.items():
         if d["close"]:
             pct_val = d["pct"] + 0.0  # -0.0 → 0.0 (avoids "+-0.00%" output)
             sign = "▲" if pct_val >= 0 else "▼"
             prefix = "+" if pct_val >= 0 else "-"
             pct = f"{prefix}{abs(pct_val):.2f}%"
-            lines.append(f"  {name:<8} {d['close']:>10,.2f}  {sign} {pct}")
+            stale_tag = ""
+            if d.get("date") and d["date"] != ltd:
+                stale_tag = f"  ⚠ {d['date'][:4]}.{d['date'][4:6]}.{d['date'][6:]} 종가 — LTD({ltd[:4]}.{ltd[4:6]}.{ltd[6:]}) 미확보"
+            lines.append(f"  {name:<8} {d['close']:>10,.2f}  {sign} {pct}{stale_tag}")
 
     prev_day = prev_trading_day()
     prev_fmt = f"{prev_day[:4]}.{prev_day[4:6]}.{prev_day[6:]}"
@@ -1089,6 +1152,15 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None, sell_actions=N
             above = mkt_ctx.get(f"kosdaq_above_ma{n}", False)
             lines.append(f"  코스닥 MA{n:<3} {val:>10}  {'✓ 위' if above else '✗ 아래'}")
 
+    # 게이트 산정에 쓰인 종가 기준일 명시 (silent fallback 금지)
+    kd = mkt_ctx.get("kospi_data_date")
+    if kd and kd != "N/A":
+        kd_fmt = f"{kd[:4]}.{kd[4:6]}.{kd[6:]}"
+        if mkt_ctx.get("kospi_stale"):
+            lines.append(f"  ⚠ 게이트 산정 코스피 종가 {kd_fmt} 기준 — LTD 종가 미확보, 게이트 미통과 처리")
+        else:
+            lines.append(f"  게이트 산정 기준일 {kd_fmt} ✓ LTD 일치")
+
     if trend:
         lines.append(f"\n【 지수 추세 분석 】")
         for name, t in trend.items():
@@ -1110,7 +1182,11 @@ def build_text(indices, trading, candidates, mkt_ctx, trend=None, sell_actions=N
     lines.append(f"  백테(2015~2026, 162종목) CAGR +29.29%, MDD -29.8%, PF 2.22 (실전 기댓값 +15-20%)")
     all_a = len([c for c in candidates if c["등급"] == "A"])
     all_b = len([c for c in candidates if c["등급"] == "B"])
-    lines.append(f"  전체 {len(candidates)}종목 — A:{all_a} B:{all_b} C:{len(c_grade)} D:{len(d_grade)}")
+    all_c = len([c for c in candidates if c["등급"] == "C"])
+    all_d = len([c for c in candidates if c["등급"] == "D"])
+    skipped = len(UNIVERSE) - len(candidates)
+    skip_note = f" (수집불가 {skipped} 제외)" if skipped > 0 else ""
+    lines.append(f"  전체 {len(candidates)}종목 — A:{all_a} B:{all_b} C:{all_c} D:{all_d}{skip_note}")
 
     a_grade = [c for c in ab_grade if c["등급"] == "A"]
     b_grade = [c for c in ab_grade if c["등급"] == "B"]
@@ -1193,14 +1269,14 @@ if __name__ == "__main__":
     token = get_token()
     print("✅ 토큰 발급 완료")
 
-    print("📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
-    mkt_ctx = get_market_context()
-
-    print("📡 지수 추세 분석 중 (5일·20일 수익률 / 52주 고저)...")
-    trend = get_index_trend()
-
     print("📡 코스피·코스닥 지수 수집 중...")
     indices = get_index(token)
+
+    print("📡 시장 컨텍스트 수집 중 (VIX / 코스피 MA60)...")
+    mkt_ctx = get_market_context(token, indices)
+
+    print("📡 지수 추세 분석 중 (5일·20일 수익률 / 52주 고저)...")
+    trend = get_index_trend(indices)
 
     print("📡 수급 데이터 수집 중...")
     trading = get_trading(token)
