@@ -1,9 +1,15 @@
 name: KIS 지수 스모크 테스트
 
-# 수동 전용 진단 워크플로 — publish 부작용 없음 (조회/출력만).
+# 수동/자기파일-push 진단 워크플로 — publish 부작용 없음 (조회/출력만).
 # 게이트 stale 수정 (8fb771e) 의 KIS 지수 경로를 secrets 로 검증.
+# push 트리거는 스모크 파일 2개 한정 (MCP 앱이 workflow_dispatch 403 이라 우회).
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/kis_index_smoke.py
+      - .github/workflows/kis_index_smoke.yml
 
 jobs:
   smoke:
