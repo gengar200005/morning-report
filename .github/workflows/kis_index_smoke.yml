@@ -1,0 +1,29 @@
+name: KIS 지수 스모크 테스트
+
+# 수동 전용 진단 워크플로 — publish 부작용 없음 (조회/출력만).
+# 게이트 stale 수정 (8fb771e) 의 KIS 지수 경로를 secrets 로 검증.
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 세팅
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: KIS 지수 엔드포인트 + 게이트 소스 검증
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          MORNINGREPOT: ${{ secrets.GITHUB_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: python scripts/kis_index_smoke.py
