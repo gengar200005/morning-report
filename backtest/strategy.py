@@ -476,6 +476,12 @@ def _main():
 
     print("\n백테 실행 중...")
     eq, tr = run_backtest(all_dates, stock_arr, kospi_arr, cfg)
+
+    results_dir = BASE_DIR / "results"
+    results_dir.mkdir(exist_ok=True)
+    tr.to_csv(results_dir / "trades.csv", index=False, encoding="utf-8-sig")
+    print(f"[저장] 트레이드 로그 → {results_dir / 'trades.csv'} ({len(tr)}건)")
+
     m = calc_metrics(eq, tr)
     print(f"\n{'='*52}")
     print(f"  {cfg['name']} — 전체 11.3년")
