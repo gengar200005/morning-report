@@ -23,3 +23,6 @@ notebooks/.ipynb_checkpoints/
 
 # 실험 결과 산출물 — 재생성 가능 (parquet 만 차단, summary CSV/JSON 은 추적)
 backtest/experiments/results/*.parquet
+
+# 워크포워드 리포트 입력 트레이드 로그 — 재생성 가능 (python backtest/strategy.py)
+backtest/results/trades.csv
