@@ -1,0 +1,111 @@
+name: V1 KIS full history collection
+
+on:
+  push:
+    branches:
+      - validation/v1-kis-sample-20261104
+    paths:
+      - .github/workflows/v1_kis_history.yml
+      - validation/trend_audit/kis_history/**
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v1-kis-history-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: github.repository == 'gengar200005/morning-report' && github.ref == 'refs/heads/validation/v1-kis-sample-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install quote client dependency
+        run: python -m pip install 'requests>=2.31,<3'
+
+      - name: Test history collection and resume behavior
+        run: python -B -m unittest discover -s validation/trend_audit/kis_history -v
+
+      - name: Prepare fixed input and optional recovery
+        id: prepare
+        env:
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path('validation/trend_audit/kis_history')
+          plan = root / 'plan.json'
+          assert hashlib.sha256(plan.read_bytes()).hexdigest() == '38e4f19d5e5db6336a2aa499a05d283ef75ce1df49ba19c40a9a56b8f506f64c', 'Frozen plan changed'
+          options = json.loads((root / 'run_options.json').read_text())
+          resume = options['resume_run_id']
+          retry = options['retry_failed']
+          assert resume is None or (type(resume) is int and resume > 0)
+          assert type(retry) is bool and (not retry or resume is not None)
+          Path(os.environ['RESULT_DIR']).mkdir(parents=True, exist_ok=False)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              print('resume_run_id=' + (str(resume) if resume is not None else ''), file=f)
+              print('retry_failed=' + str(retry).lower(), file=f)
+          PY
+
+      - name: Restore earlier checkpoints when explicitly selected
+        if: steps.prepare.outputs.resume_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.prepare.outputs.resume_run_id }}
+          pattern: v1-kis-history-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Record current execution
+        env:
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+          RESUME_RUN_ID: ${{ steps.prepare.outputs.resume_run_id }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          out = Path(os.environ['RESULT_DIR'])
+          (out / 'workflow_run.json').write_text(json.dumps({
+              'run_url': os.environ['RUN_URL'], 'commit_sha': os.environ['COMMIT_SHA'],
+              'resume_run_id': os.environ['RESUME_RUN_ID'] or None,
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Collect the frozen 162-stock history
+        timeout-minutes: 90
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}
+          RETRY_FAILED: ${{ steps.prepare.outputs.retry_failed }}
+        run: |
+          args=()
+          if [ "$RETRY_FAILED" = true ]; then args+=(--retry-failed); fi
+          python -B validation/trend_audit/kis_history/collect_history.py \
+            --plan validation/trend_audit/kis_history/plan.json \
+            --out "$RESULT_DIR" --workers 4 --rate 5 "${args[@]}"
+
+      - name: Preserve completed and partial collection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1-kis-history-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6
