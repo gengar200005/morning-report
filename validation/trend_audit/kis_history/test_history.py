@@ -150,7 +150,10 @@ class HistoryTests(unittest.TestCase):
             second, calls = self.run_collection(directory, p, respond)
             self.assertEqual(calls, {"factory": 0, "auth": 0, "quote": 0})
             self.assertEqual(second["normalized_rows"], 6)
-            self.assertTrue(second["data_ready"])
+            self.assertTrue(second["price_grid_complete"])
+            self.assertTrue(second["positive_grid_complete"])
+            self.assertFalse(second["data_ready"])
+            self.assertFalse(second["backtest_ready"])
 
     def test_changed_plan_cannot_reuse_existing_run(self):
         def respond(sample):
