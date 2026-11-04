@@ -1,0 +1,68 @@
+name: V1 KIS sample validation
+
+on:
+  push:
+    branches:
+      - validation/v1-kis-sample-20261104
+    paths:
+      - .github/workflows/v1_kis_sample.yml
+      - validation/trend_audit/kis_v1/**
+
+permissions:
+  contents: read
+
+jobs:
+  sample:
+    if: github.repository == 'gengar200005/morning-report' && github.ref == 'refs/heads/validation/v1-kis-sample-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out isolated validation branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install collector dependency
+        run: python -m pip install 'requests>=2.31,<3'
+
+      - name: Run offline collector tests
+        run: python -B -m unittest discover -s validation/trend_audit/kis_v1 -v
+
+      - name: Create fresh result directory and record run identity
+        env:
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-sample-${{ github.run_id }}-${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          out = Path(os.environ['RESULT_DIR'])
+          out.mkdir(parents=True, exist_ok=False)
+          (out / 'workflow_run.json').write_text(
+              json.dumps({'run_url': os.environ['RUN_URL'], 'commit_sha': os.environ['COMMIT_SHA']}, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Collect three KIS historical samples
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-sample-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python -B validation/trend_audit/kis_v1/collect.py --out "$RESULT_DIR"
+
+      - name: Upload sample results, including incomplete collection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-kis-sample-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1-kis-sample-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: warn
+          retention-days: 7

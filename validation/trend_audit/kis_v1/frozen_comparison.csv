@@ -1,0 +1,8 @@
+ticker,trade_date,field,frozen_provider_krw,exchange_raw_krw,difference_krw,reference_price_verified,limits_verified,ticks_verified,status,note
+000370,2016-03-02,close,7811,,,no,no,no,미확보,전일 종가 후보가 10원 호가 격자와 불일치
+000370,2016-03-03,open,7869,,,no,no,no,미확보,KRX 유가증권 일별매매정보 표본 요청 HTTP 401
+161390,2016-07-21,open/close,54100/53500,,,no,no,no,미확보,보존 NAVER 거래일과 가격만 확인
+161390,2016-07-22,open/close,53600/53700,,,no,no,no,미확보,첫 경로 분기 당시 원가격 미확인
+161390,2016-07-25,open/close,54300/53300,,,no,no,no,미확보,공개 S&P 공급자 이력은 분할 조정 명시
+006800,2025-12-23,close,23796,,,no,no,no,미확보,50원 호가 격자와 불일치
+006800,2025-12-24,open,23995,,,no,no,no,미확보,Yahoo 공개 이력의 시가 23924.86원도 원가격으로 승인하지 않음
