@@ -1,0 +1,70 @@
+name: V1 KIS corporate action metadata probe
+
+on:
+  push:
+    branches:
+      - validation/v1-kis-sample-20261104
+    paths:
+      - .github/workflows/v1_kis_actions.yml
+      - validation/trend_audit/kis_actions/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v1-kis-actions-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: github.repository == 'gengar200005/morning-report' && github.ref == 'refs/heads/validation/v1-kis-sample-20261104'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only client dependency
+        run: python -m pip install 'requests>=2.31,<3'
+      - name: Check frozen probe and immutable helper
+        run: |
+          python - <<'PYCODE'
+          import hashlib
+          from pathlib import Path
+          root = Path('validation/trend_audit')
+          assert hashlib.sha256((root / 'kis_actions/plan.json').read_bytes()).hexdigest() == '1a2751f92b019c8cd51dc86fbe7ad29fdcf3fc68d1e4e3bf884585d7a1ad7ecc'
+          assert hashlib.sha256((root / 'kis_v1/collect.py').read_bytes()).hexdigest() == '30c130cee54517fc67b73a3a4600b6b685780bec213ee523b5e67b9011b13a59'
+          PYCODE
+      - name: Test probe without authentication or network
+        run: python -B -m unittest discover -s validation/trend_audit/kis_actions -v
+      - name: Record execution
+        env:
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-actions-${{ github.run_id }}-${{ github.run_attempt }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          out = Path(os.environ['RESULT_DIR'])
+          out.mkdir(parents=True, exist_ok=False)
+          (out / 'workflow_run.json').write_text(json.dumps({'run_url':os.environ['RUN_URL'], 'commit_sha':os.environ['COMMIT_SHA']}, indent=2) + '\n')
+          PYCODE
+      - name: Read twenty fixed metadata requests
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          RESULT_DIR: ${{ runner.temp }}/v1-kis-actions-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python -B validation/trend_audit/kis_actions/collect_actions.py --out "$RESULT_DIR"
+      - name: Preserve completed and partial metadata evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-kis-actions-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1-kis-actions-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6

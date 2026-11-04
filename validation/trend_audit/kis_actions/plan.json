@@ -1,0 +1,102 @@
+[
+  {
+    "kind": "rev_split",
+    "ticker": "000100",
+    "year": 2020
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "001230",
+    "year": 2026
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "001800",
+    "year": 2017
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "002410",
+    "year": 2017
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "004990",
+    "year": 2016
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "005300",
+    "year": 2019
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "005930",
+    "year": 2018
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "010120",
+    "year": 2026
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "018880",
+    "year": 2016
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "035420",
+    "year": 2018
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "035720",
+    "year": 2021
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "192400",
+    "year": 2021
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "204320",
+    "year": 2018
+  },
+  {
+    "kind": "rev_split",
+    "ticker": "267250",
+    "year": 2021
+  },
+  {
+    "kind": "dividend",
+    "ticker": "030200",
+    "year": 2026
+  },
+  {
+    "kind": "dividend",
+    "ticker": "005610",
+    "year": 2018
+  },
+  {
+    "kind": "dividend",
+    "ticker": "001800",
+    "year": 2018
+  },
+  {
+    "kind": "dividend",
+    "ticker": "024110",
+    "year": 2018
+  },
+  {
+    "kind": "dividend",
+    "ticker": "024110",
+    "year": 2019
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "003690",
+    "year": 2023
+  }
+]
