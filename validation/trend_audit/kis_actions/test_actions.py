@@ -88,12 +88,28 @@ class ProbeTests(unittest.TestCase):
             def authenticate(self):calls.append('auth')
         with tempfile.TemporaryDirectory() as temp,patch.dict('os.environ',KIS_APP_KEY='key',KIS_APP_SECRET='secret'),patch.object(c,'request_once',return_value=(200,dict(rt_cd='0',output1=[]),{})) as request:
             out=Path(temp);r=c.collect(plan,out,Client,pause=lambda n:None)
-            self.assertEqual(calls,['auth']);self.assertEqual(request.call_count,20)
+            self.assertEqual(calls,['auth']);self.assertEqual(request.call_count,len(plan))
             self.assertFalse(r['data_ready'])
             c.collect(plan,out,Client,pause=lambda n:None)
-            self.assertEqual(request.call_count,20)
+            self.assertEqual(request.call_count,len(plan))
             first=out/(f"{plan[0]['kind']}_{plan[0]['ticker']}_{plan[0]['year']}.json")
             first.write_text('{}')
             with self.assertRaises(ValueError):c.collect(plan,out,Client,pause=lambda n:None)
+
+    def test_plan_extension_reuses_twenty_and_queries_only_forty_six(self):
+        plan=json.loads((c.ROOT/'plan.json').read_text());auth=[]
+        self.assertEqual(len(plan),66)
+        class Client:
+            def __init__(self,*args):pass
+            def authenticate(self):auth.append('auth')
+        with tempfile.TemporaryDirectory() as temp,patch.dict('os.environ',KIS_APP_KEY='key',KIS_APP_SECRET='secret'),patch.object(c,'request_once',return_value=(200,dict(rt_cd='0',output1=[]),{})) as request:
+            out=Path(temp)
+            c.collect(plan[:20],out,Client,pause=lambda n:None)
+            before={p.name:p.read_bytes() for p in out.glob('*_attempt_*.json')}
+            request.reset_mock();auth.clear()
+            result=c.collect(plan,out,Client,pause=lambda n:None)
+            self.assertEqual(request.call_count,46);self.assertEqual(auth,['auth'])
+            self.assertEqual(sum(bool(x.get('reused_response')) for x in result['requests']),20)
+            for name,data in before.items():self.assertEqual((out/name).read_bytes(),data)
 
 if __name__=='__main__':unittest.main()

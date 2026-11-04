@@ -98,5 +98,235 @@
     "kind": "bonus_issue",
     "ticker": "003690",
     "year": 2023
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2017
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2018
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2019
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2020
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2021
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2022
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2023
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "000100",
+    "year": 2024
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "003690",
+    "year": 2022
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "003690",
+    "year": 2024
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2017
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2018
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2019
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2020
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2021
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2022
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "008930",
+    "year": 2023
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "017800",
+    "year": 2020
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "032350",
+    "year": 2016
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "068270",
+    "year": 2025
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "068270",
+    "year": 2026
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2017
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2018
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2019
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2020
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2021
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2022
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2023
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "128940",
+    "year": 2024
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "247540",
+    "year": 2022
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "267270",
+    "year": 2017
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "267270",
+    "year": 2018
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "302440",
+    "year": 2020
+  },
+  {
+    "kind": "bonus_issue",
+    "ticker": "352820",
+    "year": 2020
+  },
+  {
+    "kind": "dividend",
+    "ticker": "001040",
+    "year": 2018
+  },
+  {
+    "kind": "dividend",
+    "ticker": "006800",
+    "year": 2026
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2016
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2017
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2018
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2019
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2020
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2021
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2022
+  },
+  {
+    "kind": "dividend",
+    "ticker": "068270",
+    "year": 2024
+  },
+  {
+    "kind": "dividend",
+    "ticker": "096770",
+    "year": 2021
+  },
+  {
+    "kind": "dividend",
+    "ticker": "096770",
+    "year": 2022
   }
 ]

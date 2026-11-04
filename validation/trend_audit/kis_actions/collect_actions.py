@@ -115,8 +115,8 @@ def request_once(client, ident):
         return None,{'msg1':'KIS request failed'},{}
 
 def collect(plan,out,client_factory=helper.KIS,pause=time.sleep):
-    if len(plan)!=20 or len({json.dumps(identity(x),sort_keys=True) for x in plan})!=20:
-        raise ValueError('Expected fixed twenty unique one-ticker/year requests')
+    if not 1 <= len(plan) <= 100 or len({json.dumps(identity(x),sort_keys=True) for x in plan})!=len(plan):
+        raise ValueError('Expected one to one hundred unique one-ticker/year requests')
     out.mkdir(parents=True,exist_ok=True)
     creds=[os.getenv(x) for x in helper.CREDENTIALS]
     manifest=dict(schema_version=1,started_at=datetime.now(timezone.utc).isoformat(),

@@ -1,6 +1,6 @@
 # V1 KIS corporate action metadata availability probe
 
-Twenty fixed GET request identities: 14 split-candidate ticker/years, five dividend ticker/years and one bonus-issue ticker/year. Each request is one ticker and one calendar year. No order endpoints, response-driven URLs, pagination, share-ratio inference or entitlement approval.
+Version2 extends the original twenty fixed GET identities with46 missing metadata requests derived from unresolved stock dividends and bonus issues. The first20 identities remain unchanged and new identities are sorted after them. The66-request plan contains14 split requests,17 dividend requests and35 bonus-issue requests. Each request is one ticker and one calendar year. No order endpoints, response-driven URLs, pagination, share-ratio inference or entitlement approval.
 
 Authentication is reused from the immutable sibling `../kis_v1/collect.py`, SHA256 `30c130cee54517fc67b73a3a4600b6b685780bec213ee523b5e67b9011b13a59`. The local sibling copy supports tests only; **do not include it in the remote change set**.
 
@@ -18,4 +18,6 @@ Official API source directories:
 - https://github.com/koreainvestment/open-trading-api/tree/main/examples_llm/domestic_stock/ksdinfo_dividend
 - https://github.com/koreainvestment/open-trading-api/tree/main/examples_llm/domestic_stock/ksdinfo_bonus_issue
 
-The workflow triggers only on pushes changing its own path or `validation/trend_audit/kis_actions/**` on `validation/v1-kis-sample-20261104`. It tests before exposing credentials and requests only repository contents read permission. This overlay is prepared for review; no push was performed by this task.
+The workflow triggers only on pushes changing its own path or `validation/trend_audit/kis_actions/**` on `validation/v1-kis-sample-20261104`. It tests before exposing credentials and requests repository Contents read and Actions read permission. This overlay is prepared for review; no push was performed by this task.
+
+Version2 recovery uses `run_options.json` with the reviewed source run41789248223 (or null for no recovery). The workflow also has Actions read permission to download exactly `v1-kis-actions-41789248223-1` into a fresh output directory. It preserves the old execution metadata as `source_workflow_run_41789248223.json` before recording the new run. The collector intentionally accepts plan extensions within1–100 unique identities: each restored checkpoint is verified against its individual request identity and every raw SHA, so the original20 calls are reused and only46 new requests authenticate/read. Existing raw acquisition timestamps and bytes remain unchanged; reuse is marked in the new manifest and old evidence is not relabelled as newly acquired. A focused offline test seeds20 checkpoints, extends to66, and proves exactly46 GETs and one authentication in the second run.
