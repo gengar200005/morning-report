@@ -1,0 +1,45 @@
+name: V1 KRX KOSPI PIT read-only smoke
+
+on:
+  push:
+    branches:
+      - validation/v1-krx-pit-smoke-20261105
+    paths:
+      - .github/workflows/v1_krx_pit_smoke.yml
+      - validation/trend_audit/krx_pit_smoke/**
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: github.repository == 'gengar200005/morning-report' && github.ref == 'refs/heads/validation/v1-krx-pit-smoke-20261105'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout isolated validation branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install read-only HTTP dependency
+        run: python -m pip install 'requests>=2.31,<3'
+      - name: Run offline contract tests before handling credential
+        working-directory: validation/trend_audit/krx_pit_smoke
+        run: python -B -m unittest discover -v
+      - name: Collect seven-day read-only historical samples
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        run: |
+          python -B validation/trend_audit/krx_pit_smoke/collect.py "${{ runner.temp }}/v1_krx_pit_smoke"
+      - name: Upload verified and partial response evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-krx-kospi-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v1_krx_pit_smoke/
+          if-no-files-found: warn
+          retention-days: 7
