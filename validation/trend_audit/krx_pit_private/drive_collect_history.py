@@ -24,6 +24,8 @@ from googleapiclient.http import MediaIoBaseUpload
 from gdrive_upload import _build_service
 from validation.trend_audit.krx_pit_private.drive_collect import fetch,validate,folder,existing
 
+from validation.trend_audit.krx_pit_private.drive_retry import read_retry, upload_archive, log_error
+
 FIRST_YEAR=2017
 LAST_YEAR=2026
 LAST_DAY="20261030"
@@ -44,7 +46,7 @@ def sessions(year:int,month:int):
 def verify_private_archive(drive,obj,year,month,dates):
     if obj.get("shared") is not False or int(obj.get("size") or 0)<500:
         raise RuntimeError("Private archive metadata invalid")
-    data=drive.files().get_media(fileId=obj["id"]).execute()
+    data=read_retry(lambda: drive.files().get_media(fileId=obj["id"]).execute())
     if hashlib.md5(data).hexdigest()!=obj.get("md5Checksum"):
         raise RuntimeError("Existing Drive MD5 mismatch")
     sha=hashlib.sha256(data).hexdigest()
@@ -70,12 +72,14 @@ def run(year:int,months:list[int]):
     if any(not os.environ.get(k) for k in required):
         raise RuntimeError("GitHub secret unavailable")
     drive=_build_service(*(os.environ[k] for k in required[1:]))
-    fid=folder(drive)
+    fid=read_retry(lambda: folder(drive))
+    if fid != "1f_FAl_IL31nhw69gSgU5UCfW8P9LBbKY":
+        raise RuntimeError("Unexpected private destination")
     with requests.Session() as http:
         for month in sorted(set(months)):
             days=sessions(year,month)
             name=f"KRX_PIT_{year}_{month:02d}_v1.json.gz"
-            prev=existing(drive,fid,name)
+            prev=read_retry(lambda: existing(drive,fid,name))
             if prev is not None:
                 sha=verify_private_archive(drive,prev,year,month,days)
                 print(f"PRIVATE_ARCHIVE_VERIFIED_REUSED year={year} month={month:02d} days={len(days)} sha256={sha}",flush=True)
@@ -98,15 +102,11 @@ def run(year:int,months:list[int]):
             compressed=gzip.compress(raw,mtime=0)
             sha=hashlib.sha256(compressed).hexdigest()
             desc=f"Private KRX PIT {year}-{month:02d}; days={len(records)}; sha256={sha}"
-            upload=drive.files().create(
-                body={"name":name,"parents":[fid],"description":desc},
-                media_body=MediaIoBaseUpload(io.BytesIO(compressed),mimetype="application/gzip",resumable=True),
-                fields="id,name,md5Checksum,size,shared"
-            ).execute()
-            if (upload.get("shared") is not False or
-                upload.get("md5Checksum")!=hashlib.md5(compressed).hexdigest() or
-                int(upload.get("size") or -1)!=len(compressed)):
-                raise RuntimeError("Private Drive upload validation failed")
+            def verify_upload(obj):
+                actual = verify_private_archive(drive, obj, year, month, days)
+                if actual != sha:
+                    raise RuntimeError("Immutable archive differs from collected payload")
+            upload_archive(drive, fid, name, desc, compressed, existing, verify_upload)
             print(f"PRIVATE_ARCHIVE_SAVED year={year} month={month:02d} days={len(records)} sha256={sha}",flush=True)
 
 def main():
@@ -121,5 +121,6 @@ if __name__=="__main__":
         main()
     except Exception as exc:
         # Do not print exception body, API raw response, or OAuth URLs.
+        log_error(exc, "history", 1)
         print("HISTORICAL_PRIVATE_KRX_FAILED "+type(exc).__name__,flush=True)
         sys.exit(2)
