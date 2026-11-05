@@ -1,6 +1,8 @@
 """Validate an unshared Google Drive folder under the existing Drive OAuth app."""
 import os
 import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from gdrive_upload import _build_service
 
