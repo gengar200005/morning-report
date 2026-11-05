@@ -14,6 +14,7 @@ ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
 
 from gdrive_upload import _build_service
+from validation.trend_audit.krx_pit_private.drive_retry import read_retry, log_error
 from validation.trend_audit.krx_pit_private.drive_collect import validate,folder,existing
 from validation.trend_audit.krx_pit_private.drive_collect_history import sessions
 
@@ -28,7 +29,7 @@ def audit(year):
     if any(not os.environ.get(k) for k in keys):
         raise RuntimeError("Drive secret missing")
     drive=_build_service(*(os.environ[k] for k in keys))
-    fid=folder(drive)
+    fid=read_retry(lambda: folder(drive))
     all_dates=set()
     all_codes=set()
     code_to_isin={}
@@ -40,10 +41,10 @@ def audit(year):
     for month in months:
         dates=sessions(year,month)
         name=f"KRX_PIT_{year}_{month:02d}_v1.json.gz"
-        obj=existing(drive,fid,name)
+        obj=read_retry(lambda: existing(drive,fid,name))
         if not obj or obj.get("shared") is not False:
             raise RuntimeError("Missing or insecure KRX archive")
-        data=drive.files().get_media(fileId=obj["id"]).execute()
+        data=read_retry(lambda: drive.files().get_media(fileId=obj["id"]).execute())
         if hashlib.md5(data).hexdigest()!=obj.get("md5Checksum"):
             raise RuntimeError("Drive MD5 mismatch")
         sha=hashlib.sha256(data).hexdigest()
@@ -101,5 +102,6 @@ if __name__=="__main__":
         p.add_argument("--year",type=int,required=True)
         audit(p.parse_args().year)
     except Exception as exc:
+        log_error(exc, "audit", 1)
         print("PRIVATE_YEAR_AUDIT_FAILED "+type(exc).__name__,flush=True)
         sys.exit(2)
