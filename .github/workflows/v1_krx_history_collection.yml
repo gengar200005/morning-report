@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        year: [2024, 2025, 2026]
+        year: [2026]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,4 +87,4 @@ jobs:
           for year in 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026; do
             python -B validation/trend_audit/krx_pit_private/audit_history.py --year "$year"
           done
-          echo "TARGET_ARCHIVES_VERIFIED historical_2017_2026=118 prior_2016=12 total=130"
+          python -B validation/trend_audit/krx_pit_private/audit_history.py --inventory
