@@ -7,7 +7,7 @@ from collections import defaultdict
 from dataclasses import replace
 from decimal import Decimal as D
 from fractions import Fraction
-import gzip,hashlib,json
+import gzip,hashlib,json,zipfile
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -22,6 +22,15 @@ NEW=((0,1),(2000,5),(5000,10),(20000,50),(50000,100),(200000,500),(500000,1000))
 
 
 def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def verify_feature_files(directory,expected_sha='32ef8ade9e1b8dfb28b732f74a2a57f0acf8e723df8bb896aacf9649856dfee7'):
+    archive=directory/'signal_features.zip'
+    if digest(archive)!=expected_sha:raise ValueError('Feature input hash changed')
+    with zipfile.ZipFile(archive) as z:
+        for name in ('manifest.json','proxy_features.parquet'):
+            if hashlib.sha256(z.read(name)).hexdigest()!=digest(directory/name):
+                raise ValueError('Expanded feature differs from verified archive')
+
 
 def load_account(root):
     for name,expected in ACCOUNT_HASH.items():
@@ -106,7 +115,7 @@ def actions_from_preserved(root,ids,rep,include_material):
 def run(root,signal_path,membership_path,feature_dir,out,cohort):
     out.mkdir(parents=True,exist_ok=False)
     if digest(signal_path)!=SIGNAL_HASH or digest(membership_path)!=MEMBERSHIP_HASH:raise ValueError('PIT input hash changed')
-    if digest(feature_dir/'signal_features.zip')!='32ef8ade9e1b8dfb28b732f74a2a57f0acf8e723df8bb896aacf9649856dfee7':raise ValueError('Feature input hash changed')
+    verify_feature_files(feature_dir)
     ex,rep=load_account(root/'code');inp=root/'inputs';stage=inp/'v1_ca_stage'
     manifest=json.loads((feature_dir/'manifest.json').read_text());cfg=manifest['config'];fixed=manifest['ordered_fixed'];ids=manifest['sessions'];lookup=dict(zip(ids,range(252,252+len(ids))))
     signal=json.loads(gzip.decompress(signal_path.read_bytes()))
@@ -122,7 +131,10 @@ def run(root,signal_path,membership_path,feature_dir,out,cohort):
         allowed={d:set(fixed) for d in ids};isin={}
         b=json.loads((stage/'review/frozen_candidate_batches.json').read_text())
         candidate_rows=[dict(date=x['first_date'],code=x['ticker'],rs=x['rs']) for x in b]
-        raw=pd.read_csv(inp/'v1_kis_history_results/evidence/normalized.csv',dtype={'ticker':str,'date':str})
+        quote_path=inp/'v1_kis_history_results/evidence/normalized.csv'
+        expected=json.loads((stage/'INTEGRATED_PREFLIGHT.json').read_text())['frozen']['normalized_sha256']
+        if digest(quote_path)!=expected:raise ValueError('Frozen KIS quote hash changed')
+        raw=pd.read_csv(quote_path,dtype={'ticker':str,'date':str})
         rows=raw[raw.ticker.isin(fixed)].rename(columns={'ticker':'Code','open':'Open','high':'High','low':'Low','close':'Close','volume':'Volume'})
         rows['MarketId']='FIXED_REFERENCE';rows['Changes']=np.nan
     del signal
