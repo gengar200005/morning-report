@@ -10,6 +10,8 @@ import json
 import os
 from pathlib import Path
 import sys
+import re
+from collections import Counter
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT))
 
@@ -96,11 +98,45 @@ def audit(year):
         flush=True
     )
 
+def inventory():
+    keys=("GDRIVE_OAUTH_CLIENT_ID","GDRIVE_OAUTH_CLIENT_SECRET","GDRIVE_OAUTH_REFRESH_TOKEN")
+    drive=_build_service(*(os.environ[k] for k in keys))
+    fid=read_retry(lambda: folder(drive))
+    if fid != "1f_FAl_IL31nhw69gSgU5UCfW8P9LBbKY":
+        raise RuntimeError("Unexpected destination")
+    items=[]
+    token=None
+    while True:
+        response=read_retry(lambda: drive.files().list(
+            q=f"'{fid}' in parents and trashed = false",
+            fields="nextPageToken,files(name,shared,size)",pageSize=1000,
+            pageToken=token).execute())
+        items.extend(response.get("files",[]))
+        token=response.get("nextPageToken")
+        if not token:
+            break
+    expected={f"KRX_PIT_{year}_{month:02d}_v1.json.gz"
+              for year in range(2017,2027) for month in range(1,11 if year==2026 else 13)}
+    counts=Counter(x.get("name") for x in items)
+    if any(counts[name]!=1 for name in expected):
+        raise RuntimeError("Missing or duplicate target archives")
+    targets=[x for x in items if x.get("name") in expected]
+    if any(x.get("shared") is not False or int(x.get("size") or 0)<500 for x in targets):
+        raise RuntimeError("Invalid target privacy or size")
+    unexpected=sum(bool(re.fullmatch(r"KRX_PIT_(?:201[7-9]|202[0-6])_.*",x.get("name","")))
+                   and x.get("name") not in expected for x in items)
+    if unexpected:
+        raise RuntimeError("Unexpected historical archive names")
+    print(f"INVENTORY_PASS historical_target_files={len(targets)} missing=0 duplicates=0 private=true",flush=True)
+
 if __name__=="__main__":
     try:
         p=argparse.ArgumentParser()
-        p.add_argument("--year",type=int,required=True)
-        audit(p.parse_args().year)
+        g=p.add_mutually_exclusive_group(required=True)
+        g.add_argument("--year",type=int)
+        g.add_argument("--inventory",action="store_true")
+        args=p.parse_args()
+        inventory() if args.inventory else audit(args.year)
     except Exception as exc:
         log_error(exc, "audit", 1)
         print("PRIVATE_YEAR_AUDIT_FAILED "+type(exc).__name__,flush=True)
