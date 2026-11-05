@@ -1,0 +1,29 @@
+name: KRX PIT 2016 private archive independent audit
+on:
+  push:
+    branches: [validation/v1-krx-pit-smoke-20261105]
+    paths:
+      - .github/workflows/v1_krx_2016_audit.yml
+      - validation/trend_audit/krx_pit_private/audit_2016.py
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.repository == 'gengar200005/morning-report'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install KRX private-audit dependencies
+        run: python -m pip install 'requests>=2.31,<3' 'google-api-python-client>=2.100,<3' 'google-auth>=2.30,<3' 'exchange-calendars==4.13.1'
+      - name: Independently audit all 12 private KRX archive months
+        env:
+          GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
+          GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
+          GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
+        run: python -B validation/trend_audit/krx_pit_private/audit_2016.py
