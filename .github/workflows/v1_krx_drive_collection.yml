@@ -14,7 +14,7 @@ jobs:
   collect:
     if: github.repository == 'gengar200005/morning-report'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,10 +39,10 @@ jobs:
           assert len(m.calendar(1))==20
           print('CALENDAR_2016_OFFLINE_PASS')
           PY
-      - name: Collect January 2016 into owner-only Google Drive
+      - name: Collect remaining 2016 months into owner-only Google Drive
         env:
           KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
           GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
           GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
           GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
-        run: python -B validation/trend_audit/krx_pit_private/drive_collect.py --months 1
+        run: python -B validation/trend_audit/krx_pit_private/drive_collect.py --months 1 2 3 4 5 6 7 8 9 10 11 12
