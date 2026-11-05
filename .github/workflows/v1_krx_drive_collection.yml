@@ -1,0 +1,48 @@
+name: KRX PIT 2016 private Drive monthly collection
+on:
+  push:
+    branches: [validation/v1-krx-pit-smoke-20261105]
+    paths:
+      - .github/workflows/v1_krx_drive_collection.yml
+      - validation/trend_audit/krx_pit_private/drive_collect.py
+permissions:
+  contents: read
+concurrency:
+  group: isolated-krx-private-pit-2016
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.repository == 'gengar200005/morning-report'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned-major read-only request and user-owned Drive libraries
+        run: python -m pip install 'requests>=2.31,<3' 'google-api-python-client>=2.100,<3' 'google-auth>=2.30,<3'
+      - name: Verify provisional calendar before data access
+        run: |
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          p=Path('validation/trend_audit/krx_pit_private/drive_collect.py')
+          spec=importlib.util.spec_from_file_location('private_krx',p)
+          m=importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(m)
+          days=[d for month in range(1,13) for d in m.calendar(month)]
+          assert len(days)==246 and days[0]=='20160104' and days[-1]=='20161229'
+          assert len(set(days))==246
+          assert len(m.calendar(1))==20
+          print('CALENDAR_2016_OFFLINE_PASS')
+          PY
+      - name: Collect January 2016 into owner-only Google Drive
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+          GDRIVE_OAUTH_CLIENT_ID: ${{ secrets.GDRIVE_OAUTH_CLIENT_ID }}
+          GDRIVE_OAUTH_CLIENT_SECRET: ${{ secrets.GDRIVE_OAUTH_CLIENT_SECRET }}
+          GDRIVE_OAUTH_REFRESH_TOKEN: ${{ secrets.GDRIVE_OAUTH_REFRESH_TOKEN }}
+        run: python -B validation/trend_audit/krx_pit_private/drive_collect.py --months 1
