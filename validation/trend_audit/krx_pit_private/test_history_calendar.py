@@ -48,7 +48,7 @@ class CalendarTests(unittest.TestCase):
         rows=[{"name":f"KRX_PIT_{year}_{month:02d}_v1.json.gz","shared":False,"size":"1000"}
               for year in range(2017,2027) for month in range(1,11 if year==2026 else 13)]
         drive=Mock()
-        with patch.object(audit,"_build_service",return_value=drive), patch.object(audit,"folder",return_value="1f_FAl_IL31nhw69gSgU5UCfW8P9LBbKY"), patch.dict(audit.os.environ,dict.fromkeys(("GDRIVE_OAUTH_CLIENT_ID","GDRIVE_OAUTH_CLIENT_SECRET","GDRIVE_OAUTH_REFRESH_TOKEN"),"test")):
+        with patch("builtins.print"), patch.object(audit,"_build_service",return_value=drive), patch.object(audit,"folder",return_value="1f_FAl_IL31nhw69gSgU5UCfW8P9LBbKY"), patch.dict(audit.os.environ,dict.fromkeys(("GDRIVE_OAUTH_CLIENT_ID","GDRIVE_OAUTH_CLIENT_SECRET","GDRIVE_OAUTH_REFRESH_TOKEN"),"test")):
             drive.files.return_value.list.return_value.execute.return_value={"files":rows}
             audit.inventory()
             for invalid in (rows[:-1],rows+[rows[0]],[dict(x,shared=True) for x in rows]):
