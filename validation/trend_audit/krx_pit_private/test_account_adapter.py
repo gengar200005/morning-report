@@ -1,9 +1,11 @@
 import unittest
+import tempfile,zipfile,hashlib
+from pathlib import Path
 from types import SimpleNamespace
 from collections import namedtuple
 import numpy as np
 import pandas as pd
-from validation.trend_audit.krx_pit_private.pit_account_replay import make_quotes,valid_row
+from validation.trend_audit.krx_pit_private.pit_account_replay import make_quotes,valid_row,verify_feature_files
 class Rule:
     def __init__(self,lower,upper,bands):self.bands=bands
 Quote=namedtuple('Quote','rule reference opening close tradable')
@@ -11,6 +13,16 @@ EX=SimpleNamespace(QuoteRule=Rule);REP=SimpleNamespace(Quote=Quote)
 class AdapterTests(unittest.TestCase):
     def rows(self,opening=100,volume=100):return pd.DataFrame([dict(Code='A',Open=opening,High=max(100,opening),Low=min(100,opening),Close=100,Volume=volume)])
     def quotes(self,rows,prior=None,mode='D2'):return make_quotes(rows,{'A':100} if prior is None else prior,{'A'},mode,'20200102',EX,REP)[0]
+    def test_expanded_feature_tampering_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            with zipfile.ZipFile(root/'signal_features.zip','w') as z:
+                for name in ['manifest.json','proxy_features.parquet']:
+                    z.writestr(name,b'verified');(root/name).write_bytes(b'verified')
+            expected=hashlib.sha256((root/'signal_features.zip').read_bytes()).hexdigest()
+            verify_feature_files(root,expected)
+            (root/'proxy_features.parquet').write_bytes(b'changed')
+            with self.assertRaisesRegex(ValueError,'Expanded feature'):verify_feature_files(root,expected)
     def test_future_open_does_not_change_d2_reference_or_cap(self):
         a=self.quotes(self.rows(90))['A'];b=self.quotes(self.rows(110))['A'];self.assertEqual(a.reference,b.reference);self.assertEqual(a.rule.cap(a.reference),b.rule.cap(b.reference));self.assertNotEqual(a.opening,b.opening)
     def test_unknown_future_zero_volume_does_not_release_preopen_slot(self):
