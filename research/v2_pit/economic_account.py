@@ -90,7 +90,7 @@ class Account:
         if shares:
             self.orders.append((day,isin,side,limit,shares))
 
-    def execute(self, day, settlement, bars, *, volume=None, participation=None):
+    def execute(self, day, settlement, bars, *, volume=None, participation=None, opening_guard=None):
         if self.orders and (day not in self.calendar or settlement not in self.calendar
                             or self.calendar[settlement]!=self.calendar[day]+2):
             raise ValueError('Invalid trade or T+2 settlement session')
@@ -111,9 +111,16 @@ class Account:
                           quantity=shares)
                 continue
             price = bar[0]
+            waive_limit = False
+            if opening_guard is not None:
+                reason,waive_limit = opening_guard(isin,side,limit,price)
+                if reason:
+                    self.post(day,reason,isin=isin,side=side,decision=decision)
+                    continue
             gross = D(price)*shares
             costs = gross*(FEE+SLIPPAGE)
-            if ((side=='BUY' and (price>limit or gross+costs>self.buying_power))
+            cash = self.buying_power-self.reserved if waive_limit else self.buying_power
+            if ((side=='BUY' and ((price>limit and not waive_limit) or gross+costs>cash))
                     or (side=='SELL' and (price<limit or self.shares[isin]<shares))):
                 self.post(day,'conditional_order_unfilled',isin=isin,side=side,decision=decision)
                 continue

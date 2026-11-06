@@ -220,3 +220,35 @@ checks that its earlier phase metrics are unchanged. With no eligible
 candidate the final runner refuses to open that phase. Annual returns include
 partial first and last calendar years. NAV gaps suppress full-window returns.
 Concentration is the largest marked single-position weight in total NAV.
+
+## Stage 4.1 execution audit
+
+See `execution_protocol.md`. The Stage 4 signal families and ranking cache
+are reused. E1 checks exact equality of the full daily NAV tape, ledger,
+selections, and counts against the saved Stage 4 paths. E2 uses an ex-ante
+premium cap. E3 reuses the same ex-ante sizing rule as E2 but waives the buy
+price cap when available cash net of other orders covers the observed open.
+
+```sh
+python research/v2_pit/execution_study.py economic.sqlite KOSPI.json benchmark.json stage4/pre stage41/runs
+python research/v2_pit/execution_rights_diagnostic.py economic.sqlite KOSPI.json benchmark.json stage41/rights
+python -m unittest discover -s research/v2_pit
+```
+
+Runs end in 2023. Ranked-signal occurrences count eligible-name opportunities
+at a close before portfolio constraints, including A's standing monthly targets
+on retry days. Outcome reasons are exclusive and checked in engine order:
+absent/zero/invalid bar, volume, band/auction, then order-price or cash. An order
+still pending at the end is right-censored. Forward missed returns measure
+observed opening through the 1/5/20th following session close, require one
+continuous price-index segment, and use no dates past the cutoff. Turnover is
+half two-sided filled value over mean annual NAV. The exclusion sensitivity
+skips new orders for Geumyang and leaves the original D ranking unchanged.
+
+The rights-only sensitivity starts with the same E1 execution and adds dated
+split ratios and a conditional CS Wind share-delivery date. It does not impute
+any Korea Glass delisting consideration. KRX raw monthly records show listed
+shares rising 10x on Shinpoong's relisting and 5x on FILA's relisting; CS Wind
+shares first include the approximately doubled issue on 2021-03-05. This is
+an assumption about holder availability, separately reported. The source
+database is read-only.

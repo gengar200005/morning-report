@@ -37,11 +37,15 @@ def interest(book, day, previous, annual):
         book.post(day,'cash_interest',cash=amount)
 
 
-def buy_limit(day, close):
+def quote_tick(day, price):
     bands = ((0,1),(1000,5),(5000,10),(10000,50),(50000,100),(100000,500),(500000,1000))
     if day >= '20230125':
         bands = ((0,1),(2000,5),(5000,10),(20000,50),(50000,100),(200000,500),(500000,1000))
-    tick = next(tick for floor,tick in reversed(bands) if close>=floor)
+    return next(tick for floor,tick in reversed(bands) if price>=floor)
+
+
+def buy_limit(day, close):
+    tick = quote_tick(day,close)
     return close//tick*tick
 
 
@@ -62,10 +66,12 @@ def action_inventory(db, days):
     return actions
 
 
-def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=END):
+def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=END, execution=None, additional_actions=()):
     days = calendar(db)
     book = Account(INITIAL,days)
     actions = action_inventory(db,days)
+    for day,action in additional_actions:
+        actions[day].append(action)
     exits = {(d,t):category for d,t,category in db.execute('SELECT delisted,isin,category FROM exit_audit WHERE isin IS NOT NULL')}
     holdings, cool, histories, last_prices = {},{},{},{}
     doubtful, daily, market_window = [],[],deque(maxlen=61)
@@ -77,6 +83,7 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
     fractional = {}
     modeled_issues = set()
     selections = defaultdict(list)
+    opportunities = Counter()
     risk = cfg['risk']
     annual = D(str(cfg['execution']['cma_rate']))
 
@@ -178,7 +185,9 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
                 if isin in bars and bars[isin][2]==VALID:
                     book.resolve_issue(day,marker,'Positive-volume KRX mark returned',isin=isin)
         before = len(book.log)
-        book.execute(day,days[i+2],bars,volume=volume,participation=participation)
+        guard = execution.guard(db,day,bars) if execution is not None else None
+        book.execute(day,days[i+2],bars,volume=volume,participation=participation,
+                     opening_guard=guard)
         for event in book.log[before:]:
             if event['event']!='fill':
                 continue
@@ -228,21 +237,30 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
             pending_assets = {asset for _,asset,n,_ in book.claims.values() if n}
             slots = risk['max_positions']-len(book.shares.keys() | pending_assets)
             # Orders reserve cash already settled; no contingent slots or sale proceeds.
-            if policy is not None and slots>0:
-                budget = (book.buying_power-book.reserved)/slots
+            if policy is not None:
+                budget = (book.buying_power-book.reserved)/slots if slots>0 else D(0)
                 eligible_isins = {row[0] for row in signal}
                 for isin,code in policy.entries(day):
-                    if isin not in eligible_isins or isin in book.shares or isin in pending_assets:
+                    opportunities['ranked_signal_occurrences'] += 1
+                    if isin not in eligible_isins:
+                        opportunities['not_currently_eligible'] += 1
                         continue
-                    limit = buy_limit(days[i+1],bars[isin][1])
+                    if isin in book.shares or isin in pending_assets:
+                        opportunities['already_held_or_pending'] += 1
+                        continue
+                    if slots<=0:
+                        opportunities['slots_unavailable'] += 1
+                        continue
+                    limit = (execution.limit(days[i+1],bars[isin][1]) if execution is not None
+                             else buy_limit(days[i+1],bars[isin][1]))
                     requested = int(budget/(D(limit)*(1+FEE+SLIPPAGE)))
                     if requested:
                         book.queue(day,isin,'BUY',limit,requested)
                         selections[day].append(code)
                         counts['buy_signals_queued'] += 1
                         slots -= 1
-                    if not slots:
-                        break
+                    else:
+                        opportunities['cash_too_small_for_one_share'] += 1
             elif policy is None and slots>0 and len(market_window)==61 and check_market_gate(np.array(market_window),60,cfg):
                 rank = sorted(s[2] for s in signal)
                 budget = (book.buying_power-book.reserved)/slots
@@ -300,7 +318,7 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
         daily.append(row)
     reconcile_journal(INITIAL,book.log,daily,marks_log)
     return dict(daily=daily,journal=book.log,exceptions=doubtful,counts=dict(counts),
-                selections=dict(selections),mode=mode)
+                selections=dict(selections),mode=mode,opportunities=dict(opportunities))
 
 
 def main():
