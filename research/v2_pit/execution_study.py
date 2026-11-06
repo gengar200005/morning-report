@@ -27,8 +27,10 @@ def execution_details(run, db, days):
 
     @lru_cache(maxsize=16000)
     def path(isin,start,end):
-        return db.execute("""SELECT day,price_index,link_status FROM economic_momentum
-            WHERE isin=? AND day BETWEEN ? AND ? ORDER BY day""",(isin,start,end)).fetchall()
+        selected = days[days_by_index[start]:days_by_index[end]+1]
+        placeholders = ','.join('?' for _ in selected)
+        return db.execute(f"""SELECT day,price_index,link_status FROM economic_momentum
+            WHERE isin=? AND day IN ({placeholders}) ORDER BY day""",(isin,*selected)).fetchall()
 
     def add_forward(isin,day,op,close,reason):
         i = days_by_index[day]
@@ -86,15 +88,22 @@ class Exclusion(Policy):
 def run_one(job):
     name, model, size = job
     db_path, market, benchmark, features, out, legacy = CONTEXT
-    base, premium = MODELS[model]
-    policy = Exclusion('D',features) if name=='D-exclude' else Policy(name,features)
+    slug = f'{name}-{model}-{size}'
+    tape = out/f'{slug}.json'
     with open_db(db_path) as db:
-        run = replay(db,market,D(size),load_config(),mode='exploratory',policy=policy,end=CUT,
-                     execution=Execution(base,D(premium)))
-        run['execution'] = model
+        if features is None:
+            run = json.loads(tape.read_text())
+            if run.get('execution')!=model or run['daily'][-1]['day']>CUT:
+                raise ValueError(f'Unexpected tape: {slug}')
+        else:
+            base, premium = MODELS[model]
+            policy = Exclusion('D',features) if name=='D-exclude' else Policy(name,features)
+            run = replay(db,market,D(size),load_config(),mode='exploratory',policy=policy,end=CUT,
+                         execution=Execution(base,D(premium)))
+            run['execution'] = model
+            tape.write_text(json.dumps(run,default=str))
         result = summarize_one(run,benchmark)
         result.update(execution_details(run,db,calendar(db)))
-    slug = f'{name}-{model}-{size}'
     if model=='E1' and name in NAMES:
         old = json.loads((legacy/f"{name}-{'base' if size=='.01' else 'liquidity'}.json").read_text())
         if any(json.dumps(run[k],default=str,sort_keys=True)!=json.dumps(old[k],sort_keys=True)
@@ -109,7 +118,6 @@ def run_one(job):
                                   for r in run['daily'] if r['day']<'20230101'])
     result['exception_inventory'] = run['exceptions']
     result['mean_annual_turnover'] = annual_turnover(run)
-    (out/f'{slug}.json').write_text(json.dumps(run,default=str))
     return slug,result
 
 
@@ -129,13 +137,16 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('database','market','benchmark','legacy','output'):
         p.add_argument(name,type=Path)
+    p.add_argument('--reuse-run-tapes',action='store_true')
     p.add_argument('--workers',type=int,default=4)
     args = p.parse_args()
     args.output.mkdir(parents=True,exist_ok=True)
     market = {r[0]:r[4] for r in json.loads(args.market.read_text())[1:] if r[0]<=CUT}
     benchmark = [r for r in json.loads(args.benchmark.read_text())['gross']['daily'] if r['day']<=CUT]
-    with open_db(args.database) as db:
-        features = build_features(db,calendar(db),market,CUT)
+    features = None
+    if not args.reuse_run_tapes:
+        with open_db(args.database) as db:
+            features = build_features(db,calendar(db),market,CUT)
     CONTEXT = args.database,market,benchmark,features,args.output,args.legacy
     jobs = [(name,model,size) for name in NAMES for model in MODELS for size in ('.01','.001')]
     jobs += [('D-exclude',model,size) for model in ('E1','E2','E3') for size in ('.01','.001')]
@@ -144,7 +155,7 @@ def main():
     metadata = {name:digest(getattr(args,name)) for name in ('database','market','benchmark')}
     metadata['protocol'] = digest(Path(__file__).with_name('execution_protocol.md'))
     metadata['stage4_summary'] = digest(args.legacy/'summary.json')
-    (args.output/'summary.json').write_text(json.dumps(dict(inputs=metadata,results=results),indent=2))
+    (args.output/'summary.json').write_text(json.dumps(dict(inputs=metadata,results=results),indent=2,default=str))
 
 
 if __name__=='__main__':
