@@ -33,6 +33,10 @@ class Account:
 
     def post(self, day, event, *, isin='', shares=0, cash=D(0), claim=None,
              remove=None, block=None, unblock=None, **details):
+        if unblock and unblock not in self.unknown:
+            raise ValueError('Cannot resolve an unopened issue')
+        if block and (block in self.unknown or block==unblock):
+            raise ValueError('Issue already open or invalid transition')
         if type(shares) is not int:
             raise ValueError('Positions require integer shares')
         if self.shares[isin]+shares<0 or self.cash+cash<0:
@@ -56,6 +60,11 @@ class Account:
             self.unknown.remove(unblock)
         self.log.append(dict(day=day,event=event,isin=isin,shares=shares,cash=cash,
                              claim=claim,remove=remove,block=block,unblock=unblock,**details))
+
+    def resolve_issue(self, day, key, evidence, **posting):
+        if not isinstance(evidence,str) or not evidence.strip():
+            raise ValueError('Resolution requires evidence')
+        self.post(day,'issue_resolved',unblock=key,evidence=evidence,**posting)
 
     @property
     def buying_power(self):

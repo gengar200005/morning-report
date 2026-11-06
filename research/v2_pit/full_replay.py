@@ -1,6 +1,6 @@
 """Full-period PIT application of the frozen V1 T10/CD60 backtest rules."""
 import argparse
-from bisect import bisect_right
+from bisect import bisect_left, bisect_right
 from collections import Counter, defaultdict, deque
 from datetime import date
 from decimal import Decimal as D
@@ -47,23 +47,22 @@ def buy_limit(day, close):
 
 def action_inventory(db, days):
     actions = defaultdict(list)
-    for key,isin,kind,status,day,payment,terms in db.execute("""
-        SELECT event_id,isin,kind,status,effective_date,payment_or_delivery,terms
+    for key,isin,kind,status,day,payment,terms,announced in db.execute("""
+        SELECT event_id,isin,kind,status,effective_date,payment_or_delivery,terms,announcement_date
         FROM corporate_actions WHERE isin IS NOT NULL"""):
         payload = json.loads(terms)
         day = day or payload.get('inventory_date')
         if not day or day>END:
             continue
         # Legal non-session dates take effect before the next opening.
-        from bisect import bisect_left
         idx = bisect_left(days,day)
         if idx==len(days):
             continue
-        actions[days[idx]].append((key,isin,kind,status,payment,payload))
+        actions[days[idx]].append((key,isin,kind,status,payment,payload,announced))
     return actions
 
 
-def replay(db, market, participation, cfg, *, scheduled_bonus=False):
+def replay(db, market, participation, cfg, *, mode="verified"):
     days = calendar(db)
     book = Account(INITIAL,days)
     actions = action_inventory(db,days)
@@ -73,6 +72,11 @@ def replay(db, market, participation, cfg, *, scheduled_bonus=False):
     marks_log, dividends = {},defaultdict(list)
     counts = Counter()
     known_split = set()
+    research = mode!='verified'
+    stress = mode in ('stress','valuation-stress')
+    fractional = {}
+    modeled_issues = set()
+    selections = defaultdict(list)
     risk = cfg['risk']
     annual = D(str(cfg['execution']['cma_rate']))
 
@@ -107,9 +111,10 @@ def replay(db, market, participation, cfg, *, scheduled_bonus=False):
         if day!=START:
             interest(book,day,days[i-1],annual)
         for key,isin,amount in dividends.pop(day,[]):
-            book.post(day,'archived_gross_dividend_paid',isin=isin,cash=amount,unblock=key)
+            book.resolve_issue(day,key,'Archived payment date and per-share cash terms',
+                               isin=isin,cash=amount)
         book.settle(day)
-        for key,isin,kind,status,payment,terms in actions.get(day,[]):
+        for key,isin,kind,status,payment,terms,announced in actions.get(day,[]):
             if kind=='split' and status=='V1_ACCOUNT_TERMS':
                 known_split.add(isin)
                 ratio = Fraction(terms['verified']['ratio_numerator'],terms['verified']['ratio_denominator'])
@@ -129,20 +134,47 @@ def replay(db, market, participation, cfg, *, scheduled_bonus=False):
             if kind=='cash_dividend' and payment and payment>day:
                 marker = 'dividend:'+key
                 flag(day,isin,marker,'DIVIDEND_AMOUNT_PENDING_ON_EX_DATE')
-                dividends[payment].append((marker,isin,D(terms['per_share_krw'])*book.shares[isin]))
+                pay_idx = bisect_left(days,payment)
+                amount = D(terms['per_share_krw'])*book.shares[isin]
+                if pay_idx<len(days):
+                    dividends[days[pay_idx]].append((marker,isin,amount))
+                else:
+                    dividends[payment].append((marker,isin,amount))
             else:
                 flag(day,isin,'action:'+key,'UNVERIFIED_'+kind.upper())
                 book.cancel_unit_change_orders(day,isin)
-                if scheduled_bonus and key=='20190228000002':
+                if (kind=='bonus' and status=='TERMS_CONFIRMED_SETTLEMENT_UNVERIFIED'
+                        and announced and announced<day
+                        and terms.get('planned_delivery') and terms.get('ratio')):
                     ratio = Fraction(terms['ratio'])
-                    book.award(day,key,isin,isin,ratio,terms['planned_delivery'])
+                    due_idx = bisect_left(days,terms['planned_delivery'])+(5 if mode=='stress' else 0)
+                    amount = book.shares[isin]*ratio
+                    if due_idx>=len(days):
+                        continue
+                    due = days[due_idx]
+                    book.post(day,'public_bonus_terms',isin=isin,event_id=key,
+                              estimated_whole=int(amount),fraction=str(amount-int(amount)),
+                              stated_schedule=terms['planned_delivery'])
                     factor = 1+D(ratio.numerator)/ratio.denominator
                     holdings[isin][1] /= factor
                     holdings[isin][2] /= factor
                     known_split.add(isin)
+                    if research:
+                        book.award(day,key,isin,isin,ratio,due)
+                        modeled_issues.add('action:'+key)
+                        if amount.denominator!=1:
+                            fraction = amount-int(amount)
+                            fractional[key+':fraction'] = [isin,fraction,terms['planned_delivery'],None]
         for isin in tuple(book.shares):
             if (day,isin) in exits:
                 flag(day,isin,'exit:'+isin,'UNVERIFIED_DELISTING_'+exits[day,isin])
+        # Resolve mark gaps before matching orders so a sale on the
+        # resumption opening does not leave a stale valuation block.
+        for marker in sorted(book.unknown):
+            if marker.startswith('missing:'):
+                isin = marker.removeprefix('missing:')
+                if isin in bars and bars[isin][2]==VALID:
+                    book.resolve_issue(day,marker,'Positive-volume KRX mark returned',isin=isin)
         before = len(book.log)
         book.execute(day,days[i+2],bars,volume=volume,participation=participation)
         for event in book.log[before:]:
@@ -171,6 +203,12 @@ def replay(db, market, participation, cfg, *, scheduled_bonus=False):
             elif isin in last_prices:
                 flag(day,isin,'missing:'+isin,'UNVERIFIED_HELD_MARK_OR_HALT')
                 # No stale marks are used for NAV; positions and orders are retained.
+        # A delivered sale does not erase unsettled entitlements. Pending
+        # stock rights can have their own raw mark even after the old lot sold.
+        for _,asset,quantity,_ in book.claims.values():
+            bar = bars.get(asset)
+            if quantity and bar and bar[2]==VALID:
+                marks[asset] = bar[1]
         if day!=END:
             for isin,qty in book.shares.items():
                 if isin not in marks:
@@ -200,14 +238,44 @@ def replay(db, market, participation, cfg, *, scheduled_bonus=False):
                         requested = int(budget/(D(limit)*(1+FEE+SLIPPAGE)))
                         if requested:
                             book.queue(day,isin,'BUY',limit,requested)
+                            selections[day].append(code)
                             counts['buy_signals_queued'] += 1
                             slots -= 1
                         if not slots:
                             break
         marks_log[day] = marks
-        daily.append(book.snapshot(day,marks))
+        row = book.snapshot(day,marks)
+        if research:
+            # Post-close analytical values never enter Account.cash, claims,
+            # position sizing, stop decisions, or the PIT rank universe.
+            overlays = {}
+            handled = set(modeled_issues)
+            for key,isin,amount in (event for events in dividends.values() for event in events):
+                handled.add(key)
+                overlays[key] = amount
+            for key,(isin,fraction,listing,fixed) in fractional.items():
+                raw = bars.get(isin)
+                close = raw[1] if raw and raw[2]==VALID else None
+                if fixed is None and day>=listing and close is not None:
+                    fixed = fractional[key][3] = close
+                value = fixed if fixed is not None else close
+                if value is not None:
+                    handled.add(key)
+                    overlays[key] = D(value)*D(fraction.numerator)/fraction.denominator*(0 if stress else 1)
+            for isin in set(book.shares)-marks.keys():
+                raw = bars.get(isin)
+                marker = 'missing:'+isin
+                if raw and raw[2]=='ZERO_VOLUME' and last_prices.get(isin) and marker in book.unknown:
+                    handled.update((isin,marker))
+                    overlays[marker] = D(book.shares[isin]*last_prices[isin])*(D('.5') if stress else 1)
+            unexplained = sorted(set(row['unresolved'])-handled)
+            row.update(research_nav=None if unexplained else row['cash']+row['stock']+
+                       row['receivables']-row['payables']+sum(overlays.values(),D(0)),
+                       valuation_overlays=overlays,research_unresolved=unexplained)
+        daily.append(row)
     reconcile_journal(INITIAL,book.log,daily,marks_log)
-    return dict(daily=daily,journal=book.log,exceptions=doubtful,counts=dict(counts))
+    return dict(daily=daily,journal=book.log,exceptions=doubtful,counts=dict(counts),
+                selections=dict(selections),mode=mode)
 
 
 def main():
@@ -215,15 +283,17 @@ def main():
     p.add_argument('database',type=Path)
     p.add_argument('market',type=Path)
     p.add_argument('--participation',type=D,default=D('.01'))
-    p.add_argument('--scheduled-bonus',action='store_true')
+    p.add_argument('--mode',choices=('verified','exploratory','stress','valuation-stress'),default='verified')
+    p.add_argument('--scheduled-bonus',action='store_const',dest='mode',const='exploratory',
+                   help='Compatibility alias for --mode exploratory')
     a = p.parse_args()
     market = {r[0]:r[4] for r in json.loads(a.market.read_text())[1:]}
     cfg = load_config()
     with sqlite3.connect(a.database.resolve().as_uri()+'?mode=ro',uri=True) as db:
-        out = replay(db,market,a.participation,cfg,scheduled_bonus=a.scheduled_bonus)
+        out = replay(db,market,a.participation,cfg,mode=a.mode)
     out['inputs'] = dict(database_sha256=digest(a.database),market_sha256=digest(a.market),
                          config_sha256=digest(ROOT/'backtest/strategy_config.yaml'),
-                         participation=str(a.participation),scheduled_bonus=a.scheduled_bonus,strategy_sha256=digest(ROOT/'backtest/strategy.py'))
+                         participation=str(a.participation),mode=a.mode,strategy_sha256=digest(ROOT/'backtest/strategy.py'))
     print(json.dumps(out,default=str))
 
 

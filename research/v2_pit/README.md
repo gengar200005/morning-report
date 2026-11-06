@@ -160,3 +160,40 @@ payment date. Distribution withholding is also modeled separately for the
 benchmark; the primary comparison uses gross distributions on both sides.
 Results assume modeled commissions, slippage, cash interest and quote rules.
 The account leaves unresolved NAV unset and never splices around missing days.
+
+## Stage 3.1 NAV lifecycle and candidate research protocol
+
+Reproduce the immutable Stage 3 baseline at commit `7d12c38b3d15`.
+For current execution, keep that output as `base.json`, then run:
+
+```sh
+for mode in verified exploratory stress valuation-stress; do
+  python research/v2_pit/full_replay.py economic.sqlite KOSPI.json --mode "$mode" > "$mode.json"
+done
+python research/v2_pit/full_replay.py economic.sqlite KOSPI.json \
+  --mode exploratory --participation .001 > exploratory-strict.json
+python research/v2_pit/nav_lifecycle_audit.py base.json verified.json exploratory.json \
+  stress.json valuation-stress.json benchmark.json --liquidity exploratory-strict.json
+```
+
+The ledger clears a missing-mark issue on observed trading resumption, even
+when a position is sold at that opening. Cash rights resolve only against an
+identified payment. The known public bonus ratio may normalize the stop basis
+only if the filing predates the event; unverified delivery is still blocked in
+the verified path. The exploratory path applies the public planned listing
+date to whole shares; a five-session delay is a separate sensitivity. Estimated
+dividend and fractional values are read-only valuation overlays. Cash arrives
+only on an archived dividend payment date. Fractional estimates never become
+spendable cash. During observed zero-volume sessions, the exploratory model
+marks held shares at the last known price. Stress marks those holdings at 50%
+and values the uncertain fraction at zero. Unhandled issues leave research
+NAV unset. Gross distributions are compared on both sides.
+
+Candidate research may start using the same frozen dates and PIT universe,
+predeclared rules and costs, an aligned full-period benchmark, a reconciled
+ledger, a fully calculable exploratory NAV with every assumption tagged, and
+explicit stress plus liquidity cases. Retain nulls and exclude whole-path
+metrics if an unknown event remains. Report conditional benchmark spreads and
+changes in candidate ordering across assumptions. Only advance a candidate
+toward implementation when its advantage persists across predeclared execution
+and accounting sensitivities and in a separate held-out validation.
