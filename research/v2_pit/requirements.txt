@@ -1,0 +1,2 @@
+exchange-calendars==4.13.1
+pyarrow==26.0.1
