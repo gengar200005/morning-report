@@ -27,19 +27,24 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('database','market','benchmark','output'):
         p.add_argument(name,type=Path)
+    p.add_argument('--reuse-run-tapes',action='store_true')
     a = p.parse_args()
     a.output.mkdir(parents=True,exist_ok=True)
     market = {r[0]:r[4] for r in json.loads(a.market.read_text())[1:] if r[0]<=CUT}
     benchmark = [r for r in json.loads(a.benchmark.read_text())['gross']['daily'] if r['day']<=CUT]
     with open_db(a.database) as db:
-        features = build_features(db,calendar(db),market,CUT,('B','C'))
+        features = None if a.reuse_run_tapes else build_features(db,calendar(db),market,CUT,('B','C'))
         result = {}
         for name in ('B','C'):
-            run = replay(db,market,D('.01'),load_config(),mode='exploratory',
-                         policy=Policy(name,features),end=CUT,additional_actions=EXTRA[name])
-            (a.output/f'{name}.json').write_text(json.dumps(run,default=str))
+            tape = a.output/f'{name}.json'
+            if features is None:
+                run = json.loads(tape.read_text())
+            else:
+                run = replay(db,market,D('.01'),load_config(),mode='exploratory',
+                             policy=Policy(name,features),end=CUT,additional_actions=EXTRA[name])
+                tape.write_text(json.dumps(run,default=str))
             result[name] = summarize_one(run,benchmark)
-    (a.output/'summary.json').write_text(json.dumps(result,indent=2))
+    (a.output/'summary.json').write_text(json.dumps(result,indent=2,default=str))
 
 
 if __name__=='__main__':
