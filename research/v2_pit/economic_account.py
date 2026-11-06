@@ -20,8 +20,10 @@ def sale_tax(day):
 
 
 class Account:
-    def __init__(self, cash):
+    def __init__(self, cash, sessions=(), *, etf=False):
         self.cash = D(cash)
+        self.calendar = {day:i for i,day in enumerate(sessions)}
+        self.etf = etf
         self.shares = Counter()
         self.claims = {}
         self.unknown = set()
@@ -59,12 +61,19 @@ class Account:
     def buying_power(self):
         return self.cash+sum((min(v,D(0)) for _,_,_,v in self.claims.values()),D(0))
 
+    @property
+    def reserved(self):
+        return sum((D(limit)*shares*(1+FEE+SLIPPAGE)
+                    for _,_,side,limit,shares in self.orders if side=='BUY'),D(0))
+
     def queue(self, day, isin, side, limit, requested):
         if (side not in ('BUY','SELL') or type(requested) is not int or requested<1
                 or type(limit) is not int or limit<1):
             raise ValueError('Invalid order terms')
+        if any(order[1]==isin for order in self.orders):
+            raise ValueError('Duplicate order for security')
         if side=='BUY':
-            shares = min(requested,int(self.buying_power/(limit*(1+FEE+SLIPPAGE))))
+            shares = min(requested,int((self.buying_power-self.reserved)/(limit*(1+FEE+SLIPPAGE))))
         else:
             shares = min(requested,self.shares[isin])
         self.post(day,'order_sized_at_close',isin=isin,side=side,quantity=shares,
@@ -72,13 +81,25 @@ class Account:
         if shares:
             self.orders.append((day,isin,side,limit,shares))
 
-    def execute(self, day, settlement, bars):
-        for decision,isin,side,limit,shares in self.orders:
+    def execute(self, day, settlement, bars, *, volume=None, participation=None):
+        if self.orders and (day not in self.calendar or settlement not in self.calendar
+                            or self.calendar[settlement]!=self.calendar[day]+2):
+            raise ValueError('Invalid trade or T+2 settlement session')
+        if any(decision not in self.calendar or self.calendar[day]<=self.calendar[decision]
+               for decision,*_ in self.orders):
+            raise ValueError('Order cannot fill before the following session')
+        while self.orders:
+            decision,isin,side,limit,shares = self.orders.pop(0)
             bar = bars.get(isin)
-            if day<=decision:
-                raise ValueError('Order cannot fill before the following session')
+            if self.calendar[day]!=self.calendar[decision]+1:
+                self.post(day,'order_expired',isin=isin,side=side,decision=decision)
+                continue
             if not bar or bar[2]!=VALID:
                 self.post(day,'opening_unavailable',isin=isin,side=side,decision=decision)
+                continue
+            if participation is not None and shares>(volume or {}).get(isin,0)*participation:
+                self.post(day,'volume_limit_unfilled',isin=isin,side=side,decision=decision,
+                          quantity=shares)
                 continue
             price = bar[0]
             gross = D(price)*shares
@@ -87,14 +108,13 @@ class Account:
                     or (side=='SELL' and (price<limit or self.shares[isin]<shares))):
                 self.post(day,'conditional_order_unfilled',isin=isin,side=side,decision=decision)
                 continue
-            tax = gross*sale_tax(settlement) if side=='SELL' else D(0)
+            tax = gross*sale_tax(settlement) if side=='SELL' and not self.etf else D(0)
             amount = gross-costs-tax if side=='SELL' else -(gross+costs)
             receivable = (f'fill:{day}:{isin}:{len(self.log)}',settlement,'',0,amount)
             self.post(day,'fill',isin=isin,shares=shares if side=='BUY' else -shares,
                       claim=receivable,
                       decision=decision,side=side,price=price,fee=gross*FEE,
                       slippage=gross*SLIPPAGE,sell_tax=tax,settlement=settlement)
-        self.orders.clear()
 
     def settle(self, day):
         for event,(due,asset,quantity,value) in list(self.claims.items()):

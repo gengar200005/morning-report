@@ -123,3 +123,40 @@ unit conversion. Unknown cash or equity rights block path-level metrics.
 The fixed actual cases cover trades, Samsung split and gross dividend, and
 Hanjin delisting. Share awards and conversions also have synthetic accounting
 tests. Miwon filing terms are audited separately from actual delivery and payment.
+
+## Stage 3 full replay
+
+Use the Stage 2 SQLite, the preserved V1 `KOSPI.json` and Yahoo
+`yahoo_069500.json` archives, the six Samsung fund distribution pages
+(`stkTicker=069500`, all history), and the Daum raw-price archive.
+
+```sh
+python research/v2_pit/full_replay.py economic.sqlite KOSPI.json > base.json
+python research/v2_pit/full_replay.py economic.sqlite KOSPI.json --participation .001 > strict.json
+python research/v2_pit/full_replay.py economic.sqlite KOSPI.json --scheduled-bonus > scheduled_bonus.json
+python research/v2_pit/kodex_benchmark.py economic.sqlite yahoo_069500.json issuer[1-6].json \
+  --secondary daum.json > benchmark.json
+python research/v2_pit/replay_summary.py base.json strict.json scheduled_bonus.json benchmark.json
+python -m unittest discover -s research/v2_pit
+```
+
+Frozen V1 research configuration is read from `backtest/strategy_config.yaml`
+and the same Minervini, supply and market-gate helpers are reused. Live report
+VIX and broker supply inputs have no equivalent historical PIT series here.
+The replay uses 252 contiguous returns with a PIT rank universe, prior-close
+buy limits, settled cash only, open slots without anticipating sales, one
+session expiry, and no forced endpoint liquidation. The fixed baseline uses
+a daily participation rejection threshold of 1%; the strict path uses 0.1%.
+Execution-day volume is used only to reject modeled fills. Neither threshold
+certifies opening-auction depth. Sequential queue order is rank descending,
+then ticker ascending. The bonus sensitivity uses only the archived planned
+Miwon delivery date; the fractional cash and whole-path NAV remain unresolved.
+
+ETF prices are unadjusted Yahoo bars supplemented by overlapping, cross-checked
+Daum bars. Distributions use the issuer's payment/record-date table; entitlement
+is dated by the exchange calendar. Historical distribution amounts are used
+for economic accrual only, and reinvestment can use cash after the official
+payment date. Distribution withholding is also modeled separately for the
+benchmark; the primary comparison uses gross distributions on both sides.
+Results assume modeled commissions, slippage, cash interest and quote rules.
+The account leaves unresolved NAV unset and never splices around missing days.

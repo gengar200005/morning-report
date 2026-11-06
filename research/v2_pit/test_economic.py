@@ -30,7 +30,7 @@ class EconomicTests(unittest.TestCase):
                          list(map(D,('.003','.0025','.0023','.002','.0018','.0015','.002'))))
 
     def test_no_opening_sizing_or_unsettled_proceeds_spending(self):
-        a = Account(1000)
+        a = Account(1000,('20180102','20180103','20180104','20180105','20180108','20180109','20180110'))
         a.queue('20180102','A','BUY',200,100)
         self.assertEqual(a.orders[0][-1],4)
         a.execute('20180103','20180105',{'A':(100,100,VALID)})

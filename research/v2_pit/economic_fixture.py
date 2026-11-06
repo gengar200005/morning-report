@@ -27,8 +27,8 @@ ORDERS = {
 
 
 def replay(db, miss_last_sale=False):
-    book = Account(INITIAL)
     dates = [r[0] for r in db.execute("SELECT day FROM sessions WHERE day BETWEEN '20170302' AND '20180824' ORDER BY day")]
+    book = Account(INITIAL,dates)
     days = dates[:-2]  # keep the final two calendar dates for settlement lookup
     rows, marks_by_day = [], {}
     payment, per_share = db.execute("""
