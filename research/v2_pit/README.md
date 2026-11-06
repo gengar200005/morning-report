@@ -92,3 +92,34 @@ test uses conditional next-opening fills, no auction allocation model, and
 gross dividend accounting. An unverified delisting entitlement leaves the
 position open and NAV undefined. A whole-period tax schedule and account
 certification are separate requirements.
+
+## Stage 2 economic replay
+
+Build from the stage 1.5 SQLite and the same preserved monthly KRX archives.
+
+```sh
+python research/v2_pit/economic_prices.py --base /private/stage15.sqlite \
+  --krx /private/monthly --output /private/economic.sqlite > /private/price_audit.json
+python research/v2_pit/economic_fixture.py /private/economic.sqlite > /private/replay.json
+python -m unittest discover -s research/v2_pit
+```
+
+Use `economic_prices.candidates(db, signal_day)` for the dated price momentum
+input. `economic_momentum.price_index` is a forward index, `ohlcv.close` is
+raw KRW, and confirmed unit conversions are recorded separately. The legacy
+`signal_segments.close` is retained for reproduction of Stage 1.5 and is a
+forward index. No execution or Stage 2 signal reads that column. The new
+signal needs 252 contiguous validated returns. Even a confirmed split
+with a trading halt restarts the signal window. Rates use the published
+two-decimal rounding interval and are cross-checked within the same KRX feed.
+
+The fixed ledger uses prior-close order decisions, conditional next-opening
+fills, integer shares, T+2 settlement, modeled 15 bps commissions and 5 bps
+slippage, and a dated KOSPI sale-tax schedule. Sale proceeds are not available
+to reinvest before settlement. Taxes use the effective settlement date as the
+schedule key and exact decimal charges; broker rounding and auction allocation
+are unmodeled. A halt carries a mark only for the documented fixture and share
+unit conversion. Unknown cash or equity rights block path-level metrics.
+The fixed actual cases cover trades, Samsung split and gross dividend, and
+Hanjin delisting. Share awards and conversions also have synthetic accounting
+tests. Miwon filing terms are audited separately from actual delivery and payment.
