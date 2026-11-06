@@ -56,3 +56,39 @@ for its order cap and only conditionally fills against the opening. This smoke
 retains V1's fee and cash interest settings, with permissive quote bounds.
 Historical taxes, additional slippage, confirmed halts, action-complete
 portfolio replay, and performance certification require further validation.
+
+## Stage 1.5 validation
+
+Use the foundation SQLite file and the same 130 archived KRX inputs. Extract
+`kospi_pit/metadata/{delisting,desc,krx}_2026-10-30.csv` from the V1 PIT
+alpha evidence ZIP. They are the preserved delisting-history, listing master
+and endpoint security snapshots, separate from the daily OPEN API endpoints.
+
+```sh
+python research/v2_pit/validate_stage.py --base /private/v2.sqlite \
+  --krx /private/monthly --metadata /private/kospi_pit/metadata \
+  --output /private/stage15.sqlite > /private/stage15_validation.json
+python -m unittest discover -s research/v2_pit
+python research/v2_pit/smoke.py /private/stage15.sqlite /private/kospi_pit/code
+python research/v2_pit/stage_account.py /private/stage15.sqlite /private/kospi_pit/code
+```
+
+`pit_candidates(db, signal_day)` returns diagnostic price-only inputs for that
+session's close, from its own membership and 252 preceding price observations.
+The forward return chain restarts at unresolved reference changes, anomalous
+moves, and missing sessions. One evidenced 50:1 Samsung Electronics conversion
+bridges the changed trading unit after its known suspension. The chain excludes
+cash dividends and does not populate the production-quality `signal_prices`
+table. Spot checks for bonus issuances compare the theoretical unrounded
+reference against that session's reported reference. Terms from later filings,
+uncertain cash or share deliveries, and the ex-date reports stay separate from
+tradable signal inputs. Listing and action identity audits are retrospective
+and must not be used as candidate inputs.
+
+The fixed account cases exercise the preserved V1 Book. Historical sell cost
+in the 2017–2018 fixtures includes 30 bps combined transaction and rural tax.
+Each fill also charges modeled slippage of 5 bps as a cash cost. This fixed
+test uses conditional next-opening fills, no auction allocation model, and
+gross dividend accounting. An unverified delisting entitlement leaves the
+position open and NAV undefined. A whole-period tax schedule and account
+certification are separate requirements.
