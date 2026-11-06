@@ -197,3 +197,26 @@ metrics if an unknown event remains. Report conditional benchmark spreads and
 changes in candidate ordering across assumptions. Only advance a candidate
 toward implementation when its advantage persists across predeclared execution
 and accounting sensitivities and in a separate held-out validation.
+
+## Stage 4 candidate study
+
+See the frozen `candidate_protocol.md` for the four distinct strategies and
+predeclared finalist gate. Use the Stage 2 SQLite, preserved KOSPI daily file,
+and the Stage 3 gross KODEX benchmark JSON. The signal cache is built once per
+phase and shared across the three execution/economic cases. The V1 strategy
+file is unchanged. The corrected V2 MA200 lag uses `[i-222:i-22]`.
+
+```sh
+python research/v2_pit/candidate_study.py economic.sqlite KOSPI.json benchmark.json pre
+# Run only after recording pre/summary.json and only if it contains a finalist.
+python research/v2_pit/candidate_study.py economic.sqlite KOSPI.json benchmark.json final \
+  --selection pre/summary.json
+python -m unittest discover -s research/v2_pit
+```
+
+The final runner checks the frozen protocol and input digests, recomputes the
+selection from the saved results, evaluates only the selected candidate, and
+checks that its earlier phase metrics are unchanged. With no eligible
+candidate the final runner refuses to open that phase. Annual returns include
+partial first and last calendar years. NAV gaps suppress full-window returns.
+Concentration is the largest marked single-position weight in total NAV.

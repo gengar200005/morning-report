@@ -62,7 +62,7 @@ def action_inventory(db, days):
     return actions
 
 
-def replay(db, market, participation, cfg, *, mode="verified"):
+def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=END):
     days = calendar(db)
     book = Account(INITIAL,days)
     actions = action_inventory(db,days)
@@ -88,6 +88,8 @@ def replay(db, market, participation, cfg, *, mode="verified"):
                                  shares=book.shares[isin],last_mark_exposure=exposure))
 
     for i,day in enumerate(days[:-2]):
+        if day>end:
+            break
         if day not in market:
             raise ValueError(f'Missing KOSPI gate close {day}')
         market_window.append(market[day])
@@ -97,7 +99,7 @@ def replay(db, market, participation, cfg, *, mode="verified"):
             FROM execution_bars p LEFT JOIN economic_momentum m USING(day,isin) WHERE p.day=?""",(day,)):
             bars[isin] = (op,cl,state)
             volume[isin] = v
-            if index is not None:
+            if index is not None and policy is None:
                 h = histories.setdefault(isin,deque(maxlen=253))
                 if link!='CONTIGUOUS_RAW_RETURN':
                     h.clear()
@@ -209,19 +211,39 @@ def replay(db, market, participation, cfg, *, mode="verified"):
             bar = bars.get(asset)
             if quantity and bar and bar[2]==VALID:
                 marks[asset] = bar[1]
-        if day!=END:
+        if day!=end:
+            if policy is not None:
+                policy.prepare(day)
             for isin,qty in book.shares.items():
                 if isin not in marks:
                     continue
                 opened,entry,peak = holdings[isin]
                 peak = holdings[isin][2] = max(peak,marks[isin])
-                if (marks[isin]<=max(entry*(1-D(str(risk['stop_loss']))),peak*(1-D(str(risk['trail_stop']))))
-                        or i-opened>=risk['max_hold_days']):
+                should_exit = (marks[isin]<=max(entry*(1-D(str(risk['stop_loss']))),
+                                                    peak*(1-D(str(risk['trail_stop']))))
+                               or i-opened>=risk['max_hold_days']) if policy is None else (
+                                   policy.exit(day,isin,marks[isin],entry))
+                if should_exit:
                     book.queue(day,isin,'SELL',1,qty)
             pending_assets = {asset for _,asset,n,_ in book.claims.values() if n}
             slots = risk['max_positions']-len(book.shares.keys() | pending_assets)
             # Orders reserve cash already settled; no contingent slots or sale proceeds.
-            if slots>0 and len(market_window)==61 and check_market_gate(np.array(market_window),60,cfg):
+            if policy is not None and slots>0:
+                budget = (book.buying_power-book.reserved)/slots
+                eligible_isins = {row[0] for row in signal}
+                for isin,code in policy.entries(day):
+                    if isin not in eligible_isins or isin in book.shares or isin in pending_assets:
+                        continue
+                    limit = buy_limit(days[i+1],bars[isin][1])
+                    requested = int(budget/(D(limit)*(1+FEE+SLIPPAGE)))
+                    if requested:
+                        book.queue(day,isin,'BUY',limit,requested)
+                        selections[day].append(code)
+                        counts['buy_signals_queued'] += 1
+                        slots -= 1
+                    if not slots:
+                        break
+            elif policy is None and slots>0 and len(market_window)==61 and check_market_gate(np.array(market_window),60,cfg):
                 rank = sorted(s[2] for s in signal)
                 budget = (book.buying_power-book.reserved)/slots
                 for isin,code,momentum,close in sorted(signal,key=lambda s:(-s[2],s[1])):
@@ -245,6 +267,9 @@ def replay(db, market, participation, cfg, *, mode="verified"):
                             break
         marks_log[day] = marks
         row = book.snapshot(day,marks)
+        if policy is not None:
+            row['marked_positions'] = {isin:qty*marks[isin] for isin,qty in book.shares.items()
+                                       if isin in marks}
         if research:
             # Post-close analytical values never enter Account.cash, claims,
             # position sizing, stop decisions, or the PIT rank universe.
