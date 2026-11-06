@@ -49,14 +49,15 @@ def buy_limit(day, close):
     return close//tick*tick
 
 
-def action_inventory(db, days):
+def action_inventory(db, days, end=END):
     actions = defaultdict(list)
     for key,isin,kind,status,day,payment,terms,announced in db.execute("""
         SELECT event_id,isin,kind,status,effective_date,payment_or_delivery,terms,announcement_date
-        FROM corporate_actions WHERE isin IS NOT NULL"""):
+        FROM corporate_actions WHERE isin IS NOT NULL
+        AND coalesce(effective_date,json_extract(terms,'$.inventory_date'))<=?""",(end,)):
         payload = json.loads(terms)
         day = day or payload.get('inventory_date')
-        if not day or day>END:
+        if not day or day>end:
             continue
         # Legal non-session dates take effect before the next opening.
         idx = bisect_left(days,day)
@@ -66,13 +67,15 @@ def action_inventory(db, days):
     return actions
 
 
-def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=END, execution=None, additional_actions=()):
-    days = calendar(db)
-    book = Account(INITIAL,days)
-    actions = action_inventory(db,days)
+def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=END,
+           execution=None, additional_actions=(), rebalance=None, session_days=None,
+           start=START, initial=INITIAL):
+    days = calendar(db) if session_days is None else session_days
+    book = Account(initial,days)
+    actions = action_inventory(db,days,end)
     for day,action in additional_actions:
         actions[day].append(action)
-    exits = {(d,t):category for d,t,category in db.execute('SELECT delisted,isin,category FROM exit_audit WHERE isin IS NOT NULL')}
+    exits = {(d,t):category for d,t,category in db.execute('SELECT delisted,isin,category FROM exit_audit WHERE isin IS NOT NULL AND delisted<=?',(end,))}
     holdings, cool, histories, last_prices = {},{},{},{}
     doubtful, daily, market_window = [],[],deque(maxlen=61)
     marks_log, dividends = {},defaultdict(list)
@@ -97,23 +100,26 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
     for i,day in enumerate(days[:-2]):
         if day>end:
             break
-        if day not in market:
+        if rebalance is not None and day<start:
+            continue
+        if rebalance is None and day not in market:
             raise ValueError(f'Missing KOSPI gate close {day}')
-        market_window.append(market[day])
+        if rebalance is None:
+            market_window.append(market[day])
         bars, volume, signal = {},{},[]
         for isin,code,op,cl,v,state,index,momentum,link in db.execute("""
             SELECT p.isin,p.code,p.open,p.close,p.volume,p.state,m.price_index,m.momentum_252,m.link_status
             FROM execution_bars p LEFT JOIN economic_momentum m USING(day,isin) WHERE p.day=?""",(day,)):
             bars[isin] = (op,cl,state)
             volume[isin] = v
-            if index is not None and policy is None:
+            if index is not None and policy is None and rebalance is None:
                 h = histories.setdefault(isin,deque(maxlen=253))
                 if link!='CONTIGUOUS_RAW_RETURN':
                     h.clear()
                 h.append((index,v))
             if momentum is not None:
                 signal.append((isin,code,momentum,cl))
-        if day<START:
+        if day<start:
             continue
         counts['eligible_observations'] += len(signal)
         counts['excluded_or_unready_observations'] += len(bars)-len(signal)
@@ -196,7 +202,7 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
                 entry = D(event['price'])*(1+FEE+SLIPPAGE)
                 holdings[isin] = [i,entry,entry]
             else:
-                if not any(asset==isin and n for _,asset,n,_ in book.claims.values()):
+                if not book.shares.get(isin) and not any(asset==isin and n for _,asset,n,_ in book.claims.values()):
                     holdings.pop(isin)
                 cool[isin] = i
         marks = {}
@@ -220,7 +226,9 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
             bar = bars.get(asset)
             if quantity and bar and bar[2]==VALID:
                 marks[asset] = bar[1]
-        if day!=end:
+        if day!=end and rebalance is not None:
+            rebalance(book, i, day, days[i+1], bars, marks, last_prices)
+        if day!=end and rebalance is None:
             if policy is not None:
                 policy.prepare(day)
             for isin,qty in book.shares.items():
@@ -285,7 +293,7 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
                             break
         marks_log[day] = marks
         row = book.snapshot(day,marks)
-        if policy is not None:
+        if policy is not None or rebalance is not None:
             row['marked_positions'] = {isin:qty*marks[isin] for isin,qty in book.shares.items()
                                        if isin in marks}
         if research:
@@ -316,7 +324,7 @@ def replay(db, market, participation, cfg, *, mode="verified", policy=None, end=
                        row['receivables']-row['payables']+sum(overlays.values(),D(0)),
                        valuation_overlays=overlays,research_unresolved=unexplained)
         daily.append(row)
-    reconcile_journal(INITIAL,book.log,daily,marks_log)
+    reconcile_journal(initial,book.log,daily,marks_log)
     return dict(daily=daily,journal=book.log,exceptions=doubtful,counts=dict(counts),
                 selections=dict(selections),mode=mode,opportunities=dict(opportunities))
 
