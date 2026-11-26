@@ -1,0 +1,13 @@
+{
+  "denominator": 782,
+  "classification": {
+    "exact_name_only": 427,
+    "directory_code_only": 57,
+    "directory_code_and_exact_name": 179,
+    "unmatched": 117,
+    "code_linked_no_matching_original": 2
+  },
+  "usable_candidates": 663,
+  "missing_in_market_filter": 25,
+  "collisions": 0
+}

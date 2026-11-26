@@ -1,0 +1,243 @@
+{
+  "route": "Public DART, no OpenDART key used. Original per-receipt PDF, XBRL ZIP, HTML source and Korean financial labels verified. Compare originally filed prior-period comparative, not first filing for the preceding year.",
+  "facts": [
+    {
+      "receipt": "20161114002433",
+      "corp_code": "00790501",
+      "period": "2016Q3",
+      "stock_code": "117930",
+      "isin": "KR7117930008",
+      "viewer_title": "한진해운/분기보고서/2016.11.14",
+      "public_date": "2016-11-14",
+      "public_date_type": "verified periodic document date (upper bound for first public information); no exhaustive search for earlier disclosures",
+      "section_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114002433&dcmNo=5352318&eleId=13&offset=324024&length=201271&dtd=dart3.xsd",
+      "xbrl_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20161114002433&dcm_no=5352318&lang=ko",
+      "xbrl_zip_sha256": "673f1cbc5ae1c8421ef8d693612d468bf8262b3994aceeb17d920b485d65223f",
+      "instance_sha256": "7258af72dc23e51ba30e821d9f850a280dce63b64940b808b66051dbd209060b",
+      "html_sha256": "f0952c19a22322185e219ffff4026784c16f799e2a7a70b71fe522422544f963",
+      "facts": {
+        "Revenue": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": 1048387819126,
+            "reported_label": "매출액 (주25,26)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": 1925267110311,
+            "reported_label": "매출액 (주25,26)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "OperatingIncomeLoss": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": -309362630924,
+            "reported_label": "영업이익(손실) (주26)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": -1866886453,
+            "reported_label": "영업이익(손실) (주26)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "BasicEarningsLossPerShare": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": -13802,
+            "reported_label": "기본및희석주당순이익(손실)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": 284,
+            "reported_label": "기본및희석주당순이익(손실)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          }
+        ]
+      }
+    },
+    {
+      "receipt": "20161130001119",
+      "corp_code": "00790501",
+      "period": "2016Q3",
+      "stock_code": "117930",
+      "isin": "KR7117930008",
+      "viewer_title": "한진해운/분기보고서/2016.11.30",
+      "public_date": "2016-11-30",
+      "public_date_type": "verified periodic document date (upper bound for first public information); no exhaustive search for earlier disclosures",
+      "section_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161130001119&dcmNo=5367806&eleId=15&offset=354869&length=201271&dtd=dart3.xsd",
+      "xbrl_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20161130001119&dcm_no=5367806&lang=ko",
+      "xbrl_zip_sha256": "90a0e6ca08b59e7ca3bc98918c34e4945e4d519bade96fbf7650a1033862b5f9",
+      "instance_sha256": "7258af72dc23e51ba30e821d9f850a280dce63b64940b808b66051dbd209060b",
+      "html_sha256": "f0952c19a22322185e219ffff4026784c16f799e2a7a70b71fe522422544f963",
+      "facts": {
+        "Revenue": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": 1048387819126,
+            "reported_label": "매출액 (주25,26)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": 1925267110311,
+            "reported_label": "매출액 (주25,26)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "OperatingIncomeLoss": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": -309362630924,
+            "reported_label": "영업이익(손실) (주26)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": -1866886453,
+            "reported_label": "영업이익(손실) (주26)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "BasicEarningsLossPerShare": [
+          {
+            "start": "2016-07-01",
+            "end": "2016-09-30",
+            "value": -13802,
+            "reported_label": "기본및희석주당순이익(손실)",
+            "context_ref": "CFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          },
+          {
+            "start": "2015-07-01",
+            "end": "2015-09-30",
+            "value": 284,
+            "reported_label": "기본및희석주당순이익(손실)",
+            "context_ref": "PFY2015dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          }
+        ]
+      }
+    },
+    {
+      "receipt": "20181114002813",
+      "corp_code": "00159005",
+      "period": "2018Q3",
+      "stock_code": "002000",
+      "isin": "KR7002000008",
+      "viewer_title": "생고뱅코리아홀딩스/분기보고서/2018.11.14",
+      "public_date": "2018-11-14",
+      "public_date_type": "verified periodic document date (upper bound for first public information); no exhaustive search for earlier disclosures",
+      "section_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20181114002813&dcmNo=6385149&eleId=13&offset=230554&length=69525&dtd=dart3.xsd",
+      "xbrl_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20181114002813&dcm_no=6385149&lang=ko",
+      "xbrl_zip_sha256": "dc4d1399cc890ac1735549dea9c7be6e3e81301c3e541a2928b93ad2f1389947",
+      "instance_sha256": "c653520f7669c7588da69c7d23eaebecb01e48a11fc465dd631342dc0858708a",
+      "html_sha256": "028acc9126794e7007ebc6e3516c0a13b575080ded919f39fb1a253802f31f1f",
+      "facts": {
+        "Revenue": [
+          {
+            "start": "2018-07-01",
+            "end": "2018-09-30",
+            "value": 140872919102,
+            "reported_label": "매출액 (주21,29)",
+            "context_ref": "CFY2018dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2017-07-01",
+            "end": "2017-09-30",
+            "value": 88992596977,
+            "reported_label": "매출액 (주21,29)",
+            "context_ref": "PFY2017dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "OperatingIncomeLoss": [
+          {
+            "start": "2018-07-01",
+            "end": "2018-09-30",
+            "value": 6946592294,
+            "reported_label": "영업이익(손실) (주29)",
+            "context_ref": "CFY2018dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          },
+          {
+            "start": "2017-07-01",
+            "end": "2017-09-30",
+            "value": 5596448136,
+            "reported_label": "영업이익(손실) (주29)",
+            "context_ref": "PFY2017dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW",
+            "xbrl_measure": "iso4217:KRW"
+          }
+        ],
+        "BasicEarningsLossPerShare": [
+          {
+            "start": "2018-07-01",
+            "end": "2018-09-30",
+            "value": 616,
+            "reported_label": "보통주당이익(손실) (단위 : 원)",
+            "context_ref": "CFY2018dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          },
+          {
+            "start": "2017-07-01",
+            "end": "2017-09-30",
+            "value": 519,
+            "reported_label": "보통주당이익(손실) (단위 : 원)",
+            "context_ref": "PFY2017dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "reported_unit_html": "KRW/common share",
+            "xbrl_measure": "shares"
+          }
+        ]
+      }
+    }
+  ],
+  "observations": [
+    "Hanjin original/correction changed only contingent debt guarantee table; all 8 XBRL members byte-identical, ZIP package hashes differ.",
+    "Hankuk Glass historic listed legal entity now displayed as Saint-Gobain Korea Holdings. Use historical KRX ISIN, class, cover and DART corp code.",
+    "Hankuk Glass preferred EPS 628/569 is submitted with diluted EPS XBRL tag; only ordinary/basic 616/519 cross-checked versus rendered statements.",
+    "XBRL measure for EPS is shares, with currency per share confirmed by reporting tables. Never normalize these units without independent evidence.",
+    "At date-only disclosure, next KRX session 2016-11-15/2018-11-15. Hankuk Glass volume and opening price were both zero in the latter session. No executable next-open trade."
+  ]
+}

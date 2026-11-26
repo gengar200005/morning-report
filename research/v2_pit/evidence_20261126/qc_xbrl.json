@@ -1,0 +1,938 @@
+[
+  {
+    "receipt": "20210513000780",
+    "document": "8066770",
+    "corp": "00137809",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210513000780&dcm_no=8066770&lang=ko",
+    "archive_sha256": "dddcfb5698fbf8e2fe8f20423918715b8fe8288a5a518b5df8cd3ba2a727f838",
+    "instance": "00137809_2015-08-03.xbrl",
+    "instance_sha256": "684e3990e0740ef94ef6f9995e897529076c628e311fd4ca38a219b6df0fd8ca",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        },
+        "operating_profit": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        },
+        "operating_profit": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [],
+          "reason": "no_supported_fact_in_exact_context"
+        }
+      }
+    }
+  },
+  {
+    "receipt": "20210517000210",
+    "document": "8071071",
+    "corp": "00159795",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517000210&dcm_no=8071071&lang=ko",
+    "archive_sha256": "e342b2113f6cfab2eaeefc20694dbafef3936238b89d597c95de09cb09c09626",
+    "instance": "00159795_2017-10-31.xbrl",
+    "instance_sha256": "b96fd3a1f6186d3cfa3e4c2b94cda8435e015ea710bd7b25ad5d9c9635b210a5",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "PASS",
+          "value": "102105380598",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "102105380598",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "102105380598",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "9007635050",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "9007635050",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "9007635050",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "177",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "177",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "PASS",
+          "value": "88669640238",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "88669640238",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "88669640238",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "12602851186",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "12602851186",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "12602851186",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "247",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "247",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      }
+    }
+  },
+  {
+    "receipt": "20210517000849",
+    "document": "8072702",
+    "corp": "00103042",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517000849&dcm_no=8072702&lang=ko",
+    "archive_sha256": "8035d3110664537cb3e2f7c53d791337df05ea720342c076d33b6dae48686dff",
+    "instance": "00103042_2018-06-30.xbrl",
+    "instance_sha256": "26fec8fb0eb6ccdd7509cc501c95d430b5c227f5cdbe678122b310244b6d4165",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "PASS",
+          "value": "149324741211",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "149324741211",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "149324741211",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "4274358194",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "4274358194",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "4274358194",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "95",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "95",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "PASS",
+          "value": "123348608764",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "123348608764",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "123348608764",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "3632161096",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "3632161096",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "3632161096",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "98",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "98",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      }
+    }
+  },
+  {
+    "receipt": "20210517001140",
+    "document": "8073409",
+    "corp": "00219574",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517001140&dcm_no=8073409&lang=ko",
+    "archive_sha256": "ea74f7e1ddae2fd6fdc888ef9b112cfe7ea137abb273d2e6237c0e0812f67940",
+    "instance": "00219574_2018-04-17.xbrl",
+    "instance_sha256": "c88fc9283a9f16cf1cc541bb5793fac19c4bed29fcc6d7e516cec25e18aa702d",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "PASS",
+          "value": "134638247000",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "134638247000",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "134638247000",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "4116331166",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "4116331166",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "4116331166",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "424",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "424",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "PASS",
+          "value": "131982715969",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "131982715969",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "131982715969",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "903759832",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "903759832",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "903759832",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "-28",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "-28",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      }
+    }
+  },
+  {
+    "receipt": "20210517001189",
+    "document": "8073532",
+    "corp": "00116824",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517001189&dcm_no=8073532&lang=ko",
+    "archive_sha256": "8626393d09f9d071e03e1af7d79b256e9c02a7e904b2ec12300fea0672fc33ec",
+    "instance": "00116824_2018-03-20.xbrl",
+    "instance_sha256": "d3f5082e427bd37caabf182213320e7b6d1d67c4828986e02b0a2a78e73fc184",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "PASS",
+          "value": "192209824591",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "192209824591",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "192209824591",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "5448000357",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "5448000357",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "5448000357",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "131",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "131",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "PASS",
+          "value": "181131447669",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "181131447669",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "181131447669",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "8812607967",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "8812607967",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "8812607967",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1370",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1370",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      }
+    }
+  },
+  {
+    "receipt": "20210517001750",
+    "document": "8075017",
+    "corp": "00170558",
+    "periods": {
+      "current": [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      "prior_as_reported": [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    },
+    "source_url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517001750&dcm_no=8075017&lang=ko",
+    "archive_sha256": "aa00cbc6f9aec4ad82a081a1f966944b8a98f3ed80b06b187d1554e639abb73b",
+    "instance": "00170558_2011-08-10.xbrl",
+    "instance_sha256": "a13bcb43cd32842c90b7ee1e7a725c11e1b45f8a375b38193497e42e8b90932f",
+    "fields": {
+      "current": {
+        "revenue": {
+          "status": "PASS",
+          "value": "878992033732",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "878992033732",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "878992033732",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "170733525927",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "170733525927",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "170733525927",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1734",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1734",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      },
+      "prior_as_reported": {
+        "revenue": {
+          "status": "PASS",
+          "value": "768937144317",
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "768937144317",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}Revenue",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "768937144317",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "value": "138863264748",
+          "candidates": [
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "138863264748",
+              "nil": false
+            },
+            {
+              "tag": "{http://dart.fss.or.kr/taxonomy/2019-10-01/ifrs/dart}OperatingIncomeLoss",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "KRW",
+              "unit_ref": "KRW",
+              "decimals": "0",
+              "raw": "138863264748",
+              "nil": false
+            }
+          ],
+          "reason": "exact_consolidated_quarter_fact"
+        },
+        "basic_common_eps": {
+          "status": "BLOCKED",
+          "value": null,
+          "candidates": [
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1404",
+              "nil": false
+            },
+            {
+              "tag": "{http://xbrl.ifrs.org/taxonomy/2019-03-27/ifrs-full}BasicEarningsLossPerShare",
+              "context": "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+              "unit": "shares",
+              "unit_ref": "SHARES",
+              "decimals": "INF",
+              "raw": "1404",
+              "nil": false
+            }
+          ],
+          "reason": "common_share_class_requires_notes+per_share_unit_unverified"
+        }
+      }
+    }
+  }
+]

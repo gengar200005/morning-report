@@ -1,0 +1,47 @@
+{
+  "status": "PARTIAL",
+  "pages_read": 6,
+  "pages_reported": 19,
+  "rows_read": 270,
+  "rows_reported": 828,
+  "failed_page": 7,
+  "reason": "HTTP 503 from upstream connection termination; GET and form POST retries failed.",
+  "hashes": [
+    {
+      "page": 1,
+      "rows": 45,
+      "pagination": "[1/19] [\ucd1d 828\uac74]",
+      "sha256": "e8981532cd45208ddbf61b65774fa843c00623d111ada85b1ccccb9644882433"
+    },
+    {
+      "page": 2,
+      "rows": 45,
+      "pagination": "[2/19] [\ucd1d 828\uac74]",
+      "sha256": "b5bd757a46a0e1f2a7d8da7245f1896a6a7baa3910b68179deefe1d39c112a25"
+    },
+    {
+      "page": 3,
+      "rows": 45,
+      "pagination": "[3/19] [\ucd1d 828\uac74]",
+      "sha256": "ccecef4300b4de711d75ff1661bf78eaa892914e3344d91e45d8d2f227a147b0"
+    },
+    {
+      "page": 4,
+      "rows": 45,
+      "pagination": "[4/19] [\ucd1d 828\uac74]",
+      "sha256": "6acd2ceecbebebae2df0b31b97be640607b4feea2b67171d417e7e87cd8d7800"
+    },
+    {
+      "page": 5,
+      "rows": 45,
+      "pagination": "[5/19] [\ucd1d 828\uac74]",
+      "sha256": "e490d8d54b5e832b23e510a3a72b4051381e78283ea1e9bfe9fe46811bfa9d20"
+    },
+    {
+      "page": 6,
+      "rows": 45,
+      "pagination": "[6/19] [\ucd1d 828\uac74]",
+      "sha256": "90399333906d1a4841ce76b48164dceb3ff37d440b468b39d19316acc4650604"
+    }
+  ]
+}

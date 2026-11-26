@@ -1,0 +1,312 @@
+{
+  "events": {
+    "2021": {
+      "firm": "삼성전자",
+      "corp_code": "00126380",
+      "period": "2021Q1",
+      "receipt": "20210517001185",
+      "dcm": "8073522",
+      "xbrl_instance_sha256": "11ec2f8a3b9d930a73deb6ae4aacbdf1f1f166c392f99673e78af74ba5b2a588",
+      "consolidated_filing_values": {
+        "Revenue": {
+          "value": 65388503,
+          "prior_year_same_quarter_as_filed": 55325178,
+          "unit": "million KRW",
+          "xbrl_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        "OperatingIncomeLoss": {
+          "value": 9382868,
+          "prior_year_same_quarter_as_filed": 6447345,
+          "unit": "million KRW",
+          "xbrl_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        "BasicEarningsLossPerShare": {
+          "value": 1044,
+          "prior_year_same_quarter_as_filed": 720,
+          "unit": "KRW/common share",
+          "xbrl_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      },
+      "filing_shares_note": "XBRL EPS unit resolves to shares; amount validated against KRW/common share in consolidated notes and face, not inferred from the tag.",
+      "guidance_versions": [
+        {
+          "kind": "guidance",
+          "receipt": "20210407800054",
+          "unit": "trillion KRW",
+          "data": {
+            "매출액": {
+              "value": "65.00",
+              "prior_year_same_quarter_as_filed": "55.33"
+            },
+            "영업이익": {
+              "value": "9.30",
+              "prior_year_same_quarter_as_filed": "6.45"
+            }
+          }
+        },
+        {
+          "kind": "correction",
+          "receipt": "20210429800068",
+          "unit": "trillion KRW",
+          "data": {
+            "매출액": {
+              "value": "65.39",
+              "prior_year_same_quarter_as_filed": "55.33"
+            },
+            "영업이익": {
+              "value": "9.38",
+              "prior_year_same_quarter_as_filed": "6.45"
+            }
+          }
+        }
+      ],
+      "april_deck": {
+        "event_on": "2021-04-29",
+        "eps": [
+          1044,
+          720
+        ],
+        "label": "Basic Earnings Per Share(KRW)",
+        "is_unambiguous_basic_common": false
+      },
+      "basic_common_first_verified_by": "2021-05-17",
+      "periodic_family_options": [
+        "rcpNo=20210517001185"
+      ],
+      "timing_rule": "Use the next eligible exchange session after the source date. Same-day prices excluded. Observed evidence gives an upper bound on earliest disclosure."
+    },
+    "2023": {
+      "firm": "삼성전자",
+      "corp_code": "00126380",
+      "period": "2023Q1",
+      "receipt": "20230515002335",
+      "dcm": "9276899",
+      "xbrl_instance_sha256": "ef4f1f98d089a6ff73c91ddbfc817772ea32615ff75c54013efeff2938e657e6",
+      "consolidated_filing_values": {
+        "Revenue": {
+          "value": 63745371,
+          "prior_year_same_quarter_as_filed": 77781498,
+          "unit": "million KRW",
+          "xbrl_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        "OperatingIncomeLoss": {
+          "value": 640178,
+          "prior_year_same_quarter_as_filed": 14121409,
+          "unit": "million KRW",
+          "xbrl_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        "BasicEarningsLossPerShare": {
+          "value": 206,
+          "prior_year_same_quarter_as_filed": 1638,
+          "unit": "KRW/common share",
+          "xbrl_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      },
+      "filing_shares_note": "XBRL EPS unit resolves to shares; amount validated against KRW/common share in consolidated notes and face, not inferred from the tag.",
+      "guidance_versions": [
+        {
+          "kind": "guidance",
+          "receipt": "20230407800208",
+          "unit": "trillion KRW",
+          "data": {
+            "매출액": {
+              "value": "63.00",
+              "prior_year_same_quarter_as_filed": "77.78"
+            },
+            "영업이익": {
+              "value": "0.60",
+              "prior_year_same_quarter_as_filed": "14.12"
+            }
+          }
+        },
+        {
+          "kind": "correction",
+          "receipt": "20230427800066",
+          "unit": "trillion KRW",
+          "data": {
+            "매출액": {
+              "value": "63.75",
+              "prior_year_same_quarter_as_filed": "77.78"
+            },
+            "영업이익": {
+              "value": "0.64",
+              "prior_year_same_quarter_as_filed": "14.12"
+            }
+          }
+        }
+      ],
+      "april_deck": {
+        "event_on": "2023-04-27",
+        "eps": [
+          206,
+          1638
+        ],
+        "label": "Earnings Per Share (KRW Won)",
+        "is_unambiguous_basic_common": false
+      },
+      "basic_common_first_verified_by": "2023-05-15",
+      "periodic_family_options": [
+        "rcpNo=20230515002335"
+      ],
+      "timing_rule": "Use the next eligible exchange session after the source date. Same-day prices excluded. Observed evidence gives an upper bound on earliest disclosure."
+    }
+  },
+  "sources": {
+    "events.html": {
+      "url": "https://www.samsung.com/global/ir/ir-events-presentations/events/",
+      "sha256": "7a659a1d5b3b62d60218688c96c35ecec5835a05a3910552009414b7af68392b",
+      "bytes": 413599
+    },
+    "2021-dart.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517001185",
+      "sha256": "fee3e0f02174bb24b898007a466d59c265f13a766887776481d16c0d326605a5",
+      "bytes": 55944
+    },
+    "2021-deck.pdf": {
+      "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2021_1Q_conference_eng.pdf",
+      "sha256": "087ca39c3a23e037c91ffd3c05a78a8a0a6d685d7b087e4ea7232f8bac000e7a",
+      "bytes": 842687
+    },
+    "2021-prelim.html": {
+      "url": "https://news.samsung.com/kr/삼성전자-2021년-1분기-잠정실적-발표",
+      "sha256": "ce43befc104979dcff45332a1439978c00914ea84bf94550516cfc3041abd5c3",
+      "bytes": 132794
+    },
+    "2021-fs.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001185&dcmNo=8073522&eleId=14&offset=662977&length=80168&dtd=dart3.xsd",
+      "sha256": "088fb84d81b24516d7569d311841c4234186d4b54fe89c5fd741bddc5fce3657",
+      "bytes": 55468
+    },
+    "2021-files.html": {
+      "url": "https://dart.fss.or.kr/pdf/download/main.do?rcp_no=20210517001185&dcm_no=8073522",
+      "sha256": "c5c1d3b4280bf8eab3ef1bad22541955f0341e2c04b8e4055bd3dbbedb055a35",
+      "bytes": 2839
+    },
+    "2021-notes.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001185&dcmNo=8073522&eleId=15&offset=743149&length=338217&dtd=dart3.xsd",
+      "sha256": "52759824256a2aacbfd7046a16d4dad40b151a269c79b4b7d31820edc59ed028",
+      "bytes": 334460
+    },
+    "2023-dart.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230515002335",
+      "sha256": "4aa628814dd6d1f545c72dc0e7aa0ea82bf8bb8d7185f8f00b7719725a232531",
+      "bytes": 65643
+    },
+    "2023-deck.pdf": {
+      "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2023_1Q_conference_eng.pdf",
+      "sha256": "94ac3ee6f520f9dece49bde779df40e6cdf279385e6b11561fe775f591ac0062",
+      "bytes": 4895180
+    },
+    "2023-prelim.html": {
+      "url": "https://news.samsung.com/kr/삼성전자-2023년-1분기-잠정실적-발표",
+      "sha256": "452f087f668810f1323a3a6fec462bdcb641b23dd7ba7c7505b3c23d3e802cc4",
+      "bytes": 134917
+    },
+    "2023-fs.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515002335&dcmNo=9276899&eleId=19&offset=187242&length=75568&dtd=dart3.xsd",
+      "sha256": "9638eb36e9a030947d62cf0371aaf00d71efca7d159712b8fdd76de15a066cce",
+      "bytes": 52259
+    },
+    "2023-files.html": {
+      "url": "https://dart.fss.or.kr/pdf/download/main.do?rcp_no=20230515002335&dcm_no=9276899",
+      "sha256": "5c6ba9d5e393ef36bec7ad5a5b9ef7ff521b0a76ec49dd4a934458cea65356b7",
+      "bytes": 2839
+    },
+    "2023-notes.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515002335&dcmNo=9276899&eleId=20&offset=262814&length=316340&dtd=dart3.xsd",
+      "sha256": "c970ec20b98221c0b45bad324203b6d3886c576a163ddc75191a7d1c962b01b9",
+      "bytes": 310564
+    },
+    "2023-report.pdf": {
+      "url": "https://images.samsung.com/kdp/ir/business-report/2023_1Q_Interim_Business_Report_vF_kr.pdf",
+      "sha256": "823f78c53cc741af07d5e649dfd7f1ffa337dde2659981b29794a8d387c536aa",
+      "bytes": 1446118
+    },
+    "2021-soi.pdf": {
+      "url": "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2021_con_quarter01_soi.pdf",
+      "sha256": "96db0a98a229d6b18470522a775e5c16d6c5ab2150e0e4bafb66828b576aef96",
+      "bytes": 186241
+    },
+    "2021-correction.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210429800068",
+      "sha256": "404d37af6832e1acfb07f1a75766d5ade6d040d2481df10ec819ff92e7af1b2a",
+      "bytes": 37277
+    },
+    "2021-guidance.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210407800054",
+      "sha256": "478e715647c44e7304700b9f483b820ad0002b1df64f574fb8dccadc5f7f838e",
+      "bytes": 37429
+    },
+    "2021-guidance-body.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210407800054&dcmNo=7980176&eleId=0&offset=0&length=0&dtd=HTML",
+      "sha256": "10921cd67815b1193f57c029282fb4a557aeec32b7b1f3801fd5ee4d9f62a593",
+      "bytes": 15520
+    },
+    "2021-correction-body.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210429800068&dcmNo=8047669&eleId=0&offset=0&length=0&dtd=HTML",
+      "sha256": "ecd343098bf9624fcd8431e08dd03a2d07d85a62c261338438489d61cb78e136",
+      "bytes": 25194
+    },
+    "2023-correction.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230427800066",
+      "sha256": "96d8d82420bd28d1871cccfc7ec162a4acd623339a46dd15f548af81be8876d6",
+      "bytes": 37799
+    },
+    "2023-guidance.html": {
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230407800208",
+      "sha256": "a1c2dcf803f417e8e212b785d502885fe5aa02a5f30dd3f49e9c869ff580bc4f",
+      "bytes": 37951
+    },
+    "2023-guidance-body.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230407800208&dcmNo=9178456&eleId=0&offset=0&length=0&dtd=HTML",
+      "sha256": "a03eb8591cc1baed526114e4ffe65be44fef4bd9c030a750850cd4f0784a024c",
+      "bytes": 15530
+    },
+    "2023-correction-body.html": {
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230427800066&dcmNo=9248484&eleId=0&offset=0&length=0&dtd=HTML",
+      "sha256": "2504c7e906f84b381b3638af6536786d225cd6f69f047bb7c0f1078ce013c000",
+      "bytes": 25153
+    },
+    "2021-xbrl.zip": {
+      "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517001185&dcm_no=8073522&lang=ko",
+      "sha256": "1b79620694832a7516b8dea6cb2e359c5ad2c9fbb11e687ec68dc199a15cbd3e",
+      "bytes": 211591
+    },
+    "2023-xbrl.zip": {
+      "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20230515002335&dcm_no=9276899&lang=ko",
+      "sha256": "a61bf3dc9c86b43c0b415734f6d762f0015a7e0a599f28571f4267b0f452c134",
+      "bytes": 210484
+    }
+  },
+  "scope": "Public DART and issuer pages. Receipt ZIP supplied by public DART contains original IFRS XBRL, not authenticated OpenDART document.xml. The regulator viewer wrapper is dynamic; hashes refer to retrieved bytes. Receipt family is scoped to each linked filing, not a full search of the corpus. Two-issuer-quarter sample cannot measure population accuracy."
+}

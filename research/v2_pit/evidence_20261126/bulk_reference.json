@@ -1,0 +1,49 @@
+{
+  "status": "BLOCKED",
+  "scope": "2021Q1 cross-sectional consolidated earnings bulk reference, coverage-only, not receipt PIT",
+  "historical_census": {
+    "quarter_end": "2021-03-31",
+    "unique_stocks": 782,
+    "csv_sha256": "ba2cbaf9bf322c537be1c0385755e1e25a6bf47624b01c2579b26698a4d60406"
+  },
+  "sources": {
+    "description": "https://opendart.fss.or.kr/disclosureinfo/fnltt/dwld/main.do",
+    "index": "https://opendart.fss.or.kr/disclosureinfo/fnltt/dwld/list.do",
+    "download": "https://opendart.fss.or.kr/cmm/downloadFnlttZip.do?fl_nm=2021_1Q_PL_20240713030456.zip"
+  },
+  "listed_filename": "2021_1Q_PL_20240713030456.zip",
+  "index_requests": [
+    "GET",
+    "POST (AJAX)"
+  ],
+  "download_requests": [
+    "GET",
+    "GET with main page session and referer"
+  ],
+  "source_bytes_metadata": {
+    "description": {
+      "byte_length": 31089,
+      "sha256": "906e0581be2b9d7a03514e03c1ac9706c742c67245161ee3f4873854e73f297e"
+    },
+    "index_get": {
+      "byte_length": 92030,
+      "sha256": "41dc633944ef30595246f6ced564bd9ac01ee76f42267e542194d2d21b36523f"
+    },
+    "index_post": {
+      "byte_length": 92030,
+      "sha256": "41dc633944ef30595246f6ced564bd9ac01ee76f42267e542194d2d21b36523f"
+    },
+    "download_error": {
+      "byte_length": 975,
+      "sha256": "5db30a6e6fded8a47f4f059049933a1e7dc95e16b0d9ad3e49725837918f67a7"
+    }
+  },
+  "download_http_status": 200,
+  "download_content_type": "text/html; charset=utf-8",
+  "valid_zip": false,
+  "issuer_receipts_fetched_for_census": 0,
+  "data_coverage": null,
+  "extraction_accuracy": null,
+  "PIT_completeness": null,
+  "caveat": "Listed bulk is subject to later revisions and cannot establish the earliest known field or receipt even when downloadable."
+}

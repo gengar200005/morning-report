@@ -1,0 +1,214 @@
+[
+  {
+    "receipt": "20210428800041",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210428800041",
+    "sha256": "882ca4caba6dd584d618d5bfca06327844f9c0385f29ac879e5eb3bfa0faac66",
+    "size": 37068
+  },
+  {
+    "receipt": "20210428800041",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210428800041&dcmNo=8045082&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "b7b4eeaec2e944391a07e39c2024a49a5bd97163df58c118950f26569ff6d4e9",
+    "size": 15871
+  },
+  {
+    "receipt": "20230426800003",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230426800003",
+    "sha256": "549be75a05e75bb7e4da55dae9add60d4eaf630fe0a669f555b32b49bc76d0ec",
+    "size": 37068
+  },
+  {
+    "receipt": "20230426800003",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230426800003&dcmNo=9246220&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "669a75c5507f30f192eee76d792290732ba1b746a2026e39feb1e1e898710e26",
+    "size": 15989
+  },
+  {
+    "receipt": "20210407800092",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210407800092",
+    "sha256": "0971d45fa65b95c8cdeac473071e44fcdd0e821d3dd5da82e9d85e39f4d1b928",
+    "size": 38668
+  },
+  {
+    "receipt": "20210407800092",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210407800092&dcmNo=7980896&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "1529e4da8f30a91f146014f9a113a84a5132d34980c6d3a20489b5f3dae6a3f2",
+    "size": 15812
+  },
+  {
+    "receipt": "20210429800242",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210429800242",
+    "sha256": "5650abd27668e1c5690d4989a7ff04b42af66de8bf8c3dd20b6576572da937b4",
+    "size": 38516
+  },
+  {
+    "receipt": "20210429800242",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210429800242&dcmNo=8048441&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "9f733b5e9a9dfa9e1f27e08289755c2d674bb97adfbc0251cdcb0ba7883cf052",
+    "size": 25438
+  },
+  {
+    "receipt": "20230407800596",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230407800596",
+    "sha256": "b8896d647a1d5660f627f0ac984f9a1ceebac53fc10537a0d52b41b1c8f41998",
+    "size": 38196
+  },
+  {
+    "receipt": "20230407800596",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230407800596&dcmNo=9182962&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "9323329f45545406244e155f1dfc8aa31354e37a976996187a4b410c97516b91",
+    "size": 16231
+  },
+  {
+    "receipt": "20230427800323",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230427800323",
+    "sha256": "53dd8660d9fa566e5114d5c4d17766d915da57401ba182942608987b546099eb",
+    "size": 38044
+  },
+  {
+    "receipt": "20230427800323",
+    "kind": "release",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230427800323&dcmNo=9249346&eleId=0&offset=0&length=0&dtd=HTML",
+    "sha256": "04fad5ba048fc4dc379041427f8a64c59b6dc4053dc8acbcf151707ca33b338b",
+    "size": 21292
+  },
+  {
+    "receipt": "20210517000890",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517000890",
+    "sha256": "cfb8bf7562e7c510d828e7f2bfc4381f5115783cccfbfad03af8716869c18894",
+    "size": 56170
+  },
+  {
+    "receipt": "20210517000890",
+    "kind": "fs",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000890&dcmNo=8072798&eleId=14&offset=727044&length=79141&dtd=dart3.xsd",
+    "sha256": "4bb482402ce9bd8b3d4a5baf5c1d1adabd9ac9932d0f7f3e471eaf48edab3368",
+    "size": 54487
+  },
+  {
+    "receipt": "20210517000890",
+    "kind": "notes",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000890&dcmNo=8072798&eleId=15&offset=806189&length=624174&dtd=dart3.xsd",
+    "sha256": "c081f1f91ef75fe55c296a70b4e15815ac3329e44769e3f144a4d91bcc347919",
+    "size": 642439
+  },
+  {
+    "receipt": "20210517000667",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517000667",
+    "sha256": "18e438f957cc2d86db1196aeac835aa6b9dae9ebc41631096da88e124be1461c",
+    "size": 55947
+  },
+  {
+    "receipt": "20210517000667",
+    "kind": "fs",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000667&dcmNo=8072275&eleId=14&offset=388909&length=67005&dtd=dart3.xsd",
+    "sha256": "f70683b05756d928ecb67db98933a0b18bf5d155e6e088e1daa434cdbfaf79bc",
+    "size": 45938
+  },
+  {
+    "receipt": "20210517000667",
+    "kind": "notes",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000667&dcmNo=8072275&eleId=15&offset=455918&length=325011&dtd=dart3.xsd",
+    "sha256": "2057ca6f2c4b0dc71bddaaa9fc5097e86386a77240b533d6c09523e01df36312",
+    "size": 327887
+  },
+  {
+    "receipt": "20230515001288",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230515001288",
+    "sha256": "e7895419e32822589fe0791d8f81a1e839b58551a9e87767f300def770fda97d",
+    "size": 65872
+  },
+  {
+    "receipt": "20230515001288",
+    "kind": "fs",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001288&dcmNo=9274267&eleId=19&offset=241051&length=90080&dtd=dart3.xsd",
+    "sha256": "510b3f9968e92dfe915033024556d8541e5d31dc20e03c42d2d96c0a890c7e4d",
+    "size": 62050
+  },
+  {
+    "receipt": "20230515001288",
+    "kind": "notes",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001288&dcmNo=9274267&eleId=20&offset=331135&length=632057&dtd=dart3.xsd",
+    "sha256": "b5f444f201a329ce3aec8f2d414447374a3b4a2fd099271e1de855951ff8534f",
+    "size": 651291
+  },
+  {
+    "receipt": "20230515001677",
+    "kind": "main",
+    "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230515001677",
+    "sha256": "a9e3beda4edf3d7c67612ebf7d451077ce76a46c09bed532ec8a73107b945f67",
+    "size": 65109
+  },
+  {
+    "receipt": "20230515001677",
+    "kind": "fs",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001677&dcmNo=9275239&eleId=19&offset=142359&length=71658&dtd=dart3.xsd",
+    "sha256": "0ead2e574bd7db112872be46bc2b1afdd5e16cf29ea623d5b31b08fe4f948b7d",
+    "size": 49250
+  },
+  {
+    "receipt": "20230515001677",
+    "kind": "notes",
+    "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001677&dcmNo=9275239&eleId=20&offset=214021&length=296898&dtd=dart3.xsd",
+    "sha256": "72c8eb6653ac176d90147a30d3ed75797797c8dfdb501709557f1c2d0c97d910",
+    "size": 298293
+  },
+  {
+    "receipt": "20210517000890",
+    "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517000890&dcm_no=8072798&lang=ko",
+    "sha256": "669a3206f2393ba38555582d739ebf3b7974b7c226442c70f9a708048160bcbb",
+    "size": 213990,
+    "kind": "original_xbrl_zip"
+  },
+  {
+    "receipt": "20210517000667",
+    "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20210517000667&dcm_no=8072275&lang=ko",
+    "sha256": "55a6085a68f73964707b5b4868b7f48963870b362a926820a8c5681426458db3",
+    "size": 211551,
+    "kind": "original_xbrl_zip"
+  },
+  {
+    "receipt": "20230515001288",
+    "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20230515001288&dcm_no=9274267&lang=ko",
+    "sha256": "53d82746da78a034929756b5f9af8c433924fb265ba49a92c3cd8a2471bb01ed",
+    "size": 219793,
+    "kind": "original_xbrl_zip"
+  },
+  {
+    "receipt": "20230515001677",
+    "url": "https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no=20230515001677&dcm_no=9275239&lang=ko",
+    "sha256": "1f4c16292674d7504ed2040180d77afe7a248cda04aa906e420155258357112d",
+    "size": 214296,
+    "kind": "original_xbrl_zip"
+  },
+  {
+    "receipt": null,
+    "linked_event_receipt": "20210428800041",
+    "kind": "issuer_IR_slides_via_conference_vendor",
+    "url": "https://irsvc.teletogether.com/hynix/pdf/2021Q1_conference_eng.pdf",
+    "sha256": "cc2c60731ed2f2b93d0a3debf6c540513354fc5a2acf0d5fda83e14fa741925c",
+    "size": 2031204
+  },
+  {
+    "receipt": null,
+    "linked_event_receipt": "20230426800003",
+    "kind": "issuer_IR_slides_via_conference_vendor",
+    "url": "https://irsvc.teletogether.com/hynix/pdf/hynix2023Q1_eng.pdf?1=",
+    "sha256": "cf30cc59a7807ba3c6768247651d5b3ebc033ec5dce644674cc328b5c05922c3",
+    "size": 3077824
+  }
+]

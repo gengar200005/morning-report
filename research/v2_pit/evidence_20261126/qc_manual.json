@@ -1,0 +1,604 @@
+{
+  "scope": "Original periodic-filing field transcriptions checked on fixed 8-issuer 2021Q1 subset. Amounts in each field unit. PASS here means rendered original quarterly comparison only, not earliest-publication proof, PIT investability, scalable extraction accuracy or numerical agreement with independent XBRL.",
+  "selection": "First 6 March 31 universe rows by SHA-256 of mr-v2-qc1: + ISIN sorted as bytes; add stock codes 006800 and 105560. No replacements.",
+  "counts": {
+    "revenue": {
+      "PASS": 5,
+      "BLOCKED": 3
+    },
+    "operating_profit": {
+      "PASS": 7,
+      "BLOCKED": 1
+    },
+    "basic_eps_common": {
+      "PASS": 6,
+      "BLOCKED": 2
+    }
+  },
+  "rows": [
+    {
+      "stock_code": "044820",
+      "isin": "KR7044820009",
+      "issuer_as_of": "코스맥스비티아이",
+      "corp_code": "00219574",
+      "receipt": "20210517001140",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "코스맥스비티아이/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517001140",
+      "index_sha256": "fc0cb22fcc777e09627cc14e84a21cbe82c27779c8184fa8c5357fb4e630b2b1",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001140&dcmNo=8073409&eleId=14&offset=259802&length=69705&dtd=dart3.xsd",
+      "viewer_sha256": "97c54796445082bccfcfce9910f6a16be773cc095c22a38f4d3fa046b32d7e6f",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001140&dcmNo=8073409&eleId=15&offset=329511&length=346158&dtd=dart3.xsd",
+      "notes_sha256": "beb92e0e6de48f86351a4b389c290f7976df0bfb860f783e0f3afb26265b3d28",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001140&dcmNo=8073409&eleId=7&offset=96683&length=22751&dtd=dart3.xsd",
+      "issued_shares_sha256": "9cc1f1190b96fbd1b55e2d42bd5fdb10a12bc421498f4fcaa368b0b5cd3ee4c9",
+      "fields": {
+        "revenue": {
+          "status": "PASS",
+          "current": 134638247000,
+          "prior": 131982715969,
+          "unit": "KRW",
+          "source_label": "매출액",
+          "table_index": 3,
+          "row_index": 2,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 4116331166,
+          "prior": 903759832,
+          "unit": "KRW",
+          "source_label": "영업이익",
+          "table_index": 3,
+          "row_index": 6,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 424,
+          "prior": -28,
+          "unit": "KRW/share",
+          "source_label": "기본주당순이익 (단위 : 원)",
+          "table_index": 3,
+          "row_index": 31,
+          "value_columns": [
+            1,
+            3
+          ],
+          "share_class_evidence": "Explicit common-share computation or row in associated notes",
+          "notes_table_index": 80,
+          "signal_eligibility": "F1 excluded: prior EPS negative"
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "9,603,921",
+        "-",
+        "9,603,921",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "017960",
+      "isin": "KR7017960006",
+      "issuer_as_of": "한국카본",
+      "corp_code": "00159795",
+      "receipt": "20210517000210",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "한국카본/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517000210",
+      "index_sha256": "49a7c93c921fef1d262b48b4ed76b07fb30d4d95ff9aa38af74cbb9054cba7bd",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000210&dcmNo=8071071&eleId=14&offset=270146&length=74763&dtd=dart3.xsd",
+      "viewer_sha256": "03f5aa95bee2be51eef71a057e643859a0e8161e94ac255e8bbf25f5ca1e22bb",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000210&dcmNo=8071071&eleId=15&offset=344913&length=421784&dtd=dart3.xsd",
+      "notes_sha256": "b35cfe3992116cb1b02027fc11f0194c47e2954f8df0374c21f560f3aa93893c",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000210&dcmNo=8071071&eleId=7&offset=41351&length=19277&dtd=dart3.xsd",
+      "issued_shares_sha256": "40ce17c756e8556cd3cc13c886560781514ccdb3ba9e154f23664743b10838fd",
+      "fields": {
+        "revenue": {
+          "status": "PASS",
+          "current": 102105380598,
+          "prior": 88669640238,
+          "unit": "KRW",
+          "source_label": "수익(매출액)",
+          "table_index": 3,
+          "row_index": 2,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 9007635050,
+          "prior": 12602851186,
+          "unit": "KRW",
+          "source_label": "영업이익(손실)",
+          "table_index": 3,
+          "row_index": 8,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "basic_eps_common": {
+          "status": "BLOCKED",
+          "current": 177,
+          "prior": 247,
+          "unit": "KRW/share",
+          "source_label": "기본주당이익(손실) (단위 : 원)",
+          "table_index": 3,
+          "row_index": 28,
+          "value_columns": [
+            1,
+            3
+          ],
+          "reason": "Face shows 177/247 but note 91 shows 171 for continuing and dash for discontinued; note 92 compares prior annual not prior Q1. Retain face values for audit only.",
+          "notes_table_index": 91
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "43,960,757",
+        "-",
+        "43,960,757",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "000640",
+      "isin": "KR7000640003",
+      "issuer_as_of": "동아쏘시오홀딩스",
+      "corp_code": "00116824",
+      "receipt": "20210517001189",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "동아제약/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517001189",
+      "index_sha256": "3952b61fea4b6dea5f894e9ad922e3b87f2b2196fd0ac3fa25e8a7bd2619c30f",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001189&dcmNo=8073532&eleId=14&offset=306810&length=96518&dtd=dart3.xsd",
+      "viewer_sha256": "7d75b40dea70e464b36b03e27e99f752d89e2d012117c02fc4ea4b1b26571cd6",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001189&dcmNo=8073532&eleId=15&offset=403332&length=182066&dtd=dart3.xsd",
+      "notes_sha256": "09dc4c0494ac037e13c705dc0b078ef8928afb36422aca8798419c871c7b0a1b",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001189&dcmNo=8073532&eleId=7&offset=80530&length=22508&dtd=dart3.xsd",
+      "issued_shares_sha256": "3ff8d1c3fd5ac692ac9d9a2f39e0f371a75e6df573c98734a6d3bdbb546ffd68",
+      "fields": {
+        "revenue": {
+          "status": "PASS",
+          "current": 192209824591,
+          "prior": 181131447669,
+          "unit": "KRW",
+          "source_label": "Ⅰ.영업수익",
+          "table_index": 3,
+          "row_index": 2,
+          "value_columns": [
+            1,
+            3
+          ],
+          "scope_note": "Consolidated operating revenue; holdings company. Separate comparability check before pooled industry ranks."
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 5448000357,
+          "prior": 8812607967,
+          "unit": "KRW",
+          "source_label": "Ⅲ.영업이익",
+          "table_index": 3,
+          "row_index": 19,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 131,
+          "prior": 1370,
+          "unit": "KRW/share",
+          "source_label": "기본주당순이익 (단위 : 원)",
+          "table_index": 3,
+          "row_index": 48,
+          "value_columns": [
+            1,
+            3
+          ],
+          "share_class_evidence": "Basic EPS line; only ordinary shares issued in same-report share-class table at quarter end. Share split audit not performed."
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "6,155,346",
+        "-",
+        "6,155,346",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "001770",
+      "isin": "KR7001770007",
+      "issuer_as_of": "신화실업",
+      "corp_code": "00137809",
+      "receipt": "20210513000780",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "SHD/분기보고서/2021.05.13",
+      "source_date": "20210513",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210513000780",
+      "index_sha256": "3653ce115618d5fdc87c8889baba84e296bcf8751e845fda93712686a32b7e05",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210513000780&dcmNo=8066770&eleId=14&offset=143662&length=340&dtd=dart3.xsd",
+      "viewer_sha256": "e2dee16182d3dc51c5b2798bd65311af5b4f848ad0a1a1be1e19a9c8da0ecda9",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210513000780&dcmNo=8066770&eleId=15&offset=144006&length=343&dtd=dart3.xsd",
+      "notes_sha256": "8fcff1f734c8695edd30f184e2fbcab795a16108b4061310b614a499f4d0d060",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210513000780&dcmNo=8066770&eleId=7&offset=34293&length=6143&dtd=dart3.xsd",
+      "issued_shares_sha256": "8c7e2cf720911042d119aa0c1e4f2c0d53455f98b038787ca3420337d29e9d70",
+      "fields": {
+        "revenue": {
+          "status": "BLOCKED",
+          "reason": "CFS section explicitly not applicable",
+          "current": null,
+          "prior": null
+        },
+        "operating_profit": {
+          "status": "BLOCKED",
+          "reason": "CFS section explicitly not applicable",
+          "current": null,
+          "prior": null
+        },
+        "basic_eps_common": {
+          "status": "BLOCKED",
+          "reason": "CFS section explicitly not applicable",
+          "current": null,
+          "prior": null
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "1,214,878",
+        "1,214,878",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "009070",
+      "isin": "KR7009070004",
+      "issuer_as_of": "KCTC",
+      "corp_code": "00103042",
+      "receipt": "20210517000849",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "케이씨티시/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517000849",
+      "index_sha256": "b46df063f145cb9be16366d598adfe40f133d36adce9b868ea1f851269bc8096",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000849&dcmNo=8072702&eleId=14&offset=275002&length=63722&dtd=dart3.xsd",
+      "viewer_sha256": "1809b513fafdacd05df2be4dfd0ae264a03479dd5bffc55528c7d59577e72d03",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000849&dcmNo=8072702&eleId=15&offset=338728&length=170049&dtd=dart3.xsd",
+      "notes_sha256": "9c3b95cc4f832209802390860bd0fb6b97ac83aa265766dfd354670d0c06c045",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000849&dcmNo=8072702&eleId=7&offset=57785&length=29261&dtd=dart3.xsd",
+      "issued_shares_sha256": "91175c9c3f99bc9db7217f683a81b14aaf4ebbfec06a1ca664b76fee41402514",
+      "fields": {
+        "revenue": {
+          "status": "PASS",
+          "current": 149324741211,
+          "prior": 123348608764,
+          "unit": "KRW",
+          "source_label": "수익(매출액)",
+          "table_index": 3,
+          "row_index": 2,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 4274358194,
+          "prior": 3632161096,
+          "unit": "KRW",
+          "source_label": "영업이익(손실)",
+          "table_index": 3,
+          "row_index": 6,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 95,
+          "prior": 98,
+          "unit": "KRW/share",
+          "source_label": "기본주당이익(손실) (단위 : 원)",
+          "table_index": 3,
+          "row_index": 29,
+          "value_columns": [
+            1,
+            3
+          ],
+          "share_class_evidence": "Basic EPS line; only ordinary shares issued in same-report share-class table at quarter end. Share split audit not performed."
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "종류주식",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "30,000,000",
+        "-",
+        "30,000,000",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "021240",
+      "isin": "KR7021240007",
+      "issuer_as_of": "코웨이",
+      "corp_code": "00170558",
+      "receipt": "20210517001750",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "코웨이/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517001750",
+      "index_sha256": "8800b3a24c02f05524208f8416d2f24ddae689cb94aba4aa34882e450229b43e",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001750&dcmNo=8075017&eleId=14&offset=203744&length=66067&dtd=dart3.xsd",
+      "viewer_sha256": "be4449e9839d29085f1a1447e33f2e442a7da8014c2b6470829d103f43dd89e1",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001750&dcmNo=8075017&eleId=15&offset=269815&length=291024&dtd=dart3.xsd",
+      "notes_sha256": "b1487eca3a6bd4d5c2a64f618c2c69437e40f0e0dc88af16408be51396974a38",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001750&dcmNo=8075017&eleId=7&offset=39601&length=22558&dtd=dart3.xsd",
+      "issued_shares_sha256": "cab40d4b6ff537156ab7ae0a5477c45314079063fe76f53e4de71b03dd761b7a",
+      "fields": {
+        "revenue": {
+          "status": "PASS",
+          "current": 878992033732,
+          "prior": 768937144317,
+          "unit": "KRW",
+          "source_label": "매출액",
+          "table_index": 3,
+          "row_index": 2,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 170733525927,
+          "prior": 138863264748,
+          "unit": "KRW",
+          "source_label": "영업이익(손실)",
+          "table_index": 3,
+          "row_index": 6,
+          "value_columns": [
+            1,
+            3
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 1734,
+          "prior": 1404,
+          "unit": "KRW/share",
+          "source_label": "기본주당이익(손실) (단위 : 원)",
+          "table_index": 3,
+          "row_index": 27,
+          "value_columns": [
+            1,
+            3
+          ],
+          "share_class_evidence": "Basic EPS line; only ordinary shares issued in same-report share-class table at quarter end. Share split audit not performed."
+        }
+      },
+      "issued_share_classes": [
+        "의결권 있는 보통주",
+        "의결권 없는 우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "73,799,619",
+        "-",
+        "73,799,619",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "006800",
+      "isin": "KR7006800007",
+      "issuer_as_of": "미래에셋대우",
+      "corp_code": "00111722",
+      "receipt": "20210517002041",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "미래에셋증권/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517002041",
+      "index_sha256": "19100bfb2a7aa8391abe55a55f7dcb2038c1dc6ec9624d715ae47788f5d42198",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517002041&dcmNo=8075798&eleId=14&offset=1873064&length=125900&dtd=dart3.xsd",
+      "viewer_sha256": "95b01d4ec5464f83dd26ac485e0d7194f7bb64f49c220244e6553107cae603d9",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517002041&dcmNo=8075798&eleId=15&offset=1998968&length=773863&dtd=dart3.xsd",
+      "notes_sha256": "f8f0b5a92bda503d172124331307c6248d2a87ef4de699e631dac466e4a5e0f7",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517002041&dcmNo=8075798&eleId=7&offset=228013&length=35272&dtd=dart3.xsd",
+      "issued_shares_sha256": "1c7df9a84b8f33b407362aa2c677e178ba7f0d1628d92aa268cac2d25d89a9a9",
+      "fields": {
+        "revenue": {
+          "status": "BLOCKED",
+          "current": 4763394632313,
+          "prior": 9085651881146,
+          "unit": "KRW",
+          "source_label": "I. 영업수익",
+          "table_index": 3,
+          "row_index": 1,
+          "value_columns": [
+            1,
+            2
+          ],
+          "reason": "Brokerage gross operating revenue is observable; not released for cross-industry F2/F3 ranking"
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 419055471247,
+          "prior": 138664155378,
+          "unit": "KRW",
+          "source_label": "III. 영업이익",
+          "table_index": 3,
+          "row_index": 24,
+          "value_columns": [
+            1,
+            2
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 451,
+          "prior": 156,
+          "unit": "KRW/share",
+          "source_label": "1. 기본 및 희석주당이익(보통주)",
+          "table_index": 3,
+          "row_index": 47,
+          "value_columns": [
+            1,
+            2
+          ],
+          "share_class_evidence": "Explicit common-share computation or row in associated notes",
+          "notes_table_index": 139
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "635,316,408",
+        "154,075,750",
+        "789,392,158",
+        "-"
+      ]
+    },
+    {
+      "stock_code": "105560",
+      "isin": "KR7105560007",
+      "issuer_as_of": "KB금융",
+      "corp_code": "00688996",
+      "receipt": "20210517001542",
+      "period_end": "2021-03-31",
+      "comparison_period_end": "2020-03-31",
+      "scope": "CFS",
+      "source_title": "KB금융/분기보고서/2021.05.17",
+      "source_date": "20210517",
+      "earliest_field_disclosure_complete": false,
+      "share_basis_historical_adjustments_independently_verified": false,
+      "index_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210517001542",
+      "index_sha256": "ab632d5e5ba60afff5067d7152c9b925e06f6840e45e3255f1189c306ef4c6fa",
+      "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001542&dcmNo=8074450&eleId=14&offset=3220043&length=153686&dtd=dart3.xsd",
+      "viewer_sha256": "9153ff3a1d705c33fdf3eda850656b4e69f59d866e22c63c30d3a3c44173578a",
+      "notes_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001542&dcmNo=8074450&eleId=15&offset=3373733&length=982402&dtd=dart3.xsd",
+      "notes_sha256": "dbb15b12c487a0590bc3028660fb06d4fb6cb64a910744f1077784106717fb82",
+      "issued_shares_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001542&dcmNo=8074450&eleId=7&offset=440521&length=27371&dtd=dart3.xsd",
+      "issued_shares_sha256": "be2ae45f39b881056f183c654a6eb93bb61fb6ddbdb4d7dfc1ed7630785c38a2",
+      "fields": {
+        "revenue": {
+          "status": "BLOCKED",
+          "reason": "Bank reports earnings components; no comparable top-line sales in primary statement",
+          "current": null,
+          "prior": null
+        },
+        "operating_profit": {
+          "status": "PASS",
+          "current": 1746826,
+          "prior": 1039119,
+          "unit": "KRW million",
+          "source_label": "IX.영업이익",
+          "table_index": 3,
+          "row_index": 19,
+          "value_columns": [
+            2,
+            4
+          ]
+        },
+        "basic_eps_common": {
+          "status": "PASS",
+          "current": 3225,
+          "prior": 1864,
+          "unit": "KRW/share",
+          "source_label": "기본주당이익",
+          "table_index": 3,
+          "row_index": 48,
+          "value_columns": [
+            2,
+            4
+          ],
+          "share_class_evidence": "Explicit common-share computation or row in associated notes",
+          "notes_table_index": 159
+        }
+      },
+      "issued_share_classes": [
+        "보통주",
+        "우선주",
+        "합계"
+      ],
+      "issued_share_counts_row": [
+        "Ⅳ. 발행주식의 총수 (Ⅱ-Ⅲ)",
+        "415,807,920",
+        "-",
+        "415,807,920",
+        "-"
+      ]
+    }
+  ]
+}

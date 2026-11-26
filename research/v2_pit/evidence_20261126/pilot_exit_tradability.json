@@ -1,0 +1,50 @@
+[
+  {
+    "source": "KRX_PIT_2016_11_v1.json.gz",
+    "sha256": "10a5b30f7c601dcb0c0cce153cfc30cd69082c22bf2f2b8cd3fad85c32130733",
+    "date": "20161115",
+    "identity": {
+      "ISU_ABBRV": "한진해운",
+      "ISU_CD": "KR7117930008",
+      "ISU_ENG_NM": "HANJIN SHIPPING",
+      "ISU_NM": "한진해운보통주",
+      "ISU_SRT_CD": "117930",
+      "KIND_STKCERT_TP_NM": "보통주",
+      "LIST_DD": "20091229",
+      "LIST_SHRS": "245269947",
+      "MKT_TP_NM": "KOSPI",
+      "PARVAL": "5000",
+      "SECT_TP_NM": "",
+      "SECUGRP_NM": "주권"
+    },
+    "daily_without_prices": {
+      "ISU_CD": "117930",
+      "ISU_NM": "한진해운",
+      "ACC_TRDVOL": "51976131"
+    }
+  },
+  {
+    "source": "KRX_PIT_2018_11_v1.json.gz",
+    "sha256": "bf626e013783952c7014656423cb09de92b8763538fe8d2bba645c2e7b18b5fd",
+    "date": "20181115",
+    "identity": {
+      "ISU_ABBRV": "한국유리",
+      "ISU_CD": "KR7002000008",
+      "ISU_ENG_NM": "HankukGlassIndustries",
+      "ISU_NM": "한국유리공업보통주",
+      "ISU_SRT_CD": "002000",
+      "KIND_STKCERT_TP_NM": "보통주",
+      "LIST_DD": "19690627",
+      "LIST_SHRS": "10079660",
+      "MKT_TP_NM": "KOSPI",
+      "PARVAL": "5000",
+      "SECT_TP_NM": "",
+      "SECUGRP_NM": "주권"
+    },
+    "daily_without_prices": {
+      "ISU_CD": "002000",
+      "ISU_NM": "한국유리",
+      "ACC_TRDVOL": "0"
+    }
+  }
+]

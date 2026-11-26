@@ -1,0 +1,299 @@
+[
+  {
+    "receipt": "20210517001185",
+    "document": "8073522",
+    "corp": "00126380",
+    "archive_sha256": "1b79620694832a7516b8dea6cb2e359c5ad2c9fbb11e687ec68dc199a15cbd3e",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "1044",
+    "prior_as_reported": "720",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001185&dcmNo=8073522&eleId=14&offset=662977&length=80168&dtd=dart3.xsd",
+        "sha256": "088fb84d81b24516d7569d311841c4234186d4b54fe89c5fd741bddc5fce3657",
+        "table": 3,
+        "row": 20,
+        "label": "기본주당이익(손실)(단위:원)",
+        "values": [
+          "1044",
+          "720"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001185&dcmNo=8073522&eleId=15&offset=743149&length=338217&dtd=dart3.xsd",
+        "sha256": "52759824256a2aacbfd7046a16d4dad40b151a269c79b4b7d31820edc59ed028",
+        "table": 127,
+        "row": 4,
+        "label": "기본보통주주당이익(원)",
+        "values": [
+          "1044",
+          "720"
+        ],
+        "basis": "÷가중평균유통보통주식수(천주)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20230515002335",
+    "document": "9276899",
+    "corp": "00126380",
+    "archive_sha256": "a61bf3dc9c86b43c0b415734f6d762f0015a7e0a599f28571f4267b0f452c134",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "206",
+    "prior_as_reported": "1638",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515002335&dcmNo=9276899&eleId=19&offset=187242&length=75568&dtd=dart3.xsd",
+        "sha256": "9638eb36e9a030947d62cf0371aaf00d71efca7d159712b8fdd76de15a066cce",
+        "table": 3,
+        "row": 20,
+        "label": "기본주당이익(손실)(단위:원)",
+        "values": [
+          "206",
+          "1638"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515002335&dcmNo=9276899&eleId=20&offset=262814&length=316340&dtd=dart3.xsd",
+        "sha256": "c970ec20b98221c0b45bad324203b6d3886c576a163ddc75191a7d1c962b01b9",
+        "table": 126,
+        "row": 4,
+        "label": "기본보통주주당이익(원)",
+        "values": [
+          "206",
+          "1638"
+        ],
+        "basis": "÷가중평균유통보통주식수(천주)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20210517000667",
+    "document": "8072275",
+    "corp": "00164779",
+    "archive_sha256": "55a6085a68f73964707b5b4868b7f48963870b362a926820a8c5681426458db3",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "1448",
+    "prior_as_reported": "925",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000667&dcmNo=8072275&eleId=14&offset=388909&length=67005&dtd=dart3.xsd",
+        "sha256": "f70683b05756d928ecb67db98933a0b18bf5d155e6e088e1daa434cdbfaf79bc",
+        "table": 3,
+        "row": 30,
+        "label": "기본주당분기순이익(단위:원)",
+        "values": [
+          "1448",
+          "925"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000667&dcmNo=8072275&eleId=15&offset=455918&length=325011&dtd=dart3.xsd",
+        "sha256": "2057ca6f2c4b0dc71bddaaa9fc5097e86386a77240b533d6c09523e01df36312",
+        "table": 64,
+        "row": 4,
+        "label": "기본주당이익",
+        "values": [
+          "1448",
+          "925"
+        ],
+        "basis": "가중평균유통보통주식수(*)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20210517000890",
+    "document": "8072798",
+    "corp": "00401731",
+    "archive_sha256": "669a3206f2393ba38555582d739ebf3b7974b7c226442c70f9a708048160bcbb",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "5543",
+    "prior_as_reported": "5694",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000890&dcmNo=8072798&eleId=14&offset=727044&length=79141&dtd=dart3.xsd",
+        "sha256": "4bb482402ce9bd8b3d4a5baf5c1d1adabd9ac9932d0f7f3e471eaf48edab3368",
+        "table": 3,
+        "row": 24,
+        "label": "보통주기본주당순이익(단위:원)",
+        "values": [
+          "5543",
+          "5694"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000890&dcmNo=8072798&eleId=15&offset=806189&length=624174&dtd=dart3.xsd",
+        "sha256": "c081f1f91ef75fe55c296a70b4e15815ac3329e44769e3f144a4d91bcc347919",
+        "table": 157,
+        "row": 3,
+        "label": "보통주기본주당순이익(단위:원/주)",
+        "values": [
+          "5543",
+          "5694"
+        ],
+        "basis": "가중평균유통보통주식수(단위:주)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20230515001677",
+    "document": "9275239",
+    "corp": "00164779",
+    "archive_sha256": "1f4c16292674d7504ed2040180d77afe7a248cda04aa906e420155258357112d",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "-3751",
+    "prior_as_reported": "2884",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001677&dcmNo=9275239&eleId=19&offset=142359&length=71658&dtd=dart3.xsd",
+        "sha256": "0ead2e574bd7db112872be46bc2b1afdd5e16cf29ea623d5b31b08fe4f948b7d",
+        "table": 3,
+        "row": 30,
+        "label": "기본주당분기순이익(손실)(단위:원)",
+        "values": [
+          "-3751",
+          "2884"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001677&dcmNo=9275239&eleId=20&offset=214021&length=296898&dtd=dart3.xsd",
+        "sha256": "72c8eb6653ac176d90147a30d3ed75797797c8dfdb501709557f1c2d0c97d910",
+        "table": 55,
+        "row": 4,
+        "label": "기본주당이익(손실)",
+        "values": [
+          "-3751",
+          "2884"
+        ],
+        "basis": "가중평균유통보통주식수(*)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20230515001288",
+    "document": "9274267",
+    "corp": "00401731",
+    "archive_sha256": "53d82746da78a034929756b5f9af8c433924fb265ba49a92c3cd8a2471bb01ed",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "2616",
+    "prior_as_reported": "6811",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001288&dcmNo=9274267&eleId=19&offset=241051&length=90080&dtd=dart3.xsd",
+        "sha256": "510b3f9968e92dfe915033024556d8541e5d31dc20e03c42d2d96c0a890c7e4d",
+        "table": 3,
+        "row": 26,
+        "label": "보통주기본주당이익(손실)(단위:원)",
+        "values": [
+          "2616",
+          "6811"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20230515001288&dcmNo=9274267&eleId=20&offset=331135&length=632057&dtd=dart3.xsd",
+        "sha256": "b5f444f201a329ce3aec8f2d414447374a3b4a2fd099271e1de855951ff8534f",
+        "table": 150,
+        "row": 5,
+        "label": "보통주기본주당순이익(손실)(단위:원/주)",
+        "values": [
+          "2616",
+          "6811"
+        ],
+        "basis": "가중평균유통보통주식수(단위:주)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained"
+  },
+  {
+    "receipt": "20161114002433",
+    "document": "5352318",
+    "corp": "00790501",
+    "archive_sha256": "673f1cbc5ae1c8421ef8d693612d468bf8262b3994aceeb17d920b485d65223f",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "reason": "only_calendar_Q1_note_periods_supported"
+  },
+  {
+    "receipt": "20161130001119",
+    "document": "5367806",
+    "corp": "00790501",
+    "archive_sha256": "90a0e6ca08b59e7ca3bc98918c34e4945e4d519bade96fbf7650a1033862b5f9",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "reason": "only_calendar_Q1_note_periods_supported"
+  },
+  {
+    "receipt": "20181114002813",
+    "document": "6385149",
+    "corp": "00159005",
+    "archive_sha256": "dc4d1399cc890ac1735549dea9c7be6e3e81301c3e541a2928b93ad2f1389947",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "reason": "only_calendar_Q1_note_periods_supported"
+  }
+]

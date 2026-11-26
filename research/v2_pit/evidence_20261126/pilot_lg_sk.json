@@ -1,0 +1,314 @@
+[
+  {
+    "receipt": "20210517000890",
+    "corp_code": "00401731",
+    "amounts_current_then_prior": {
+      "revenue": [
+        {
+          "year": 2021,
+          "value": 18809481000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 14727803000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "operating_profit": [
+        {
+          "year": 2021,
+          "value": 1516646000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 1090404000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "basic_common_eps": [
+        {
+          "year": 2021,
+          "value": 5543,
+          "concept": "udf_IS_20171025185124770_BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 5694,
+          "concept": "udf_IS_20171025185124770_BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "receipt": "20230515001288",
+    "corp_code": "00401731",
+    "amounts_current_then_prior": {
+      "revenue": [
+        {
+          "year": 2023,
+          "value": 20415872000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 20969002000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "operating_profit": [
+        {
+          "year": 2023,
+          "value": 1497388000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 1942890000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "basic_common_eps": [
+        {
+          "year": 2023,
+          "value": 2616,
+          "concept": "udf_IS_20171025185124770_BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 6811,
+          "concept": "udf_IS_20171025185124770_BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "receipt": "20210517000667",
+    "corp_code": "00164779",
+    "amounts_current_then_prior": {
+      "revenue": [
+        {
+          "year": 2021,
+          "value": 8494188000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 7198892000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "operating_profit": [
+        {
+          "year": 2021,
+          "value": 1324421000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 802762000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "basic_common_eps": [
+        {
+          "year": 2021,
+          "value": 1448,
+          "concept": "BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "CFY2021dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2021dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2020,
+          "value": 925,
+          "concept": "BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "PFY2020dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2020dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "receipt": "20230515001677",
+    "corp_code": "00164779",
+    "amounts_current_then_prior": {
+      "revenue": [
+        {
+          "year": 2023,
+          "value": 5088111000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 12155653000000,
+          "concept": "Revenue",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "operating_profit": [
+        {
+          "year": 2023,
+          "value": -3402302000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 2863897000000,
+          "concept": "OperatingIncomeLoss",
+          "xml_unit": "KRW",
+          "unit_basis": "KRW from XBRL, statement millions converted",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ],
+      "basic_common_eps": [
+        {
+          "year": 2023,
+          "value": -3751,
+          "concept": "BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "CFY2023dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "CFY2023dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        },
+        {
+          "year": 2022,
+          "value": 2884,
+          "concept": "BasicEarningsLossPerShare",
+          "xml_unit": "SHARES",
+          "unit_basis": "KRW/share via statement + common-stock note or LG common line and label",
+          "matching_contexts": [
+            "PFY2022dFQA_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember",
+            "PFY2022dFQQ_ifrs-full_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs-full_ConsolidatedMember"
+          ]
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "query": {
+    "currentPage": 1,
+    "maxResults": 100,
+    "maxLinks": 10,
+    "startDate": "20210401",
+    "endDate": "20210630",
+    "publicType": "A003",
+    "corporationType": "P",
+    "businessCode": "all",
+    "option": "report",
+    "sort": "date",
+    "series": "asc"
+  },
+  "total_all_periods": 794,
+  "total_pages": 8,
+  "page_hashes": {
+    "1": "a4d3df3f59c056a0277bca64563c758c6372598dccf3c1884ff081558f948783",
+    "2": "1e16a8d8a78bbc75ccad613ad03ea6efe6a87804e31c41a2cbe561cc50a096a2",
+    "3": "b12d9534e405c673fa47e5126176edab220d08677a07452e3573d7dec0d07e58",
+    "4": "87ebe6358d82fe586b22552f32fce61d0aa81870408774617296078a9d0a7746",
+    "5": "d12306a7275163d9bf0bf8f8346a5ad547efacced85cfe3d75eb4ae7eac6f449",
+    "6": "1d2dd5fcd573878fc4fefa12d5e6b21a86a7aff96b38bd481c3329b119055eef",
+    "7": "f1791d290bf3f89f0f828d054e6c8857e56ddd73a48f718c4e5ec375f3852c79",
+    "8": "b9a128df8147efd81eb06c1a89d21cfb0031764bb8f95510702c6af9de99e06d"
+  },
+  "target_title_receipts": 783,
+  "unique_corps": 752,
+  "types": {
+    "original": 752,
+    "amendment_or_other": 31
+  },
+  "unique_originals": 752,
+  "unique_name_candidates": 581
+}
