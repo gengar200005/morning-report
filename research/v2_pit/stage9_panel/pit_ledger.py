@@ -213,13 +213,22 @@ def derived_quarter(rows, annual, formation, sessions, cache, basis, field):
                 or not all(h in saved for h,saved in zip(review.get('component_hashes',()),hashes,strict=False))
                 or len(review.get('component_hashes',()))!=4):
             return None,detail,'arithmetic_only_basis_unverified'
+        if 'arithmetic_pair' in review and tuple(review['arithmetic_pair'])!=derived:
+            return None,detail,'independent_arithmetic_mismatch'
         if review.get('note_source_hashes'):
             note_hashes=review['note_source_hashes']
             if (len(note_hashes)!=4 or not all(re.fullmatch(r'[a-f0-9]{64}',h) for h in note_hashes)
                     or not all(h in {meta['sha'] for meta,_ in receipt_sources(cache,r)}
+                               or (r['receipt'],r['corp_code'],h) in review.get('_verified_note_bodies',set())
                                for h,r in zip(note_hashes,sources,strict=True))):
                 return None,detail,'basis_note_hashes_not_bound_to_effective_receipts'
             detail['note_source_hashes']=note_hashes
+            notes=review.get('note_sources',[])
+            if notes:
+                if (len(notes)!=4 or any(n.get('receipt')!=r['receipt'] or n.get('sha256')!=h
+                        for n,r,h in zip(notes,sources,note_hashes,strict=True))):
+                    return None,detail,'basis_note_reference_mismatch'
+                detail['note_sources']=notes
         if review.get('review_method'):
             detail['review_method']=review['review_method']
         if 'independent_quarter_confirmed' in review:
@@ -365,7 +374,7 @@ def summary(group):
                 reasons=dict(Counter(r['reason'] for r in group)))
 
 
-def build(roster, context, receipts, coverage, sessions_db, facts_db, output, basis_file=None):
+def build(roster, context, receipts, coverage, sessions_db, facts_db, output, basis_file=None, packages_db=None):
     if sha256(roster.read_bytes()).hexdigest()!=ROSTER_SHA:
         raise ValueError('Frozen sample roster mismatch')
     members=read_csv(roster)
@@ -381,10 +390,27 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
         raise ValueError('Duplicate coverage records')
     basis={}
     basis_sha=''
+    if basis_file and packages_db is None:
+        adjacent_source=facts_db.parent.parent/'raw'/'receipts.sqlite'
+        packages_db=adjacent_source if adjacent_source.is_file() else None
     if basis_file:
         raw_basis=basis_file.read_bytes()
         basis_sha=sha256(raw_basis).hexdigest()
         for r in json.loads(raw_basis):
+            r.pop('_verified_note_bodies',None)
+            if r.get('note_source_hashes') and packages_db:
+                verified=set()
+                with sqlite3.connect(packages_db.resolve().as_uri()+'?mode=ro',uri=True) as notes:
+                    for ref,digest in zip(r['component_receipts'],r['note_source_hashes'],strict=True):
+                        for doc,corp,url,raw in notes.execute(
+                                "SELECT document,corp,source,body FROM packages WHERE kind='dart_notes' AND receipt=? AND sha256=? "
+                                "AND NOT EXISTS (SELECT 1 FROM quarantine WHERE receipt=? AND kind='dart_notes')",(ref,digest,ref)):
+                            link=urlsplit(url);query=parse_qs(link.query)
+                            if ((link.scheme,link.netloc,link.path)==('https','dart.fss.or.kr','/report/viewer.do')
+                                    and query.get('rcpNo')==[ref] and query.get('dcmNo')==[doc]
+                                    and sha256(raw).hexdigest()==digest):
+                                verified.add((ref,corp,digest))
+                r['_verified_note_bodies']=verified
             key=(*r['component_receipts'],r['field'])
             if key in basis:
                 raise ValueError('Duplicate cumulative review')
@@ -440,5 +466,6 @@ if __name__=='__main__':
     for name in ('roster','context','receipts','coverage','sessions_db','facts_db','output'):
         p.add_argument(name,type=Path)
     p.add_argument('--basis-file',type=Path)
+    p.add_argument('--packages-db',type=Path)
     result=build(**vars(p.parse_args()))
     print(json.dumps({'totals':result['total'],'annual_gates':result['annual_gates']},ensure_ascii=False))

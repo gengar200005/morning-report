@@ -8,10 +8,11 @@ import sys
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from stage9_panel.collection_targets import target_receipts
+from stage9_panel.coverage_limits import cfs_proofs, field_class
 from stage9_panel.pit_ledger import read_csv
 
 
-def estimate(root, sessions, year):
+def estimate(root, sessions, year, ledger=None):
     manifest=read_csv(root/'identity/receipts.csv')
     by_receipt={r['receipt']:r for r in manifest if r['receipt']}
     roster=[r for r in read_csv(root/'limited_issuer_months.csv') if r['formation'].startswith(year)]
@@ -34,7 +35,18 @@ def estimate(root, sessions, year):
             if not samples:
                 raise ValueError(f'No observed cost for {kind} {step}')
             requests+=n; response_bytes+=n*samples['mean_bytes']; seconds+=n*samples['mean_seconds']
-    return dict(year=year,all_primary_and_comparator_receipts=len(target),cached_source_receipts=len(target&cached),
+    current=read_csv(ledger or root/'ledger/issuer_months.csv')
+    selected=[r for r in current if r['formation'].startswith(year) and r['industry_group']=='nonfinancial']
+    required=(4*len(selected)+4)//5
+    proof=cfs_proofs(root/'ledger/facts.sqlite')
+    minimum_annual={}
+    for field in ('F2','F3'):
+        interim=[r for r in selected if r['report_type']!='11011']
+        classified=Counter(field_class(r,field,proof)[0] for r in interim)
+        interim_ceiling=len(interim)-sum(classified[k] for k in ('explicit_no_cfs','verified_period_rule','verified_signal_domain'))
+        minimum_annual[field]=dict(known_nonfinancial=len(selected),required=required,other_forms_including_unassigned=len(interim),
+                                   other_form_optimistic_max=interim_ceiling,minimum_annual_form_observations=max(0,required-interim_ceiling))
+    return dict(year=year,optimistic_minimum_annual=minimum_annual,all_primary_and_comparator_receipts=len(target),cached_source_receipts=len(target&cached),
                 missing_receipts=len(remaining),assumed_source_route=count,measured_http200=observed,
                 estimated_http_requests=requests,estimated_response_bytes=round(response_bytes),
                 estimated_sum_request_seconds=round(seconds),

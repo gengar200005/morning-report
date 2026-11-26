@@ -11,7 +11,7 @@ from pathlib import Path
 from stage9_panel.collect_receipts import read_csv
 from stage9_panel.pit_facts import extract_receipt
 
-def run(raw,meta,draw,out):
+def run(raw,meta,draw,out,include_later=False):
     bykey=defaultdict(list)
     for r in read_csv(meta):
         if r['period_end'] and r['version']=='original':
@@ -38,7 +38,7 @@ def run(raw,meta,draw,out):
             if rr:
                 if nr!=1:row['identity']='two_DART_indexes_only_KIND_pending'
                 rc=rr['receipt'];row['receipt']=rc;row['reason']='no_original_raw'
-                packages=db.execute("""SELECT kind,document,corp,sha256,body FROM packages WHERE receipt=? AND corp=? AND NOT EXISTS (SELECT 1 FROM quarantine q WHERE q.receipt=packages.receipt AND q.kind=packages.kind) AND NOT EXISTS (SELECT 1 FROM reservations v WHERE v.receipt=packages.receipt AND v.kind=packages.kind AND v.phase='full') ORDER BY kind""",(rc,rr['corp_code'])).fetchall()
+                packages=db.execute("""SELECT kind,document,corp,sha256,body FROM packages WHERE receipt=? AND corp=? AND NOT EXISTS (SELECT 1 FROM quarantine q WHERE q.receipt=packages.receipt AND q.kind=packages.kind) AND kind IN ('xbrl','kind_html','dart_html') AND (? OR NOT EXISTS (SELECT 1 FROM reservations v WHERE v.receipt=packages.receipt AND v.kind=packages.kind AND v.phase='full')) ORDER BY kind""",(rc,rr['corp_code'],int(include_later))).fetchall()
                 row['forms']=','.join(r[0] for r in packages)
                 if packages:row['reason']='CFS exact monetary field/period unavailable'
                 for kind,doc,corp,digest,body in packages:
@@ -63,7 +63,7 @@ def run(raw,meta,draw,out):
     file=out/'technical_rows.csv'
     with file.open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=list(statuses[0]));w.writeheader();w.writerows(statuses)
-    summary=dict(fixed_draw_sha256=hashlib.sha256(draw.read_bytes()).hexdigest(),audit_rows_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),
+    summary=dict(includes_post_technical_sources=include_later,fixed_draw_sha256=hashlib.sha256(draw.read_bytes()).hexdigest(),audit_rows_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),
                  generation_meta_sha256=hashlib.sha256(meta.read_bytes()).hexdigest(),all_cached_by_source=allcounts,requests_by_phase=phases,
                  fixed_by_year=grouped('year'),fixed_by_stratum=grouped('stratum'),fixed_by_quarter=grouped('quarter'))
     (out/'collection_summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
@@ -71,4 +71,5 @@ def run(raw,meta,draw,out):
 if __name__=='__main__':
     a=argparse.ArgumentParser(description=__doc__)
     for key in ('raw','meta','draw','out'):a.add_argument(key,type=Path)
+    a.add_argument('--include-later',action='store_true')
     run(**vars(a.parse_args()))

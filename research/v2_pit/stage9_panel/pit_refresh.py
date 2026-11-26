@@ -35,10 +35,10 @@ def refresh(root,sessions,output,final=False):
     source_before=inventory(packages)
     indexed=index_facts(packages,receipts,facts)
     basis=root/'ledger/q4_basis.json'
-    result=build(roster,context,receipts,coverage,sessions,facts,output,basis if basis.is_file() else None)
+    result=build(roster,context,receipts,coverage,sessions,facts,output,basis if basis.is_file() else None,packages)
     limits=check_limits(roster,context,output/'issuer_months.csv',output/'quality.json',facts,
                         output/'coverage_limits.json',identity=root/'identity',packages=packages)
-    cost=estimate(root,sessions,'2017')
+    cost=estimate(root,sessions,'2017',output/'issuer_months.csv')
     (output/'2017_cost.json').write_text(json.dumps(cost,ensure_ascii=False,indent=2)+'\n')
     source_after=inventory(packages)
     if (limits['ledger_sha256']!=result['ledger_sha256'] or limits['context_sha256']!=result['context_sha256']

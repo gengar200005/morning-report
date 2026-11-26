@@ -1,0 +1,152 @@
+[
+  {
+    "component_receipts": [
+      "20180330000582",
+      "20171114000220",
+      "20170331000549",
+      "20161114000295"
+    ],
+    "component_hashes": [
+      "1765015f38bf5349141e10d19c02c812e31f7365e197ae56b978b051549309da",
+      "e0056b63645882f8806f98be52ae4dc049da6a012af3461a9917af6f639cea38",
+      "f1856bba061400ee7ff5dd823288b41bc3562cc97ee9036dd3ac89dcfb1148a3",
+      "8af4de80c3a535f32ee78b662f90092c955b505f5f1a0ab5e1b8d59eceae62e4"
+    ],
+    "field": "revenue",
+    "source_url": "https://kind.krx.co.kr/external/2018/03/30/000537/20180330001721/11011.htm",
+    "source_sha256": "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1",
+    "note_source_hashes": [
+      "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1",
+      "65f164513b084bc34aab5cb1e26225e6e11b08b3d86fc6d9b0aa195410399523",
+      "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+      "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+    ],
+    "note_sources": [
+      {
+        "receipt": "20180330000582",
+        "url": "https://kind.krx.co.kr/external/2018/03/30/000537/20180330001721/11011.htm",
+        "sha256": "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1"
+      },
+      {
+        "receipt": "20171114000220",
+        "url": "https://kind.krx.co.kr/external/2017/11/14/000246/20171114000462/11013.htm",
+        "sha256": "65f164513b084bc34aab5cb1e26225e6e11b08b3d86fc6d9b0aa195410399523"
+      },
+      {
+        "receipt": "20170331000549",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+        "sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca"
+      },
+      {
+        "receipt": "20161114000295",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114000295&dcmNo=5347438&eleId=14&offset=855246&length=315064&dtd=dart3.xsd",
+        "sha256": "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+      }
+    ],
+    "available_session": "2018-04-02",
+    "verdict": "PASS",
+    "review_method": "same_basis_filing_notes",
+    "independent_quarter_confirmed": false,
+    "arithmetic_pair": [
+      456918390445,
+      491037256493
+    ],
+    "note_segment_amounts": [
+      [
+        1889910216355,
+        1890232768003
+      ],
+      [
+        1432991825910,
+        1399195511510
+      ],
+      [
+        1890232768003
+      ],
+      [
+        1399195511510
+      ]
+    ],
+    "subsidiary_counts": [
+      15,
+      15,
+      15,
+      15
+    ]
+  },
+  {
+    "component_receipts": [
+      "20180330000582",
+      "20171114000220",
+      "20170331000549",
+      "20161114000295"
+    ],
+    "component_hashes": [
+      "1765015f38bf5349141e10d19c02c812e31f7365e197ae56b978b051549309da",
+      "e0056b63645882f8806f98be52ae4dc049da6a012af3461a9917af6f639cea38",
+      "f1856bba061400ee7ff5dd823288b41bc3562cc97ee9036dd3ac89dcfb1148a3",
+      "8af4de80c3a535f32ee78b662f90092c955b505f5f1a0ab5e1b8d59eceae62e4"
+    ],
+    "field": "operating_profit",
+    "source_url": "https://kind.krx.co.kr/external/2018/03/30/000537/20180330001721/11011.htm",
+    "source_sha256": "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1",
+    "note_source_hashes": [
+      "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1",
+      "65f164513b084bc34aab5cb1e26225e6e11b08b3d86fc6d9b0aa195410399523",
+      "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+      "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+    ],
+    "note_sources": [
+      {
+        "receipt": "20180330000582",
+        "url": "https://kind.krx.co.kr/external/2018/03/30/000537/20180330001721/11011.htm",
+        "sha256": "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1"
+      },
+      {
+        "receipt": "20171114000220",
+        "url": "https://kind.krx.co.kr/external/2017/11/14/000246/20171114000462/11013.htm",
+        "sha256": "65f164513b084bc34aab5cb1e26225e6e11b08b3d86fc6d9b0aa195410399523"
+      },
+      {
+        "receipt": "20170331000549",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+        "sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca"
+      },
+      {
+        "receipt": "20161114000295",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114000295&dcmNo=5347438&eleId=14&offset=855246&length=315064&dtd=dart3.xsd",
+        "sha256": "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+      }
+    ],
+    "available_session": "2018-04-02",
+    "verdict": "PASS",
+    "review_method": "same_basis_filing_notes",
+    "independent_quarter_confirmed": false,
+    "arithmetic_pair": [
+      23071858740,
+      41460192511
+    ],
+    "note_segment_amounts": [
+      [
+        87249748641,
+        124005913762
+      ],
+      [
+        64177889901,
+        82545721251
+      ],
+      [
+        124005913762
+      ],
+      [
+        82545721251
+      ]
+    ],
+    "subsidiary_counts": [
+      15,
+      15,
+      15,
+      15
+    ]
+  }
+]

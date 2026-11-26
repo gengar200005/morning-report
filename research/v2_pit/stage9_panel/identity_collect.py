@@ -11,6 +11,7 @@ import sqlite3
 import threading
 import time
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import Request,urlopen
 
 from lxml import html
@@ -20,6 +21,7 @@ DART='https://dart.fss.or.kr/dsab007/detailSearch.ax'
 PORTAL='https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do'
 TYPES={'사업보고서':'11011','반기보고서':'11012','분기보고서':'11013'}
 ACCESS_LOCK=threading.Lock()
+DENIED=threading.Event()
 LAST=0.0
 def rows(path):
     with path.open(encoding='utf-8-sig',newline='') as stream:return list(csv.DictReader(stream))
@@ -34,6 +36,7 @@ def fetch(f,url,params,service):
     if f.is_file():return f.read_bytes()
     refer={'K':KIND+'?method=searchDetailsMain','D':'https://dart.fss.or.kr/dsab007/main.do','X':PORTAL.replace('list.do','main.do')}[service]
     for attempt in range(3):
+        if DENIED.is_set():raise PermissionError('Source access stopped on explicit denial')
         with ACCESS_LOCK:
             time.sleep(max(0,.47-(time.monotonic()-LAST)));LAST=time.monotonic()
         q=urlencode(params,doseq=True).encode()
@@ -46,7 +49,10 @@ def fetch(f,url,params,service):
                 raise ValueError('invalid or incomplete result page')
             if service=='K' and b'<script>alert(' in body:raise ValueError('KIND range alert')
             f.write_bytes(body);return body
-        except Exception:
+        except Exception as error:
+            if 'blocked by policy' in str(error).lower() or isinstance(error,HTTPError) and error.code in (401,403):
+                DENIED.set()
+                raise
             if attempt==2:raise
             time.sleep(.5+attempt)
 def kind_period(w,base,start,end,market='1',specific=None):
@@ -150,6 +156,7 @@ def main():
         jobs=[(issuer,r) for issuer in issuers for r in (('ALL',) if args.mode=='D' else ('11013','11012','11011'))]
         def task(j):d_query(w,j[0],args.mode,j[1])
     def run(j):
+        if DENIED.is_set():return
         try:task(j)
         except Exception as e:print('FAIL',j,type(e).__name__,str(e)[:100],flush=True)
     with ThreadPoolExecutor(2,thread_name_prefix=args.mode) as pool:list(pool.map(run,jobs))

@@ -1,0 +1,44 @@
+{
+  "scope": "2017-01 through 2021-12 formation-time KOSPI common-stock roster. Archive includes earlier comparison reports.",
+  "roster_rows": 14400,
+  "formation_months": 60,
+  "each_formation_count": 240,
+  "distinct_isin": 270,
+  "issuer_corp_codes": 270,
+  "kind_complete_quarter_windows": 26,
+  "dart_issuer_full_periodic_indexes": 270,
+  "exchange_sessions_rules": "Use strictly next known session after latest public source date. Leave dates before verified calendar blank.",
+  "issuer_month_complete_index": 14400,
+  "xbrl_directory_queries_verified": 810,
+  "xbrl_directory_queries_expected": 810,
+  "events": 8041,
+  "version_status": {
+    "amendment|BLOCKED": 356,
+    "amendment|PASS": 619,
+    "original|BLOCKED": 1334,
+    "original|PASS": 5732
+  },
+  "xbrl_lookup": {
+    "listed_with_document": 7191,
+    "queried_no_entry": 850
+  },
+  "amendment_scope": {
+    "(none)|BLOCKED": 1690,
+    "(none)|PASS": 6325,
+    "financial_attachment_only|PASS": 11,
+    "nonfinancial_attachment_only|PASS": 14,
+    "periodic_main_body|PASS": 1
+  },
+  "identity_BLOCKED_reasons": {
+    "DART_event_not_yet_uniquely_confirmed_by_KIND": 809,
+    "missing_historical_filing_or_period_security": 881
+  },
+  "source_manifest_sha256": {
+    "receipts.csv": "a92a249134f5fc29979d644efbd44d33d2de2e3ca9ad031fab55e66d5f4f1861",
+    "issuers_resolved.csv": "daf19d32e7cf158c745fded9f3b35b8dbe556e2d2ed0596a95c70412eacef8f3",
+    "monthly_coverage.csv": "c10e98aadbbbf0931ae706b5d179c9065b1e09c97c5fb12cc065771ed9d778ba",
+    "coverage.csv": "271e8bc160c37f5bcab37dd78a17cfe9e46a05145068c14a6de12ee17e5a20d4",
+    "xbrl_directory_manifest.csv": "990fd6f5248c7bc6f137733f5b8de1e6c92956634a129147272a996f6c1e115e"
+  },
+  "frozen_roster_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390"
+}

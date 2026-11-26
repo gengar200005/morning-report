@@ -1,0 +1,119 @@
+{
+  "purpose": "Recovery cost measurement with financial statements and filing identifiers only; collecting snapshot, not final coverage. Holdings and returns excluded.",
+  "issuer_month_ledger_sha256": "6d32a47664ad6b2127167562ceaaaf35409c2262ca252b47568347b886325677",
+  "scope": "nonfinancial memberships where as-of selected receipt is annual and FY end 2016-12-31",
+  "issuer_months": 419,
+  "firms": 210,
+  "annual_receipt_versions": 212,
+  "formations": {
+    "20170403": 209,
+    "20170502": 210
+  },
+  "F3_missing_reasons_by_issuer_month": {
+    "revenue_cumulative_no_receipt_payload": 209,
+    "revenue_cumulative_support_version_unavailable": 132,
+    "issuer_not_yet_established_for_full_prior_three_months": 2,
+    "revenue_arithmetic_only_basis_unverified": 22,
+    "revenue_cumulative_reported_no_consolidated_statement": 24,
+    "revenue_cumulative_no_consolidated_xbrl_context": 6,
+    "revenue_cumulative_no_exact_cfs_pair": 20,
+    "revenue_prior_comparator_restated_or_inconsistent": 4
+  },
+  "already_numeric_but_basis_unverified": {
+    "issuer_months": 22,
+    "firms": 11,
+    "distinct_four_receipt_tuples": 11,
+    "distinct_component_receipts": 44,
+    "components_with_archived_notes_or_full_html": 2,
+    "components_without_archived_notes_or_full_html": 42,
+    "tuples_with_all_notes_or_full_html": 0,
+    "docs_alone_do_not_establish_accounting_basis": true
+  },
+  "hite_realized": {
+    "receipts": [
+      "20180330000582",
+      "20171114000220",
+      "20170331000549",
+      "20161114000295"
+    ],
+    "unique_issuer_years": 1,
+    "expected_independent_quarter_values": false,
+    "archives": {
+      "dart_html": {
+        "sources": 2,
+        "bytes": 205860
+      },
+      "dart_notes": {
+        "sources": 2,
+        "bytes": 875628
+      },
+      "dart_overview": {
+        "sources": 2,
+        "bytes": 502736
+      },
+      "kind_html": {
+        "sources": 2,
+        "bytes": 5045440
+      },
+      "xbrl": {
+        "sources": 4,
+        "bytes": 702160
+      }
+    },
+    "four_approval_xbrl_and_four_notes_bytes": 6623228,
+    "historical_two_fss_menus_bytes": 114905,
+    "http_cache_calls_by_kind_and_step": [
+      {
+        "kind": "dart_html",
+        "step": "body",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 7.512,
+        "transferred_bytes": 205860
+      },
+      {
+        "kind": "dart_notes",
+        "step": "body",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 10.139,
+        "transferred_bytes": 875628
+      },
+      {
+        "kind": "dart_overview",
+        "step": "body",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 11.385,
+        "transferred_bytes": 502736
+      },
+      {
+        "kind": "kind_html",
+        "step": "body",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 5.866,
+        "transferred_bytes": 5045440
+      },
+      {
+        "kind": "kind_html",
+        "step": "index",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 3.707,
+        "transferred_bytes": 49820
+      },
+      {
+        "kind": "kind_html",
+        "step": "pointer",
+        "calls": 2,
+        "http_elapsed_sum_seconds": 10.758,
+        "transferred_bytes": 2092
+      },
+      {
+        "kind": "xbrl",
+        "step": "body",
+        "calls": 4,
+        "http_elapsed_sum_seconds": 21.34,
+        "transferred_bytes": 702160
+      }
+    ],
+    "one_off_human_review_minutes": null,
+    "inference_limit": "No human timer was started. HTTP durations overlap; their sum is resource time, not wall clock or a five-year projection."
+  }
+}

@@ -22,6 +22,7 @@ from urllib.request import Request, build_opener
 from lxml import html
 from dart_receipts import NoRedirect
 from stage82b.kind_display import BASE, contents_url
+from stage9_panel.fss_section import statement_pointer
 
 XBRL_URL = 'https://opendart.fss.or.kr/cmm/downloadIfrs.do?'
 REFERER = 'https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/main.do'
@@ -98,7 +99,7 @@ def once(db, row, kind, phase, step, url, interval):
         if cached:
             if sha(cached[1])!=cached[0]:raise ValueError('pointer hash mismatch')
             return cached[1]
-    headers={'User-Agent':'Mozilla/5.0','Referer':REFERER if kind=='xbrl' else 'https://kind.krx.co.kr/'}
+    headers={'User-Agent':'Mozilla/5.0','Referer':REFERER if kind=='xbrl' else ('https://dart.fss.or.kr/' if kind.startswith('dart_') else 'https://kind.krx.co.kr/')}
     for attempt in range(3):
         if HALT.is_set():raise InterruptedError('public server rate/access signal')
         with LOCK:
@@ -144,17 +145,29 @@ def fetch(job):
                 url=XBRL_URL+urlencode(dict(rcp_no=rc,dcm_no=doc,lang='ko'))
                 body=once(db,row,kind,phase,'body',url,interval)
                 check_archive(body)
-            elif kind=='dart_html':
+            elif kind in ('dart_html','dart_notes','dart_overview'):
+                if not row.get('url'):
+                    main='https://dart.fss.or.kr/dsaf001/main.do?'+urlencode({'rcpNo':rc})
+                    main_body=once(db,row,kind,phase,'index',main,interval)
+                    label,doc,url=statement_pointer(main_body,rc,doc)
+                    row=dict(row,url=url,section=label,source_main_sha256=sha(main_body))
                 url=row['url'];u=urlsplit(url);params=parse_qs(u.query)
+                expected=r'I\.회사의개요' if kind=='dart_overview' else r'\d+\.연결재무제표'+('주석' if kind=='dart_notes' else '')
                 if (u.scheme!='https' or u.netloc!='dart.fss.or.kr' or u.path!='/report/viewer.do'
                         or set(params)!= {'rcpNo','dcmNo','eleId','offset','length','dtd'}
                         or params['rcpNo']!=[rc] or params['dcmNo']!=[doc]
-                        or not re.fullmatch(r'\d{5,10}',doc) or row['section']!='2. 연결재무제표'
+                        or not re.fullmatch(r'\d{5,10}',doc)
+                        or not re.fullmatch(expected,''.join(row['section'].split()))
                         or not re.fullmatch('[0-9a-f]{64}',row['source_main_sha256'])):
                     raise ValueError('FSS main-to-CFS pointer mismatch')
                 body=once(db,row,kind,phase,'body',url,interval)
-                if not html.fromstring(body).xpath('//table'):
-                    raise ValueError('missing FSS statement table')
+                try:
+                    page=html.fromstring(body.decode('utf-8'))
+                except UnicodeDecodeError:
+                    page=html.fromstring(body.decode('cp949'))
+                headings={''.join(x.split()) for x in page.xpath('//a[@name]/text()')}
+                if ''.join(row['section'].split()) not in headings:
+                    raise ValueError('FSS viewer heading and main node disagree')
             else:
                 kr=row['kind_receipt']
                 if not re.fullmatch(r'\d{14}',kr) or not re.fullmatch(r'\d{6}',row['stock_code']):raise ValueError('invalid KIND receipt/security')
@@ -321,11 +334,12 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
         with connect(path) as db:
             blocked={r[0] for r in db.execute("SELECT receipt FROM completed WHERE kind='xbrl' AND status='BLOCKED' UNION SELECT receipt FROM quarantine WHERE kind='xbrl'")}
         jobs=[(r,'kind_html') for r,k in jobs if k=='xbrl' and r['receipt'] in blocked and r.get('kind_receipt')]+jobs
-    dart_requests=manifest.parent/'dart_display_requests.csv'
-    if phase=='full' and dart_requests.is_file():
+    if phase=='full':
         roster_codes={r['historical_code'] for r in roster}
-        darts=[(r,'dart_html') for r in read_csv(dart_requests) if r['stock_code'] in roster_codes]
-        jobs=darts+jobs
+        for filename,kind in (('dart_display_requests.csv','dart_html'),('dart_notes_requests.csv','dart_notes'),('dart_group_overview_requests.csv','dart_overview')):
+            review=manifest.parent/filename
+            if review.is_file():
+                jobs=[(r,kind) for r in read_csv(review) if r['stock_code'] in roster_codes]+jobs
     early=manifest.parent/'technical_download_candidates.csv'
     if phase=='technical' and early.is_file():
         frozen={(r['isin'],r['stock_code'],r['period_end']) for r in read_csv(draw)}
@@ -333,6 +347,36 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
             if ((r['isin'],r['stock_code'],r['period_end']) in frozen and r['document']
                     and r.get('FSS_full_list_hash') and r.get('OpenDART_download_index_hash')):
                 jobs.append((r,'xbrl'))
+    if phase=='full' and kinds and 'dart_html' in kinds:
+        # The alternate display is for the very same verified document. Reuse
+        # KRX financial bodies already on disk. Request a second format only
+        # for explicitly designated independent reviews.
+        with connect(path) as db:
+            old_displays={r[0] for r in db.execute("SELECT receipt FROM packages WHERE kind IN ('kind_html','dart_html')")}
+        alternate=[(r,'dart_html') for r,k in jobs if k=='kind_html' and r['receipt'] not in old_displays]
+        # A partial XBRL directory search can coexist with independently
+        # verified DART/KRX identity and a receipt-specific FSS statement.
+        if sessions_db.exists() and coverage.is_file():
+            alternate.extend((r,'dart_html') for r in allrows if r['receipt'] in needed and not r.get('document')
+                and r['receipt'] not in old_displays and (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS'))
+        manual=[(r,k) for r,k in jobs if k.startswith('dart_') and r.get('url')]
+        jobs=manual+alternate+jobs
+    xchecks=panel.parent/'raw'/'audit_xbrl_requests.csv'
+    if phase=='full' and xchecks.is_file():
+        identity_by_id={r['receipt']:r for r in allrows if r['identity_status']=='PASS'}
+        review=[]
+        for spec in read_csv(xchecks):
+            signed=identity_by_id.get(spec['receipt'])
+            if not signed or signed['stock_code']!=spec['stock_code'] or signed['report_type']!=spec['report_type']:continue
+            stem='X-'+spec['stock_code']+'-'+spec['report_type']
+            index=manifest.parent/'parsed'/(stem+'.json')
+            if not index.is_file():continue
+            matches=[x for x in json.loads(index.read_text())['records'] if x['receipt']==spec['receipt'] and
+                     x['corp_code']==signed['corp_code'] and x.get('document')==spec['document']]
+            if len(matches)!=1:continue
+            if not any(sha(f.read_bytes())==matches[0]['source_sha256'] for f in (manifest.parent/'raw').glob(stem+'-p*.html')):continue
+            review.append((dict(signed,document=spec['document']),'xbrl'))
+        jobs=review+jobs
     if kinds:jobs=[(r,k) for r,k in jobs if k in kinds]
     with connect(path) as db:accepted=reserve(db,jobs,phase,retry_blocked,batch_size if phase=='full' else None)
     print(f'{phase} planned {len(jobs)} pending {len(accepted)}',flush=True)
@@ -353,7 +397,7 @@ if __name__=='__main__':
     a.add_argument('--retry-blocked',action='store_true')
     a.add_argument('--display-queue',type=Path)
     a.add_argument('--batch-size',type=int,default=300)
-    a.add_argument('--kinds',nargs='+',choices=('xbrl','kind_html','dart_html'))
+    a.add_argument('--kinds',nargs='+',choices=('xbrl','kind_html','dart_html','dart_notes','dart_overview'))
     args=a.parse_args()
     args.path.parent.mkdir(parents=True,exist_ok=True)
     # A concurrent snapshot refresh must never request a second copy of a reserved file.

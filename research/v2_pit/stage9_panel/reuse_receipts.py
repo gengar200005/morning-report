@@ -6,7 +6,8 @@ import re
 import zlib
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
-from stage9_panel.collect_receipts import connect, initialize, read_csv, store
+from stage9_panel.collect_receipts import connect, initialize, read_csv, store, sha
+from stage9_panel.fss_section import statement_pointer
 
 def run(path,panel,prior,archives):
     universe={r['historical_isin'] for r in read_csv(panel)}
@@ -100,6 +101,18 @@ def run(path,panel,prior,archives):
             store(out,r['receipt'],r['document'],r['corp_code'],'dart_html',r['url'],body.read_bytes(),r['sha256'])
             with out:
                 out.execute('INSERT OR IGNORE INTO reservations VALUES(?,?,?)',(r['receipt'],'dart_html','identity_source_handoff'))
+        # Reuse earlier original main menus when an alternate original DART
+        # statement view is called for; their selected receipt must match.
+        candidates=list((identity/'raw').glob('fss-*-*-*.html'))+list((identity/'raw').glob('ipo-*-original.html'))
+        for directory in [archives/'mr-lgsk',archives/'mr-delisted']:
+            candidates.extend(directory.glob('*.html'))
+        for f in candidates:
+            ids=re.findall(r'(?<!\d)\d{14}(?!\d)',f.name)
+            if len(ids)!=1:continue
+            try:body=f.read_bytes();statement_pointer(body,ids[0])
+            except (UnicodeError,ValueError):continue
+            url='https://dart.fss.or.kr/dsaf001/main.do?rcpNo='+ids[0]
+            with out:out.execute('INSERT OR IGNORE INTO pointers VALUES(?,?,?)',(url,sha(body),body))
         print(out.execute('SELECT kind,count(*),sum(length(body)) FROM packages GROUP BY kind').fetchall())
 
 if __name__=='__main__':

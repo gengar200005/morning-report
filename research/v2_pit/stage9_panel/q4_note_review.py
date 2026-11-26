@@ -76,6 +76,8 @@ def consolidated_notes(doc):
 
 def replay(packages, reviewed):
     """reviewed holds exact statement locations, policy excerpts and an independent adjudication."""
+    if set(reviewed['independent_face_amounts']) != {'revenue', 'operating_profit'}:
+        raise ValueError('Both independently checked statement fields are required')
     if len(reviewed['sources']) != 4 or len({s['receipt'] for s in reviewed['sources']}) != 4:
         raise ValueError('Four distinct annual and nine-month source receipts required')
     tables = []
@@ -86,20 +88,48 @@ def replay(packages, reviewed):
         for source in reviewed['sources']:
             receipt = source['receipt']
             sql = 'SELECT sha256,source,body,corp FROM packages WHERE receipt=? AND kind=?'
-            for kind in ('kind_html', 'xbrl'):
+            note_kind = source['note_kind']
+            if note_kind not in ('kind_html', 'dart_notes'):
+                raise ValueError('Unexpected notes format')
+            for kind in (note_kind, 'xbrl'):
                 row = db.execute(sql, (receipt, kind)).fetchone()
-                if (not row or row[3] != reviewed['corp'] or row[0] != source[kind + '_sha256']
+                if (not row or row[3] != reviewed['corp'] or row[0] != source['note_sha256' if kind == note_kind else 'xbrl_sha256']
                         or sha256(row[2]).hexdigest() != row[0]):
                     raise ValueError('Missing or changed original ' + receipt)
-                if kind == 'kind_html':
+                if kind == note_kind:
                     doc = html.fromstring(row[2].decode('utf-8-sig'))
                     notes.append(dict(receipt=receipt, url=row[1], sha256=row[0]))
-            text, note_tables = consolidated_notes(doc)
+            if note_kind == 'kind_html':
+                text, note_tables = consolidated_notes(doc)
+            else:
+                text, note_tables = compact(doc.text_content()), doc.xpath('//table')
+                if '연결재무제표주석' not in text:
+                    raise ValueError('Missing FSS consolidated notes heading')
             for label in ('policy', 'scope_change'):
                 if not source[label] or any(compact(phrase) not in text for phrase in source[label]):
                     raise ValueError('Missing reviewed note disclosure ' + receipt + '/' + label)
             tabs = doc.xpath('//table')
-            rosters.append(scope(tabs[source['scope_table']]))
+            if source.get('scope_note_rows'):
+                rows = cells(tabs[source['scope_table']])
+                if '종속기업명' not in rows[0]:
+                    raise ValueError('Unrecognized subsidiary roster')
+                subsidiary_rows = rows[source['scope_note_rows']:]
+                subsidiary_names = [r[0] for r in subsidiary_rows]
+                if not subsidiary_names or len(set(subsidiary_names)) != len(subsidiary_names):
+                    raise ValueError('Ambiguous subsidiary roster')
+                rosters.append(sorted((r[0], r[2], r[3], r[4]) for r in subsidiary_rows))
+            else:
+                roster = scope(tabs[source['scope_table']])
+                for equivalence in source.get('control_wording', []):
+                    documented = tuple(equivalence['overview_row'])
+                    note = tabs[equivalence['notes_table']]
+                    ownership = equivalence['ownership_row']
+                    if documented not in roster or note not in note_tables or ownership not in cells(note):
+                        raise ValueError('Missing evidence for different descriptions of control')
+                    if ownership[0] != documented[0] or ownership[2:4] != ['100.0', '100.0']:
+                        raise ValueError('Control-wording exception requires unchanged wholly owned holding')
+                    roster[roster.index(documented)] = (documented[0], documented[1], '100% ' + ownership[4])
+                rosters.append(sorted(roster))
             reviewed_tables = [tabs[n] for n in source['segment_tables']]
             if not all(table in note_tables for table in reviewed_tables):
                 raise ValueError('Operating-segment table outside consolidated notes')

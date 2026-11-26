@@ -15,7 +15,7 @@ import unicodedata
 TYPES={'사업보고서':'11011','반기보고서':'11012','분기보고서':'11013'}
 COLUMNS=('isin stock_code corp_code kind_receipt receipt document filing_date available_session period_end report_type version identity_status '
          'kind_timestamp source_kind_sha256 source_dart_sha256 original_receipt reason source_kind_export_sha256 source_xbrl_index_sha256 '
-         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis comparison_basis_status comparison_basis_reason filing_source_form fss_display_url fss_display_sha256 amendment_scope attachment_name main_receipts_at_event source_fss_viewer_sha256').split()
+         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis comparison_basis_status comparison_basis_reason filing_source_form fss_display_url fss_display_sha256 amendment_scope attachment_name main_receipts_at_event source_fss_viewer_sha256 xbrl_index_lookup_status').split()
 def read(path):
     with path.open(encoding='utf-8-sig',newline='') as s:return list(csv.DictReader(s))
 def load(path):
@@ -277,6 +277,19 @@ def consolidate(w,roster,db,prior):
         elif r['version']=='amendment' and r['identity_status']=='PASS':
             r.update(identity_status='BLOCKED',reason='ambiguous_or_unavailable_original_version')
         elif len(orig)>1:r.update(identity_status='BLOCKED',comparator_identity_status='BLOCKED',reason='multiple_candidate_originals')
+    directory={(p.stem.split('-')[1],p.stem.split('-')[2]) for p in (w/'parsed').glob('X-*.json')}
+    for r in result:
+        if not r['receipt']:
+            status='no_matched_FSS_receipt'
+        elif r.get('source_xbrl_index_sha256'):
+            status='listed_with_document' if r.get('document') else 'listed_without_document'
+        elif r.get('document'):
+            status='earlier_verified_archive'
+        elif (r['stock_code'],r['report_type']) in directory:
+            status='queried_no_entry'
+        else:
+            status='query_not_obtained'
+        r['xbrl_index_lookup_status']=status
     result.sort(key=lambda r:(r['isin'],r['filing_date'],r['kind_timestamp'],r['receipt'],r['kind_receipt']))
     save(w/'receipts.csv',result,COLUMNS)
     monthly=[];co_summ=[]
@@ -299,10 +312,13 @@ def consolidate(w,roster,db,prior):
         m=[r for r in monthly if r['isin']==isin];hasd=co in darts and bool(darts[co]['records'])
         co_summ.append(dict(isin=isin,stock_code=co,complete=int(counts[isin]==len(m)),start_date=m[0]['formation'],end_date=m[-1]['formation'],
             kind_completed_windows=len(complete),dart_report_11011=int(hasd),dart_report_11012=int(hasd),dart_report_11013=int(hasd),
-            complete_months=counts[isin],expected_months=len(m),issue='' if counts[isin]==len(m) else 'pending_or_unverified_search'))
+            xbrl_11011_complete=int((co,'11011') in directory),xbrl_11012_complete=int((co,'11012') in directory),
+            xbrl_11013_complete=int((co,'11013') in directory),complete_months=counts[isin],expected_months=len(m),issue='' if counts[isin]==len(m) else 'pending_or_unverified_search'))
     save(w/'monthly_coverage.csv',monthly,list(monthly[0]));save(w/'coverage.csv',co_summ,list(co_summ[0]))
     summary=dict(rows=len(result),pass_rows=sum(r['identity_status']=='PASS' for r in result),
         downloadable=sum(r['identity_status']=='PASS' and bool(r['document']) for r in result),
+        xbrl_directory_completed=len(directory),xbrl_directory_expected=3*len(isos),
+        xbrl_lookup=dict(Counter(r['xbrl_index_lookup_status'] for r in result)),
         complete_kind_windows=complete,complete_issuer_full_dart=len(darts),complete_months=sum(counts.values()),expected_months=len(monthly))
     tmp=w/'progress.tmp';tmp.write_text(json.dumps(summary,ensure_ascii=False,indent=2));tmp.replace(w/'progress.json')
     print(summary['rows'],summary['pass_rows'],summary['downloadable'],summary['complete_issuer_full_dart'],summary['complete_months'],flush=True)

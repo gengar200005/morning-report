@@ -1,6 +1,6 @@
 import unittest
 from lxml import html
-from stage9_panel.q4_note_review import scope, segment
+from stage9_panel.q4_note_review import consolidated_notes, scope, segment
 
 
 def table(rows, unit='원'):
@@ -17,6 +17,15 @@ class ReviewedNotesTest(unittest.TestCase):
         rows[1][-1] = '101'
         with self.assertRaisesRegex(ValueError, 'reconcile'):
             segment(table(rows), 'operating_profit')
+
+    def test_only_consolidated_note_section_is_available(self):
+        doc = html.fromstring('<html><body><p class="SECTION-2">3. 연결재무제표 주석</p>'
+                              '<p>연결기업 정책</p><table><tr><td>연결부문</td></tr></table>'
+                              '<p class="SECTION-2">4. 재무제표</p><p>별도기업 정책</p></body></html>')
+        text, tables = consolidated_notes(doc)
+        self.assertIn('연결기업정책', text)
+        self.assertNotIn('별도기업정책', text)
+        self.assertEqual(len(tables), 1)
 
     def test_entity_roster_requires_each_identifiable_name(self):
         rows = [['상호','설립일','지배관계 근거'],['회사1','2001.01','의결권 과반수']]
