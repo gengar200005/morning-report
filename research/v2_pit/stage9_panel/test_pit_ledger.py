@@ -46,6 +46,9 @@ class AsOfLedgerTests(unittest.TestCase):
         self.assertEqual(one_row(self.member,'nonfinancial',[r],{**self.good,'complete':'0'},self.days,sample,{})['identity_pass'],0)
         stale=one_row({**self.member,'formation':'20211001'},'nonfinancial',[r],self.good,self.days,sample,{})
         self.assertEqual(stale['reason'],'stale_latest_quarter')
+        r.update(comparison_basis_status='BLOCKED',comparison_basis_reason='issuer_not_yet_established_for_full_prior_three_months')
+        recent=one_row(self.member,'nonfinancial',[r],self.good,self.days,sample,{})
+        self.assertEqual((recent['identity_pass'],recent['F3'],recent['F3_reason']),(1,'',r['comparison_basis_reason']))
     def test_uncertain_same_day_order_and_unlinked_amendment(self):
         orig=self.filing('o','20210331','20210517')
         first=self.filing('a','20210331','20210701',origin='o'); second={**first,'receipt':'b'}
@@ -54,11 +57,25 @@ class AsOfLedgerTests(unittest.TestCase):
         self.assertEqual(filing_versions([orig,first,second],'20210802',sessions=self.days)[0]['receipt'],'b')
         bad={**second,'original_receipt':'other'}
         self.assertEqual(filing_versions([orig,bad],'20210802',sessions=self.days)[1],'unlinked_amendment')
+    def test_attachment_only_scope_requires_proven_parent(self):
+        original=self.filing('main','20210331','20210517')
+        attachment={**self.filing('annex','20210331','20210518',origin='main'),
+                    'amendment_scope':'nonfinancial_attachment_only','main_receipts_at_event':'main',
+                    'source_fss_viewer_sha256':'b'*64}
+        version,status=filing_versions([original,attachment],'20210601',sessions=self.days)
+        self.assertEqual((status,version['receipt'],version['nonfinancial_attachment_receipts']),('PASS','main','annex'))
+        attachment['amendment_scope']='financial_attachment_only'
+        result=one_row(self.member,'nonfinancial',[original,attachment],self.good,self.days,{}, {})
+        self.assertEqual((result['identity_pass'],result['receipt'],result['reason']),(1,'annex','financial_attachment_comparison_unverified'))
+
     def test_precalendar_evidence_only_for_prior_component(self):
         r={**self.filing('r','20150930','20151112'),'identity_status':'BLOCKED',
            'comparator_identity_status':'PASS','comparator_identity_basis':'cross-index plus historical security'}
         self.assertEqual(filing_versions([r],'20210601',sessions=self.days)[1],'unverified_receipt_identity')
         self.assertEqual(filing_versions([r],'20210601',sessions=self.days,reference_only=True)[1],'PASS')
+        # FY comparators may finish before the master begins but be filed during the verified calendar.
+        r.update(period_end='20151231',filing_date='20160330')
+        self.assertEqual(filing_versions([r],'20210601',sessions=['20160104',*self.days],reference_only=True)[1],'PASS')
 
     def test_multiple_sources_cannot_override_disagreement(self):
         r=self.filing('r','20210331','20210517')
@@ -96,6 +113,11 @@ class AsOfLedgerTests(unittest.TestCase):
         self.assertEqual((out['revenue_current']['value'],out['operating_profit_prior']['value']),(9900000,222000))
         self.assertFalse(cumulative_facts(raw,12,intervals))
         self.assertFalse(cumulative_facts(viewer(),9,intervals))
+        named=raw.decode().replace('3개월','당3분기',1).replace('3개월','전3분기(검토받지 않은 재무제표)',1).encode()
+        quarters=((date(2021,1,1),date(2021,3,31)),(date(2020,1,1),date(2020,3,31)))
+        self.assertEqual(cumulative_facts(named,3,quarters)['revenue_current']['value'],1200000)
+        self.assertEqual(cumulative_facts(named,9,intervals)['revenue_current']['value'],9900000)
+        self.assertFalse(cumulative_facts(named.replace('당3분기'.encode(),'당2분기'.encode()),3,quarters))
 
     def test_quarantine_revokes_cached_source(self):
         import csv

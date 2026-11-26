@@ -16,12 +16,12 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
 from urllib.error import HTTPError
-from urllib.parse import urlencode
+from urllib.parse import parse_qs, urlencode, urlsplit
 from urllib.request import Request, build_opener
 
 from lxml import html
 from dart_receipts import NoRedirect
-from stage82b.kind_display import BASE, contents_url, document_number
+from stage82b.kind_display import BASE, contents_url
 
 XBRL_URL = 'https://opendart.fss.or.kr/cmm/downloadIfrs.do?'
 REFERER = 'https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/main.do'
@@ -73,20 +73,22 @@ def check_archive(body):
         if z.testzip() is not None:
             raise ValueError('XBRL CRC mismatch')
 
-def kind_document(raw,receipt,stock_code,amendment):
-    if not amendment:
-        return document_number(raw,receipt,stock_code)
+def kind_document(raw,receipt,stock_code,amendment,kind_timestamp=''):
     root=html.fromstring(raw.decode('utf-8'))
     if re.findall(r'\((\d{6})\)',root.xpath('string(//header//h1)'))!=[stock_code]:
-        raise ValueError('wrong security in amended report')
-    stamp='.'.join((receipt[:4],receipt[4:6],receipt[6:8]))
+        raise ValueError('wrong security in report viewer')
+    stamps={'.'.join((receipt[:4],receipt[4:6],receipt[6:8]))}
+    # Publication and receipt-prefix dates can differ on a weekend/after hours.
+    # Use a second date only from the independent official KRX listing of this event.
+    if kind_timestamp:stamps.add(date.fromisoformat(kind_timestamp[:10]).strftime('%Y.%m.%d'))
     hits=[]
     for node in root.xpath('//select[@id="mainDoc"]/option'):
         title=''.join(node.text_content().split())
-        if '정정' in title and any(k in title for k in ('분기보고서','반기보고서','사업보고서')) and title.endswith('('+stamp+')') and re.fullmatch(r'\d{14}\|[YN]',node.get('value','')):
+        report=any(k in title for k in ('분기보고서','반기보고서','사업보고서'))
+        desired=('정정' in title) if amendment else title.startswith(('분기보고서','반기보고서','사업보고서'))
+        if report and desired and any(title.endswith('('+s+')') for s in stamps) and re.fullmatch(r'\d{14}\|[YN]',node.get('value','')):
             hits.append(node.get('value').split('|')[0])
-    if len(hits)!=1:
-        raise ValueError('no unique dated amended document')
+    if len(hits)!=1:raise ValueError('no unique dated report matching verified KIND publication date')
     return hits[0]
 
 def once(db, row, kind, phase, step, url, interval):
@@ -142,11 +144,22 @@ def fetch(job):
                 url=XBRL_URL+urlencode(dict(rcp_no=rc,dcm_no=doc,lang='ko'))
                 body=once(db,row,kind,phase,'body',url,interval)
                 check_archive(body)
+            elif kind=='dart_html':
+                url=row['url'];u=urlsplit(url);params=parse_qs(u.query)
+                if (u.scheme!='https' or u.netloc!='dart.fss.or.kr' or u.path!='/report/viewer.do'
+                        or set(params)!= {'rcpNo','dcmNo','eleId','offset','length','dtd'}
+                        or params['rcpNo']!=[rc] or params['dcmNo']!=[doc]
+                        or not re.fullmatch(r'\d{5,10}',doc) or row['section']!='2. 연결재무제표'
+                        or not re.fullmatch('[0-9a-f]{64}',row['source_main_sha256'])):
+                    raise ValueError('FSS main-to-CFS pointer mismatch')
+                body=once(db,row,kind,phase,'body',url,interval)
+                if not html.fromstring(body).xpath('//table'):
+                    raise ValueError('missing FSS statement table')
             else:
                 kr=row['kind_receipt']
                 if not re.fullmatch(r'\d{14}',kr) or not re.fullmatch(r'\d{6}',row['stock_code']):raise ValueError('invalid KIND receipt/security')
                 index=BASE+urlencode(dict(method='search',acptno=kr))
-                doc=kind_document(once(db,row,kind,phase,'index',index,interval),kr,row['stock_code'],is_amended(row))
+                doc=kind_document(once(db,row,kind,phase,'index',index,interval),kr,row['stock_code'],is_amended(row),row.get('kind_timestamp',''))
                 pointer=BASE+urlencode(dict(method='searchContents',docNo=doc))
                 url=contents_url(once(db,row,kind,phase,'pointer',pointer,interval),kr,doc)
                 body=once(db,row,kind,phase,'body',url,interval)
@@ -233,7 +246,9 @@ def reserve(db,jobs,phase,retry_blocked=False,limit=None):
             if key in seen:continue
             seen.add(key)
             if db.execute('SELECT 1 FROM packages WHERE receipt=? AND kind=?',key).fetchone():continue
-            if not retry_blocked and db.execute("SELECT 1 FROM completed WHERE receipt=? AND kind=? AND status='BLOCKED'",key).fetchone():continue
+            if not retry_blocked:
+                fail=db.execute("SELECT detail FROM completed WHERE receipt=? AND kind=? AND status='BLOCKED'",key).fetchone()
+                if fail and fail[0]!='No unambiguous dated original in KIND menu':continue
             held=db.execute('SELECT phase FROM reservations WHERE receipt=? AND kind=?',key).fetchone()
             if not held and phase=='technical' and remaining<=0:continue
             if not held:
@@ -243,7 +258,7 @@ def reserve(db,jobs,phase,retry_blocked=False,limit=None):
             if limit is not None and len(accepted)>=limit:break
     return accepted
 
-def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,display_queue=None,batch_size=300):
+def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,display_queue=None,batch_size=300,kinds=None):
     initialize(path)
     if workers is None:workers=3 if phase=='technical' else 5
     allrows=read_csv(manifest)
@@ -277,12 +292,19 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
         main=audit.with_name('audit_main_frozen.csv')
         targets={(r['isin'],r['period_end']) for r in (audits+(read_csv(main) if main.exists() else []))}
         base={(r['isin'],r['period_end']) for r in drawrows}
-        for isin,end in list(targets):
-            if end.endswith('-12-31'):targets.add((isin,end[:4]+'-09-30'))
+        from stage9_panel.pit_ledger import prev_end
+        annual_checks={(r['isin'],date.fromisoformat(r['period_end']).isoformat()) for r,k in jobs
+                       if r['report_type']=='11011'}
+        for isin,end in targets & annual_checks:
+            for n in (3,12,15):
+                targets.add((isin,date.fromisoformat(prev_end(end,n)).isoformat()))
+        manual_receipts=set()
+        review=panel.parent/'raw'/'audit_display_requests.csv'
+        if review.is_file():manual_receipts={r['receipt'] for r in read_csv(review)}
         checks=[]
         for r,k in jobs:
             key=(r['isin'],date.fromisoformat(r['period_end']).isoformat())
-            if key in targets and r.get('kind_receipt'):
+            if (key in targets or r['receipt'] in manual_receipts) and r.get('kind_receipt'):
                 checks.extend([(r,'kind_html'),(r,k)])
             elif key in base:
                 checks.append((r,k))
@@ -299,6 +321,11 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
         with connect(path) as db:
             blocked={r[0] for r in db.execute("SELECT receipt FROM completed WHERE kind='xbrl' AND status='BLOCKED' UNION SELECT receipt FROM quarantine WHERE kind='xbrl'")}
         jobs=[(r,'kind_html') for r,k in jobs if k=='xbrl' and r['receipt'] in blocked and r.get('kind_receipt')]+jobs
+    dart_requests=manifest.parent/'dart_display_requests.csv'
+    if phase=='full' and dart_requests.is_file():
+        roster_codes={r['historical_code'] for r in roster}
+        darts=[(r,'dart_html') for r in read_csv(dart_requests) if r['stock_code'] in roster_codes]
+        jobs=darts+jobs
     early=manifest.parent/'technical_download_candidates.csv'
     if phase=='technical' and early.is_file():
         frozen={(r['isin'],r['stock_code'],r['period_end']) for r in read_csv(draw)}
@@ -306,6 +333,7 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
             if ((r['isin'],r['stock_code'],r['period_end']) in frozen and r['document']
                     and r.get('FSS_full_list_hash') and r.get('OpenDART_download_index_hash')):
                 jobs.append((r,'xbrl'))
+    if kinds:jobs=[(r,k) for r,k in jobs if k in kinds]
     with connect(path) as db:accepted=reserve(db,jobs,phase,retry_blocked,batch_size if phase=='full' else None)
     print(f'{phase} planned {len(jobs)} pending {len(accepted)}',flush=True)
     with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -325,6 +353,7 @@ if __name__=='__main__':
     a.add_argument('--retry-blocked',action='store_true')
     a.add_argument('--display-queue',type=Path)
     a.add_argument('--batch-size',type=int,default=300)
+    a.add_argument('--kinds',nargs='+',choices=('xbrl','kind_html','dart_html'))
     args=a.parse_args()
     args.path.parent.mkdir(parents=True,exist_ok=True)
     # A concurrent snapshot refresh must never request a second copy of a reserved file.

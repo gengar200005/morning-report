@@ -21,7 +21,7 @@ from stage9_panel.pit_display import cumulative_facts
 FIELDS = ('revenue', 'operating_profit')
 DURATIONS = (3, 9, 12)
 ANNUAL_SUBPERIODS = {'first9': (3,9), 'first6': (6,6), 'first3': (9,3), 'second3': (6,3), 'third3': (3,3)}
-FACTS_VERSION = 3
+FACTS_VERSION = 4
 
 
 def dates_for(end, months, prior=False):
@@ -106,7 +106,7 @@ def extract_receipt(receipt, document, corp, period_end, kind, raw, expected_has
     end = date.fromisoformat(period_end)
     if end.day != calendar.monthrange(end.year, end.month)[1]:
         raise ValueError('unsupported non-month-end accounting period')
-    if kind == 'kind_html':
+    if kind in ('kind_html','dart_html'):
         display = extract_display_fields(raw, 'CFS', end.isoformat(), None)
         group = {}
         for field, data in display['fields'].items():
@@ -115,6 +115,13 @@ def extract_receipt(receipt, document, corp, period_end, kind, raw, expected_has
                     group[field+'_'+side] = {'value': data[side], 'status':'exact_display_quarter',
                         'table':data['table_index'], 'row':data['row_index'], 'columns':data['value_columns'],
                         'unit':data['unit'],'label':data['source_label']}
+        wanted=tuple(tuple(date.fromisoformat(v) for v in dates_for(end,3,prior)) for prior in (False,True))
+        extra=cumulative_facts(raw,3,wanted)
+        for key,item in extra.items():
+            if key in group and group[key].get('value')!=item.get('value'):
+                group[key]={'status':'conflicting_values'}
+            else:
+                group[key]=item
         result = {'source_type': kind,'3':group,'explicit_no_cfs':not group and no_consolidated_statement(raw)}
         if not result['explicit_no_cfs']:
             for duration in (9,12):
@@ -149,14 +156,15 @@ def index_facts(packages, receipts, cache):
                 out.executemany('DELETE FROM facts WHERE receipt=? AND kind=?',quarantine)
         # Do not materialize all archives (or hold a read transaction across network fetches).
         for receipt, kind, corp, doc, digest, url in source.execute('SELECT receipt,kind,corp,document,sha256,source FROM packages').fetchall():
-            if (receipt,kind) in quarantine:
+            if kind not in ('xbrl','kind_html','dart_html') or (receipt,kind) in quarantine:
                 continue
             candidates = by_receipt.get(receipt, set())
             periods = {p for c,p,d in candidates if c==corp and p and (kind=='kind_html' or not d or d==doc)}
             if len(periods) != 1:
                 continue
             end = periods.pop()
-            if out.execute("SELECT 1 FROM facts WHERE receipt=? AND kind=? AND sha=? AND period=? AND json_extract(evidence,'$.facts_version')=?", (receipt,kind,digest,end,FACTS_VERSION)).fetchone():
+            version=3 if kind=='xbrl' else FACTS_VERSION
+            if out.execute("SELECT 1 FROM facts WHERE receipt=? AND kind=? AND sha=? AND period=? AND json_extract(evidence,'$.facts_version')=?", (receipt,kind,digest,end,version)).fetchone():
                 reused += 1
                 continue
             row = source.execute('SELECT body FROM packages WHERE receipt=? AND kind=? AND sha256=?', (receipt,kind,digest)).fetchone()
@@ -167,7 +175,7 @@ def index_facts(packages, receipts, cache):
             except (ValueError, BadZipFile, ParseError, ParserError, UnicodeError, InvalidOperation) as error:
                 facts={'source_sha256':digest,'source_type':kind,'error':str(error)}
                 blocked += 1
-            facts.update(facts_version=FACTS_VERSION,source_url=url)
+            facts.update(facts_version=version,source_url=url)
             with out:
                 out.execute('INSERT OR REPLACE INTO facts VALUES (?,?,?,?,?,?,?)',
                             (receipt,kind,doc,corp,end,digest,json.dumps(facts,ensure_ascii=False)))

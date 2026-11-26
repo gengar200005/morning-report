@@ -12,6 +12,7 @@ import json
 import re
 from pathlib import Path
 import sqlite3
+from urllib.parse import parse_qs, urlsplit
 
 if __package__:
     from .q4_basis import annual_basis
@@ -58,6 +59,14 @@ def filing_versions(rows, formation, period='', *, sessions, reference_only=Fals
         return None,'no_available_periodic_report'
     end = max(r['period_end'] for r in known)
     group = [r for r in known if r['period_end'] == end]
+    body_ids={r['receipt'] for r in group if r.get('amendment_scope')!='nonfinancial_attachment_only'}
+    exempt=[r for r in group if r.get('amendment_scope')=='nonfinancial_attachment_only'
+            and r['version']=='amendment' and r['identity_status']=='PASS'
+            and r.get('original_receipt') in body_ids
+            and r['original_receipt'] in r.get('main_receipts_at_event','').split('|')
+            and re.fullmatch('[a-f0-9]{64}',r.get('source_fss_viewer_sha256',''))]
+    if exempt:
+        group=[r for r in group if r not in exempt]
     latest_date = max(r['filing_date'] for r in group)
     on_date = [r for r in group if r['filing_date'] == latest_date]
     if len(on_date) > 1:
@@ -82,7 +91,7 @@ def filing_versions(rows, formation, period='', *, sessions, reference_only=Fals
         return chosen,'accounting_period_not_closed_at_filing'
     def verified(r):
         return r['identity_status']=='PASS' or (reference_only and r['version']=='original'
-            and r['filing_date']<sessions[0] and r.get('comparator_identity_status')=='PASS'
+            and r['period_end']<sessions[0] and r.get('comparator_identity_status')=='PASS'
             and bool(r.get('comparator_identity_basis')))
     if not verified(chosen) or not chosen['corp_code'] or not chosen['receipt']:
         return chosen,'unverified_receipt_identity'
@@ -100,6 +109,8 @@ def filing_versions(rows, formation, period='', *, sessions, reference_only=Fals
         return chosen,'unlinked_amendment'
     if chosen['corp_code']!=original['corp_code'] or chosen['report_type']!=original['report_type']:
         return chosen,'inconsistent_version_group'
+    if exempt:
+        chosen={**chosen,'nonfinancial_attachment_receipts':'|'.join(sorted(r['receipt'] for r in exempt))}
     return chosen,'PASS'
 
 
@@ -109,6 +120,13 @@ def receipt_sources(cache, r):
             continue
         if meta['kind']=='xbrl' and r.get('document') and meta['doc']!=r['document']:
             continue
+        if meta['kind']=='dart_html':
+            url=urlsplit(evidence.get('source_url',''))
+            params=parse_qs(url.query)
+            if ((url.scheme,url.netloc,url.path)!=('https','dart.fss.or.kr','/report/viewer.do')
+                    or params.get('rcpNo')!=[r['receipt']] or params.get('dcmNo')!=[meta['doc']]
+                    or (r.get('document') and meta['doc']!=r['document'])):
+                continue
         if meta['kind']=='kind_html':
             url=evidence.get('source_url','')
             route=re.fullmatch(r'https://kind\.krx\.co\.kr/external/(\d{4})/(\d{2})/(\d{2})/(\d{6})/(\d{14})/[^/]+\.html?',url,re.I)
@@ -155,6 +173,11 @@ def derived_quarter(rows, annual, formation, sessions, cache, basis, field):
         return None,{},'cumulative_support_version_unavailable'
     nine,prior_annual,prior_nine = [r for r,_ in versioned]
     sources=[annual,nine,prior_annual,prior_nine]
+    if any(r.get('amendment_scope')=='financial_attachment_only' for r in sources):
+        return None,{},'financial_attachment_comparison_unverified'
+    for required in (annual,nine):
+        if required.get('comparison_basis_status')=='BLOCKED':
+            return None,{},required.get('comparison_basis_reason') or 'comparison_basis_unverified'
     if (annual['report_type']!='11011' or prior_annual['report_type']!='11011'
             or len({r['corp_code'] for r in sources})!=1 or len({r['receipt'] for r in sources})!=4):
         return None,{},'incompatible_cumulative_filings'
@@ -190,6 +213,17 @@ def derived_quarter(rows, annual, formation, sessions, cache, basis, field):
                 or not all(h in saved for h,saved in zip(review.get('component_hashes',()),hashes,strict=False))
                 or len(review.get('component_hashes',()))!=4):
             return None,detail,'arithmetic_only_basis_unverified'
+        if review.get('note_source_hashes'):
+            note_hashes=review['note_source_hashes']
+            if (len(note_hashes)!=4 or not all(re.fullmatch(r'[a-f0-9]{64}',h) for h in note_hashes)
+                    or not all(h in {meta['sha'] for meta,_ in receipt_sources(cache,r)}
+                               for h,r in zip(note_hashes,sources,strict=True))):
+                return None,detail,'basis_note_hashes_not_bound_to_effective_receipts'
+            detail['note_source_hashes']=note_hashes
+        if review.get('review_method'):
+            detail['review_method']=review['review_method']
+        if 'independent_quarter_confirmed' in review:
+            detail['independent_quarter_confirmed']=review['independent_quarter_confirmed']
         detail['basis']=review['source_url']
         detail['basis_sha256']=review['source_sha256']
         detail['basis_available_session']=day(review['available_session'])
@@ -227,14 +261,14 @@ def one_row(member, industry, history, coverage, sessions, cache, basis):
     t, isin=member['formation'],member['historical_isin']
     item=dict(formation=t,isin=isin,stock_code=member['historical_code'],industry_group=industry,
               identity_pass=0,period_end='',filing_date='',available_session='',receipt='',original_receipt='',
-              corp_code='',kind_receipt='',document='',report_type='',ordering_timestamp='',age_days='',filing_lag_days='',source_sha256='',version='',method_F2='',method_F3='',F2='',F3='',
+              corp_code='',kind_receipt='',document='',report_type='',nonfinancial_attachment_receipts='',amendment_scope='',ordering_timestamp='',comparison_basis_status='',comparison_basis_reason='',age_days='',filing_lag_days='',source_sha256='',version='',method_F2='',method_F3='',F2='',F3='',
               revenue_current='',revenue_prior='',operating_profit_current='',operating_profit_prior='',
               revenue_source_sha256='',operating_profit_source_sha256='',
               F2_reason='',F3_reason='',revenue_reason='',operating_profit_reason='',candidate_revenue_current='',candidate_revenue_prior='',
               candidate_operating_profit_current='',candidate_operating_profit_prior='',components='',status='BLOCKED',reason='')
     chosen,status=filing_versions(history,t,sessions=sessions)
     if chosen:
-        for key in ('period_end','filing_date','receipt','corp_code','version','original_receipt','kind_receipt','document','report_type','ordering_timestamp'):
+        for key in ('period_end','filing_date','receipt','corp_code','version','original_receipt','kind_receipt','document','report_type','nonfinancial_attachment_receipts','amendment_scope','ordering_timestamp','comparison_basis_status','comparison_basis_reason'):
             item[key]=chosen.get(key,'')
         if chosen['version']=='original':
             item['original_receipt']=chosen['receipt']
@@ -260,6 +294,10 @@ def one_row(member, industry, history, coverage, sessions, cache, basis):
             status='not_calendar_quarter_end'
         elif chosen['period_end'] < earliest:
             status='stale_latest_quarter'
+        elif chosen.get('amendment_scope')=='financial_attachment_only':
+            status='financial_attachment_comparison_unverified'
+        elif chosen.get('comparison_basis_status')=='BLOCKED':
+            status=chosen.get('comparison_basis_reason') or 'comparison_basis_unverified'
     if status!='PASS':
         item['F2_reason']=item['F3_reason']=item['reason']=status
         return item
@@ -277,6 +315,7 @@ def one_row(member, industry, history, coverage, sessions, cache, basis):
             if pair:
                 hashes=[h for group in detail['hashes'] for h in group]
                 hashes.extend(d['sha256'] for d in detail['annual_basis_evidence']['documents'])
+                hashes.extend(detail.get('note_source_hashes',[]))
                 if detail.get('basis_sha256'):
                     hashes.append(detail['basis_sha256'])
                 latest=bisect_right(sessions,detail['latest_component_filed'])
@@ -341,8 +380,11 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
     if len(spans)!=len(coverage_rows):
         raise ValueError('Duplicate coverage records')
     basis={}
+    basis_sha=''
     if basis_file:
-        for r in json.loads(basis_file.read_bytes()):
+        raw_basis=basis_file.read_bytes()
+        basis_sha=sha256(raw_basis).hexdigest()
+        for r in json.loads(raw_basis):
             key=(*r['component_receipts'],r['field'])
             if key in basis:
                 raise ValueError('Duplicate cumulative review')
@@ -352,9 +394,11 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
     if len(sessions)!=len(set(sessions)) or not set(m['formation'] for m in members).issubset(sessions):
         raise ValueError('Missing or duplicated formation sessions')
     cache=defaultdict(list)
+    fact_signature=sha256()
     with sqlite3.connect(facts_db.resolve().as_uri()+'?mode=ro',uri=True) as db:
         db.row_factory=sqlite3.Row
-        for record in db.execute('SELECT * FROM facts'):
+        for record in db.execute('SELECT * FROM facts ORDER BY receipt,kind,sha,period'):
+            fact_signature.update(json.dumps(tuple(record),ensure_ascii=False,separators=(',',':')).encode()+b'\n')
             cache[record['receipt']].append((record,json.loads(record['evidence'])))
     rows=[]
     for m in members:
@@ -381,6 +425,7 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
                 by_selected_period={k:summary([r for r in rows if r['period_end']==k]) for k in sorted(source_quarters)},
                 ledger_sha256=sha256(path.read_bytes()).hexdigest(),roster_sha256=ROSTER_SHA,
                 metadata_sha256=filing_sha,coverage_sha256=coverage_sha,context_sha256=context_sha,
+                fact_snapshot_sha256=fact_signature.hexdigest(),cumulative_basis_sha256=basis_sha,
                 by_report_type={k:summary([r for r in rows if r['report_type']==k]) for k in sorted({r['report_type'] for r in rows})},
                 by_version={k:summary([r for r in rows if r['version']==k]) for k in sorted({r['version'] for r in rows})},
                 by_industry={k:summary([r for r in rows if r['industry_group']==k]) for k in sorted({r['industry_group'] for r in rows})})

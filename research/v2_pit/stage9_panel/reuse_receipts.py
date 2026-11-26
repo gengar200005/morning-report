@@ -5,6 +5,7 @@ import json
 import re
 import zlib
 from pathlib import Path
+from urllib.parse import urlsplit, parse_qs
 from stage9_panel.collect_receipts import connect, initialize, read_csv, store
 
 def run(path,panel,prior,archives):
@@ -85,6 +86,20 @@ def run(path,panel,prior,archives):
                 body=archives/'mr-identity'/'nondec'/(r['kind_receipt']+'.htm')
                 store(out,r['receipt'],r['source_url'].split('/')[-2],r['corp_code'],'kind_html',
                       r['source_url'],body.read_bytes(),r['source_sha256'])
+        # A pre-listing filing may have an FSS viewer but no KRX report body yet.
+        # Respect the exact historic main-to-CFS section link supplied by identity review.
+        identity=panel.parent/'identity'
+        for f in identity.glob('prelisting-*-source.json'):
+            r=json.loads(f.read_text())
+            u=urlsplit(r['url']);params=parse_qs(u.query)
+            if (r['stock_code'] not in codes or u.scheme!='https' or u.netloc!='dart.fss.or.kr'
+                    or u.path!='/report/viewer.do' or params.get('rcpNo')!=[r['receipt']]
+                    or params.get('dcmNo')!=[r['document']] or r['section']!='2. 연결재무제표'):
+                raise ValueError('prelisting receipt/section identity mismatch')
+            body=identity/'raw'/('ipo-'+r['receipt']+'-cfs.htm')
+            store(out,r['receipt'],r['document'],r['corp_code'],'dart_html',r['url'],body.read_bytes(),r['sha256'])
+            with out:
+                out.execute('INSERT OR IGNORE INTO reservations VALUES(?,?,?)',(r['receipt'],'dart_html','identity_source_handoff'))
         print(out.execute('SELECT kind,count(*),sum(length(body)) FROM packages GROUP BY kind').fetchall())
 
 if __name__=='__main__':

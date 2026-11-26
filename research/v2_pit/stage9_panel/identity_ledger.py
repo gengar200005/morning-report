@@ -15,7 +15,7 @@ import unicodedata
 TYPES={'사업보고서':'11011','반기보고서':'11012','분기보고서':'11013'}
 COLUMNS=('isin stock_code corp_code kind_receipt receipt document filing_date available_session period_end report_type version identity_status '
          'kind_timestamp source_kind_sha256 source_dart_sha256 original_receipt reason source_kind_export_sha256 source_xbrl_index_sha256 '
-         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis').split()
+         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis comparison_basis_status comparison_basis_reason filing_source_form fss_display_url fss_display_sha256 amendment_scope attachment_name main_receipts_at_event source_fss_viewer_sha256').split()
 def read(path):
     with path.open(encoding='utf-8-sig',newline='') as s:return list(csv.DictReader(s))
 def load(path):
@@ -96,6 +96,14 @@ def consolidate(w,roster,db,prior):
     issuers={r['stock_code']:r for r in read(w/'issuers.csv')};session,states,opening=securities(db,sec)
     kind,complete,darts,portals=local_source(w)
     clocks={r['receipt']:r for f in (w/'parsed').glob('time-*.json') for r in load(f)['records']}
+    ipo={r['stock_code']:r for r in load(w/'prelisting_proof.json') if 'blocked' not in r} if (w/'prelisting_proof.json').is_file() else {}
+    ipo_targets={(r['code'],r['end']) for r in load(w/'prelisting_candidates.json')} if (w/'prelisting_candidates.json').is_file() else set()
+    originals={}
+    for f in w.glob('prelisting-*-source.json'):
+        value=load(f);body=w/'raw'/('ipo-'+value['receipt']+'-cfs.htm');viewer=w/'raw'/('ipo-'+value['receipt']+'-original.html')
+        if value['sha256']!=hashlib.sha256(body.read_bytes()).hexdigest() or value['main_hash']!=hashlib.sha256(viewer.read_bytes()).hexdigest():
+            raise ValueError('Prelisting original changed')
+        originals[value['receipt']]=value
     transfer={r['stock_code']:r for r in load(w/'transfer_proof.json') if r['verified_transfer']} if (w/'transfer_proof.json').exists() else {}
     # These date-qualified anchors remove same-name corporations from name-only search output.
     supp_path=w.parent/'identity_supplement/issuer_resolution.csv'
@@ -164,6 +172,12 @@ def consolidate(w,roster,db,prior):
                 covered=lambda t,record:bool(record and record[0]==co) or tr['previous_listing_date']<=t<tr['transfer_date']
                 if min(fd,end)<tr['transfer_date'] and covered(fd,filed) and covered(end,fiscal):
                     accepted=True;via_transfer=True
+            listing=ipo.get(co)
+            via_ipo=False
+            if (not accepted and d and (co,end) in ipo_targets and filed and filed[0]==co and
+                    listing and listing['isin']==isin and listing['corp_code']==d['corp_code'] and
+                    listing['established']<=end<listing['listed']<=fd and (co,d['corp_code']) in proven):
+                accepted=True;via_ipo=True
             xid=portals[co].get(d.get('receipt'),{})
             # The archived daily KOSPI master starts in 2016. A source from 2015 can still be
             # corroborated for comparison-only use by an original listing date preceding both dates,
@@ -174,7 +188,7 @@ def consolidate(w,roster,db,prior):
                                  and (co,d['corp_code']) in proven and valid_name(k,d,'')
                                  and (fd<session[0] or bool(filed and filed[0]==co)))
 
-            reason=('official_KOSDAQ_KOSPI_continuous_transfer_and_cross_index' if via_transfer else 'unique_cross_index_publication_minute' if accepted and via_clock else 'cross_index_historical_ISIN' if accepted else 'missing_historical_filing_or_period_security' if d else
+            reason=('own_regular_report_after_IPO_prelisting_period_verified' if via_ipo else 'official_KOSDAQ_KOSPI_continuous_transfer_and_cross_index' if via_transfer else 'unique_cross_index_publication_minute' if accepted and via_clock else 'cross_index_historical_ISIN' if accepted else 'missing_historical_filing_or_period_security' if d else
                     'ambiguous_same_day_or_issuer' if possibles else 'no_DART_crossindex_match')
             prev=registry.get(k['kind_receipt'])
             if prev and not accepted:continue
@@ -205,6 +219,41 @@ def consolidate(w,roster,db,prior):
                 source_dart_sha256=d['source_sha256'],original_receipt='',reason='DART_event_not_yet_uniquely_confirmed_by_KIND',
                 source_kind_export_sha256='',source_xbrl_index_sha256=xd.get('source_sha256',''),kind_title='',dart_published=fd,xbrl_index_date=xd.get('filing_date',''),
                 dart_title=d['title'],kind_name='',dart_name=d['name'],stamp_precision='date')
+    for row in registry.values():
+        co=row['stock_code'];end=row['period_end'];legal=ipo.get(co)
+        row['comparison_basis_status']='DEFAULT'
+        if legal and end:
+            # A single 3-month comparator uses the same three months one calendar year earlier.
+            ym=int(end[:4])*12+int(end[4:6])-1-14
+            prior_start=f'{ym//12:04d}{ym%12+1:02d}01'
+            if legal['established']>prior_start:
+                row['comparison_basis_status']='BLOCKED'
+                row['comparison_basis_reason']='issuer_not_yet_established_for_full_prior_three_months'
+            else:
+                row['comparison_basis_status']='CONTINUING_ISSUER_VERIFY_NUMERIC_SCOPE'
+                row['comparison_basis_reason']='pre-existing_legal_entity; exact_3m_CFS_numeric_verification_required'
+        own=originals.get(row['receipt'])
+        if (own and not row['kind_receipt'] and legal and (co,end) in ipo_targets and
+            legal['established']<=end<=row['filing_date']<legal['listed'] and
+            legal['isin']==row['isin'] and legal['corp_code']==row['corp_code']==own['corp_code'] and (co,row['corp_code']) in proven):
+            row.update(identity_status='PASS',reason='own_preIPO_FSS_original_CIK_and_postIPO_KRX_identity',
+                       filing_source_form='FSS_original',fss_display_url=own['url'],fss_display_sha256=own['sha256'])
+    fss={e['receipt']:e for f in (w/'parsed').glob('fss-amendment-*.json') if (e:=load(f))}
+    for row in registry.values():
+        e=fss.get(row['receipt'])
+        if not e or e['corp_code']!=row['corp_code'] or e['stock_code']!=row['stock_code'] or row['version']!='amendment':continue
+        family=[m['receipt'] for m in e.get('family',[]) if (mt:=re.match(r'^(\d{4})[.](\d{2})[.](\d{2})',m['label']))
+                and ''.join(mt.groups())<=row['filing_date']]
+        row.update(amendment_scope=e.get('event_scope','periodic_main_body'),attachment_name=e.get('attachment_name',''),
+            main_receipts_at_event='|'.join(family),source_fss_viewer_sha256=e['source_main_sha256'])
+        if not row.get('kind_receipt') and row['amendment_scope'].endswith('attachment_only'):
+            filed_state=states[row['isin']].get(previous(session,row['filing_date']))
+            original=next((r for r in registry.values() if r['receipt']==e['original_receipt'] and r['isin']==row['isin']
+                          and r['period_end']==row['period_end'] and r['identity_status']=='PASS'),None)
+            if e['original_receipt'] in family and original and filed_state and filed_state[0]==row['stock_code']:
+                row.update(identity_status='PASS',filing_source_form='FSS_attachment',
+                    reason='receipt_bound_FSS_attachment_to_confirmed_original',comparator_identity_status='PASS',
+                    comparator_identity_basis='same_as_signal_identity')
     result=list(registry.values());originals=defaultdict(set)
     for r in result:
         if r['version']=='original' and r['identity_status']=='PASS':

@@ -1,0 +1,101 @@
+{
+  "restated_negative": {
+    "company": "사조동아원",
+    "stock_code": "008040",
+    "fiscal_year_end": "2017-12-31",
+    "formation": "20180402",
+    "decision": "BLOCKED",
+    "reason": "prior_comparator_restated_or_inconsistent",
+    "sources": [
+      {
+        "receipt": "20180328000391",
+        "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20180328000391&dcm_no=6020864&lang=ko",
+        "sha256": "f66082c89f868aa1a3262f8b461582491e929d73c9937e50982e13691a5f7a58",
+        "nonzero_reported_discontinued_operations": [
+          {
+            "context": "BPFY2015dFY_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "7057835267"
+          },
+          {
+            "context": "PFY2016dFY_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-373538050"
+          },
+          {
+            "context": "CFY2017dFY_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-4664098702"
+          }
+        ]
+      },
+      {
+        "receipt": "20171114000245",
+        "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20171114000245&dcm_no=5842296&lang=ko",
+        "sha256": "600c19dc0eac9c93e12e9d18baa962fd88c52567b00e298d38b4ceea46aa9900",
+        "nonzero_reported_discontinued_operations": [
+          {
+            "context": "PFY2016dTQA_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-8794191009"
+          },
+          {
+            "context": "PFY2016dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-3182555864"
+          },
+          {
+            "context": "CFY2017dTQA_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-5418590832"
+          },
+          {
+            "context": "CFY2017dTQQ_ifrs_ConsolidatedAndSeparateFinancialStatementsAxis_ifrs_ConsolidatedMember",
+            "value": "-687995542"
+          }
+        ]
+      },
+      {
+        "receipt": "20170330000434",
+        "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170330000434&dcm_no=5516381&lang=ko",
+        "sha256": "7c6e6511f651a197e752f82a2b4f354e5606398360b3e75c9ae9174880bb5fe8",
+        "nonzero_reported_discontinued_operations": []
+      },
+      {
+        "receipt": "20161111000189",
+        "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161111000189&dcm_no=5345413&lang=ko",
+        "sha256": "6c71dceed2adf24798a796d8015d97630559dfca47d76d125556545e2da661fb",
+        "nonzero_reported_discontinued_operations": []
+      }
+    ],
+    "fields": {
+      "operating_profit": {
+        "annual_comparative": 25858571449,
+        "prior_annual_filed": 26512763263,
+        "nine_comparative": 17806409006,
+        "prior_nine_filed": 16550233902
+      },
+      "revenue": {
+        "annual_comparative": 381799622107,
+        "prior_annual_filed": 414598644747,
+        "nine_comparative": 289584215905,
+        "prior_nine_filed": 308973565185
+      }
+    }
+  },
+  "non_december_direct_control": {
+    "company": "오리엔트바이오",
+    "receipt": "20220214000839",
+    "calendar_quarter": "2021Q4",
+    "fiscal_quarter": "Q3, March year end",
+    "available_session": "20220215",
+    "sha256": "60de40c2134bc3f207c16aefdb5ca74409f0d1c24920e2bcd315a3fb129399bc",
+    "status": "PASS_direct_three_month",
+    "original_and_comparative_krw": {
+      "revenue": [
+        17211509307,
+        14134201236
+      ],
+      "operating_profit": [
+        1013571158,
+        1408979190
+      ]
+    },
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20220214000839&dcm_no=8385128&lang=ko",
+    "basis": "Earlier frozen manual/XBRL control, not a new Stage 9 development observation"
+  }
+}

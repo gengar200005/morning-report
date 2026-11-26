@@ -43,7 +43,7 @@ def compare(manual, roster, receipts, packages, output):
         meta=register[reading['code'],rc]
         end=date.fromisoformat(meta['period_end']).isoformat()
         role=reading['role']
-        if (reading['code'],end) not in fixed and role!='nine_month_support':
+        if (reading['code'],end) not in fixed and role not in ('nine_month_support','prior_annual_support','prior_nine_support'):
             raise ValueError('unexpected sample')
         if reading['code']!=meta['stock_code']:
             raise ValueError('issuer mismatch')
@@ -75,7 +75,7 @@ def compare(manual, roster, receipts, packages, output):
         expected={field:int(reading[k]) if reading[k] else None for field,k in zip(FIELDS,KEYS)}
         if role!='no_cfs' and dict(zip(FIELDS,vals))!=expected:
             raise ValueError(('manual transcription vs selected cells',rc,vals,expected))
-        duration={'quarter':'3','annual':'12','nine_month_support':'9','no_cfs':'3'}[role]
+        duration={'quarter':'3','annual':'12','nine_month_support':'9','prior_annual_support':'12','prior_nine_support':'9','no_cfs':'3','cumulative_only':'3'}[role]
         result={'stock_code':reading['code'],'period_end':end,'receipt':rc,'kind_receipt':meta['kind_receipt'],
                 'filing_kst':meta['kind_timestamp'],'available_session':meta['available_session'],'role':role,
                 'manual':expected,'sha256':h,'source_url':sp,'metadata_header':header,'labels':labels,'scope_note':reading['scope_note']}
