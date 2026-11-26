@@ -96,7 +96,7 @@ class PanelOutcomeTests(unittest.TestCase):
     def test_analysis_preserves_unavailable_entries_and_inference_input(self):
         cal=[dict(formation='20170102',entry='20170103',exits={'20':'20170131','60':'20170320','120':'20170620'},june_overlap=False)]
         ds=cal[0]['formation'];names=[f'id{i:03d}' for i in range(55)]
-        feats={k:{'F2':Decimal(i-3),'corp_code':f'{i:08d}','cap':i+100,'turnover':1000-i,
+        feats={k:{'F2':Decimal(i-3),'corp_code':f'{i:08d}','cap':i+100,'turnover':1000-i,'share_turnover':Decimal(i+1)/100,
                   'sector':'G45','industry_group':'nonfinancial','cap_quartile':'2'} for i,k in enumerate(names)}
         vals={k:(i/100,i/100+.01,'observed',0) if i else (None,None,'entry_unavailable',0) for i,k in enumerate(names)}
         m4={k:i for i,k in enumerate(names) if i%3}
@@ -109,6 +109,8 @@ class PanelOutcomeTests(unittest.TestCase):
             item=next(x for x in summary if x['slice']=='overall' and x['contrast']=='top-remainder' and x['horizon']==120)
             self.assertEqual(item['effects']['price']['n_months'],1)
             self.assertGreater(item['effects']['price']['mean'],0.)
+            self.assertEqual(item['effects']['price']['positive_month_fraction'],1.)
+            self.assertIn('matched_cap_share_turnover',item['effects'])
             joint=next(x for x in summary if x['slice']=='overall' and x['contrast']=='C-A' and x['horizon']==120)
             self.assertEqual(joint['effects']['price']['n_months'],0)
             with gzip.open(out/'inference_rows.csv.gz','rt') as stream: rows=list(csv.DictReader(stream))

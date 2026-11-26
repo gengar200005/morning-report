@@ -31,6 +31,17 @@
       "3": 11538,
       "4": 11503
     },
+    "turnover_quartile": {
+      "1": 11547,
+      "2": 11518,
+      "3": 11538,
+      "4": 11503
+    },
+    "listing_age_days_group": {
+      "0_to_364": 947,
+      "1825_plus": 41342,
+      "365_to_1824": 3817
+    },
     "later_status": {
       "confirmed_delisted": 3185,
       "present_20261030": 42921
@@ -68,6 +79,17 @@
       "3": 3658,
       "4": 3692
     },
+    "turnover_quartile": {
+      "1": 3486,
+      "2": 3630,
+      "3": 3554,
+      "4": 3730
+    },
+    "listing_age_days_group": {
+      "0_to_364": 301,
+      "1825_plus": 13168,
+      "365_to_1824": 931
+    },
     "later_status": {
       "confirmed_delisted": 1007,
       "present_20261030": 13393
@@ -81,251 +103,306 @@
   "formation_counts": {
     "20170102": {
       "all": 744,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3225806451612903
     },
     "20170201": {
       "all": 742,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32345013477088946
     },
     "20170302": {
       "all": 743,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32301480484522205
     },
     "20170403": {
       "all": 742,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32345013477088946
     },
     "20170502": {
       "all": 742,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32345013477088946
     },
     "20170601": {
       "all": 749,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3204272363150868
     },
     "20170703": {
       "all": 749,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3204272363150868
     },
     "20170801": {
       "all": 749,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3204272363150868
     },
     "20170901": {
       "all": 748,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32085561497326204
     },
     "20171010": {
       "all": 748,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32085561497326204
     },
     "20171101": {
       "all": 750,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.32
     },
     "20171201": {
       "all": 752,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3191489361702128
     },
     "20180102": {
       "all": 756,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31746031746031744
     },
     "20180201": {
       "all": 758,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.316622691292876
     },
     "20180302": {
       "all": 759,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31620553359683795
     },
     "20180402": {
       "all": 759,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31620553359683795
     },
     "20180502": {
       "all": 759,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31620553359683795
     },
     "20180601": {
       "all": 759,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31620553359683795
     },
     "20180702": {
       "all": 760,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3157894736842105
     },
     "20180801": {
       "all": 766,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3133159268929504
     },
     "20180903": {
       "all": 767,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31290743155149936
     },
     "20181001": {
       "all": 768,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3125
     },
     "20181101": {
       "all": 768,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3125
     },
     "20181203": {
       "all": 769,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31209362808842656
     },
     "20190102": {
       "all": 768,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3125
     },
     "20190201": {
       "all": 768,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3125
     },
     "20190304": {
       "all": 768,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3125
     },
     "20190401": {
       "all": 771,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.311284046692607
     },
     "20190502": {
       "all": 771,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.311284046692607
     },
     "20190603": {
       "all": 771,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.311284046692607
     },
     "20190701": {
       "all": 770,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3116883116883117
     },
     "20190801": {
       "all": 770,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3116883116883117
     },
     "20190902": {
       "all": 770,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3116883116883117
     },
     "20191001": {
       "all": 770,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3116883116883117
     },
     "20191101": {
       "all": 774,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31007751937984496
     },
     "20191202": {
       "all": 778,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30848329048843187
     },
     "20200102": {
       "all": 778,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30848329048843187
     },
     "20200203": {
       "all": 779,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3080872913992298
     },
     "20200302": {
       "all": 778,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30848329048843187
     },
     "20200401": {
       "all": 777,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3088803088803089
     },
     "20200504": {
       "all": 776,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30927835051546393
     },
     "20200601": {
       "all": 776,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30927835051546393
     },
     "20200701": {
       "all": 775,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3096774193548387
     },
     "20200803": {
       "all": 774,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31007751937984496
     },
     "20200901": {
       "all": 774,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.31007751937984496
     },
     "20201005": {
       "all": 775,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3096774193548387
     },
     "20201102": {
       "all": 776,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30927835051546393
     },
     "20201201": {
       "all": 778,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30848329048843187
     },
     "20210104": {
       "all": 778,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30848329048843187
     },
     "20210201": {
       "all": 779,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3080872913992298
     },
     "20210302": {
       "all": 780,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3076923076923077
     },
     "20210401": {
       "all": 782,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3069053708439898
     },
     "20210503": {
       "all": 781,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3072983354673495
     },
     "20210601": {
       "all": 785,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3057324840764331
     },
     "20210701": {
       "all": 785,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3057324840764331
     },
     "20210802": {
       "all": 787,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.30495552731893266
     },
     "20210901": {
       "all": 793,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3026481715006305
     },
     "20211001": {
       "all": 794,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3022670025188917
     },
     "20211101": {
       "all": 795,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3018867924528302
     },
     "20211201": {
       "all": 796,
-      "selected": 240
+      "selected": 240,
+      "selection_probability": 0.3015075376884422
     }
   },
   "monthly_max_percentage_point_difference": {
-    "cap_quartile": [
-      5.35070360598065,
-      "20180201",
-      "2"
-    ],
     "industry_group": [
       3.939141076991548,
       "20170703",
@@ -336,6 +413,21 @@
       "20170502",
       "산업재"
     ],
+    "cap_quartile": [
+      5.35070360598065,
+      "20180201",
+      "2"
+    ],
+    "turnover_quartile": [
+      6.21798975672215,
+      "20210503",
+      "2"
+    ],
+    "listing_age_days_group": [
+      3.360071301247769,
+      "20170901",
+      "1825_plus"
+    ],
     "later_status": [
       0.556951423785601,
       "20211201",
@@ -345,5 +437,46 @@
   "diagnostic_exit_references": {
     "delisting_2026-10-30.csv": "04d067b618836ac265f143d0cc092bc1ce384124aaf1896bb17f2c5b484a6a6b",
     "KRX_PIT_2026_10_v1.json.gz": "7502d5f7bce83e6bd19a15051eb650b0fed0a82b77c6613df51879ab75093a78"
+  },
+  "panel_population_shares_weighted_by_inverse_selection_probability": {
+    "industry_group": {
+      "financial": 0.09179128891395222,
+      "nonfinancial": 0.8967466273370247,
+      "unknown": 0.01146208374904208
+    },
+    "sector_name": {
+      "IT": 0.07680625442820183,
+      "unknown": 0.01146208374904208,
+      "건강관리": 0.05700405948611183,
+      "경기관련소비재": 0.20306612299194776,
+      "금융": 0.09179128891395222,
+      "산업재": 0.26140469787012377,
+      "소재": 0.17161287757197222,
+      "에너지": 0.010421185239809711,
+      "유틸리티": 0.01666666666666666,
+      "커뮤니케이션서비스": 0.022979745947743633,
+      "필수소비재": 0.07678501713442948
+    },
+    "cap_quartile": {
+      "1": 0.247393867754016,
+      "2": 0.242348609725416,
+      "3": 0.2537701166876314,
+      "4": 0.2564874058329341
+    },
+    "turnover_quartile": {
+      "1": 0.24210596234763368,
+      "2": 0.2520553181798462,
+      "3": 0.24679298789745371,
+      "4": 0.2590457315750644
+    },
+    "listing_age_days_group": {
+      "0_to_364": 0.020975306901487866,
+      "1825_plus": 0.9142418195752122,
+      "365_to_1824": 0.06478287352333027
+    },
+    "later_status": {
+      "confirmed_delisted": 0.06979460373920966,
+      "present_20261030": 0.9302053962608131
+    }
   }
 }

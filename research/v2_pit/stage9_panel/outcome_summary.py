@@ -9,7 +9,7 @@ from pathlib import Path
 from statistics import mean
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'stage82b'))
-from single_formation import cells, diff, groups, summaries, top
+from single_formation import cells, diff, groups, matched, summaries, top
 
 CONTRASTS=(('top','remainder','eligible'),('C','A','joint'),('C','B','joint'))
 HORIZONS=(20,60,120)
@@ -50,10 +50,12 @@ def label_stats(periods):
     for key,items in sorted(buckets.items()):
         eligible=[r for r in items if r['eligible_month']]
         names=('price','economic','matched_cap_turnover','matched_sector','adverse_price',
+               'matched_cap_share_turnover','economic_matched_cap_share_turnover',
                'economic_matched_cap_turnover','economic_matched_sector','adverse_economic')
         def summarize(column):
             values=[r[column] for r in eligible if r[column] is not None]
-            return {'n_months':len(values),'mean':mean(values) if values else None}
+            return {'n_months':len(values),'mean':mean(values) if values else None,
+                    'positive_month_fraction':sum(v>0 for v in values)/len(values) if values else None}
         output.append(dict(zip(('signal','horizon','contrast','slice','category'),key))|
                       {'candidate_months':len(items),'min_size_months':len(eligible),
                        'effects':{k:summarize(k) for k in names}})
@@ -84,7 +86,8 @@ def group_period_statistics(monthly):
         for fields,values in sorted(bucket.items()):
             known=[v for v in values if v is not None]
             metrics.append(dict(zip(('group','metric','field'),fields))|
-                           {'valid_months':len(known),'total_months':len(values),'equal_month_mean':mean(known) if known else None})
+                           {'valid_months':len(known),'total_months':len(values),'equal_month_mean':mean(known) if known else None,
+                             'positive_month_fraction':sum(v>0 for v in known)/len(known) if known and fields[2] in ('minus_etf','minus_universe') else None})
         output.append(dict(zip(('signal','horizon','slice','category'),key))|{'metrics':metrics})
     return output
 
@@ -147,6 +150,7 @@ def analyze(formation_calendar, data, market, output):
             session=market[day]
             sector={i:r['sector'] for i,r in features.items() if r['sector']}
             liq={i:(r['cap'],r['turnover']) for i,r in features.items()}
+            rate_inputs={i:(r['cap'],r['share_turnover']) for i,r in features.items()}
             prices=session['records']
             benchmark=session['benchmark']
             for signal in session['signals']:
@@ -180,10 +184,16 @@ def analyze(formation_calendar, data, market, output):
                         key=f'{left}-{right}'
                         both=outcome['contrasts'][key]
                         pri=both['price'];eco=both['partial_economic']
+                        rate_cells=cells(group[base],rate_inputs)
+                        for ix,metric in enumerate((pri,eco)):
+                            metric['matched_cap_share_turnover']=matched(group[left],group[right],
+                                {i:rec[ix] for i,rec in records.items()},rate_cells)
                         valid=eligibility(group,left)
                         all_periods.append(meta|{'contrast':key,'eligible_month':valid,
                             'price':pri['difference'],'economic':eco['difference'],
                             'matched_cap_turnover':pri['matched_cap_turnover']['effect'],
+                            'matched_cap_share_turnover':pri['matched_cap_share_turnover']['effect'],
+                            'economic_matched_cap_share_turnover':eco['matched_cap_share_turnover']['effect'],
                             'matched_sector':pri['matched_sector']['effect'],'adverse_price':pri['adverse_unresolved_stress'],
                             'economic_matched_cap_turnover':eco['matched_cap_turnover']['effect'],
                             'economic_matched_sector':eco['matched_sector']['effect'],

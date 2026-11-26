@@ -4,6 +4,7 @@ from bisect import bisect_right
 from collections import defaultdict
 import csv
 from decimal import Decimal
+from fractions import Fraction
 import gzip
 import hashlib
 import io
@@ -33,7 +34,7 @@ def load_input(a):
             or gate.get('asof_complete') is not True or not fields or len(fields)!=len(set(fields))
             or not set(fields)<={'F2','F3'}):
         raise ValueError('Phase, independent gates or explicit outcome release missing')
-    for k in ('asof','context','sample'):
+    for k in ('asof','context','sample','rates'):
         if digest(getattr(a,k))!=gate.get(k+'_sha256'):
             raise ValueError(f'Gated {k} has changed')
     frozen=json.loads((ROOT/'stage82b/limited_panel_summary.json').read_text())
@@ -56,10 +57,21 @@ def load_input(a):
             ctx[k]=r
     if len(ctx)!=len(chosen):
         raise ValueError('Incomplete as-of market context')
+    with a.rates.open(newline='') as stream:
+        rates={}
+        for r in csv.DictReader(stream):
+            key=r['formation'],r['isin']
+            numerator,denominator=int(r['traded_shares']),int(r['listed_shares'])
+            if key in rates or numerator<0 or denominator<=0:
+                raise ValueError('Invalid share turnover row')
+            rates[key]=Fraction(numerator,denominator)
+    if rates.keys()!=chosen.keys():
+        raise ValueError('Share turnover roster differs')
     data=defaultdict(dict)
     for r in rows:
         day,i=r['formation'],r['isin'];c=ctx[(day,i)]
         item={'code':c['code'],'corp_code':r.get('corp_code',''),'cap_quartile':c.get('cap_quartile','unknown'),
+              'share_turnover':rates[day,i],
               'available_session':r.get('available_session',''),'sector':c['sector_code'],'industry_group':c['industry_group'],
               'cap':int(c['cap_krw']) if c['cap_krw'] else None,
               'turnover':int(c['turnover_krw']) if c['turnover_krw'] else None}
@@ -291,7 +303,7 @@ def run(a):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    for k in ('gate','asof','context','sample','database','stage5','stage3','output'):
+    for k in ('gate','asof','context','sample','rates','database','stage5','stage3','output'):
         parser.add_argument('--'+k,type=Path,required=True)
     parser.add_argument('--release-outcomes',action='store_true')
     run(parser.parse_args())
