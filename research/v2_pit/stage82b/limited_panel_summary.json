@@ -1,0 +1,35 @@
+{
+  "algorithm": "lowest SHA256 of fixed salt plus ISIN among each date’s KOSPI ordinary membership",
+  "salt": "mr-v2-restricted-2017-21-v1|",
+  "n_per_month": 240,
+  "months": 60,
+  "sample_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390",
+  "all_common": {
+    "distinct_isins": 824,
+    "issuer_months": 46106,
+    "minimum_month_size": 742,
+    "maximum_month_size": 796,
+    "issuer_months_by_year": {
+      "2017": 8958,
+      "2018": 9148,
+      "2019": 9249,
+      "2020": 9316,
+      "2021": 9435
+    },
+    "possible_calendar_issuer_quarters": 16236
+  },
+  "limited": {
+    "distinct_isins": 270,
+    "issuer_months": 14400,
+    "minimum_month_size": 240,
+    "maximum_month_size": 240,
+    "issuer_months_by_year": {
+      "2017": 2880,
+      "2018": 2880,
+      "2019": 2880,
+      "2020": 2880,
+      "2021": 2880
+    },
+    "possible_calendar_issuer_quarters": 5097
+  }
+}

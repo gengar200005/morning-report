@@ -1,0 +1,182 @@
+{
+  "3y_80": {
+    "members": 84,
+    "possible_issuer_quarters": 1048,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 80,
+        "expected_C": 3.2,
+        "P_C_at_least_5": 0.17956654048964066
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 56,
+        "expected_C": 2.1607142857142856,
+        "P_C_at_least_5": 0.02940879701329854
+      }
+    ]
+  },
+  "3y_100": {
+    "members": 109,
+    "possible_issuer_quarters": 1316,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 100,
+        "expected_C": 4.0,
+        "P_C_at_least_5": 0.3646830130832401
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 70,
+        "expected_C": 2.8,
+        "P_C_at_least_5": 0.10522072718937231
+      }
+    ]
+  },
+  "3y_120": {
+    "members": 130,
+    "possible_issuer_quarters": 1577,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 120,
+        "expected_C": 4.8,
+        "P_C_at_least_5": 0.5540110393591884
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 84,
+        "expected_C": 3.0476190476190474,
+        "P_C_at_least_5": 0.15179962859165602
+      }
+    ]
+  },
+  "3y_160": {
+    "members": 174,
+    "possible_issuer_quarters": 2105,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 160,
+        "expected_C": 6.4,
+        "P_C_at_least_5": 0.8250922073041812
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 112,
+        "expected_C": 4.321428571428571,
+        "P_C_at_least_5": 0.4427755286163272
+      }
+    ]
+  },
+  "3y_240": {
+    "members": 260,
+    "possible_issuer_quarters": 3156,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 240,
+        "expected_C": 9.6,
+        "P_C_at_least_5": 0.9850032777594018
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 168,
+        "expected_C": 6.482142857142857,
+        "P_C_at_least_5": 0.8332461858143356
+      }
+    ]
+  },
+  "5y_80": {
+    "members": 87,
+    "possible_issuer_quarters": 1694,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 80,
+        "expected_C": 3.2,
+        "P_C_at_least_5": 0.17956654048964066
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 56,
+        "expected_C": 2.1607142857142856,
+        "P_C_at_least_5": 0.02940879701329854
+      }
+    ]
+  },
+  "5y_100": {
+    "members": 112,
+    "possible_issuer_quarters": 2123,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 100,
+        "expected_C": 4.0,
+        "P_C_at_least_5": 0.3646830130832401
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 70,
+        "expected_C": 2.8,
+        "P_C_at_least_5": 0.10522072718937231
+      }
+    ]
+  },
+  "5y_120": {
+    "members": 134,
+    "possible_issuer_quarters": 2547,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 120,
+        "expected_C": 4.8,
+        "P_C_at_least_5": 0.5540110393591884
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 84,
+        "expected_C": 3.0476190476190474,
+        "P_C_at_least_5": 0.15179962859165602
+      }
+    ]
+  },
+  "5y_160": {
+    "members": 179,
+    "possible_issuer_quarters": 3397,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 160,
+        "expected_C": 6.4,
+        "P_C_at_least_5": 0.8250922073041812
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 112,
+        "expected_C": 4.321428571428571,
+        "P_C_at_least_5": 0.4427755286163272
+      }
+    ]
+  },
+  "5y_240": {
+    "members": 270,
+    "possible_issuer_quarters": 5097,
+    "C_scenarios": [
+      {
+        "joint_eligible_fraction": 1,
+        "eligible": 240,
+        "expected_C": 9.6,
+        "P_C_at_least_5": 0.9850032777594018
+      },
+      {
+        "joint_eligible_fraction": 0.7,
+        "eligible": 168,
+        "expected_C": 6.482142857142857,
+        "P_C_at_least_5": 0.8332461858143356
+      }
+    ]
+  }
+}
