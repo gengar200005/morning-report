@@ -1,0 +1,38 @@
+{
+  "quarters": [
+    {
+      "quarter": "2021Q2",
+      "date": "20210630",
+      "historical_universe": 785,
+      "eligible_after_exclusions": 763,
+      "eligible_fiscal_challenges": 7,
+      "archive": "KRX_PIT_2021_06_v1.json.gz",
+      "archive_sha256": "ec3060acc4e4d38988dc805186fe09cd5c03c2d1277be12825002be9657c0089"
+    },
+    {
+      "quarter": "2021Q3",
+      "date": "20210930",
+      "historical_universe": 794,
+      "eligible_after_exclusions": 769,
+      "eligible_fiscal_challenges": 6,
+      "archive": "KRX_PIT_2021_09_v1.json.gz",
+      "archive_sha256": "ab8bca1b296514cc1d8de107854f45a107b9099fef3a8f697a042489edbe37ae"
+    },
+    {
+      "quarter": "2021Q4",
+      "date": "20211230",
+      "historical_universe": 796,
+      "eligible_after_exclusions": 768,
+      "eligible_fiscal_challenges": 5,
+      "archive": "KRX_PIT_2021_12_v1.json.gz",
+      "archive_sha256": "431710e444e591f0973068bf29bba9a3a049b50d7f5d67a8f68f914fe860b3f4"
+    }
+  ],
+  "prior_evidence": {
+    "other-index-0501.html": "1a0eb381f62c006883ea6190659f053e3d769022f7b34e6eaa8fb39535ee9f87",
+    "other-index-0502.html": "10d48f24d8d0861d8f9aa68b14cca13a36794fff2af11adc6de7597b03680507",
+    "qc_receipts.csv": "9b5056acf2de1b0ca6799d6b323837d335a518c04f3cbcdbb97f9a181766a608",
+    "holdout_frozen.csv": "3e75733841b6ae6c3e71590177ec03900b65001db54612a2673d94528d2e8a4a"
+  },
+  "assignment_sha256": "86f5abab1a6878c328d9dc5ac449a8e56c1fb096279d9b416730258290d4594e"
+}
