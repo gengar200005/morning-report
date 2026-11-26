@@ -4,7 +4,8 @@ from lxml import html
 from urllib.parse import urlencode
 from public_dart import PARAMS
 
-def statement_pointer(raw,receipt,expected_document=''):
+def statement_pointer(raw,receipt,expected_document='',section_kind='statement'):
+    pattern={'statement':r'\d+\.\s*연결재무제표','notes':r'\d+\.\s*연결재무제표\s*주석'}[section_kind]
     source=raw.decode('utf-8')
     tree=html.fromstring(source)
     if 'rcpNo='+receipt not in tree.xpath('//option[@selected]/@value'):
@@ -16,7 +17,7 @@ def statement_pointer(raw,receipt,expected_document=''):
     for block in re.split(r'var node\d+\s*=\s*\{\s*\}\s*;',source)[1:]:
         node=dict(re.findall(r"""node\d+\['(\w+)'\]\s*=\s*"([^"]*)"\s*;""",block))
         label=' '.join(node.get('text','').split())
-        if not re.fullmatch(r'\d+\.\s*연결재무제표',label):continue
+        if not re.fullmatch(pattern,label):continue
         if node.get('rcpNo')!=receipt or any(not re.fullmatch(r'\d+',node.get(k,'')) for k in PARAMS[1:5]):
             raise ValueError('invalid receipt-specific FSS node')
         if expected_document and node['dcmNo']!=expected_document:

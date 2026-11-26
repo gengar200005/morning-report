@@ -1,0 +1,190 @@
+[
+  {
+    "component_receipts": [
+      "20170331000549",
+      "20161114000295",
+      "20160330000717",
+      "20151113000033"
+    ],
+    "component_hashes": [
+      "f1856bba061400ee7ff5dd823288b41bc3562cc97ee9036dd3ac89dcfb1148a3",
+      "8af4de80c3a535f32ee78b662f90092c955b505f5f1a0ab5e1b8d59eceae62e4",
+      "96c8c98b7f8439e1016c0cbc180dcd39ea80df92fafc2bb38544ed15782022e6",
+      "d7c37934945c7329efbd8fb0f57322d26f3c7d25bcffee9a70d4d55722c1ce4d"
+    ],
+    "field": "operating_profit",
+    "source_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+    "source_sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+    "note_source_hashes": [
+      "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+      "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389",
+      "b0b32da64aa45fee4d2a1a3e12ec34cbd4fa5ee74aaf4323aa599613ff7db782",
+      "60a73dfc8f375725c9b2185c65b9e23841fa4a92b03149f9de61172f5e137e80"
+    ],
+    "note_sources": [
+      {
+        "receipt": "20170331000549",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+        "sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca"
+      },
+      {
+        "receipt": "20161114000295",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114000295&dcmNo=5347438&eleId=14&offset=855246&length=315064&dtd=dart3.xsd",
+        "sha256": "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+      },
+      {
+        "receipt": "20160330000717",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20160330000717&dcmNo=5012906&eleId=14&offset=783415&length=386760&dtd=dart3.xsd",
+        "sha256": "b0b32da64aa45fee4d2a1a3e12ec34cbd4fa5ee74aaf4323aa599613ff7db782"
+      },
+      {
+        "receipt": "20151113000033",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20151113000033&dcmNo=4849465&eleId=14&offset=806466&length=324386&dtd=dart3.xsd",
+        "sha256": "60a73dfc8f375725c9b2185c65b9e23841fa4a92b03149f9de61172f5e137e80"
+      }
+    ],
+    "available_session": "2017-04-03",
+    "verdict": "PASS",
+    "review_method": "same_basis_filing_notes",
+    "independent_quarter_confirmed": false,
+    "arithmetic_pair": [
+      41460192511,
+      31410540564
+    ],
+    "note_segment_amounts": [
+      [
+        124005913762,
+        133987373328
+      ],
+      [
+        82545721251,
+        102576832764
+      ],
+      [
+        133987373328
+      ],
+      [
+        102576832764
+      ]
+    ],
+    "subsidiary_counts": [
+      15,
+      15,
+      14,
+      13
+    ],
+    "disclosed_segment_reclassification": {
+      "annual": {
+        "맥주": 2545891559,
+        "기타": -2545891559
+      },
+      "nine_month": {
+        "맥주": 1719043137,
+        "기타": -1719043137
+      }
+    },
+    "supplemental_note_sources": [
+      {
+        "receipt": "20170331000549",
+        "kind": "dart_overview",
+        "document": "5524024",
+        "sha256": "5a9a2c13bfe9e27af157693d6607172434c9d28254dffae12bcef51345e99703",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=3&offset=14064&length=234545&dtd=dart3.xsd"
+      }
+    ]
+  },
+  {
+    "component_receipts": [
+      "20170331000549",
+      "20161114000295",
+      "20160330000717",
+      "20151113000033"
+    ],
+    "component_hashes": [
+      "f1856bba061400ee7ff5dd823288b41bc3562cc97ee9036dd3ac89dcfb1148a3",
+      "8af4de80c3a535f32ee78b662f90092c955b505f5f1a0ab5e1b8d59eceae62e4",
+      "96c8c98b7f8439e1016c0cbc180dcd39ea80df92fafc2bb38544ed15782022e6",
+      "d7c37934945c7329efbd8fb0f57322d26f3c7d25bcffee9a70d4d55722c1ce4d"
+    ],
+    "field": "revenue",
+    "source_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+    "source_sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+    "note_source_hashes": [
+      "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+      "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389",
+      "b0b32da64aa45fee4d2a1a3e12ec34cbd4fa5ee74aaf4323aa599613ff7db782",
+      "60a73dfc8f375725c9b2185c65b9e23841fa4a92b03149f9de61172f5e137e80"
+    ],
+    "note_sources": [
+      {
+        "receipt": "20170331000549",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+        "sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca"
+      },
+      {
+        "receipt": "20161114000295",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114000295&dcmNo=5347438&eleId=14&offset=855246&length=315064&dtd=dart3.xsd",
+        "sha256": "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389"
+      },
+      {
+        "receipt": "20160330000717",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20160330000717&dcmNo=5012906&eleId=14&offset=783415&length=386760&dtd=dart3.xsd",
+        "sha256": "b0b32da64aa45fee4d2a1a3e12ec34cbd4fa5ee74aaf4323aa599613ff7db782"
+      },
+      {
+        "receipt": "20151113000033",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20151113000033&dcmNo=4849465&eleId=14&offset=806466&length=324386&dtd=dart3.xsd",
+        "sha256": "60a73dfc8f375725c9b2185c65b9e23841fa4a92b03149f9de61172f5e137e80"
+      }
+    ],
+    "available_session": "2017-04-03",
+    "verdict": "PASS",
+    "review_method": "same_basis_filing_notes",
+    "independent_quarter_confirmed": false,
+    "arithmetic_pair": [
+      491037256493,
+      495220138137
+    ],
+    "note_segment_amounts": [
+      [
+        1890232768003,
+        1907480759547
+      ],
+      [
+        1399195511510,
+        1412260621410
+      ],
+      [
+        1907480759547
+      ],
+      [
+        1412260621410
+      ]
+    ],
+    "subsidiary_counts": [
+      15,
+      15,
+      14,
+      13
+    ],
+    "disclosed_segment_reclassification": {
+      "annual": {
+        "맥주": 30647672877,
+        "기타": -30647672877
+      },
+      "nine_month": {
+        "맥주": 22667937108,
+        "기타": -22667937108
+      }
+    },
+    "supplemental_note_sources": [
+      {
+        "receipt": "20170331000549",
+        "kind": "dart_overview",
+        "document": "5524024",
+        "sha256": "5a9a2c13bfe9e27af157693d6607172434c9d28254dffae12bcef51345e99703",
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=3&offset=14064&length=234545&dtd=dart3.xsd"
+      }
+    ]
+  }
+]

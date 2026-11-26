@@ -1,0 +1,794 @@
+{
+  "000080": {
+    "formation_dates": [
+      "20170403",
+      "20170502"
+    ],
+    "receipts": [
+      {
+        "receipt": "20170331000549",
+        "version": "original",
+        "period": "20161231",
+        "filed": "20170331",
+        "available_session": "20170403",
+        "identity": "PASS",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331000549&dcm_no=5524024&lang=ko",
+        "xbrl_sha256": "f1856bba061400ee7ff5dd823288b41bc3562cc97ee9036dd3ac89dcfb1148a3",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170331000549&dcmNo=5524024&eleId=14&offset=824735&length=392499&dtd=dart3.xsd",
+        "notes_sha256": "2e50f21c9f1bd77a78613b7414957ab5fae9b6773bfccab48688bd3459e6fbca",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            1890232768003,
+            124005913762
+          ],
+          "prior": [
+            1907480759547,
+            133987373328
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 8,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "1,009,308,164,111",
+              "766,711,704,287",
+              "69,005,535,276",
+              "45,207,364,329",
+              "-",
+              "1,890,232,768,003"
+            ],
+            "op_row": [
+              "영업손익",
+              "140,250,484,787",
+              "(-)21,697,496,865",
+              "982,455,064",
+              "7,976,258,572",
+              "(-)3,505,787,796",
+              "124,005,913,762"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          },
+          "prior": {
+            "table": 9,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "960,479,776,749",
+              "831,260,637,552",
+              "68,965,981,942",
+              "46,774,363,304",
+              "-",
+              "1,907,480,759,547"
+            ],
+            "op_row": [
+              "영업손익",
+              "129,024,391,830",
+              "(-)1,450,622,947",
+              "3,272,596,670",
+              "8,460,463,578",
+              "(-)5,319,455,803",
+              "133,987,373,328"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20161114000295",
+        "version": "original",
+        "period": "20160930",
+        "filed": "20161114",
+        "available_session": "20161115",
+        "identity": "PASS",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114000295&dcm_no=5347438&lang=ko",
+        "xbrl_sha256": "8af4de80c3a535f32ee78b662f90092c955b505f5f1a0ab5e1b8d59eceae62e4",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20161114000295&dcmNo=5347438&eleId=14&offset=855246&length=315064&dtd=dart3.xsd",
+        "notes_sha256": "499e481763c1c5bbd31cf42f9c28047af60d1e5170892f6f353437f850a3d389",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            1399195511510,
+            82545721251
+          ],
+          "prior": [
+            1412260621410,
+            102576832764
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 4,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "749,483,662,831",
+              "562,530,351,365",
+              "53,265,530,580",
+              "33,915,966,734",
+              "-",
+              "1,399,195,511,510"
+            ],
+            "op_row": [
+              "영업손익",
+              "101,277,145,814",
+              "(-)22,151,844,387",
+              "1,281,576,995",
+              "5,672,511,373",
+              "(-)3,533,668,544",
+              "82,545,721,251"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          },
+          "prior": {
+            "table": 5,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "696,369,211,518",
+              "626,085,199,619",
+              "53,219,059,819",
+              "36,587,150,454",
+              "-",
+              "1,412,260,621,410"
+            ],
+            "op_row": [
+              "영업손익",
+              "93,139,692,488",
+              "3,321,122,031",
+              "3,173,947,253",
+              "6,579,028,107",
+              "(-)3,636,957,115",
+              "102,576,832,764"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20160330000717",
+        "version": "original",
+        "period": "20151231",
+        "filed": "20160330",
+        "available_session": "20160331",
+        "identity": "BLOCKED",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330000717&dcm_no=5012906&lang=ko",
+        "xbrl_sha256": "96c8c98b7f8439e1016c0cbc180dcd39ea80df92fafc2bb38544ed15782022e6",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20160330000717&dcmNo=5012906&eleId=14&offset=783415&length=386760&dtd=dart3.xsd",
+        "notes_sha256": "b0b32da64aa45fee4d2a1a3e12ec34cbd4fa5ee74aaf4323aa599613ff7db782",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            1907480759547,
+            133987373328
+          ],
+          "prior": [
+            1872333382745,
+            93703353570
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 6,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "960,479,776,749",
+              "800,612,964,675",
+              "68,965,981,942",
+              "77,422,036,181",
+              "-",
+              "1,907,480,759,547"
+            ],
+            "op_row": [
+              "영업손익",
+              "129,024,391,830",
+              "(-)3,996,514,506",
+              "3,272,596,670",
+              "11,006,355,137",
+              "(-)5,319,455,803",
+              "133,987,373,328"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          },
+          "prior": {
+            "table": 7,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "946,847,214,836",
+              "783,349,298,599",
+              "73,184,183,361",
+              "68,952,685,949",
+              "-",
+              "1,872,333,382,745"
+            ],
+            "op_row": [
+              "영업손익",
+              "119,118,492,939",
+              "(-)22,517,474,938",
+              "(-)5,351,147,830",
+              "5,852,041,780",
+              "(-)3,398,558,381",
+              "93,703,353,570"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20151113000033",
+        "version": "original",
+        "period": "20150930",
+        "filed": "20151113",
+        "available_session": "",
+        "identity": "BLOCKED",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151113000033&dcm_no=4849465&lang=ko",
+        "xbrl_sha256": "d7c37934945c7329efbd8fb0f57322d26f3c7d25bcffee9a70d4d55722c1ce4d",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20151113000033&dcmNo=4849465&eleId=14&offset=806466&length=324386&dtd=dart3.xsd",
+        "notes_sha256": "60a73dfc8f375725c9b2185c65b9e23841fa4a92b03149f9de61172f5e137e80",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            1412260621410,
+            102576832764
+          ],
+          "prior": [
+            1403280805017,
+            79510782589
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 4,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "696,369,211,518",
+              "603,417,262,511",
+              "53,219,059,819",
+              "59,255,087,562",
+              "-",
+              "1,412,260,621,410"
+            ],
+            "op_row": [
+              "영업손익",
+              "93,139,692,488",
+              "1,602,078,894",
+              "3,173,947,253",
+              "8,298,071,244",
+              "(-)3,636,957,115",
+              "102,576,832,764"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          },
+          "prior": {
+            "table": 5,
+            "headers": [
+              "구분",
+              "소주",
+              "맥주",
+              "생수",
+              "기타",
+              "조정 및 제거",
+              "합계"
+            ],
+            "revenue_row": [
+              "외부거래",
+              "703,812,157,894",
+              "590,202,066,662",
+              "57,633,592,566",
+              "51,632,987,895",
+              "-",
+              "1,403,280,805,017"
+            ],
+            "op_row": [
+              "영업손익",
+              "94,572,030,131",
+              "(-)15,510,210,963",
+              "(-)3,006,046,675",
+              "5,496,887,866",
+              "(-)2,041,877,770",
+              "79,510,782,589"
+            ],
+            "note_unit_krw": 1,
+            "exact_KRW_minus_display_scaled": [
+              0,
+              0
+            ]
+          }
+        }
+      }
+    ],
+    "derived": [
+      [
+        491037256493,
+        41460192511
+      ],
+      [
+        495220138137,
+        31410540564
+      ]
+    ],
+    "order": [
+      "revenue_KRW",
+      "operating_profit_KRW"
+    ],
+    "decision": "PASS_same_as_reported_basis",
+    "independent_direct_Q4_publication": false
+  },
+  "007690": {
+    "formation_dates": [
+      "20170403",
+      "20170502"
+    ],
+    "receipts": [
+      {
+        "receipt": "20170329000302",
+        "version": "original",
+        "period": "20161231",
+        "filed": "20170329",
+        "available_session": "20170330",
+        "identity": "PASS",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170329000302&dcm_no=5512348&lang=ko",
+        "xbrl_sha256": "88a24067e28a14cbdd06099be3941af07fe2ae0f32a87a37c228b4d2680b46ae",
+        "source_notes": "https://kind.krx.co.kr/external/2017/03/29/000217/20170329000862/11011.htm",
+        "notes_sha256": "173be4ae7794ea743161f76f23fa16e7dedde2bb82f7758d1dcc1a4dc64c8183",
+        "note_section": "kind_html",
+        "values": {
+          "current": [
+            952633435802,
+            36983503212
+          ],
+          "prior": [
+            1011877773027,
+            77969150965
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 115,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "828,780,336",
+              "185,622,602",
+              "1,014,402,938",
+              "(61,769,502)",
+              "952,633,436"
+            ],
+            "op_row": [
+              "영업이익",
+              "31,805,633",
+              "5,034,149",
+              "36,839,782",
+              "143,721",
+              "36,983,503"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              -198,
+              212
+            ]
+          },
+          "prior": {
+            "table": 117,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "903,281,127",
+              "176,752,384",
+              "1,080,033,511",
+              "(68,155,738)",
+              "1,011,877,773"
+            ],
+            "op_row": [
+              "영업이익",
+              "74,822,579",
+              "3,463,163",
+              "78,285,741",
+              "(316,590)",
+              "77,969,151"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              27,
+              -35
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20161114000547",
+        "version": "original",
+        "period": "20160930",
+        "filed": "20161114",
+        "available_session": "20161115",
+        "identity": "PASS",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114000547&dcm_no=5347896&lang=ko",
+        "xbrl_sha256": "92e6981b90379d25a11755def4cd5bd06d9fb0c8e86fb5225d36dc0c5e20bb06",
+        "source_notes": "https://kind.krx.co.kr/external/2016/11/14/000467/20161114000910/11013.htm",
+        "notes_sha256": "31a5057063193adbd809532041be5faec345e96017cce0cec5d50210b5f003d7",
+        "note_section": "kind_html",
+        "values": {
+          "current": [
+            730944061987,
+            32031693468
+          ],
+          "prior": [
+            773129571723,
+            62184323358
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 118,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "641,312,410",
+              "136,595,802",
+              "777,908,212",
+              "(46,964,150)",
+              "730,944,062"
+            ],
+            "op_row": [
+              "영업이익",
+              "27,281,285",
+              "4,755,740",
+              "32,037,025",
+              "(5,332)",
+              "32,031,693"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              -13,
+              468
+            ]
+          },
+          "prior": {
+            "table": 120,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "692,281,270",
+              "132,700,469",
+              "824,981,739",
+              "(51,852,167)",
+              "773,129,572"
+            ],
+            "op_row": [
+              "영업이익",
+              "59,827,249",
+              "2,721,740",
+              "62,548,989",
+              "(364,666)",
+              "62,184,323"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              -277,
+              358
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20160329000310",
+        "version": "original",
+        "period": "20151231",
+        "filed": "20160329",
+        "available_session": "20160330",
+        "identity": "BLOCKED",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160329000310&dcm_no=5006649&lang=ko",
+        "xbrl_sha256": "b373324b7ed46617d7f9a1763a58b27781ecda64fd790a752ce2e9713c7ec89b",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20160329000310&dcmNo=5006649&eleId=14&offset=278622&length=325174&dtd=dart3.xsd",
+        "notes_sha256": "0e65b029f0fe52a6b78b2b243f2edfa14b153e9d7a6ee85abc55e54460b900fa",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            1011877773027,
+            77969150965
+          ],
+          "prior": [
+            977957814790,
+            31548926944
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 120,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "903,281,127",
+              "176,752,384",
+              "1,080,033,511",
+              "(68,155,738)",
+              "1,011,877,773"
+            ],
+            "op_row": [
+              "영업이익",
+              "74,822,579",
+              "3,463,163",
+              "78,285,741",
+              "(316,590)",
+              "77,969,151"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              27,
+              -35
+            ]
+          },
+          "prior": {
+            "table": 122,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "845,464,325",
+              "199,102,101",
+              "1,044,566,426",
+              "(66,608,611)",
+              "977,957,815"
+            ],
+            "op_row": [
+              "영업이익",
+              "24,898,791",
+              "6,697,340",
+              "31,596,131",
+              "(47,204)",
+              "31,548,927"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              -210,
+              -56
+            ]
+          }
+        }
+      },
+      {
+        "receipt": "20151112000368",
+        "version": "original",
+        "period": "20150930",
+        "filed": "20151112",
+        "available_session": "",
+        "identity": "BLOCKED",
+        "comparator_identity": "PASS",
+        "source_xbrl": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151112000368&dcm_no=4849064&lang=ko",
+        "xbrl_sha256": "ec68df3241d9d1e9fb4f4b1133813b4ad25b6a70cc3035230cd6283b74f0fbad",
+        "source_notes": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20151112000368&dcmNo=4849064&eleId=14&offset=299343&length=335285&dtd=dart3.xsd",
+        "notes_sha256": "d1e2de5d9a8a36e9948ae5998a26792aaf45cd29064c46b822c01e1d97869e46",
+        "note_section": "dart_notes",
+        "values": {
+          "current": [
+            773129571723,
+            62184323358
+          ],
+          "prior": [
+            732590929057,
+            23443356399
+          ]
+        },
+        "segment_notes": {
+          "current": {
+            "table": 118,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "692,281,270",
+              "132,700,469",
+              "824,981,739",
+              "(51,852,167)",
+              "773,129,572"
+            ],
+            "op_row": [
+              "영업이익",
+              "59,827,249",
+              "2,721,740",
+              "62,548,989",
+              "(364,666)",
+              "62,184,323"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              -277,
+              358
+            ]
+          },
+          "prior": {
+            "table": 120,
+            "headers": [
+              "구 분",
+              "에폭시",
+              "Polyol",
+              "합계",
+              "연결조정",
+              "연결후금액"
+            ],
+            "revenue_row": [
+              "수 익",
+              "629,911,364",
+              "146,366,934",
+              "776,278,298",
+              "(43,687,369)",
+              "732,590,929"
+            ],
+            "op_row": [
+              "영업이익",
+              "18,321,413",
+              "5,092,378",
+              "23,413,791",
+              "29,565",
+              "23,443,356"
+            ],
+            "note_unit_krw": 1000,
+            "exact_KRW_minus_display_scaled": [
+              57,
+              399
+            ]
+          }
+        }
+      }
+    ],
+    "derived": [
+      [
+        221689373815,
+        4951809744
+      ],
+      [
+        238748201304,
+        15784827607
+      ]
+    ],
+    "order": [
+      "revenue_KRW",
+      "operating_profit_KRW"
+    ],
+    "decision": "PASS_same_as_reported_basis",
+    "independent_direct_Q4_publication": false
+  }
+}

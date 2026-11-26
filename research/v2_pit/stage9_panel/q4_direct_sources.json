@@ -1,0 +1,668 @@
+{
+  "scope": "FY2016 eight frozen cases selected from the unresolved group. A result here does not estimate unconditional coverage. No future returns were used.",
+  "draw_sha256": "30155a1433f86cb143c52d8aa61fe8d488dac3748c7d3313ee0299c143eaa179",
+  "cases": [
+    {
+      "issuer": "동양고속",
+      "isin": "KR7084670009",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331002997",
+          "original_receipt": "20170331002997",
+          "version": "original",
+          "corp": "00540641",
+          "document": "5533028",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "6f0be605111e51ba8d45a4faa9ba1a403b63176e0f2fe365c3ba05f2f1080511",
+          "instance_sha256": "95369c09654df8327c84aae9bfbe2baacf22d83632185b5530bf85afaba91394",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331002997&dcm_no=5533028&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114001468",
+          "original_receipt": "20161114001468",
+          "version": "original",
+          "corp": "00540641",
+          "document": "5349934",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "fe49aa1ae57de11dee300c4dff0bd05e55740a5c43923bf2d474a59123463a8e",
+          "instance_sha256": "1331498866aeac1b6dc6067be6ad176ac26068ffb76055b7e1498255bc1ce00f",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114001468&dcm_no=5349934&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330003306",
+          "original_receipt": "20160330003306",
+          "version": "original",
+          "corp": "00540641",
+          "document": "5024942",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "f0170148388494be4e2205579f15bb812ba57f725df31f5cfbdea95052e8f20b",
+          "instance_sha256": "dd8ea6a054a9f05ed2b9be79900090ddea25eeaeee45162a5b8e754261eb1f21",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330003306&dcm_no=5024942&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000773",
+          "original_receipt": "20151116000773",
+          "version": "original",
+          "corp": "00540641",
+          "document": "4853742",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "dd3e565042c570825e6d063455d19b6dfce860b783415d946d51c43f6751243e",
+          "instance_sha256": "c9ea18a4c5bd329f005e01798e5d2bbe3dcc9e73039a15b78a7775806a9a1b04",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000773&dcm_no=4853742&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            46034901298,
+            34970522146
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            4833772305,
+            -465629314
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "동방아그로",
+      "isin": "KR7007590003",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331002888",
+          "original_receipt": "20170331002888",
+          "version": "original",
+          "corp": "00115384",
+          "document": "5532525",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "845c2dba741d46e35400867d4d470b5040581807db2ee42376955c45ba508020",
+          "instance_sha256": "e91d174695882cea6360a5633891c94116f0a98887cdf0f1aa3d553fcdfb94ab",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331002888&dcm_no=5532525&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114000632",
+          "original_receipt": "20161114000632",
+          "version": "original",
+          "corp": "00115384",
+          "document": "5348079",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "754f2b6da87627a55a91cb89662b4214593e1d1d893429b3c42f263339c9b947",
+          "instance_sha256": "1a487c6f7f2fcac61b83d988cee4a8149f23d4a88fa9191bac044718310f5aac",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114000632&dcm_no=5348079&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330001482",
+          "original_receipt": "20160330001482",
+          "version": "original",
+          "corp": "00115384",
+          "document": "5016052",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "652dbed766efc3ef78d65bd6176967fe5f2c4865b64548cc4a7ff2858fbdf4be",
+          "instance_sha256": "f509596766356d310aef04f09e7997c02f0bf47f3d77bd10adb67d9298ba6587",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330001482&dcm_no=5016052&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000461",
+          "original_receipt": "20151116000461",
+          "version": "original",
+          "corp": "00115384",
+          "document": "4853041",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "6c81eb7bd2db2922ce22816c372b88ef89e1b118b8c8efdc6603d0b146e200e9",
+          "instance_sha256": "b568f6d455db646f56afa57800bed4c2ed5608586e73c32dfa0c1a28c1de7e61",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000461&dcm_no=4853041&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            8965356965,
+            6544373241
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            -4843430778,
+            -5530399083
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "삼화페인트",
+      "isin": "KR7000390005",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170330000610",
+          "original_receipt": "20170330000610",
+          "version": "original",
+          "corp": "00129387",
+          "document": "5517000",
+          "period_end": "20161231",
+          "filing_date": "20170330",
+          "sha256": "70d584977300b68a5894f3b9da65bb856079c5db3c8a8f4a4f5a11691243ba8d",
+          "instance_sha256": "6824364f0ccd69d6653e05864dbdcfc65286235f4f91876a76966324bc77e9ae",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170330000610&dcm_no=5517000&lang=ko",
+          "kind_html_buffered": true
+        },
+        {
+          "receipt": "20161111000281",
+          "original_receipt": "20161111000281",
+          "version": "original",
+          "corp": "00129387",
+          "document": "5345616",
+          "period_end": "20160930",
+          "filing_date": "20161111",
+          "sha256": "6bd16b2a01d545723fdcaf99cdd2cf311350c5a7b2911b2b4753bf13a2a808bc",
+          "instance_sha256": "859e3690c011f274705c9a31221f8e68dd5f270e7f4eb31152f56645d44b06eb",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161111000281&dcm_no=5345616&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160329000459",
+          "original_receipt": "20160329000459",
+          "version": "original",
+          "corp": "00129387",
+          "document": "5007124",
+          "period_end": "20151231",
+          "filing_date": "20160329",
+          "sha256": "fd219e5ced8a20ff8f32007945bfc01f78bcd656185df4acd5d9bf4755a76c9c",
+          "instance_sha256": "6c632d0761b459c0ef6d1393d4d96d418b1abc24bf6e425d4392a183284138f2",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160329000459&dcm_no=5007124&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151113000428",
+          "original_receipt": "20151113000428",
+          "version": "original",
+          "corp": "00129387",
+          "document": "4850217",
+          "period_end": "20150930",
+          "filing_date": "20151113",
+          "sha256": "0fd96c5348bdfe4c3b575bf50cc3a4e0acf1f78b0d9e0c49b59388be464e4134",
+          "instance_sha256": "2df2c46044f8900d98948b5f41a3a4e651be1f8acfa3c48a8bcdfd56faa0fc5e",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151113000428&dcm_no=4850217&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            121102307604,
+            122720411654
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            2710175127,
+            7168218623
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "디아이씨",
+      "isin": "KR7092200005",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331000607",
+          "original_receipt": "20170331000607",
+          "version": "original",
+          "corp": "00112165",
+          "document": "5524203",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "c183cd07c64767f267dacd6ea1b779da50e85b68530a13b71dbc063eb2d360ed",
+          "instance_sha256": "3e7de5bc25a301d9c60656b96db182d34d232113eb3b82e0c181e4b6ec3cb75c",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331000607&dcm_no=5524203&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161111000558",
+          "original_receipt": "20161111000558",
+          "version": "original",
+          "corp": "00112165",
+          "document": "5346273",
+          "period_end": "20160930",
+          "filing_date": "20161111",
+          "sha256": "dfd91c01a7c7107ccfddd20ce45abcd69fa2eb6eb22f8d1ab9dfe3df2def59ac",
+          "instance_sha256": "b0a1948f5ebd7d7c9baabecc1af07e351f927dc7eb3a2306ae4f35ef3a35a3ea",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161111000558&dcm_no=5346273&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330000296",
+          "original_receipt": "20160330000296",
+          "version": "original",
+          "corp": "00112165",
+          "document": "5011303",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "abddd58cfaf17b85be6fae2c9b5c2f36f71b7af9fa275346038c488404c787d7",
+          "instance_sha256": "d0a53c032b82e15c36bbb5fb05dbe5f65f3b784f4f0051309a91c6699467f75f",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330000296&dcm_no=5011303&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000671",
+          "original_receipt": "20151116000671",
+          "version": "original",
+          "corp": "00112165",
+          "document": "4853502",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "b8519890d23f47c702d2f7c0df967eea4270ae9babac68d6a2e9370fe72f01f4",
+          "instance_sha256": "5dbb0ae013dd1cf95c63f5ecc8b6d163692207ec640b9655610de1bb0046152e",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000671&dcm_no=4853502&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            161020402141,
+            137353949043
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            9593063404,
+            8892470599
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "서울가스",
+      "isin": "KR7017390006",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331004136",
+          "original_receipt": "20170331004136",
+          "version": "original",
+          "corp": "00130684",
+          "document": "5538365",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "8dc86c32ed941f94c997a98694e4e818541257625868205fdf6b541620828394",
+          "instance_sha256": "a25aa33b97ef1dec2d0386a27ff89e21409f5195001b07fd994fce7f9e27a661",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331004136&dcm_no=5538365&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114001526",
+          "original_receipt": "20161114001526",
+          "version": "original",
+          "corp": "00130684",
+          "document": "5350064",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "46fa990219efb854aea2d74c24627f3d828f50cad37f3a16ae1b112423765119",
+          "instance_sha256": "fd5e5716176baa198a17e278dd9d3f446a3576321b08c6ede55313cda78c2c29",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114001526&dcm_no=5350064&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330004120",
+          "original_receipt": "20160330004120",
+          "version": "original",
+          "corp": "00130684",
+          "document": "5029089",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "849d745460a61ded3da4a4c6db95942f805ee36af7dac359276e0cd12a0bb76a",
+          "instance_sha256": "71368c019eb46f2f15d7e5da957ae6dd31792cb58ff4eb5e5cd9984c2b74f5be",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330004120&dcm_no=5029089&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000995",
+          "original_receipt": "20151116000995",
+          "version": "original",
+          "corp": "00130684",
+          "document": "4854211",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "313080bb7325dfe10b7324fbe576baa923bce28cdd1569d4f4344dfcf0427988",
+          "instance_sha256": "e7f34382464d0c45cdbb4507396de1f45d6a2c247260b6b637218b4a13c37fab",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000995&dcm_no=4854211&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            378852924910,
+            351459263576
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            -7325483704,
+            -2603834890
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "GS글로벌",
+      "isin": "KR7001250000",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331003894",
+          "original_receipt": "20170331003894",
+          "version": "original",
+          "corp": "00138190",
+          "document": "5537169",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "26dd14586152ed05af3aacb592a97835ead9c5cb7ef23cac4849c437c587a910",
+          "instance_sha256": "cb16d3e6a80567d770947a25861db04e1dd243af6b940063fcbe1c82fef9d4f6",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331003894&dcm_no=5537169&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114001359",
+          "original_receipt": "20161114001359",
+          "version": "original",
+          "corp": "00138190",
+          "document": "5349697",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "edac189fb6d96985be046b800f7066f7400871cde1d72d22f6725e8b941924c8",
+          "instance_sha256": "ce193ad3b023b91a50a45884e842c1075ed94eda0fe5f99f00e0f3a4ece69160",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114001359&dcm_no=5349697&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330003456",
+          "original_receipt": "20160330003456",
+          "version": "original",
+          "corp": "00138190",
+          "document": "5025707",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "e1ff2af75910509c19854e4658c1f3a592e8213ef278196ee17647e5764d52f9",
+          "instance_sha256": "84d53d67cdf18c9609dc26153adfbaad3f801b220872272016173f4c5f8a217b",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330003456&dcm_no=5025707&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000746",
+          "original_receipt": "20151116000746",
+          "version": "original",
+          "corp": "00138190",
+          "document": "4853683",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "4d7286d31646cd7ab80d2354f240a538a5de8403faf939cc89a5eab4da0fa66c",
+          "instance_sha256": "74cd3434f22061b197dbbd5cdf5d3911a326736347005762597616b393c09734",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000746&dcm_no=4853683&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            770674369368,
+            517797939323
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            11734098162,
+            6669824575
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "오리온",
+      "isin": "KR7001800002",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331005186",
+          "original_receipt": "20170331005186",
+          "version": "original",
+          "corp": "00117577",
+          "document": "5543676",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "27fd4a651ea04bc88b4f7750f52125d1c35e588e18a28f819efc9fbdf4e625e6",
+          "instance_sha256": "d84dfcf5c6370ac0f02d92e64fc1dc75ab8127e5da8f6486a6c872f7bd880fd6",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331005186&dcm_no=5543676&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114000978",
+          "original_receipt": "20161114000978",
+          "version": "original",
+          "corp": "00117577",
+          "document": "5348839",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "ef35fa03e04a62ed1ef1c581351e084e465ccc32b864c0609a979e2bb8cf3fbe",
+          "instance_sha256": "6f907aaba16bc3d2511df6ef5a0ff05871b2d003071a908e9011fe8d51a07afb",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114000978&dcm_no=5348839&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330003612",
+          "original_receipt": "20160330003612",
+          "version": "original",
+          "corp": "00117577",
+          "document": "5026503",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "2a1635c70bd1e27eb76cd9f3e3b85391f1f4cfd19beb166912bede33a99f96c5",
+          "instance_sha256": "9e6febdcca0930be6fcc41f9679412532d4fec9187956104d7944c73fdac89df",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330003612&dcm_no=5026503&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000300",
+          "original_receipt": "20151116000300",
+          "version": "original",
+          "corp": "00117577",
+          "document": "4852729",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "8271d57cd515c0b0d7df0a82aa7a1136fbe0b40e93dfdcd4aaac344474483d24",
+          "instance_sha256": "2d78fca8b7b521903688ea99abcfa5637058f8f6bb282ccb8a31c711e25e8753",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000300&dcm_no=4852729&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            632361827195,
+            604018201871
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            85042896120,
+            66368227039
+          ]
+        }
+      }
+    },
+    {
+      "issuer": "POSCO",
+      "isin": "KR7005490008",
+      "formation": "20170403",
+      "source_reports": [
+        {
+          "receipt": "20170331003833",
+          "original_receipt": "20170331003833",
+          "version": "original",
+          "corp": "00155319",
+          "document": "5536897",
+          "period_end": "20161231",
+          "filing_date": "20170331",
+          "sha256": "ad6221dda356271e0875b406629b924a10ad5a694ea0c7a588b75f88266d3056",
+          "instance_sha256": "311fd69e276b15a498fc77f10aebd31dc2ad8ff7a513d15970e9bcf1f58b2429",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170331003833&dcm_no=5536897&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20161114002105",
+          "original_receipt": "20161114002105",
+          "version": "original",
+          "corp": "00155319",
+          "document": "5351470",
+          "period_end": "20160930",
+          "filing_date": "20161114",
+          "sha256": "7d4f455ed4cebd711a7c129dc4d0c4ab8457a5ed543efeca51f001fb8f626485",
+          "instance_sha256": "694d43a6f8d9a7e5d813ea6772eb3bd2663d3346ec88598cec04199c95936320",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20161114002105&dcm_no=5351470&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20160330002741",
+          "original_receipt": "20160330002741",
+          "version": "original",
+          "corp": "00155319",
+          "document": "5022116",
+          "period_end": "20151231",
+          "filing_date": "20160330",
+          "sha256": "48c1f64c75acca350c5488e2bf71b5c0da6c32582b7b92b9a968feeac52d4123",
+          "instance_sha256": "7554c75a504c6a4a48f75776323cf02119305566dc5534aac951ca813980b160",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20160330002741&dcm_no=5022116&lang=ko",
+          "kind_html_buffered": false
+        },
+        {
+          "receipt": "20151116000799",
+          "original_receipt": "20151116000799",
+          "version": "original",
+          "corp": "00155319",
+          "document": "4853777",
+          "period_end": "20150930",
+          "filing_date": "20151116",
+          "sha256": "af29675ac52c8a254431e3745a336f3cf7c5ee5a691c446f36402fbc0ebde402",
+          "instance_sha256": "b1a5387cbd94d3cc209dcffa15b897430b318d746f02abdd145e4519fa3f69a7",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20151116000799&dcm_no=4853777&lang=ko",
+          "kind_html_buffered": false
+        }
+      ],
+      "fields": {
+        "revenue": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            15017370815290,
+            13905949595814
+          ]
+        },
+        "operating_profit": {
+          "four_inputs": "PASS",
+          "annual_reconciliation": "INSUFFICIENT",
+          "observed_same_annual_components": [],
+          "arithmetic_pair_KRW": [
+            471749575759,
+            340546076174
+          ]
+        }
+      }
+    }
+  ],
+  "direct_quarter_probe": {
+    "firms_tested": 8,
+    "statutory_report_files": 32,
+    "extra_official_metadata": 1,
+    "extra_official_exhibits": 1,
+    "companies_with_accepted_4Q": 0,
+    "companies_requiring_other_evidence": 8,
+    "complete_nonperiodic_report_inventory": false,
+    "control": {
+      "issuer": "POSCO",
+      "scope": "Consolidated results are annual 2014, 2015 and 2016. Fourth-quarter raw-material prices are not consolidated revenue or operating profit.",
+      "status": "ANNUAL_ONLY_FOR_TARGET_ACCOUNTS",
+      "filing_and_exhibit": [
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/889132/000119312517017283/0001193125-17-017283-index.htm",
+          "started_utc": "2026-11-26T08:55:25.085344+00:00",
+          "http": 200,
+          "bytes": 13968,
+          "sha256": "30a53c6b187125c238a9810c3fa4fa6e6a6dd214e5b9e15312e52d4423ab4459"
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/889132/000119312517017283/d321473dex991.htm",
+          "started_utc": "2026-11-26T08:55:38.179704+00:00",
+          "http": 200,
+          "bytes": 29200,
+          "sha256": "6dbb8f083ac2a375f529145b8556b3fd85732e6601dec6047c81ceac62e77746"
+        }
+      ]
+    }
+  }
+}

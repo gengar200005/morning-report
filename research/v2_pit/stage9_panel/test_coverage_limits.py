@@ -76,3 +76,48 @@ class CoverageLimitTests(unittest.TestCase):
             self.assertEqual(field_class(row,'F3',{},ex)[0],'confirmed_issuer_not_established')
             self.assertEqual(field_class(row,'F3',{('src','12345678','20180331'):[('k','hash')]},ex)[0],'explicit_no_cfs')
             self.assertEqual(other_exclusions(p,[row|{'period_end':'20180630'}],{'coverage_sha256':'unused'}),{})
+
+    def test_dart_main_viewer_and_identity_are_bound_and_two_sources_count_once(self):
+        receipt,corp,period='20190513000321','12345678','20190331'
+        sec='2. 연결재무제표'; doc='1234567'; kr='20190513000111';kd='20190513000444'
+        q={'rcpNo':receipt,'dcmNo':doc,'eleId':'7','offset':'130','length':'75','dtd':'dart3.xsd'}
+        from urllib.parse import urlencode
+        url='https://dart.fss.or.kr/report/viewer.do?'+urlencode(q)
+        main_url='https://dart.fss.or.kr/dsaf001/main.do?rcpNo='+receipt
+        def main_body(title=sec):
+            js='var node1 = {}; '+''.join(f'node1[\'{key}\'] = "{v}";' for key,v in {'text':title,**q}.items())
+            return f'<html><head><title>분기보고서</title></head><body><select><option selected value="rcpNo={receipt}"></option></select><script>{js}</script></body></html>'.encode()
+        body=f'<html><body><p><a name="section">{sec}</a></p><p>해당사항 없음</p></body></html>'.encode()
+        fib={'source_sha256':sha256(body).hexdigest(),'explicit_no_cfs':True,'3':{},'receipt':receipt,'corp':corp,
+             'period_end':'2019-03-31','document':doc,'source_url':url}
+        current={'receipt':receipt,'original_receipt':receipt,'corp_code':corp,'period_end':period,'kind_receipt':kr,
+            'identity_pass':'1','document':doc,'formation':'20190603','available_session':'20190514','F3':'',
+            'F3_reason':'revenue_reported_no_consolidated_statement','revenue_source_sha256':'','revenue_reason':'reported_no_consolidated_statement'}
+        with TemporaryDirectory() as temp:
+            raw=Path(temp)/'raw.db';facts=Path(temp)/'facts.db'
+            with sqlite3.connect(raw) as source,sqlite3.connect(facts) as f:
+                source.executescript('CREATE TABLE packages(receipt,kind,document,corp,source,sha256,body);CREATE TABLE pointers(url,sha,body);CREATE TABLE quarantine(receipt,kind);')
+                source.execute('INSERT INTO packages VALUES(?,?,?,?,?,?,?)',(receipt,'dart_html',doc,corp,url,fib['source_sha256'],body))
+                f.execute('CREATE TABLE facts(receipt,kind,doc,corp,period,sha,evidence)')
+                f.execute('INSERT INTO facts VALUES(?,?,?,?,?,?,?)',(receipt,'dart_html',doc,corp,period,fib['source_sha256'],json.dumps(fib)))
+                f.commit()
+                def pointer(data):
+                    source.execute('DELETE FROM pointers')
+                    source.execute('INSERT INTO pointers VALUES(?,?,?)',(main_url,sha256(data).hexdigest(),data))
+                    source.commit()
+                pointer(main_body())
+                details={};proof=cfs_proofs(facts,raw,details)
+                self.assertEqual(field_class(current,'F3',proof)[0],'explicit_no_cfs')
+                self.assertEqual(details[receipt,corp,period]['exact_section_text'],'2. 연결재무제표 해당사항 없음')
+                self.assertEqual(field_class(current|{'document':'other'},'F3',proof)[0],'pending_or_unproven')
+                pointer(main_body('3. 연결재무제표 주석'))
+                self.assertEqual(field_class(current,'F3',cfs_proofs(facts,raw))[0],'pending_or_unproven')
+                pointer(main_body())
+                live='<html><body><p class="SECTION-2">2. 연결재무제표</p><table><tr><td>자산총계</td><td>9,000</td></tr></table></body></html>'.encode()
+                source.execute('INSERT INTO packages VALUES(?,?,?,?,?,?,?)',(receipt,'kind_html',kd,corp,'kind',sha256(live).hexdigest(),live));source.commit()
+                self.assertEqual(field_class(current,'F3',cfs_proofs(facts,raw))[0],'pending_or_unproven')
+                source.execute("DELETE FROM packages WHERE kind='kind_html'");source.commit()
+                second=fib|{'document':kd,'source_sha256':'k'*64,'source_url':'https://kind.krx.co.kr/external/2019/05/13/000111/'+kd+'/11013.htm'}
+                f.execute('INSERT INTO facts VALUES(?,?,?,?,?,?,?)',(receipt,'kind_html',kd,corp,period,'k'*64,json.dumps(second)));f.commit()
+                reason,hashes=field_class(current,'F3',cfs_proofs(facts,raw))
+                self.assertEqual(reason,'explicit_no_cfs');self.assertEqual(len(hashes),2)

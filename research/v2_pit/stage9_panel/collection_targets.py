@@ -28,11 +28,17 @@ def target_receipts(manifest,panel,sessions_db,monthly_coverage,context,draw,aud
         primary,status=filing_versions(rows,day,sessions=sessions)
         if status!='PASS' or not 0<=(date.fromisoformat(day)-date.fromisoformat(primary['period_end'])).days<=180:
             continue
+        if primary.get('amendment_scope')=='financial_attachment_only':
+            if primary.get('original_receipt'):targets.add(primary['original_receipt'])
+            continue
         chosen=[primary]
         if primary['report_type']=='11011':
             for n in (3,12,15):
                 component,st=filing_versions(rows,day,prev_end(primary['period_end'],n),sessions=sessions,reference_only=n>=12)
-                if st=='PASS':chosen.append(component)
+                if st=='PASS':
+                    if component.get('amendment_scope')=='financial_attachment_only':
+                        if component.get('original_receipt'):targets.add(component['original_receipt'])
+                    else:chosen.append(component)
         for row in chosen:
             targets.add(row['receipt'])
             if row['original_receipt']:targets.add(row['original_receipt'])

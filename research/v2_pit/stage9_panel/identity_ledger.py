@@ -15,7 +15,7 @@ import unicodedata
 TYPES={'사업보고서':'11011','반기보고서':'11012','분기보고서':'11013'}
 COLUMNS=('isin stock_code corp_code kind_receipt receipt document filing_date available_session period_end report_type version identity_status '
          'kind_timestamp source_kind_sha256 source_dart_sha256 original_receipt reason source_kind_export_sha256 source_xbrl_index_sha256 '
-         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis comparison_basis_status comparison_basis_reason filing_source_form fss_display_url fss_display_sha256 amendment_scope attachment_name main_receipts_at_event source_fss_viewer_sha256 xbrl_index_lookup_status').split()
+         'kind_title dart_title kind_name dart_name stamp_precision kind_published dart_published xbrl_index_date dart_timestamp source_dart_time_sha256 ordering_timestamp comparator_identity_status comparator_identity_basis comparison_basis_status comparison_basis_reason filing_source_form fss_display_url fss_display_sha256 amendment_scope attachment_name main_receipts_at_event source_fss_viewer_sha256 xbrl_index_lookup_status comparator_original_receipt comparator_chain_basis comparator_amendment_menu_sha256 comparator_original_menu_sha256').split()
 def read(path):
     with path.open(encoding='utf-8-sig',newline='') as s:return list(csv.DictReader(s))
 def load(path):
@@ -277,6 +277,25 @@ def consolidate(w,roster,db,prior):
         elif r['version']=='amendment' and r['identity_status']=='PASS':
             r.update(identity_status='BLOCKED',reason='ambiguous_or_unavailable_original_version')
         elif len(orig)>1:r.update(identity_status='BLOCKED',comparator_identity_status='BLOCKED',reason='multiple_candidate_originals')
+    chains_file=w/'comparator_chains.csv'
+    if chains_file.is_file():
+        from identity_comparator_chains import prove
+        by_receipt={r['receipt']:r for r in result if r['receipt']}
+        for item in read(chains_file):
+            if item['status']!='PASS':continue
+            amendment=by_receipt.get(item['receipt'])
+            origin=by_receipt.get(item['candidate_parent'])
+            if not amendment or not origin:raise ValueError('Missing component of comparator family')
+            fields=('isin','corp_code','period_end','report_type')
+            if any(amendment[k]!=origin[k] for k in fields) or amendment.get('comparator_identity_status')!='PASS' or origin.get('comparator_identity_status')!='PASS':
+                raise ValueError('Comparator issuer or fiscal scope changed')
+            if amendment['version']!='amendment' or origin['version']!='original' or amendment.get('identity_status')=='PASS':
+                raise ValueError('Comparator version or formation identity changed')
+            evidence=prove(w,amendment,origin)
+            if evidence!=item:raise ValueError('Comparator source record changed for '+item['receipt'])
+            amendment.update(comparator_original_receipt=origin['receipt'],comparator_chain_basis=evidence['reason'],
+                comparator_amendment_menu_sha256=item['amendment_menu_sha256'],comparator_original_menu_sha256=item['original_menu_sha256'],
+                amendment_scope='periodic_main_body')
     directory={(p.stem.split('-')[1],p.stem.split('-')[2]) for p in (w/'parsed').glob('X-*.json')}
     for r in result:
         if not r['receipt']:

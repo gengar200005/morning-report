@@ -18,6 +18,14 @@ class ReviewedNotesTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'reconcile'):
             segment(table(rows), 'operating_profit')
 
+    def test_rounded_thousands_with_reported_subtotal_and_adjustment(self):
+        rows = [['구분','에폭시','Polyol','합계','연결조정','연결후금액'],
+                ['영업이익','74,822,579','3,463,163','78,285,741','(316,590)','77,969,151']]
+        self.assertEqual(segment(table(rows, '천원'), 'operating_profit', 1000)[1], 77969151)
+        rows[1][3] = '78,285,739'
+        with self.assertRaisesRegex(ValueError,'subtotal'):
+            segment(table(rows, '천원'), 'operating_profit', 1000)
+
     def test_only_consolidated_note_section_is_available(self):
         doc = html.fromstring('<html><body><p class="SECTION-2">3. 연결재무제표 주석</p>'
                               '<p>연결기업 정책</p><table><tr><td>연결부문</td></tr></table>'

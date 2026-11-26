@@ -1,0 +1,167 @@
+{
+  "purpose": "Direct Q4 evidence recovery test, before measuring Q4 returns. Fixed two distinct sectors per cap quartile. Selection did not use sales, earnings, return, direction, or document availability. Conditional on four filed inputs passing arithmetic comparison only.",
+  "salt": "MR-v2-Q4-direct-cost-2016-v1|",
+  "ledger_sha256": "5c6c80ef89686237da53b746549be554be53c30bfd5430d22e7137e3f431c543",
+  "ctx_sha256": "6794bc104e34dad94e2c1527e97e3317be1861e82ebbe97b85891a7bd32e8ea1",
+  "population": 99,
+  "by_cap": {
+    "1": 19,
+    "2": 29,
+    "3": 28,
+    "4": 23
+  },
+  "draw": [
+    {
+      "hash_rank": "0aa613afba05dea3762e7cfe4f91b8ba7a2d316a1de743f33e1f047aac2c4635",
+      "cap_quartile": "1",
+      "sector": "산업재",
+      "sector_code": "G20",
+      "isin": "KR7084670009",
+      "stock_code": "084670",
+      "issuer": "동양고속",
+      "formation": "20170403",
+      "receipt": "20170331002997",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331002997",
+        "20161114001468",
+        "20160330003306",
+        "20151116000773"
+      ]
+    },
+    {
+      "hash_rank": "1d10137d8beaf01cc385ed92f3e35cf09205fdcf22be8df0066ddcf098f3b485",
+      "cap_quartile": "1",
+      "sector": "소재",
+      "sector_code": "G15",
+      "isin": "KR7007590003",
+      "stock_code": "007590",
+      "issuer": "동방아그로",
+      "formation": "20170403",
+      "receipt": "20170331002888",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331002888",
+        "20161114000632",
+        "20160330001482",
+        "20151116000461"
+      ]
+    },
+    {
+      "hash_rank": "041f4b493cb406583e9f5a23bcbff4308060292c9d5687e78cdf060a69765e03",
+      "cap_quartile": "2",
+      "sector": "산업재",
+      "sector_code": "G20",
+      "isin": "KR7000390005",
+      "stock_code": "000390",
+      "issuer": "삼화페인트",
+      "formation": "20170403",
+      "receipt": "20170330000610",
+      "filing_date": "20170330",
+      "version": "original",
+      "four_receipts": [
+        "20170330000610",
+        "20161111000281",
+        "20160329000459",
+        "20151113000428"
+      ]
+    },
+    {
+      "hash_rank": "065df59819f921f97fab398d84a4df02b78cd349ef43a98d3b75de29265ca39f",
+      "cap_quartile": "2",
+      "sector": "경기관련소비재",
+      "sector_code": "G25",
+      "isin": "KR7092200005",
+      "stock_code": "092200",
+      "issuer": "디아이씨",
+      "formation": "20170403",
+      "receipt": "20170331000607",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331000607",
+        "20161111000558",
+        "20160330000296",
+        "20151116000671"
+      ]
+    },
+    {
+      "hash_rank": "14d21602dac6a192b31b35c174adaa46dc81a2c51a02b06bc144feb718cad8e9",
+      "cap_quartile": "3",
+      "sector": "유틸리티",
+      "sector_code": "G55",
+      "isin": "KR7017390006",
+      "stock_code": "017390",
+      "issuer": "서울가스",
+      "formation": "20170403",
+      "receipt": "20170331004136",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331004136",
+        "20161114001526",
+        "20160330004120",
+        "20151116000995"
+      ]
+    },
+    {
+      "hash_rank": "1c8f6e93d1d426df0f0e645a59ec9a62c3ed66d3530d49ba1066268a86a61cd8",
+      "cap_quartile": "3",
+      "sector": "산업재",
+      "sector_code": "G20",
+      "isin": "KR7001250000",
+      "stock_code": "001250",
+      "issuer": "GS글로벌",
+      "formation": "20170403",
+      "receipt": "20170331003894",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331003894",
+        "20161114001359",
+        "20160330003456",
+        "20151116000746"
+      ]
+    },
+    {
+      "hash_rank": "16e19623c8014ccbec29677742ee6582afa2be1c0d9374452512649849da2b44",
+      "cap_quartile": "4",
+      "sector": "필수소비재",
+      "sector_code": "G30",
+      "isin": "KR7001800002",
+      "stock_code": "001800",
+      "issuer": "오리온",
+      "formation": "20170403",
+      "receipt": "20170331005186",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331005186",
+        "20161114000978",
+        "20160330003612",
+        "20151116000300"
+      ]
+    },
+    {
+      "hash_rank": "23f33e7ae9c058e065955ef11c1045a58d43bf60df3c6f0c59247dd9aaa44837",
+      "cap_quartile": "4",
+      "sector": "소재",
+      "sector_code": "G15",
+      "isin": "KR7005490008",
+      "stock_code": "005490",
+      "issuer": "POSCO",
+      "formation": "20170403",
+      "receipt": "20170331003833",
+      "filing_date": "20170331",
+      "version": "original",
+      "four_receipts": [
+        "20170331003833",
+        "20161114002105",
+        "20160330002741",
+        "20151116000799"
+      ]
+    }
+  ]
+}

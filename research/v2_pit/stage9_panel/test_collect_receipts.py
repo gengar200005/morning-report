@@ -61,3 +61,22 @@ class AsOfAcquisitionTest(unittest.TestCase):
             self.assertEqual(target_receipts(rows,roster,path,coverage,[],[],[]),{r['receipt'] for r in rows})
             monthly_fin=[dict(formation='20170502',isin='A',industry_group='financial')]
             self.assertEqual(target_receipts(rows,roster,path,coverage,monthly_fin,[],[]),set())
+
+
+class SourceSelectionTest(unittest.TestCase):
+    def test_kind_receipt_prefix_may_predate_publication_but_other_dates_stay_blocked(self):
+        from stage9_panel.collect_receipts import kind_document
+        receipt='20170811001427'
+        source=("""
+            <header><h1>회사 (006390)</h1></header>
+            <select id="mainDoc"><option selected value="20170811003629|Y">반기보고서(일반법인) (2017.08.14)</option></select>
+        """).encode()
+        self.assertEqual(kind_document(source,receipt,'006390',False,'2017-08-14 07:00'),'20170811003629')
+        with self.assertRaises(ValueError):kind_document(source,receipt,'006390',False)
+        with self.assertRaises(ValueError):kind_document(source,receipt,'006399',False,'2017-08-14 07:00')
+
+    def test_attachment_selection_cannot_become_report_body(self):
+        from stage9_panel.fss_section import statement_pointer
+        source='<title>회사/사업보고서</title><select><option selected value="rcpNo=20180515001992&amp;dcmNo=6180866">연결감사보고서</option></select>'
+        with self.assertRaisesRegex(ValueError,'selected original receipt differs'):
+            statement_pointer(source.encode(),'20180515001992','6180866')

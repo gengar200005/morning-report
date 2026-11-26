@@ -15,13 +15,13 @@ from zipfile import BadZipFile, ZipFile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from filing_xbrl import X, NIL, classify, dimensions_match, field_for, parse_instance, unit_kind
-from stage82b.display_fields import extract_display_fields, no_consolidated_statement
-from stage9_panel.pit_display import cumulative_facts
+from stage82b.display_fields import extract_display_fields
+from stage9_panel.pit_display import cumulative_facts, confirmed_absence
 
 FIELDS = ('revenue', 'operating_profit')
 DURATIONS = (3, 9, 12)
 ANNUAL_SUBPERIODS = {'first9': (3,9), 'first6': (6,6), 'first3': (9,3), 'second3': (6,3), 'third3': (3,3)}
-FACTS_VERSION = 4
+FACTS_VERSION = 6
 
 
 def dates_for(end, months, prior=False):
@@ -122,7 +122,7 @@ def extract_receipt(receipt, document, corp, period_end, kind, raw, expected_has
                 group[key]={'status':'conflicting_values'}
             else:
                 group[key]=item
-        result = {'source_type': kind,'3':group,'explicit_no_cfs':not group and no_consolidated_statement(raw)}
+        result = {'source_type': kind,'3':group,'explicit_no_cfs':not group and confirmed_absence(raw)}
         if not result['explicit_no_cfs']:
             for duration in (9,12):
                 wanted=tuple(tuple(date.fromisoformat(v) for v in dates_for(end,duration,prior)) for prior in (False,True))

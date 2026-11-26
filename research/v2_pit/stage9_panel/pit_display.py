@@ -4,7 +4,40 @@ from lxml import html
 
 from public_dart import normalized, table_rows
 from stage82b.display_fields import (FIELDS, TITLE, UNIT_SCALES, compact, field_label,
-    fiscal_key, header_columns, kind_section, monetary_pair, table_metadata)
+    fiscal_key, header_columns, kind_section, monetary_pair, table_metadata, no_consolidated_statement)
+
+
+ABSENCE_SENTENCES = (
+    r'해당사항(?:이)?(?:없음|없슴|없습니다)',
+    r'(?:당사|회사)는한국채택국제회계기준에의한연결대상이(?:없어|없으므로)연결재무제표를작성하지않습니다',
+    r'당사는연결재무제표작성대상(?:기업|법인)이아닙니다',
+    r'당사는연결재무제표작성대상법인이아니므로연결재무제표를별도(?:로)?작성하지않습니다',
+    r'당기중종속회사합병으로인해보고서작성기준일현재연결대상회사가없어기재를생략합니다',
+    r'(?:해당사항없음\.?)?보고서제출일현재회사는연결대상종속기업이없으므로당기재무제표는개별재무제표입니다',
+    r'당사는보고서작성기준일현재연결재무제표와관련된사항이없습니다',
+    r'해당사항없음당분기말현재회사는[0-9]{4}년[0-9]{1,2}월[0-9]{1,2}일부완전자회사의흡수합병\(소멸\)로인하여연결대상종속기업이없으므로당기재무제표는개별재무제표입니다',
+)
+
+
+def confirmed_absence(raw):
+    if no_consolidated_statement(raw):
+        return True
+    tree=html.fromstring(raw.decode('utf-8'))
+    pattern=r'\d+\.\s*연결재무제표'
+    isolated,label=kind_section(tree,pattern)
+    if isolated:
+        tree=html.fromstring(isolated.decode('utf-8'))
+    else:
+        heads=[normalized(s) for s in tree.xpath('//a[@name]/text()')]
+        if len(heads)!=1 or not re.fullmatch(pattern,heads[0]):
+            return False
+        label=heads[0]
+    body=tree.find('body')
+    text=compact((body if body is not None else tree).text_content())
+    if not text.startswith(compact(label)):
+        return False
+    statement=text[len(compact(label)):].strip('▶※-()*.。:<>“”"')
+    return any(re.fullmatch(sentence,statement) for sentence in ABSENCE_SENTENCES)
 
 
 def labelled_columns(rows, periods, wanted, duration):

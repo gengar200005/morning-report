@@ -22,6 +22,7 @@ def estimate(root, sessions, year, ledger=None):
                            read_csv(root/'context.csv'),[],[])
     with sqlite3.connect((root/'raw/receipts.sqlite').resolve().as_uri()+'?mode=ro',uri=True) as db:
         cached={r[0] for r in db.execute("SELECT DISTINCT receipt FROM packages WHERE kind IN ('xbrl','kind_html','dart_html') AND (receipt,kind) NOT IN (SELECT receipt,kind FROM quarantine)")}
+        note_receipts={r[0] for r in db.execute("SELECT DISTINCT receipt FROM packages WHERE kind IN ('kind_html','dart_notes') AND (receipt,kind) NOT IN (SELECT receipt,kind FROM quarantine)")}
         observed=defaultdict(dict)
         for kind,step,count,mean_bytes,seconds in db.execute('SELECT kind,step,count(*),avg(nbytes),avg(elapsed) FROM requests WHERE http=200 GROUP BY kind,step'):
             observed[kind][step]=dict(count=count,mean_bytes=mean_bytes,mean_seconds=seconds)
@@ -38,7 +39,7 @@ def estimate(root, sessions, year, ledger=None):
     current=read_csv(ledger or root/'ledger/issuer_months.csv')
     selected=[r for r in current if r['formation'].startswith(year) and r['industry_group']=='nonfinancial']
     required=(4*len(selected)+4)//5
-    proof=cfs_proofs(root/'ledger/facts.sqlite')
+    proof=cfs_proofs(root/'ledger/facts.sqlite',root/'raw/receipts.sqlite')
     minimum_annual={}
     for field in ('F2','F3'):
         interim=[r for r in selected if r['report_type']!='11011']
@@ -46,7 +47,20 @@ def estimate(root, sessions, year, ledger=None):
         interim_ceiling=len(interim)-sum(classified[k] for k in ('explicit_no_cfs','verified_period_rule','verified_signal_domain'))
         minimum_annual[field]=dict(known_nonfinancial=len(selected),required=required,other_forms_including_unassigned=len(interim),
                                    other_form_optimistic_max=interim_ceiling,minimum_annual_form_observations=max(0,required-interim_ceiling))
-    return dict(year=year,optimistic_minimum_annual=minimum_annual,all_primary_and_comparator_receipts=len(target),cached_source_receipts=len(target&cached),
+    annual=[r for r in selected if r['report_type']=='11011']
+    note_groups=defaultdict(int)
+    for r in annual:
+        if r['F3_reason']!='revenue_arithmetic_only_basis_unverified':
+            continue
+        sources=tuple(json.loads(r['components'])['revenue']['receipts'])
+        note_groups[sources]+=1
+    missing_notes={refs:sorted(set(refs)-note_receipts) for refs in note_groups}
+    notes=dict(arithmetic_only_F3_months=sum(note_groups.values()),receipt_groups=len(note_groups),
+               additional_distinct_note_receipts=len({r for ids in missing_notes.values() for r in ids}),
+               groups_by_additional_notes=Counter(map(len,missing_notes.values())))
+    return dict(year=year,optimistic_minimum_annual=minimum_annual,arithmetic_review_notes=notes,
+                annual_form_F3_reasons=Counter(r['F3_reason'] for r in annual),
+                all_primary_and_comparator_receipts=len(target),cached_source_receipts=len(target&cached),
                 missing_receipts=len(remaining),assumed_source_route=count,measured_http200=observed,
                 estimated_http_requests=requests,estimated_response_bytes=round(response_bytes),
                 estimated_sum_request_seconds=round(seconds),

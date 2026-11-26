@@ -38,7 +38,7 @@ def run(database,directory):
             requests=[r for r in urls if r['phase']==phase]
             span=max(r['started']+r['elapsed'] for r in requests)-min(r['started'] for r in requests)
             intake=sum(r['phase']==phase for r in rows)
-            stats[phase]=dict(http_attempts=len(requests),http_status=dict(Counter(str(r['http'])+'/'+r['status'] for r in requests)),
+            stats[phase]=dict(http_attempts=len(requests),distinct_file_http_attempts=len({(r['receipt'],r['kind']) for r in requests}),http_status=dict(Counter(str(r['http'])+'/'+r['status'] for r in requests)),
                raw_files_received=intake,body_bytes=sum(r['nbytes'] for r in requests if r['step']=='body'),
                all_http_bytes=sum(r['nbytes'] for r in requests),elapsed_wall_seconds=round(span,3),
                files_per_minute=round(60*intake/span,2) if span>0 else None,

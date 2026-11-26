@@ -18,7 +18,11 @@
     "direct_numeric_verified_one_or_more": 48,
     "post_delist_financial_op_cells": 2,
     "in_scope_direct_incorrect": 0,
-    "incorrect_nonmissing_across_sources": 2
+    "incorrect_nonmissing_across_sources": 2,
+    "annual_basis_status": {
+      "same_basis_approved": 2,
+      "arithmetic_only": 1
+    }
   },
   "rows": [
     {
@@ -99,7 +103,12 @@
         "operating_profit_prior": 15784827607
       },
       "supporting_9m_receipt": "20161114000547",
-      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate"
+      "arithmetic_status": "reproduced from displayed annual and nine-month consolidated amounts",
+      "same_basis_fields": [
+        "operating_profit",
+        "revenue"
+      ],
+      "basis_status": "same_basis_approved"
     },
     {
       "stock_code": "002790",
@@ -251,7 +260,12 @@
         "operating_profit_prior": 41460192511
       },
       "supporting_9m_receipt": "20171114000220",
-      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate",
+      "arithmetic_status": "reproduced from displayed annual and nine-month consolidated amounts",
+      "same_basis_fields": [
+        "operating_profit",
+        "revenue"
+      ],
+      "basis_status": "same_basis_approved",
       "registered_versions": [
         {
           "receipt": "20180330000582",
@@ -576,7 +590,9 @@
         "operating_profit_prior": 4835853079
       },
       "supporting_9m_receipt": "20191114000529",
-      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate"
+      "arithmetic_status": "reproduced from displayed annual and nine-month consolidated amounts",
+      "same_basis_fields": [],
+      "basis_status": "arithmetic_only"
     },
     {
       "stock_code": "000520",
@@ -863,5 +879,6 @@
         }
       }
     }
-  ]
+  ],
+  "q4_basis_sha256": "8a47e6f5c58aa2e487da9eb67ea081d89a0df3a887f07f40f6760534c2b68388"
 }

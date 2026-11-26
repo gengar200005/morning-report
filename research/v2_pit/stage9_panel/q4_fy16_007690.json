@@ -1,0 +1,138 @@
+{
+  "issuer": "국도화학",
+  "corp": "00104388",
+  "fiscal_end": "2016-12-31",
+  "available_session": "2017-03-30",
+  "independent_review": "PASS",
+  "independent_quarter_confirmed": false,
+  "sources": [
+    {
+      "receipt": "20170329000302",
+      "end": "2016-12-31",
+      "note_kind": "kind_html",
+      "note_sha256": "173be4ae7794ea743161f76f23fa16e7dedde2bb82f7758d1dcc1a4dc64c8183",
+      "xbrl_sha256": "88a24067e28a14cbdd06099be3941af07fe2ae0f32a87a37c228b4d2680b46ae",
+      "segment_tables": [
+        192,
+        194
+      ],
+      "policy": [
+        "3.유의적인회계정책연결재무제표작성에적용된유의한회계정책은아래기술되어있으며,당기및비교표시된전기의재무제표는동일한회계정책을적용하여작성되었으며",
+        "매출에누리와할인및환입은수익금액에서조정하고있습니다."
+      ],
+      "scope_change": [
+        "연결재무제표작성대상종속기업의주요재무현황은다음과같습니다."
+      ],
+      "scope_note_rows": 2,
+      "scope_header": "회사명",
+      "scope_table": 78,
+      "renamed_subsidiary": {
+        "prior_name": "(주)하진켐텍",
+        "filed_name": "국도화인켐주식회사(*)",
+        "disclosure": "2017년1월2일부로(주)하진켐텍은국도화인켐주식회사로상호를변경하였습니다."
+      }
+    },
+    {
+      "receipt": "20161114000547",
+      "end": "2016-09-30",
+      "note_kind": "kind_html",
+      "note_sha256": "31a5057063193adbd809532041be5faec345e96017cce0cec5d50210b5f003d7",
+      "xbrl_sha256": "92e6981b90379d25a11755def4cd5bd06d9fb0c8e86fb5225d36dc0c5e20bb06",
+      "segment_tables": [
+        195,
+        197
+      ],
+      "policy": [
+        "3.유의적인회계정책연결재무제표작성에적용된유의한회계정책은아래기술되어있으며,당분기및비교표시된전기의재무제표는동일한회계정책을적용하여작성되었으며",
+        "매출에누리와할인및환입은수익금액에서조정하고있습니다."
+      ],
+      "scope_change": [
+        "연결재무제표작성대상종속기업의주요재무현황은다음과같습니다."
+      ],
+      "scope_note_rows": 2,
+      "scope_header": "회사명",
+      "scope_table": 78
+    },
+    {
+      "receipt": "20160329000310",
+      "end": "2015-12-31",
+      "note_kind": "dart_notes",
+      "note_sha256": "0e65b029f0fe52a6b78b2b243f2edfa14b153e9d7a6ee85abc55e54460b900fa",
+      "xbrl_sha256": "b373324b7ed46617d7f9a1763a58b27781ecda64fd790a752ce2e9713c7ec89b",
+      "segment_tables": [
+        120
+      ],
+      "policy": [
+        "3.유의적인회계정책연결재무제표작성에적용된유의한회계정책은아래기술되어있으며,당기및비교표시된전기의재무제표는동일한회계정책을적용하여작성되었으며",
+        "매출에누리와할인및환입은수익금액에서조정하고있습니다.",
+        "제3자로부터기여금이있는확정급여제도를운영하고있지않으므로동기준서가연결실체에미치는영향은없습니다."
+      ],
+      "scope_change": [
+        "연결재무제표작성대상종속기업의주요재무현황은다음과같습니다."
+      ],
+      "scope_note_rows": 2,
+      "scope_header": "회사명",
+      "scope_table": 1
+    },
+    {
+      "receipt": "20151112000368",
+      "end": "2015-09-30",
+      "note_kind": "dart_notes",
+      "note_sha256": "d1e2de5d9a8a36e9948ae5998a26792aaf45cd29064c46b822c01e1d97869e46",
+      "xbrl_sha256": "ec68df3241d9d1e9fb4f4b1133813b4ad25b6a70cc3035230cd6283b74f0fbad",
+      "segment_tables": [
+        118
+      ],
+      "policy": [
+        "3.유의적인회계정책연결재무제표작성에적용된유의한회계정책은아래기술되어있으며,당분기및비교표시된전기의재무제표는동일한회계정책을적용하여작성되었으며",
+        "매출에누리와할인및환입은수익금액에서조정하고있습니다.",
+        "제3자로부터기여금이있는확정급여제도를운영하고있지않으므로동기준서가당사에미치는영향은없습니다."
+      ],
+      "scope_change": [
+        "연결재무제표작성대상종속기업의주요재무현황은다음과같습니다."
+      ],
+      "scope_note_rows": 2,
+      "scope_header": "회사명",
+      "scope_table": 1
+    }
+  ],
+  "independent_face_amounts": {
+    "operating_profit": [
+      [
+        36983503212,
+        77969150965
+      ],
+      [
+        32031693468,
+        62184323358
+      ],
+      [
+        77969150965
+      ],
+      [
+        62184323358
+      ]
+    ],
+    "revenue": [
+      [
+        952633435802,
+        1011877773027
+      ],
+      [
+        730944061987,
+        773129571723
+      ],
+      [
+        1011877773027
+      ],
+      [
+        773129571723
+      ]
+    ]
+  },
+  "segment_scale": 1000,
+  "independent_evidence": {
+    "path": "identity/kukdo_fy16_review.json",
+    "sha256": "5e9efa882ca17c9e8edf12b907a2fe3dd759d795725bf6aadc281148acdbffa0"
+  }
+}

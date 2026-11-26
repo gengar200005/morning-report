@@ -26,7 +26,8 @@ def run(raw,meta,draw,out,include_later=False):
             event=db.execute('SELECT http,status,nbytes,elapsed,started FROM requests WHERE phase=?',(phase,)).fetchall()
             completed=dict(db.execute('SELECT c.status, count(*) FROM reservations r JOIN completed c USING(receipt,kind) WHERE phase=? GROUP BY c.status',(phase,)))
             new=db.execute('SELECT count(*) FROM reservations WHERE phase=?',(phase,)).fetchone()[0]
-            phases[phase]=dict(distinct_initial_file_attempts=new,completed=completed,http_requests=len(event),
+            actual=db.execute('SELECT count(*) FROM (SELECT DISTINCT receipt,kind FROM requests WHERE phase=?)',(phase,)).fetchone()[0]
+            phases[phase]=dict(distinct_reserved_files=new,distinct_initial_file_attempts=actual,completed=completed,http_requests=len(event),
                                http_results=dict(Counter(str(e[0])+':'+e[1] for e in event)),
                                response_bytes=sum(e[2] for e in event),elapsed_wall_s=(round(max(e[4]+e[3] for e in event)-min(e[4] for e in event),2) if event else 0),
                                median_response_seconds=round(statistics.median(e[3] for e in event),3) if event else None)

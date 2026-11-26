@@ -18,15 +18,17 @@
     "original|BLOCKED": 1334,
     "original|PASS": 5732
   },
+  "precalendar_comparator_periodic_main_links": 2,
   "xbrl_lookup": {
     "listed_with_document": 7191,
     "queried_no_entry": 850
   },
   "amendment_scope": {
-    "(none)|BLOCKED": 1690,
+    "(none)|BLOCKED": 1688,
     "(none)|PASS": 6325,
     "financial_attachment_only|PASS": 11,
     "nonfinancial_attachment_only|PASS": 14,
+    "periodic_main_body|BLOCKED": 2,
     "periodic_main_body|PASS": 1
   },
   "identity_BLOCKED_reasons": {
@@ -34,11 +36,12 @@
     "missing_historical_filing_or_period_security": 881
   },
   "source_manifest_sha256": {
-    "receipts.csv": "a92a249134f5fc29979d644efbd44d33d2de2e3ca9ad031fab55e66d5f4f1861",
+    "receipts.csv": "26d4e9320b3318e9fae64d4ffc5447ef9d35a0c8afb1dfa226a868b8ba87f481",
     "issuers_resolved.csv": "daf19d32e7cf158c745fded9f3b35b8dbe556e2d2ed0596a95c70412eacef8f3",
     "monthly_coverage.csv": "c10e98aadbbbf0931ae706b5d179c9065b1e09c97c5fb12cc065771ed9d778ba",
     "coverage.csv": "271e8bc160c37f5bcab37dd78a17cfe9e46a05145068c14a6de12ee17e5a20d4",
-    "xbrl_directory_manifest.csv": "990fd6f5248c7bc6f137733f5b8de1e6c92956634a129147272a996f6c1e115e"
+    "xbrl_directory_manifest.csv": "990fd6f5248c7bc6f137733f5b8de1e6c92956634a129147272a996f6c1e115e",
+    "comparator_chains.csv": "6d2df8a5ee8bc227e2f6bc0fc0fd0005a099d10ca4463523df5893d014929497"
   },
   "frozen_roster_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390"
 }

@@ -11,6 +11,7 @@ from stage9_panel.coverage_limits import run as check_limits
 from stage9_panel.pit_cost import estimate
 from stage9_panel.pit_facts import index_facts
 from stage9_panel.pit_ledger import build
+from stage9_panel.q4_route_limit import scenario
 
 
 def inventory(path):
@@ -44,16 +45,21 @@ def refresh(root,sessions,output,final=False):
     if (limits['ledger_sha256']!=result['ledger_sha256'] or limits['context_sha256']!=result['context_sha256']
             or limits['metadata_sha256']!=result['metadata_sha256'] or limits['coverage_sha256']!=result['coverage_sha256']):
         raise ValueError('Ledger and coverage views have different input hashes')
-    stable=(source_before==source_after and all(sha256(p.read_bytes()).hexdigest()==result[k] for p,k in
+    basis_now=sha256(basis.read_bytes()).hexdigest() if basis.exists() else ''
+    stable=(source_before==source_after and basis_now==result['cumulative_basis_sha256'] and all(sha256(p.read_bytes()).hexdigest()==result[k] for p,k in
             [(receipts,'metadata_sha256'),(coverage,'coverage_sha256'),(context,'context_sha256')]))
     if final and not stable:
         raise ValueError('Input inventory changed during the final rebuild. Rerun after collection is frozen.')
+    outputs=['issuer_months.csv','quality.json','coverage_limits.json','2017_cost.json']
+    if final:
+        scenario(root,sessions,output,output/'q4_route_limit.json')
+        outputs.append('q4_route_limit.json')
     proof=dict(stable_during_rebuild=stable,final_requested=final,source_inventory_sha256=source_after,
         source_inventory_before_sha256=source_before,fact_snapshot_sha256=result['fact_snapshot_sha256'],
         metadata_sha256=result['metadata_sha256'],coverage_sha256=result['coverage_sha256'],
         context_sha256=result['context_sha256'],roster_sha256=result['roster_sha256'],indexed=indexed,
-        outputs={f:sha256((output/f).read_bytes()).hexdigest() for f in
-                 ('issuer_months.csv','quality.json','coverage_limits.json','2017_cost.json')})
+        cumulative_basis_sha256=result['cumulative_basis_sha256'],session_dates_sha256=result['session_dates_sha256'],
+        outputs={f:sha256((output/f).read_bytes()).hexdigest() for f in outputs})
     (output/'pit_snapshot.json').write_text(json.dumps(proof,indent=2)+'\n')
     return proof
 

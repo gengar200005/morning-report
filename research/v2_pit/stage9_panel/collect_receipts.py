@@ -134,7 +134,7 @@ def once(db, row, kind, phase, step, url, interval):
 
 def fetch(job):
     path,row,kind,phase,interval=job
-    if HALT.is_set():return 'DEFERRED'
+    if HALT.is_set() or (phase=='full' and (path.parent/'final.stop').exists()):return 'DEFERRED'
     with connect(path) as db:
         rc,corp,doc=row['receipt'],row['corp_code'],row.get('document','')
         try:
@@ -149,7 +149,7 @@ def fetch(job):
                 if not row.get('url'):
                     main='https://dart.fss.or.kr/dsaf001/main.do?'+urlencode({'rcpNo':rc})
                     main_body=once(db,row,kind,phase,'index',main,interval)
-                    label,doc,url=statement_pointer(main_body,rc,doc)
+                    label,doc,url=statement_pointer(main_body,rc,doc,'notes' if kind=='dart_notes' else 'statement')
                     row=dict(row,url=url,section=label,source_main_sha256=sha(main_body))
                 url=row['url'];u=urlsplit(url);params=parse_qs(u.query)
                 expected=r'I\.회사의개요' if kind=='dart_overview' else r'\d+\.연결재무제표'+('주석' if kind=='dart_notes' else '')
@@ -273,6 +273,8 @@ def reserve(db,jobs,phase,retry_blocked=False,limit=None):
 
 def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,display_queue=None,batch_size=300,kinds=None):
     initialize(path)
+    if phase=='full' and (path.parent/'final.stop').exists():
+        print('new acquisition frozen');return
     if workers is None:workers=3 if phase=='technical' else 5
     allrows=read_csv(manifest)
     rows=allrows
@@ -287,17 +289,19 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
     coverage=manifest.parent/'monthly_coverage.csv'
     industry=panel.parent/'context.csv'
     main=audit.with_name('audit_main_frozen.csv')
-    first_year=set()
+    priority_year={}
     if phase=='full' and sessions_db.exists() and coverage.is_file():
         from stage9_panel.collection_targets import target_receipts
         coverage_rows=read_csv(coverage)
         industry_rows=read_csv(industry) if industry.exists() else []
         needed=target_receipts(allrows,roster,sessions_db,coverage_rows,industry_rows,
                                drawrows,audits+(read_csv(main) if main.exists() else []))
-        first_year=target_receipts(allrows,[r for r in roster if r['formation'].startswith('2017')],
-                                   sessions_db,coverage_rows,industry_rows,[],[])
+        for rank,year in enumerate(('2017','2018','2019','2021','2020')):
+            year_targets=target_receipts(allrows,[r for r in roster if r['formation'].startswith(year)],
+                                         sessions_db,coverage_rows,industry_rows,[],[])
+            for rc in year_targets:priority_year.setdefault(rc,rank)
         jobs=[(r,'xbrl' if r.get('document') else 'kind_html') for r in rows
-              if (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS') and r['receipt'] in needed]
+              if r.get('amendment_scope') not in ('financial_attachment_only','nonfinancial_attachment_only') and (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS') and r['receipt'] in needed]
     else:
         jobs=plan(rows,drawrows,audits,roster,phase)
     if phase=='full':
@@ -322,7 +326,7 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
             elif key in base:
                 checks.append((r,k))
         # A stable hash interleaves issuers/years during long collections.
-        ordered=sorted(jobs,key=lambda j:(j[0]['receipt'] not in first_year,sha(('stage9-full-v1|'+j[0]['receipt']).encode())))
+        ordered=sorted(jobs,key=lambda j:(priority_year.get(j[0]['receipt'],9),sha(('stage9-full-v1|'+j[0]['receipt']).encode())))
         jobs=checks+ordered
     if phase=='full' and display_queue is not None:
         eligible={r['receipt']:r for r,kind in jobs if r.get('kind_receipt')}
@@ -358,9 +362,18 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
         # verified DART/KRX identity and a receipt-specific FSS statement.
         if sessions_db.exists() and coverage.is_file():
             alternate.extend((r,'dart_html') for r in allrows if r['receipt'] in needed and not r.get('document')
-                and r['receipt'] not in old_displays and (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS'))
+                and r['receipt'] not in old_displays and r.get('amendment_scope') not in ('financial_attachment_only','nonfinancial_attachment_only') and (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS'))
         manual=[(r,k) for r,k in jobs if k.startswith('dart_') and r.get('url')]
+        alternate=sorted(alternate,key=lambda pair:priority_year.get(pair[0]['receipt'],9))
         jobs=manual+alternate+jobs
+    notes=panel.parent/'raw'/'audit_note_receipts.csv'
+    if phase=='full' and notes.is_file():
+        desired={(r['receipt'],r['stock_code']) for r in read_csv(notes)}
+        notes_jobs=[(r,'dart_notes') for r in allrows if (r['receipt'],r['stock_code']) in desired and
+            (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS') and r['corp_code']]
+        # Keep explicitly cross-identified menu coordinates preferred over new index access.
+        have={r['receipt'] for r,k in jobs if k=='dart_notes' and r.get('url')}
+        jobs=[j for j in notes_jobs if j[0]['receipt'] not in have]+jobs
     xchecks=panel.parent/'raw'/'audit_xbrl_requests.csv'
     if phase=='full' and xchecks.is_file():
         identity_by_id={r['receipt']:r for r in allrows if r['identity_status']=='PASS'}

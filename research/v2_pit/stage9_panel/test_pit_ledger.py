@@ -77,6 +77,21 @@ class AsOfLedgerTests(unittest.TestCase):
         r.update(period_end='20151231',filing_date='20160330')
         self.assertEqual(filing_versions([r],'20210601',sessions=['20160104',*self.days],reference_only=True)[1],'PASS')
 
+    def test_reference_amendment_needs_explicit_original_and_cross_indexes(self):
+        base=self.filing('o','20151231','20160330');base.update(identity_status='BLOCKED',
+            comparator_identity_status='PASS',comparator_identity_basis='confirmed historical comparator')
+        amendment={**base,'receipt':'a','version':'amendment','filing_date':'20160524','original_receipt':'',
+            'dart_title':'[기재정정]사업보고서 (2015.12)','kind_title':'[정정]사업보고서(2015.12)',
+            'source_kind_sha256':'a'*64,'source_dart_sha256':'b'*64}
+        args=([base,amendment],'20210601')
+        self.assertNotEqual(filing_versions(*args,sessions=self.days,reference_only=True)[1],'PASS')
+        amendment.update(comparator_original_receipt='o',comparator_chain_basis='confirmed original in both sources')
+        chosen,status=filing_versions(*args,sessions=self.days,reference_only=True)
+        self.assertEqual((status,chosen['receipt'],chosen['original_receipt']),('PASS','a','o'))
+        self.assertNotEqual(filing_versions(*args,sessions=self.days)[1],'PASS')
+        amendment['dart_title']='[첨부정정]사업보고서 (2015.12)'
+        self.assertNotEqual(filing_versions(*args,sessions=self.days,reference_only=True)[1],'PASS')
+
     def test_multiple_sources_cannot_override_disagreement(self):
         r=self.filing('r','20210331','20210517')
         cache={'r':[self.evidence(r,3,(110,100),(2,1)),self.evidence(r,3,(111,100),(2,1),'b')]}
@@ -118,6 +133,16 @@ class AsOfLedgerTests(unittest.TestCase):
         self.assertEqual(cumulative_facts(named,3,quarters)['revenue_current']['value'],1200000)
         self.assertEqual(cumulative_facts(named,9,intervals)['revenue_current']['value'],9900000)
         self.assertFalse(cumulative_facts(named.replace('당3분기'.encode(),'당2분기'.encode()),3,quarters))
+
+    def test_explicit_whole_section_absence_rejects_future_and_conflicting_narrative(self):
+        from stage9_panel.pit_display import confirmed_absence
+        def viewer(sentence):
+            return ('<html><body><p><a name="toc1">2. 연결재무제표</a></p><p>'+sentence+'</p></body></html>').encode()
+        exact='회사는 한국채택국제회계기준에 의한 연결대상이 없어 연결재무제표를 작성하지 않습니다.'
+        self.assertTrue(confirmed_absence(viewer(exact)))
+        self.assertTrue(confirmed_absence(viewer('▶ 해당사항 없음.')))
+        for text in ('-', '', '연결재무제표를 작성하지 않을 예정입니다.',exact+' 단, 전년도 연결실적은 아래 표와 같습니다.'):
+            self.assertFalse(confirmed_absence(viewer(text)))
 
     def test_quarantine_revokes_cached_source(self):
         import csv

@@ -60,10 +60,13 @@ def summarize(work, roster, output):
         'issuer_month_complete_index':sum(r['complete']=='1' for r in coverage),
         'xbrl_directory_queries_verified':len(api),'xbrl_directory_queries_expected':len(directory),
         'events':len(receipts),'version_status':grouped('version','identity_status'),
+        'precalendar_comparator_periodic_main_links':sum(bool(r.get('comparator_original_receipt')) for r in receipts),
         'xbrl_lookup':grouped('xbrl_index_lookup_status'),'amendment_scope':grouped('amendment_scope','identity_status'),
         'identity_BLOCKED_reasons':dict(sorted(Counter(r['reason'].split(';')[0] for r in receipts if r['identity_status']=='BLOCKED').items())),
         'source_manifest_sha256':{f:sha(work/f) for f in ('receipts.csv','issuers_resolved.csv','monthly_coverage.csv','coverage.csv','xbrl_directory_manifest.csv')},
         'frozen_roster_sha256':sha(roster)}
+    if (work/'comparator_chains.csv').is_file():
+        outcome['source_manifest_sha256']['comparator_chains.csv']=sha(work/'comparator_chains.csv')
     output.write_text(json.dumps(outcome,indent=2,ensure_ascii=False)+'\n')
     return outcome
 

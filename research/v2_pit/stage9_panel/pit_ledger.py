@@ -90,9 +90,17 @@ def filing_versions(rows, formation, period='', *, sessions, reference_only=Fals
     if chosen['period_end'] > chosen['filing_date']:
         return chosen,'accounting_period_not_closed_at_filing'
     def verified(r):
-        return r['identity_status']=='PASS' or (reference_only and r['version']=='original'
-            and r['period_end']<sessions[0] and r.get('comparator_identity_status')=='PASS'
-            and bool(r.get('comparator_identity_basis')))
+        if r['identity_status']=='PASS':
+            return True
+        if not (reference_only and r['period_end']<sessions[0] and r.get('comparator_identity_status')=='PASS'
+                and r.get('comparator_identity_basis')):
+            return False
+        if r['version']=='original':
+            return True
+        return (r['version']=='amendment' and bool(r.get('comparator_original_receipt'))
+                and bool(r.get('comparator_chain_basis')) and r.get('dart_title','').startswith('[기재정정]')
+                and '[정정]' in r.get('kind_title','') and r.get('amendment_scope','') in ('','periodic_main_body')
+                and all(re.fullmatch('[a-f0-9]{64}',r.get(k,'')) for k in ('source_kind_sha256','source_dart_sha256')))
     if not verified(chosen) or not chosen['corp_code'] or not chosen['receipt']:
         return chosen,'unverified_receipt_identity'
     originals = [r for r in group if r['version']=='original']
@@ -105,8 +113,14 @@ def filing_versions(rows, formation, period='', *, sessions, reference_only=Fals
         return chosen,'amendment_precedes_original'
     if chosen['version'] not in ('original','amendment'):
         return chosen,'unrecognized_version'
-    if chosen['version']=='amendment' and chosen.get('original_receipt')!=original['receipt']:
-        return chosen,'unlinked_amendment'
+    if chosen['version']=='amendment':
+        parent=chosen.get('original_receipt')
+        if not parent and reference_only and chosen['identity_status']!='PASS':
+            parent=chosen.get('comparator_original_receipt')
+        if parent!=original['receipt']:
+            return chosen,'unlinked_amendment'
+        if chosen.get('original_receipt')!=parent:
+            chosen={**chosen,'original_receipt':parent}
     if chosen['corp_code']!=original['corp_code'] or chosen['report_type']!=original['report_type']:
         return chosen,'inconsistent_version_group'
     if exempt:
@@ -191,6 +205,8 @@ def derived_quarter(rows, annual, formation, sessions, cache, basis, field):
     detail=dict(receipts=[r['receipt'] for r in sources], hashes=hashes,
                 comparator_identity=[r.get('comparator_identity_basis') or r['identity_status'] for r in sources[2:]],
                 filings=[r['filing_date'] for r in sources],
+                original_receipts=[r.get('original_receipt') or r['receipt'] for r in sources],
+                comparator_chain_basis=[r.get('comparator_chain_basis','') for r in sources[2:]],
                 **{'annual':fy,'nine_month':q3,'prior_year_filed_annual':prev_fy,'prior_year_filed_nine_month':prev_q3})
     if prev_fy[0]!=fy[1] or prev_q3[0]!=q3[1]:
         return None,detail,'prior_comparator_restated_or_inconsistent'
@@ -229,6 +245,12 @@ def derived_quarter(rows, annual, formation, sessions, cache, basis, field):
                         for n,r,h in zip(notes,sources,note_hashes,strict=True))):
                     return None,detail,'basis_note_reference_mismatch'
                 detail['note_sources']=notes
+        if review.get('supplemental_note_sources'):
+            extras=review['supplemental_note_sources']
+            if any((n['receipt'],annual['corp_code'],n['sha256']) not in review.get('_verified_supplements',set())
+                   or n['receipt'] not in key[:4] for n in extras):
+                return None,detail,'supplemental_note_not_bound_to_effective_receipts'
+            detail['supplemental_note_sources']=extras
         if review.get('review_method'):
             detail['review_method']=review['review_method']
         if 'independent_quarter_confirmed' in review:
@@ -325,6 +347,7 @@ def one_row(member, industry, history, coverage, sessions, cache, basis):
                 hashes=[h for group in detail['hashes'] for h in group]
                 hashes.extend(d['sha256'] for d in detail['annual_basis_evidence']['documents'])
                 hashes.extend(detail.get('note_source_hashes',[]))
+                hashes.extend(n['sha256'] for n in detail.get('supplemental_note_sources',[]))
                 if detail.get('basis_sha256'):
                     hashes.append(detail['basis_sha256'])
                 latest=bisect_right(sessions,detail['latest_component_filed'])
@@ -398,6 +421,24 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
         basis_sha=sha256(raw_basis).hexdigest()
         for r in json.loads(raw_basis):
             r.pop('_verified_note_bodies',None)
+            r.pop('_verified_supplements',None)
+            if r.get('supplemental_note_sources') and packages_db:
+                validated=set()
+                with sqlite3.connect(packages_db.resolve().as_uri()+'?mode=ro',uri=True) as notes:
+                    for n in r['supplemental_note_sources']:
+                        ref,kind,doc,url,digest=(n.get(k,'') for k in ('receipt','kind','document','url','sha256'))
+                        if ref not in r['component_receipts'] or kind not in ('dart_notes','dart_overview'):
+                            continue
+                        link=urlsplit(url);query=parse_qs(link.query)
+                        if ((link.scheme,link.netloc,link.path)!=('https','dart.fss.or.kr','/report/viewer.do')
+                                or query.get('rcpNo')!=[ref] or query.get('dcmNo')!=[doc]):
+                            continue
+                        found=notes.execute(
+                            "SELECT corp,body FROM packages WHERE receipt=? AND kind=? AND document=? AND source=? AND sha256=? "
+                            "AND NOT EXISTS (SELECT 1 FROM quarantine WHERE receipt=? AND kind=?)",(ref,kind,doc,url,digest,ref,kind)).fetchone()
+                        if found and sha256(found[1]).hexdigest()==digest:
+                            validated.add((ref,found[0],digest))
+                r['_verified_supplements']=validated
             if r.get('note_source_hashes') and packages_db:
                 verified=set()
                 with sqlite3.connect(packages_db.resolve().as_uri()+'?mode=ro',uri=True) as notes:
@@ -445,13 +486,19 @@ def build(roster, context, receipts, coverage, sessions_db, facts_db, output, ba
     temp.replace(path)
     by_year={y:summary([r for r in rows if r['formation'][:4]==y]) for y in sorted({r['formation'][:4] for r in rows})}
     by_quarter={q:summary([r for r in rows if (int(r['formation'][4:6])-1)//3+1==q]) for q in range(1,5)}
+    year_quarters=defaultdict(list)
+    for r in rows:
+        t=r['formation']
+        year_quarters[f'{t[:4]}Q{(int(t[4:6])-1)//3+1}'].append(r)
     source_quarters=Counter(r['period_end'] for r in rows if r['period_end'])
     result=dict(total=summary(rows),by_year=by_year,by_formation_calendar_quarter=by_quarter,
+                by_formation_year_quarter={k:summary(v) for k,v in sorted(year_quarters.items())},
                 by_month={k:summary([r for r in rows if r['formation']==k]) for k in sorted({r['formation'] for r in rows})},
                 by_selected_period={k:summary([r for r in rows if r['period_end']==k]) for k in sorted(source_quarters)},
                 ledger_sha256=sha256(path.read_bytes()).hexdigest(),roster_sha256=ROSTER_SHA,
                 metadata_sha256=filing_sha,coverage_sha256=coverage_sha,context_sha256=context_sha,
                 fact_snapshot_sha256=fact_signature.hexdigest(),cumulative_basis_sha256=basis_sha,
+                session_dates_sha256=sha256(('\n'.join(sessions)+'\n').encode()).hexdigest(),
                 by_report_type={k:summary([r for r in rows if r['report_type']==k]) for k in sorted({r['report_type'] for r in rows})},
                 by_version={k:summary([r for r in rows if r['version']==k]) for k in sorted({r['version'] for r in rows})},
                 by_industry={k:summary([r for r in rows if r['industry_group']==k]) for k in sorted({r['industry_group'] for r in rows})})

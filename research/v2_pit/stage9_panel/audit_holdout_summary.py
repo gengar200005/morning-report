@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 
-def summarize(fixed,checks,register,output,xml_checks=None):
+def summarize(fixed,checks,register,output,xml_checks=None,basis=None):
     with fixed.open() as f:cases=list(csv.DictReader(f))
     checked=json.loads(checks.read_bytes())
     merged=checked['rows'][:]
@@ -17,6 +17,7 @@ def summarize(fixed,checks,register,output,xml_checks=None):
         known={v['receipt'] for v in merged}
         merged.extend(v for v in extra['rows'] if v['receipt'] not in known)
     with register.open() as f:meta=list(csv.DictReader(f))
+    approvals=json.loads(basis.read_bytes()) if basis else []
     summary=[]
     for r in cases:
         code,end=r['stock_code'],r['period_end']
@@ -51,7 +52,16 @@ def summarize(fixed,checks,register,output,xml_checks=None):
                     nine=supports[0]
                     item['original_fy_minus_original_nine_KRW']={k:value-nine['manual'][k] if value is not None and nine['manual'][k] is not None else None for k,value in expected.items()}
                     item['supporting_9m_receipt']=nine['receipt']
-                    item['arithmetic_status']='reported-amount subtraction only; independent basis evidence is separate'
+                    item['arithmetic_status']='reproduced from displayed annual and nine-month consolidated amounts'
+                    if basis:
+                        accepted=[a for a in approvals if a['component_receipts'][:2]==[rec,nine['receipt']] and a['verdict']=='PASS']
+                        for a in accepted:
+                            field=a['field']
+                            expected_pair=[item['original_fy_minus_original_nine_KRW'][field+'_'+side] for side in ('current','prior')]
+                            if a['arithmetic_pair']!=expected_pair:
+                                raise ValueError('basis approval differs from human-reproduced pair')
+                        item['same_basis_fields']=sorted({a['field'] for a in accepted})
+                        item['basis_status']='same_basis_approved' if item['same_basis_fields']==['operating_profit','revenue'] else 'arithmetic_only'
             if len(registry)>1:
                 item['registered_versions']=[dict(receipt=v['receipt'],version=v['version'],available_session=v['available_session']) for v in registry]
         summary.append(item)
@@ -64,7 +74,11 @@ def summarize(fixed,checks,register,output,xml_checks=None):
             'post_delist_financial_op_cells':sum(r['verified_numeric'] for r in summary if r['category']=='post_delist_financial'),
             'in_scope_direct_incorrect':sum(r['false_numeric'] for r in summary if r['category']=='quarter'),
             'incorrect_nonmissing_across_sources':sum(r['false_numeric'] for r in summary)}
+    if basis:
+        totals['annual_basis_status']=dict(Counter(r['basis_status'] for r in summary if r['category']=='annual'))
     out=dict(supplemental_xml_sha256=sha256(xml_checks.read_bytes()).hexdigest() if xml_checks else None,frozen_sha256=sha256(fixed.read_bytes()).hexdigest(),checks_sha256=sha256(checks.read_bytes()).hexdigest(),totals=totals,rows=summary)
+    if basis:
+        out['q4_basis_sha256']=sha256(basis.read_bytes()).hexdigest()
     output.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
 
 
@@ -72,4 +86,5 @@ if __name__=='__main__':
     p=ArgumentParser(description=__doc__)
     for name in ('fixed','checks','register','output'):p.add_argument(name,type=Path)
     p.add_argument('--xml-checks',type=Path)
+    p.add_argument('--basis',type=Path)
     summarize(**vars(p.parse_args()))

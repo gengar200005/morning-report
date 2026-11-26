@@ -1,6 +1,7 @@
 """Upper bounds on annual PIT signal coverage. Read fixed membership, financial facts and ledger only."""
 import argparse
 from collections import Counter, defaultdict
+from contextlib import ExitStack
 import csv
 from datetime import date, timedelta
 from decimal import Decimal
@@ -10,7 +11,13 @@ import json
 from pathlib import Path
 import re
 import sqlite3
+import sys
 from lxml import html
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from stage82b.display_fields import kind_section
+from stage9_panel.pit_display import confirmed_absence
+from stage9_panel.fss_section import statement_pointer
 
 
 def read_csv(path):
@@ -49,22 +56,70 @@ def market_audit(roster,context):
     return matched
 
 
-def cfs_proofs(dbpath):
+def consolidated_amount_table(raw):
+    tree=html.fromstring(raw.decode('utf-8'))
+    pattern=r'\d+\.\s*연결재무제표'
+    part,_=kind_section(tree,pattern)
+    if part:tree=html.fromstring(part.decode('utf-8'))
+    elif len(tree.xpath('//a[@name]/text()'))!=1 or not re.fullmatch(pattern,tree.xpath('string(//a[@name])').strip()):
+        return False
+    for row in tree.xpath('//table//tr'):
+        labels=[''.join(cell.text_content().split()) for cell in row.xpath('./td|./th')]
+        if (any(re.search('자산총계|부채총계|자본총계|매출액|영업이익|영업활동현금흐름',v) for v in labels)
+                and any(re.fullmatch(r'[-(]?[\d,]+(?:\.\d+)?\)?',v) for v in labels)):
+            return True
+    return False
+
+
+def dart_absence(db,receipt,corp,doc,h,url):
+    main_url='https://dart.fss.or.kr/dsaf001/main.do?rcpNo='+receipt
+    pointer=db.execute('SELECT sha,body FROM pointers WHERE url=?',(main_url,)).fetchone()
+    package=db.execute("SELECT body FROM packages WHERE receipt=? AND kind='dart_html' AND corp=? AND document=? AND sha256=? AND source=?",
+                       (receipt,corp,doc,h,url)).fetchone()
+    if not pointer or not package:return None
+    body=package[0];main_sha,main=pointer
+    if sha256(main).hexdigest()!=main_sha or sha256(body).hexdigest()!=h:return None
+    try:
+        label,document,section_url=statement_pointer(main,receipt,doc)
+        tree=html.fromstring(body.decode())
+        headers=[''.join(s.split()) for s in tree.xpath('//a[@name]/text()')]
+        if headers!=[''.join(label.split())] or section_url!=url or document!=doc or not confirmed_absence(body):
+            return None
+    except (ValueError,UnicodeError):return None
+    # Check the same receipt's other official display even if the money parser missed its format.
+    other=db.execute("SELECT body FROM packages WHERE receipt=? AND kind='kind_html' AND corp=?",(receipt,corp)).fetchone()
+    if other and consolidated_amount_table(other[0]):return None
+    return {'type':'dart_html','receipt':receipt,'corp':corp,'document':doc,'source_url':url,'source_sha256':h,
+            'main_url':main_url,'main_sha256':main_sha,'section':label,
+            'exact_section_text':' '.join(' '.join(tree.xpath('//body//text()')).split())}
+
+
+def cfs_proofs(dbpath,packages=None,details=None):
     """Only explicit original display language counts. Reject conflicting source evidence."""
     absent=defaultdict(list); present=set()
-    with sqlite3.connect(dbpath.resolve().as_uri()+'?mode=ro',uri=True) as db:
+    with ExitStack() as stack:
+        db=stack.enter_context(sqlite3.connect(dbpath.resolve().as_uri()+'?mode=ro',uri=True))
+        raw=stack.enter_context(sqlite3.connect(packages.resolve().as_uri()+'?mode=ro',uri=True)) if packages and packages.is_file() else None
+        quarantined=set(raw.execute('SELECT receipt,kind FROM quarantine')) if raw else set()
         for receipt,kind,doc,corp,period,h,blob in db.execute('SELECT receipt,kind,doc,corp,period,sha,evidence FROM facts'):
             facts=json.loads(blob)
-            if facts.get('error') or facts.get('source_sha256')!=h:
+            if facts.get('error') or facts.get('source_sha256')!=h or (receipt,kind) in quarantined:
                 continue
             key=(receipt,corp,period)
-            if (kind=='kind_html' and facts.get('explicit_no_cfs') is True and facts.get('3')=={}
+            if (kind in ('kind_html','dart_html') and facts.get('explicit_no_cfs') is True and facts.get('3')=={}
                     and facts.get('receipt')==receipt and facts.get('corp')==corp
                     and facts.get('period_end','').replace('-','')==period and facts.get('document')==doc):
                 route=re.fullmatch(r'https://kind\.krx\.co\.kr/external/(\d{4})/(\d{2})/(\d{2})/(\d{6})/(\d{14})/[^/]+\.htm(?:l)?',
                                    facts.get('source_url',''),flags=re.I)
-                if route and route[5]==doc:
-                    absent[key].append((''.join(route.groups()[:4]),h))
+                if kind=='kind_html' and route and route[5]==doc:
+                    other=raw.execute("SELECT body FROM packages WHERE receipt=? AND corp=? AND kind='dart_html'",(receipt,corp)).fetchone() if raw else None
+                    if other and consolidated_amount_table(other[0]):present.add(key)
+                    else:absent[key].append((''.join(route.groups()[:4]),h))
+                elif kind=='dart_html' and raw:
+                    source=dart_absence(raw,receipt,corp,doc,h,facts.get('source_url',''))
+                    if source:
+                        absent[key].append(('DART:'+doc,h))
+                        if details is not None:details[key]=source
             if facts.get('has_cfs_context') is True or any(
                     isinstance(v,dict) and any(isinstance(t,dict) and type(t.get('value')) is int for t in v.values())
                     for v in facts.values()):
@@ -135,10 +190,15 @@ def other_exclusions(identity, ledger, quality):
     return extra
 
 
+def bound_sources(r,proof):
+    return [(k,h) for k,h in proof.get((r['receipt'],r['corp_code'],r['period_end']),[])
+            if k and (k==r['kind_receipt'] or (k.startswith('DART:') and (not r.get('document') or k[5:]==r['document'])))]
+
+
 def field_class(r,field,proof,extra=None):
     has_identity=r['identity_pass']=='1' and bool(r['receipt'] and r['original_receipt'] and r['corp_code']
                                                   and r['available_session'] and r['available_session']<=r['formation'])
-    verified=[h for k,h in proof.get((r['receipt'],r['corp_code'],r['period_end']),[]) if k and k==r['kind_receipt']]
+    verified=[h for _,h in bound_sources(r,proof)]
     if r[field]!='':
         if r[field+'_reason']!='PASS' or not r['source_sha256'] or not has_identity or verified or extra:
             raise ValueError('Numeric signal lacks evidence or conflicts with explicit no-CFS disclosure')
@@ -189,10 +249,11 @@ def run(roster_path,context_path,ledger_path,quality_path,facts,output,identity=
     keys=[(r['formation'],r['isin']) for r in ledger]
     if len(keys)!=len(set(keys)) or set(keys)!=market.keys():
         raise ValueError('Incomplete as-of ledger or duplicated issuer-month')
-    verified=cfs_proofs(facts)
+    packages=packages or roster_path.parent/'raw'/'receipts.sqlite'
+    dart_details={}
+    verified=cfs_proofs(facts,packages,dart_details)
     identity=identity or roster_path.parent/'identity'
     extra=other_exclusions(identity,ledger,quality) if (identity/'monthly_coverage.csv').is_file() else {}
-    packages=packages or roster_path.parent/'raw'/'receipts.sqlite'
     cached=None
     if packages.is_file():
         with sqlite3.connect(packages.resolve().as_uri()+'?mode=ro',uri=True) as db:
@@ -215,8 +276,9 @@ def run(roster_path,context_path,ledger_path,quality_path,facts,output,identity=
             profile[cls]+=1;a[field+'_'+cls]+=1
             reasons[y,field][r[field+'_reason']]+=1
             if cls=='explicit_no_cfs' and field=='F3':
+                sources=[('DART' if tag.startswith('DART:') else 'KIND') for tag,_ in bound_sources(r,verified)]
                 support.append(dict(formation=d,isin=i,corp_code=r['corp_code'],receipt=r['receipt'],kind_receipt=r['kind_receipt'],
-                                    period_end=r['period_end'],source_sha256=sorted(set(proof))))
+                                    period_end=r['period_end'],sources=sorted(set(sources)),source_sha256=sorted(set(proof))))
     out={}
     for y,a in sorted(windows.items()):
         ref=quality['by_year'][y]
@@ -244,6 +306,8 @@ def run(roster_path,context_path,ledger_path,quality_path,facts,output,identity=
     result={'scope':'2017–2021; original 60 × 240 draw; observed historical sector and full-market size quartile',
             'ledger_sha256':ledger_sha,'context_sha256':ctx_sha,'metadata_sha256':quality['metadata_sha256'],
             'coverage_sha256':quality['coverage_sha256'],'by_year':out,'confirmed_no_cfs_issuer_months':support,
+            'dart_no_cfs_source_documents':[dict(period_end=key[2],**source) for key,source in sorted(dart_details.items())
+                    if any(tag.startswith('DART:') for tag,_ in verified.get(key,()))],
             'counted_local_cached_receipts':len(cached) if cached is not None else None,
             'cached_receipt_ids_sha256':sha256('\n'.join(sorted(cached)).encode()).hexdigest() if cached is not None else None,
             'additional_documented_candidates':[dict(formation=d,isin=i,reason=reason,**detail) for (d,i),(reason,detail) in sorted(extra.items())],

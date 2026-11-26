@@ -29,20 +29,28 @@ def cells(table):
             for row in table.xpath('./thead/tr|./tbody/tr|./tr')]
 
 
-def segment(table, field):
+def segment(table, field, scale=1):
     header, *rows = cells(table)
-    if header[0] != '구분' or header[-1] != '합계' or len(set(header)) != len(header):
+    if header[0] != '구분' or header[-1] != ('합계' if scale == 1 else '연결후금액') or len(set(header)) != len(header):
         raise ValueError('Ambiguous operating-segment columns')
     # The note immediately before the table states its monetary scale.
-    if '(단위:원)' not in compact(''.join(table.xpath('preceding::text()[normalize-space()][position()<=2]'))):
+    unit = {1: '(단위:원)', 1000: '(단위:천원)'}[scale]
+    if unit not in compact(''.join(table.xpath('preceding::text()[normalize-space()][position()<=2]'))):
         raise ValueError('Operating-segment note has no explicit KRW unit')
-    label = {'revenue': '외부거래', 'operating_profit': '영업손익'}[field]
+    labels = ('외부거래', '영업손익') if scale == 1 else ('수익', '영업이익')
+    label = dict(zip(('revenue','operating_profit'),labels))[field]
     selected = [row for row in rows if row[0] == label]
     if len(selected) != 1 or len(selected[0]) != len(header):
         raise ValueError('Ambiguous operating-segment row')
     data = {name: amount(value) for name, value in zip(header[1:], selected[0][1:], strict=True)}
-    total = data.pop('합계')
-    if sum(data.values()) != total:
+    total = data.pop(header[-1])
+    if scale == 1000:
+        subtotal = data.pop('합계')
+        if data.keys() != {'에폭시', 'Polyol', '연결조정'} or abs(data['에폭시'] + data['Polyol'] - subtotal) > 1:
+            raise ValueError('Operating segments do not reconcile to published subtotal')
+        if abs(subtotal + data['연결조정'] - total) > 1:
+            raise ValueError('Consolidation adjustments exceed displayed rounding')
+    elif sum(data.values()) != total:
         raise ValueError('Operating segments and eliminations do not reconcile')
     return data, total
 
@@ -84,6 +92,7 @@ def replay(packages, reviewed):
     outputs = []
     rosters = []
     notes = []
+    note_texts = []
     with sqlite3.connect(packages.resolve().as_uri() + '?mode=ro', uri=True) as db:
         for source in reviewed['sources']:
             receipt = source['receipt']
@@ -105,19 +114,29 @@ def replay(packages, reviewed):
                 text, note_tables = compact(doc.text_content()), doc.xpath('//table')
                 if '연결재무제표주석' not in text:
                     raise ValueError('Missing FSS consolidated notes heading')
+            note_texts.append(text)
             for label in ('policy', 'scope_change'):
                 if not source[label] or any(compact(phrase) not in text for phrase in source[label]):
                     raise ValueError('Missing reviewed note disclosure ' + receipt + '/' + label)
             tabs = doc.xpath('//table')
             if source.get('scope_note_rows'):
                 rows = cells(tabs[source['scope_table']])
-                if '종속기업명' not in rows[0]:
+                scope_header = source.get('scope_header', '종속기업명')
+                if scope_header not in rows[0]:
                     raise ValueError('Unrecognized subsidiary roster')
                 subsidiary_rows = rows[source['scope_note_rows']:]
                 subsidiary_names = [r[0] for r in subsidiary_rows]
                 if not subsidiary_names or len(set(subsidiary_names)) != len(subsidiary_names):
                     raise ValueError('Ambiguous subsidiary roster')
-                rosters.append(sorted((r[0], r[2], r[3], r[4]) for r in subsidiary_rows))
+                columns = (0,2,3,4) if scope_header == '종속기업명' else (0,1,2,3)
+                roster = [tuple(r[c] for c in columns) for r in subsidiary_rows]
+                if 'renamed_subsidiary' in source:
+                    alias = source['renamed_subsidiary']
+                    if compact(alias['disclosure']) not in text:
+                        raise ValueError('Subsidiary name change not disclosed')
+                    roster = [(alias['prior_name'] if name == alias['filed_name'] else name, *other)
+                              for name,*other in roster]
+                rosters.append(sorted(roster))
             else:
                 roster = scope(tabs[source['scope_table']])
                 for equivalence in source.get('control_wording', []):
@@ -134,20 +153,60 @@ def replay(packages, reviewed):
             if not all(table in note_tables for table in reviewed_tables):
                 raise ValueError('Operating-segment table outside consolidated notes')
             tables.append(reviewed_tables)
+        for addition in reviewed.get('newly_formed_subsidiaries', []):
+            fy, q3 = addition['annual_index'], addition['annual_index'] + 1
+            if fy not in (0,2):
+                raise ValueError('Expected an annual filing')
+            source = addition['source']
+            if source['receipt'] not in [s['receipt'] for s in reviewed['sources']] or source['kind'] != 'dart_overview':
+                raise ValueError('Incorporation proof must belong to an input filing')
+            row = db.execute('SELECT body,sha256,source,document,corp FROM packages WHERE receipt=? AND kind=?',
+                             (source['receipt'],source['kind'])).fetchone()
+            if not row or (sha256(row[0]).hexdigest(),row[1],row[2],row[3],row[4]) != (
+                    source['sha256'], source['sha256'], source['url'], source['document'], reviewed['corp']):
+                raise ValueError('Invalid incorporation proof')
+            overview = html.fromstring(row[0].decode('utf-8-sig'))
+            registry = scope(overview.xpath('//table')[addition['registry_table']])
+            name, founded = addition['name'], addition['founded']
+            if not any(entry[:2] == (name,founded) for entry in registry):
+                raise ValueError('Incorporation date not in submitted roster')
+            if not reviewed['sources'][q3]['end'][:7] < founded.replace('.','-') <= reviewed['sources'][fy]['end'][:7]:
+                raise ValueError('Subsidiary was not founded in the fourth quarter')
+            expected = tuple(addition['annual_roster_row'])
+            if expected[0] != name or expected not in rosters[fy] or any(row[0] == name for row in rosters[q3]):
+                raise ValueError('New subsidiary cannot reconcile the submitted rosters')
+            rosters[fy] = [r for r in rosters[fy] if r != expected]
     if rosters[0] != rosters[1] or rosters[2] != rosters[3]:
         raise ValueError('Annual and nine-month consolidated entity rosters differ')
     for field, reference in reviewed['independent_face_amounts'].items():
-        parts = [[segment(tab, field) for tab in period] for period in tables]
+        scale = reviewed.get('segment_scale', 1)
+        parts = [[segment(tab, field, scale) for tab in period] for period in tables]
         if [len(p) for p in parts] != [2, 2, 1, 1]:
             raise ValueError('Wrong number of reviewed comparatives')
-        if parts[0][1] != parts[2][0] or parts[1][1] != parts[3][0]:
-            raise ValueError('Restated comparative operating segments or amounts')
+        transfers = {}
+        allowed = reviewed.get('documented_segment_reclassification')
+        for i in (0,1):
+            a, total = parts[i][1]
+            b, original_total = parts[i+2][0]
+            if (a,total) == (b,original_total):
+                continue
+            statements = reviewed.get('segment_transfer_evidence', [])
+            if (not allowed or len(statements) != 2 or not statements[i]
+                    or compact(statements[i]) not in note_texts[i]
+                    or any(group not in compact(statements[i]) for group in allowed)
+                    or total != original_total or a.keys() != b.keys()):
+                raise ValueError('Restated comparative operating segments or amounts')
+            delta = {k:a[k]-b[k] for k in a if a[k] != b[k]}
+            if set(delta) != set(allowed) or sum(delta.values()) != 0:
+                raise ValueError('Disclosed segment reclassification does not explain differences')
+            transfers['annual' if i == 0 else 'nine_month'] = delta
         if any(set(d) != set(parts[0][0][0]) for period in parts for d, _ in period):
             raise ValueError('Operating segments or eliminations differ')
         amounts = [[total for _, total in period] for period in parts]
-        if amounts != reference:
+        if any(abs(note * scale - face) * 2 > scale for values, faces in zip(amounts,reference,strict=True)
+               for note,face in zip(values,faces,strict=True)):
             raise ValueError('Independent main statement and segment-note amounts differ')
-        delta = [a - b for a, b in zip(amounts[0], amounts[1], strict=True)]
+        delta = [a - b for a, b in zip(reference[0], reference[1], strict=True)]
         if reviewed['independent_review'] != 'PASS':
             raise ValueError('Independent review incomplete')
         outputs.append(dict(component_receipts=[n['receipt'] for n in notes],
@@ -157,7 +216,14 @@ def replay(packages, reviewed):
                     available_session=reviewed['available_session'], verdict='PASS',
                     review_method='same_basis_filing_notes', independent_quarter_confirmed=False,
                     arithmetic_pair=delta, note_segment_amounts=amounts,
-                    subsidiary_counts=[len(roster) for roster in rosters]))
+                    subsidiary_counts=[len(roster) + sum(a['annual_index']==i for a in reviewed.get('newly_formed_subsidiaries',[]))
+                                       for i,roster in enumerate(rosters)]))
+        if transfers:
+            outputs[-1]['disclosed_segment_reclassification'] = transfers
+        if scale != 1:
+            outputs[-1]['note_currency_unit_KRW'] = scale
+        if reviewed.get('newly_formed_subsidiaries'):
+            outputs[-1]['supplemental_note_sources'] = [a['source'] for a in reviewed['newly_formed_subsidiaries']]
     return outputs
 
 
