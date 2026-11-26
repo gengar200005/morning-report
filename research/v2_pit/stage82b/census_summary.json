@@ -1,0 +1,196 @@
+{
+  "calendar_database_sha256": "cfe2d8ce491afc024cebea61419b6156aad93e5351b5ebeda095dc3d68aca5ff",
+  "regular_Q1_index_before_halfyear_supplements": {
+    "n": 782,
+    "identity": 772,
+    "original": 772,
+    "xbrl": 726,
+    "display": 179,
+    "revenue_raw": 636,
+    "operating_profit_raw": 644,
+    "F2": 596,
+    "F3": 596,
+    "explicit_no_cfs": 92,
+    "separate_revenue": 91,
+    "separate_profit": 90
+  },
+  "all": {
+    "n": 782,
+    "identity": 774,
+    "original": 774,
+    "xbrl": 728,
+    "display": 181,
+    "revenue_raw": 638,
+    "operating_profit_raw": 646,
+    "F2": 598,
+    "F3": 598,
+    "explicit_no_cfs": 92,
+    "separate_revenue": 91,
+    "separate_profit": 90
+  },
+  "by_industry": {
+    "nonfinancial": {
+      "n": 722,
+      "identity": 715,
+      "original": 715,
+      "xbrl": 715,
+      "display": 133,
+      "revenue_raw": 605,
+      "operating_profit_raw": 606,
+      "F2": 598,
+      "F3": 598,
+      "explicit_no_cfs": 87,
+      "separate_revenue": 86,
+      "separate_profit": 85
+    },
+    "financial": {
+      "n": 52,
+      "identity": 51,
+      "original": 51,
+      "xbrl": 5,
+      "display": 47,
+      "revenue_raw": 26,
+      "operating_profit_raw": 33,
+      "F2": 0,
+      "F3": 0,
+      "explicit_no_cfs": 4,
+      "separate_revenue": 4,
+      "separate_profit": 4
+    },
+    "unknown": {
+      "n": 8,
+      "identity": 8,
+      "original": 8,
+      "xbrl": 8,
+      "display": 1,
+      "revenue_raw": 7,
+      "operating_profit_raw": 7,
+      "F2": 0,
+      "F3": 0,
+      "explicit_no_cfs": 1,
+      "separate_revenue": 1,
+      "separate_profit": 1
+    }
+  },
+  "nonfinancial_plus_unknown_sensitivity": {
+    "n": 730,
+    "identity": 723,
+    "original": 723,
+    "xbrl": 723,
+    "display": 134,
+    "revenue_raw": 612,
+    "operating_profit_raw": 613,
+    "F2": 598,
+    "F3": 598,
+    "explicit_no_cfs": 88,
+    "separate_revenue": 87,
+    "separate_profit": 86
+  },
+  "nonfinancial_failures": {
+    "F2": {
+      "PASS": 598,
+      "no_consolidated_statement": 87,
+      "revenue_no verified income row; no_supported_fact_in_exact_context": 22,
+      "identity_unresolved": 7,
+      "original_version_or_same_day_amendment_unresolved": 7,
+      "revenue_ambiguous income rows; no_supported_fact_in_exact_context": 1
+    },
+    "F3": {
+      "PASS": 598,
+      "no_consolidated_statement": 87,
+      "revenue_no verified income row; no_supported_fact_in_exact_context": 22,
+      "identity_unresolved": 7,
+      "original_version_or_same_day_amendment_unresolved": 7,
+      "revenue_ambiguous income rows; no_supported_fact_in_exact_context": 1
+    }
+  },
+  "by_cap_quartile": {
+    "1": {
+      "n": 196,
+      "identity": 193,
+      "original": 193,
+      "xbrl": 192,
+      "display": 52,
+      "revenue_raw": 147,
+      "operating_profit_raw": 148,
+      "F2": 139,
+      "F3": 139,
+      "explicit_no_cfs": 37,
+      "separate_revenue": 36,
+      "separate_profit": 36
+    },
+    "2": {
+      "n": 195,
+      "identity": 192,
+      "original": 192,
+      "xbrl": 185,
+      "display": 48,
+      "revenue_raw": 153,
+      "operating_profit_raw": 154,
+      "F2": 149,
+      "F3": 149,
+      "explicit_no_cfs": 30,
+      "separate_revenue": 30,
+      "separate_profit": 30
+    },
+    "3": {
+      "n": 196,
+      "identity": 194,
+      "original": 194,
+      "xbrl": 179,
+      "display": 47,
+      "revenue_raw": 163,
+      "operating_profit_raw": 164,
+      "F2": 145,
+      "F3": 145,
+      "explicit_no_cfs": 22,
+      "separate_revenue": 22,
+      "separate_profit": 21
+    },
+    "4": {
+      "n": 195,
+      "identity": 195,
+      "original": 195,
+      "xbrl": 172,
+      "display": 34,
+      "revenue_raw": 175,
+      "operating_profit_raw": 180,
+      "F2": 165,
+      "F3": 165,
+      "explicit_no_cfs": 3,
+      "separate_revenue": 3,
+      "separate_profit": 3
+    }
+  },
+  "by_exit_status": {
+    "confirmed_delisted": {
+      "n": 44,
+      "identity": 42,
+      "original": 42,
+      "xbrl": 37,
+      "display": 16,
+      "revenue_raw": 29,
+      "operating_profit_raw": 29,
+      "F2": 24,
+      "F3": 24,
+      "explicit_no_cfs": 7,
+      "separate_revenue": 7,
+      "separate_profit": 7
+    },
+    "present_20261030": {
+      "n": 738,
+      "identity": 732,
+      "original": 732,
+      "xbrl": 691,
+      "display": 165,
+      "revenue_raw": 609,
+      "operating_profit_raw": 617,
+      "F2": 574,
+      "F3": 574,
+      "explicit_no_cfs": 85,
+      "separate_revenue": 84,
+      "separate_profit": 83
+    }
+  },
+  "scope": "original quarterly-report extraction QC; amendment replay and timing audit separate; no outcomes read"
+}

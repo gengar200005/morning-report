@@ -1,0 +1,121 @@
+{
+  "stage5": {
+    "archive": "Morning_Report_V2_Stage5_Evidence_20261106.zip",
+    "bytes": 8391418,
+    "members": [
+      {
+        "member": "formations.csv.gz",
+        "size": 4361303,
+        "crc32": "9ff7472d"
+      },
+      {
+        "member": "outcomes.csv.gz",
+        "size": 3563492,
+        "crc32": "bb7c62c5"
+      },
+      {
+        "member": "inputs.json",
+        "size": 409,
+        "crc32": "73174202"
+      },
+      {
+        "member": "calendar.json",
+        "size": 27856,
+        "crc32": "41c70cb2"
+      },
+      {
+        "member": "SHA256SUMS",
+        "size": 1163,
+        "crc32": "da96f49d"
+      }
+    ],
+    "expected_input_hashes": {
+      "database": "cfe2d8ce491afc024cebea61419b6156aad93e5351b5ebeda095dc3d68aca5ff",
+      "etf": "aeae08fea7fcc27585d08c0bfffd49562c74fe0a88cb90b44ec752f91e04fe18",
+      "secondary": "d6228ed3a9577dedb2100cfbd5a95a230640d92445480c635d20f73894442c87",
+      "benchmark": "724264c1cc73555ffc57c4d6a4a1a31977b3f1688f6da97dd84641e86217f1ce",
+      "protocol": "52246235ca46a437998450ac1b573cf394f49ca045dec627ad04439749bf36fd"
+    }
+  },
+  "foundation": {
+    "archive": "Morning_Report_V2_PIT_Foundation_20261106.zip",
+    "bytes": 206609215,
+    "members": [
+      {
+        "member": "Morning_Report_V2_PIT.sqlite",
+        "size": 757428224,
+        "crc32": "9ed3e9b7"
+      }
+    ]
+  },
+  "economic": {
+    "archive": "Morning_Report_V2_Stage2_Evidence_20261106.zip",
+    "bytes": 330508466,
+    "members": [
+      {
+        "member": "Morning_Report_V2_Economic.sqlite",
+        "size": 1158238208,
+        "crc32": "2ce024be",
+        "sha256": "cfe2d8ce491afc024cebea61419b6156aad93e5351b5ebeda095dc3d68aca5ff",
+        "matches_stage5_input": true
+      }
+    ]
+  },
+  "benchmark": {
+    "archive": "Morning_Report_V2_Stage3_Evidence_20261106.zip",
+    "bytes": 1128591,
+    "members": [
+      {
+        "member": "inputs/yahoo_069500.json",
+        "size": 193748,
+        "crc32": "fb9b0cf3",
+        "sha256": "aeae08fea7fcc27585d08c0bfffd49562c74fe0a88cb90b44ec752f91e04fe18",
+        "matches_stage5_input": true
+      },
+      {
+        "member": "inputs/daum.json",
+        "size": 1466747,
+        "crc32": "a91c2624",
+        "sha256": "d6228ed3a9577dedb2100cfbd5a95a230640d92445480c635d20f73894442c87",
+        "matches_stage5_input": true
+      },
+      {
+        "member": "benchmark.json",
+        "size": 2820745,
+        "crc32": "f095ea12",
+        "sha256": "724264c1cc73555ffc57c4d6a4a1a31977b3f1688f6da97dd84641e86217f1ce",
+        "matches_stage5_input": true
+      },
+      {
+        "member": "inputs/issuer1.json",
+        "size": 10012,
+        "crc32": "c37f8ce2"
+      },
+      {
+        "member": "inputs/issuer2.json",
+        "size": 10000,
+        "crc32": "e0bf24ce"
+      },
+      {
+        "member": "inputs/issuer3.json",
+        "size": 9988,
+        "crc32": "e2cddb65"
+      },
+      {
+        "member": "inputs/issuer4.json",
+        "size": 9981,
+        "crc32": "4bee6009"
+      },
+      {
+        "member": "inputs/issuer5.json",
+        "size": 9978,
+        "crc32": "427a17ec"
+      },
+      {
+        "member": "inputs/issuer6.json",
+        "size": 6660,
+        "crc32": "7d8a2597"
+      }
+    ]
+  }
+}

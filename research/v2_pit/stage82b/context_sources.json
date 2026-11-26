@@ -1,0 +1,40 @@
+{
+  "asof": "20210331",
+  "universe": 782,
+  "sector": {
+    "경기관련소비재": 167,
+    "unknown": 8,
+    "소재": 147,
+    "IT": 64,
+    "커뮤니케이션서비스": 29,
+    "산업재": 174,
+    "필수소비재": 57,
+    "건강관리": 53,
+    "금융": 52,
+    "에너지": 14,
+    "유틸리티": 17
+  },
+  "exits": {
+    "confirmed_delisted": 44,
+    "present_20261030": 738
+  },
+  "context_sha256": "2b513b8f610f7ae1f0849292a862442a4169650b61d325c6fa3ddf78bb51e75f",
+  "source_sha256": {
+    "KRX_PIT_2021_03_v1.json.gz": "98763126961f999079c0ba82ea9c93c99bc813063ee93a1679fbaf341630f523",
+    "KRX_PIT_2026_10_v1.json.gz": "7502d5f7bce83e6bd19a15051eb650b0fed0a82b77c6613df51879ab75093a78",
+    "delisting_2026-10-30.csv": "04d067b618836ac265f143d0cc092bc1ce384124aaf1896bb17f2c5b484a6a6b",
+    "G10.data": "6f0e084e1b83777382108b27a3d0eb9e0b80a51aae698a66239294c3b10de527",
+    "G15.data": "42cbf6a39a7afbbe02d98b30a66ac92645c6ff393e4a2850a92d7f3cc64d674f",
+    "G20.data": "d065842e36a7cea730652f51d4657dd396a17775df1ae1ff7613352af62cde6c",
+    "G25.data": "c2720a9d730855b385087c435c1ca43be1bb824d48d991202ea68805c3fcaf14",
+    "G30.data": "ca8ec362d32163a7c2fec189f7cde96ec6b15b2019f36e41a70b7a558c669d8a",
+    "G35.data": "77140268e42072e964c49b5f246ba24a96214c6d4afb41e2ede0ec18263bfbc5",
+    "G40.data": "f2e81ac2053a6d9ce994b324ba7f24ef6dabc1a0afb81d7ef82e701c66a1a018",
+    "G45.data": "b7b5ba4d75e03be62bb40c88aa9b39833e491082d6ec96c2c53d580d7529fc5f",
+    "G50.data": "38690144d0d04d5128bd56d2447a63b0ae0b50dc235f7b60012bb19f76481f33",
+    "G55.data": "b51dd886c6105c626162e636fc217c9d0e43f159ad8a5b7cad3bbc344b86c9f8"
+  },
+  "sector_source": "https://www.wiseindex.com/Index/GetIndexComponets?ceil_yn=0&dt=20210331&sec_cd={sector}",
+  "delisting_source": "https://raw.githubusercontent.com/FinanceData/fdr_krx_data_cache/refs/heads/master/data/listing/delisting/2026-10-30.csv",
+  "diagnostics_only": "Future delisting and end-of-window ISIN presence never form portfolio inputs."
+}

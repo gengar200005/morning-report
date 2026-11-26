@@ -1,0 +1,142 @@
+{
+  "study_date_kst": "2026-11-26",
+  "base": "98b5ebb874364ac808135a75d202ed44e4027041",
+  "OpenDART_authenticated": {
+    "status": "BLOCKED",
+    "api_calls": 0,
+    "credential_values_read_into_reports_or_printed": false,
+    "checked_nonempty_runtime_variables": {
+      "OPENDART_API_KEY": false,
+      "DART_API_KEY": false,
+      "OPEN_DART_API_KEY": false
+    },
+    "local_gh_cli_authenticated": false,
+    "github_connector_actions": "No secret discovery or injection capability listed. Repository secret presence unknown. Existing workflow files only reviewed; no matching DART configuration and no workflow invoked.",
+    "workflows_checked": [
+      "claude_render.yml",
+      "kis_index_smoke.yml",
+      "morning.yml"
+    ],
+    "runner": "research/v2_pit/authenticated_sample.py",
+    "probe_exit_code": 2,
+    "probe_output": {
+      "status": "BLOCKED",
+      "reason": "OPENDART_API_KEY_MISSING_OR_INVALID_FORMAT",
+      "api_called": false
+    },
+    "powershell_from_checked_out_repository_root": "py -3 .\\research\\v2_pit\\authenticated_sample.py \"$env:LOCALAPPDATA\\MorningReport\\OpenDART\" --prompt-key",
+    "handoff": "The terminal prompts without echo. report.json contains statuses, response and instance digests; raw API responses stay in the private output. Share report.json only if handing validation back."
+  },
+  "checked_public_opendart_web_fallback": {
+    "scope": "Public regulator website; no credential, API endpoint or market outcome used.",
+    "source": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/main.do",
+    "sample": "005930 / 2021Q1",
+    "index": "POST https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do",
+    "post_params": {
+      "startDate": "2021-05-01",
+      "endDate": "2021-06-01",
+      "textCrpNm": "삼성전자",
+      "textCrpCik": "00126380",
+      "rptType": "11013",
+      "pageIndex": 1,
+      "pageSize": 10,
+      "pageUnit": 10,
+      "recordCountPerPage": 100,
+      "sortStdr": "date",
+      "sortOrdr": "desc",
+      "isMultiCheck": ""
+    },
+    "index_contains_receipt": true,
+    "index_contains_document_number": true,
+    "index_response_sha256": "6fe12e89dc643f818845112ce3bdafc533460c34471abd490e394c147037cd76",
+    "index_bytes": 3260,
+    "zip_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001185&dcm_no=8073522&lang=ko",
+    "zip_sha256": "9e0ea01580e839bd58582499e1622cae49e8c81bbf2f43e30ca3e4280ecb93e1",
+    "zip_bytes": 211593,
+    "instance_sha256": "11ec2f8a3b9d930a73deb6ae4aacbdf1f1f166c392f99673e78af74ba5b2a588",
+    "zip_crc_valid": true,
+    "matches_recorded_public_instance": true,
+    "scope_limit": "Single checked receipt. No evidence of complete historical universe or version sequence from this request."
+  },
+  "separate_KRX_crosscheck": {
+    "author": "한국거래소",
+    "title": "유가증권시장 12월 결산법인 2021년 1분기 결산실적 (2021-05)",
+    "source": "https://vwserver.kif.re.kr/html/KM/132660271724628140_1.%2B(%EB%B3%B4%EB%8F%84%EC%9E%90%EB%A3%8C)%2B%EC%9C%A0%EA%B0%80%EC%A6%9D%EA%B6%8C%EC%8B%9C%EC%9E%A5%2B2021%EB%85%84%2B1%EB%B6%84%EA%B8%B0%2B%EA%B2%B0%EC%82%B0%EC%8B%A4%EC%A0%81.hwp.files/Sections1.html",
+    "december_year_end_issuers": 768,
+    "consolidated_filers": 661,
+    "consolidated_analyzed_nonfinancial": 593,
+    "excluded_consolidated": {
+      "changed_year_end_or_deadline": 5,
+      "split_or_merger": 13,
+      "nonstandard_audit_opinion": 8,
+      "financials": 42
+    },
+    "use": "Independent aggregate check only. Exclusions, fiscal population, and timing differ from the 782 March common-stock census; no receipt-level substitute."
+  },
+  "general_tests": {
+    "command": "python -m pytest tests -q",
+    "parent_db87e7d": {
+      "passed": 68,
+      "failed": 6
+    },
+    "base_98b5ebb": {
+      "passed": 68,
+      "failed": 6
+    },
+    "stage82b_worktree": {
+      "passed": 68,
+      "failed": 6
+    },
+    "identical_failed_nodeids": [
+      "tests/test_sector_breadth.py::TestCapWeights::test_extreme_case_cap_exceeds_full",
+      "tests/test_sector_breadth.py::TestClassifyGrade::test_inf",
+      "tests/test_sector_breadth.py::TestApplyTickerOverrides::test_zero_padding",
+      "tests/test_sector_breadth.py::TestLoadOverrides::test_reads_ticker_overrides",
+      "tests/test_sector_breadth.py::TestOverridesIntegration::test_overrides_propagate_to_scores",
+      "tests/test_sector_mapping.py::test_load_ticker_to_sector_has_164"
+    ],
+    "production_changes": false
+  },
+  "public_original_market_index": {
+    "scope": "All-market public receipt/dcm lookup for 2021-04-01 to 2021-06-30. The XBRL index is a document-availability index, not the complete KRX denominator.",
+    "manifest": "public_xbrl_receipt_index.json",
+    "sha256": "3ecf475e67ef2c0f0a887a0544281f43619d0166d6d21176747b764bdbf7e93d",
+    "pages": 24,
+    "total_rows": 2321,
+    "unique_receipts": 2321,
+    "document_links": 2321,
+    "report_title_period_2021_03": 2301,
+    "market_labels_including_other_periods": {
+      "기타법인": 232,
+      "유가증권시장": 737,
+      "코스닥시장": 1352
+    },
+    "printed_date_differs_from_receipt_prefix": [
+      {
+        "receipt": "20210531002683",
+        "corp_code": "00352718",
+        "company": "소리바다",
+        "received": "2021.06.01"
+      },
+      {
+        "receipt": "20210514001717",
+        "corp_code": "00945208",
+        "company": "더미동",
+        "received": "2021.05.17"
+      },
+      {
+        "receipt": "20210514001727",
+        "corp_code": "00660121",
+        "company": "디에이테크놀로지",
+        "received": "2021.05.17"
+      },
+      {
+        "receipt": "20210514001723",
+        "corp_code": "00142713",
+        "company": "형지I&C",
+        "received": "2021.05.17"
+      }
+    ],
+    "cache_replay": "All 24 captured pages parsed independently; reproduced the original complete JSON byte for byte."
+  }
+}

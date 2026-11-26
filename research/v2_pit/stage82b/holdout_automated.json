@@ -1,0 +1,590 @@
+[
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "e38603d4d6114c25c2dcbb379f5548dc8b0e00786c2b2dc9d898fcda157927e1",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 413201320081,
+        "prior": 409198305236,
+        "reported_current": "413,201,320,081",
+        "reported_prior": "409,198,305,236",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "매출액",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 10764438598,
+        "prior": 9940154001,
+        "reported_current": "10,764,438,598",
+        "reported_prior": "9,940,154,001",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익",
+        "table_index": 3,
+        "row_index": 7,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210517001753",
+    "kind_receipt": "20210517001820",
+    "corp_code": "00120508",
+    "stock_code": "002270",
+    "isin": "KR7002270007",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/001820/20210517004198/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "4800e2518357ce3197675adf3e8e7468fdda0bca7a5311d9bf307da5987545a4",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 96966421000,
+        "prior": 92141006000,
+        "reported_current": "96,966,421,000",
+        "reported_prior": "92,141,006,000",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "수익(매출액)",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 6504482000,
+        "prior": 3187837000,
+        "reported_current": "6,504,482,000",
+        "reported_prior": "3,187,837,000",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익(손실)",
+        "table_index": 3,
+        "row_index": 6,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210514000861",
+    "kind_receipt": "20210514000762",
+    "corp_code": "00171636",
+    "stock_code": "004150",
+    "isin": "KR7004150009",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/14/000762/20210514001551/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "b50d267d7b107465b961c757aef8ec0b0aa80fae6f64126941d9e0da245a1e9b",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 127103425159,
+        "prior": 80855113086,
+        "reported_current": "127,103,425,159",
+        "reported_prior": "80,855,113,086",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "수익(매출액)",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 8453739011,
+        "prior": 1583136544,
+        "reported_current": "8,453,739,011",
+        "reported_prior": "1,583,136,544",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익(손실)",
+        "table_index": 3,
+        "row_index": 6,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210514000652",
+    "kind_receipt": "20210514000598",
+    "corp_code": "00160302",
+    "stock_code": "005420",
+    "isin": "KR7005420005",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/14/000598/20210514001224/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "804e3ab88b6cf5f14bb1d9fa2129cf36dca9e296731b1b002b01a1994a80f70a",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 34719148677,
+        "prior": 34209640288,
+        "reported_current": "34,719,148,677",
+        "reported_prior": "34,209,640,288",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "Ⅰ.매출액",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": -9037601090,
+        "prior": -4359095488,
+        "reported_current": "(9,037,601,090)",
+        "reported_prior": "(4,359,095,488)",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "Ⅵ.영업이익(손실)",
+        "table_index": 3,
+        "row_index": 7,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210517000444",
+    "kind_receipt": "20210517000487",
+    "corp_code": "00106881",
+    "stock_code": "014990",
+    "isin": "KR7014990006",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/000487/20210517001079/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "01f3cd617abe4872e6b4ee472f5598ea8581c69123fde90f4156bf76d3bec680",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      }
+    },
+    "receipt": "20210517001754",
+    "kind_receipt": "20210517001818",
+    "corp_code": "00156150",
+    "stock_code": "019490",
+    "isin": "KR7019490002",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/001818/20210517004195/11013.htm",
+    "explicit_no_cfs": true
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "8f2e768d461d135508b39afcbdc79ce1494ea751353dab2f2464339a584c926d",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 780331000000,
+        "prior": 661321000000,
+        "reported_current": "780,331",
+        "reported_prior": "661,321",
+        "unit": "백만원",
+        "scale": 1000000,
+        "source_label": "XVII. 영업이익",
+        "table_index": 4,
+        "row_index": 23,
+        "value_columns": [
+          2,
+          4
+        ]
+      }
+    },
+    "receipt": "20210517002026",
+    "kind_receipt": "20210517002108",
+    "corp_code": "00149646",
+    "stock_code": "024110",
+    "isin": "KR7024110009",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/002108/20210517004932/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "86c392d503157cdd4a1bd28b672f7b88ea6a4ae3877c4d2e63a766cddb68e22f",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 53183270463,
+        "prior": 41993067709,
+        "reported_current": "53,183,270,463",
+        "reported_prior": "41,993,067,709",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "수익(매출액)",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": -3575630414,
+        "prior": -1770065729,
+        "reported_current": "(3,575,630,414)",
+        "reported_prior": "(1,770,065,729)",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익(손실)",
+        "table_index": 3,
+        "row_index": 6,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210517000345",
+    "kind_receipt": "20210517000380",
+    "corp_code": "00353878",
+    "stock_code": "058730",
+    "isin": "KR7058730003",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/000380/20210517000867/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "36e83195a32b4fc3b0d4089244f6239e74a0cfd603e8e15c0550cc09a8088cca",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 35064075671,
+        "prior": 35166734301,
+        "reported_current": "35,064,075,671",
+        "reported_prior": "35,166,734,301",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "수익(매출액)",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 924053467,
+        "prior": 3073724402,
+        "reported_current": "924,053,467",
+        "reported_prior": "3,073,724,402",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익(손실)",
+        "table_index": 3,
+        "row_index": 6,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210514000375",
+    "kind_receipt": "20210514000338",
+    "corp_code": "00508274",
+    "stock_code": "081000",
+    "isin": "KR7081000002",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/14/000338/20210514000648/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "5f638f4a918c2347e584d100e4708fc210581b1f9c459aec23d6464b6a6217fb",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 178369889648,
+        "prior": 133273580039,
+        "reported_current": "178,369,889,648",
+        "reported_prior": "133,273,580,039",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "XII. 영업이익",
+        "table_index": 4,
+        "row_index": 17,
+        "value_columns": [
+          2,
+          4
+        ]
+      }
+    },
+    "receipt": "20210517001507",
+    "kind_receipt": "20210517001583",
+    "corp_code": "00878915",
+    "stock_code": "139130",
+    "isin": "KR7139130009",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/001583/20210517003616/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "cdbdc62d5ee1714a1a784acd000ba74b571a1ffacb44cbe0cf3f2f15e2e40ed0",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 1616835926098,
+        "prior": 1435764699942,
+        "reported_current": "1,616,835,926,098",
+        "reported_prior": "1,435,764,699,942",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "매출액",
+        "table_index": 3,
+        "row_index": 2,
+        "value_columns": [
+          1,
+          3
+        ]
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "reason": "unclassified group outside nonfinancial signal",
+        "observed": true,
+        "current": 186022868363,
+        "prior": 106000067434,
+        "reported_current": "186,022,868,363",
+        "reported_prior": "106,000,067,434",
+        "unit": "원",
+        "scale": 1,
+        "source_label": "영업이익",
+        "table_index": 3,
+        "row_index": 7,
+        "value_columns": [
+          1,
+          3
+        ]
+      }
+    },
+    "receipt": "20210517001509",
+    "kind_receipt": "20210517001586",
+    "corp_code": "00937324",
+    "stock_code": "161390",
+    "isin": "KR7161390000",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/17/001586/20210517003623/11013.htm",
+    "explicit_no_cfs": false
+  },
+  {
+    "scope": "CFS",
+    "financial_group": "unclassified",
+    "source_sha256": "dd558806e5b5870b153ecf724ce1d18e4b62873820a2f8f3166e7c19fd420e2a",
+    "periods": [
+      [
+        "2021-01-01",
+        "2021-03-31"
+      ],
+      [
+        "2020-01-01",
+        "2020-03-31"
+      ]
+    ],
+    "fields": {
+      "revenue": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      },
+      "operating_profit": {
+        "status": "BLOCKED",
+        "current": null,
+        "prior": null,
+        "reason": "no verified income row"
+      }
+    },
+    "receipt": "20210514000666",
+    "kind_receipt": "20210514000606",
+    "corp_code": "00367844",
+    "stock_code": "317400",
+    "isin": "KR7317400000",
+    "source_url": "https://kind.krx.co.kr/external/2021/05/14/000606/20210514001238/11013.htm",
+    "explicit_no_cfs": true
+  }
+]

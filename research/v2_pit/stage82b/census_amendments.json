@@ -1,0 +1,1621 @@
+{
+  "changed_original_vs_correction": [],
+  "affected_company_month_start_observations": [
+    {
+      "isin": "KR7007070006",
+      "formation": "20210503",
+      "receipt": "20210429000798",
+      "version": "original",
+      "revenue": [
+        "2100136802469",
+        "2141890677232"
+      ],
+      "operating_profit": [
+        "37523939162",
+        "88763360645"
+      ]
+    },
+    {
+      "isin": "KR7007070006",
+      "formation": "20210601",
+      "receipt": "20210511000600",
+      "version": "amendment_or_other",
+      "revenue": [
+        "2100136802469",
+        "2141890677232"
+      ],
+      "operating_profit": [
+        "37523939162",
+        "88763360645"
+      ]
+    },
+    {
+      "isin": "KR7339770000",
+      "formation": "20210601",
+      "receipt": "20210511000291",
+      "version": "amendment_or_other",
+      "revenue": [
+        "123856085883",
+        "105506190332"
+      ],
+      "operating_profit": [
+        "10753563453",
+        "9497164865"
+      ]
+    },
+    {
+      "isin": "KR7134380005",
+      "formation": "20210601",
+      "receipt": "20210513000062",
+      "version": "amendment_or_other",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "isin": "KR7025820002",
+      "formation": "20210601",
+      "receipt": "20210513000190",
+      "version": "amendment_or_other",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "isin": "KR7006880009",
+      "formation": "20210601",
+      "receipt": "20210514001427",
+      "version": "amendment_or_other",
+      "revenue": [
+        "41442538955",
+        "45312708687"
+      ],
+      "operating_profit": [
+        "1938400458",
+        "1070804427"
+      ]
+    },
+    {
+      "isin": "KR7068400001",
+      "formation": "20210601",
+      "receipt": "20210514001689",
+      "version": "amendment_or_other",
+      "revenue": [
+        "248561873120",
+        "208616486657"
+      ],
+      "operating_profit": [
+        "19677721188",
+        "19227906974"
+      ]
+    },
+    {
+      "isin": "KR7096770003",
+      "formation": "20210601",
+      "receipt": "20210517000019",
+      "version": "amendment_or_other",
+      "revenue": [
+        "9239757265000",
+        "11047064474000"
+      ],
+      "operating_profit": [
+        "502539294000",
+        "-1815427094000"
+      ]
+    },
+    {
+      "isin": "KR7049800006",
+      "formation": "20210601",
+      "receipt": "20210517000978",
+      "version": "amendment_or_other",
+      "revenue": [
+        "58465829824",
+        "52746021406"
+      ],
+      "operating_profit": [
+        "971608470",
+        "1478920451"
+      ]
+    },
+    {
+      "isin": "KR7010100006",
+      "formation": "20210601",
+      "receipt": "20210517001369",
+      "version": "amendment_or_other",
+      "revenue": [
+        "244415354389",
+        "219917881235"
+      ],
+      "operating_profit": [
+        "8108796263",
+        "6292358789"
+      ]
+    },
+    {
+      "isin": "KR7005960000",
+      "formation": "20210601",
+      "receipt": "20210517002084",
+      "version": "amendment_or_other",
+      "revenue": [
+        "257970018922",
+        "301526033385"
+      ],
+      "operating_profit": [
+        "10467802258",
+        "17029634205"
+      ]
+    },
+    {
+      "isin": "KR7003960002",
+      "formation": "20210601",
+      "receipt": "20210517002144",
+      "version": "amendment_or_other",
+      "revenue": [
+        "440745909661",
+        "412233147322"
+      ],
+      "operating_profit": [
+        "25138712859",
+        "8987673099"
+      ]
+    },
+    {
+      "isin": "KR7281820001",
+      "formation": "20210601",
+      "receipt": "20210518000091",
+      "version": "amendment_or_other",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "isin": "KR7097230007",
+      "formation": "20210601",
+      "receipt": "20210518000092",
+      "version": "amendment_or_other",
+      "revenue": [
+        "274483000000",
+        "335338000000"
+      ],
+      "operating_profit": [
+        "-25156000000",
+        "17101000000"
+      ]
+    },
+    {
+      "isin": "KR7007280001",
+      "formation": "20210601",
+      "receipt": "20210518000280",
+      "version": "amendment_or_other",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "isin": "KR7214420002",
+      "formation": "20210601",
+      "receipt": "20210525000331",
+      "version": "amendment_or_other",
+      "revenue": [
+        "27391801967",
+        "33106986315"
+      ],
+      "operating_profit": [
+        "-1902238368",
+        "-7697760770"
+      ]
+    },
+    {
+      "isin": "KR7010060002",
+      "formation": "20210601",
+      "receipt": "20210518000324",
+      "version": "amendment_or_other",
+      "revenue": [
+        "573677884000",
+        "568602914000"
+      ],
+      "operating_profit": [
+        "47018557000",
+        "-92927197000"
+      ]
+    },
+    {
+      "isin": "KR7195870001",
+      "formation": "20210601",
+      "receipt": "20210520000060",
+      "version": "amendment_or_other",
+      "revenue": [
+        "137478338064",
+        "107327197717"
+      ],
+      "operating_profit": [
+        "10164555728",
+        "10321997750"
+      ]
+    },
+    {
+      "isin": "KR7011000007",
+      "formation": "20210601",
+      "receipt": "20210521000254",
+      "version": "amendment_or_other",
+      "revenue": [
+        "9193312717",
+        "8390944753"
+      ],
+      "operating_profit": [
+        "-3172789539",
+        "-2910789658"
+      ]
+    },
+    {
+      "isin": "KR7005850003",
+      "formation": "20210601",
+      "receipt": "20210521000274",
+      "version": "amendment_or_other",
+      "revenue": [
+        "740375794009",
+        "612943096463"
+      ],
+      "operating_profit": [
+        "56790444018",
+        "30670631401"
+      ]
+    },
+    {
+      "isin": "KR7003220001",
+      "formation": "20210601",
+      "receipt": "20210521000347",
+      "version": "amendment_or_other",
+      "revenue": [
+        "74993570919",
+        "80605497742"
+      ],
+      "operating_profit": [
+        "-2270701307",
+        "10077915034"
+      ]
+    },
+    {
+      "isin": "KR7005490008",
+      "formation": "20210601",
+      "receipt": "20210524000320",
+      "version": "amendment_or_other",
+      "revenue": [
+        "16068722906869",
+        "14545812808227"
+      ],
+      "operating_profit": [
+        "1552441317171",
+        "705250568115"
+      ]
+    },
+    {
+      "isin": "KR7058730003",
+      "formation": "20210601",
+      "receipt": "20210525000116",
+      "version": "amendment_or_other",
+      "revenue": [
+        "53183270463",
+        "41993067709"
+      ],
+      "operating_profit": [
+        "-3575630414",
+        "-1770065729"
+      ]
+    },
+    {
+      "isin": "KR7008500001",
+      "formation": "20210601",
+      "receipt": "20210527000487",
+      "version": "amendment_or_other",
+      "revenue": [
+        "11689286689",
+        "8782288500"
+      ],
+      "operating_profit": [
+        "-1232471577",
+        "-2855728972"
+      ]
+    },
+    {
+      "isin": "KR7068270008",
+      "formation": "20210601",
+      "receipt": "20210531001767",
+      "version": "amendment_or_other",
+      "revenue": [
+        "456968796893",
+        "372847105071"
+      ],
+      "operating_profit": [
+        "207656108157",
+        "120241411124"
+      ]
+    },
+    {
+      "isin": "KR7091810002",
+      "formation": "20210601",
+      "receipt": "20210517000956",
+      "version": "original",
+      "revenue": [
+        "35269080419",
+        "149177730763"
+      ],
+      "operating_profit": [
+        "-45419322174",
+        "-22299099715"
+      ]
+    },
+    {
+      "isin": "KR7031820004",
+      "formation": "20210601",
+      "receipt": "20210517001766",
+      "version": "original",
+      "revenue": [
+        "54747612854",
+        "37212014771"
+      ],
+      "operating_profit": [
+        "-3452947694",
+        "-3434965409"
+      ]
+    },
+    {
+      "isin": "KR7336370002",
+      "formation": "20210601",
+      "receipt": "20210528001229",
+      "version": "original",
+      "revenue": [
+        "88758655146",
+        "70923954773"
+      ],
+      "operating_profit": [
+        "405847794",
+        "8900051988"
+      ]
+    },
+    {
+      "isin": "KR7003230000",
+      "formation": "20210601",
+      "receipt": "20210517000900",
+      "version": "original",
+      "revenue": [
+        "140005906880",
+        "156384418000"
+      ],
+      "operating_profit": [
+        "14357546242",
+        "26677991807"
+      ]
+    }
+  ],
+  "amendments_indexed": 30,
+  "affected_issuers": 28,
+  "amendments_obtained": 30,
+  "available_signed_pairs": 26,
+  "bounded_version_rows": [
+    {
+      "stock_code": "007070",
+      "isin": "KR7007070006",
+      "corp": "00140177",
+      "receipt": "20210429000798",
+      "version": "original",
+      "filed": "20210429",
+      "start_session": "20210430",
+      "stop_session_exclusive": "20210511",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "4a0541a50f76bd4bc6ffeea75f97b0637f0f5aa4bed7da6a8bbe2290b5f9f17c",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210429000798&dcm_no=8048504&lang=ko",
+      "revenue": [
+        "2100136802469",
+        "2141890677232"
+      ],
+      "operating_profit": [
+        "37523939162",
+        "88763360645"
+      ]
+    },
+    {
+      "stock_code": "007070",
+      "isin": "KR7007070006",
+      "corp": "00140177",
+      "receipt": "20210510000851",
+      "version": "amendment_or_other",
+      "filed": "20210510",
+      "start_session": "20210511",
+      "stop_session_exclusive": "20210512",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "7f97dadcc6756e834e3250098de185b8623af6293be9c623761fe82aa7708b0d",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210510000851&dcm_no=8061822&lang=ko",
+      "revenue": [
+        "2100136802469",
+        "2141890677232"
+      ],
+      "operating_profit": [
+        "37523939162",
+        "88763360645"
+      ]
+    },
+    {
+      "stock_code": "007070",
+      "isin": "KR7007070006",
+      "corp": "00140177",
+      "receipt": "20210511000600",
+      "version": "amendment_or_other",
+      "filed": "20210511",
+      "start_session": "20210512",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "5ac5103a8dc2508581d1eb29a7f2e3014d53d6216a156b3c3024ebd0bd733a61",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210511000600&dcm_no=8063101&lang=ko",
+      "revenue": [
+        "2100136802469",
+        "2141890677232"
+      ],
+      "operating_profit": [
+        "37523939162",
+        "88763360645"
+      ]
+    },
+    {
+      "stock_code": "339770",
+      "isin": "KR7339770000",
+      "corp": "00453284",
+      "receipt": "20210511000031",
+      "version": "original",
+      "filed": "20210511",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "c0e181f412c77a762c4e733a479a4c782d3dfc35c696437732dcaa595fcb5d2b",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210511000031&dcm_no=8062053&lang=ko",
+      "revenue": [
+        "123856085883",
+        "105506190332"
+      ],
+      "operating_profit": [
+        "10753563453",
+        "9497164865"
+      ]
+    },
+    {
+      "stock_code": "339770",
+      "isin": "KR7339770000",
+      "corp": "00453284",
+      "receipt": "20210511000291",
+      "version": "amendment_or_other",
+      "filed": "20210511",
+      "start_session": "20210512",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "390108b2afec533045421906b4a8b8bab554d185fe68e9db2a0ed34fbd9aca20",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210511000291&dcm_no=8062459&lang=ko",
+      "revenue": [
+        "123856085883",
+        "105506190332"
+      ],
+      "operating_profit": [
+        "10753563453",
+        "9497164865"
+      ]
+    },
+    {
+      "stock_code": "134380",
+      "isin": "KR7134380005",
+      "corp": "00855163",
+      "receipt": "20210511000026",
+      "version": "original",
+      "filed": "20210511",
+      "start_session": "20210512",
+      "stop_session_exclusive": "20210514",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "9c233ee630a488746093d78e4fc25107f249ab3f4ddcacd920863a8863a94bf8",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210511000026&dcm_no=8062046&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "134380",
+      "isin": "KR7134380005",
+      "corp": "00855163",
+      "receipt": "20210513000062",
+      "version": "amendment_or_other",
+      "filed": "20210513",
+      "start_session": "20210514",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "fffaf8c9583d82de88cae71f56b2d65c81ccd68c3b7259aa6737576721778503",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210513000062&dcm_no=8065419&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "025820",
+      "isin": "KR7025820002",
+      "corp": "00145464",
+      "receipt": "20210513000071",
+      "version": "original",
+      "filed": "20210513",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "c5901996c57545bedbbe80b48fbf223453b1ebb62fefd8eb74ca0fe726245fa9",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210513000071&dcm_no=8065423&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "025820",
+      "isin": "KR7025820002",
+      "corp": "00145464",
+      "receipt": "20210513000190",
+      "version": "amendment_or_other",
+      "filed": "20210513",
+      "start_session": "20210514",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "33fcfb990a51065fddc36ca02b3fd0a57dfd1f491b88aac6249958c58cef1462",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210513000190&dcm_no=8065435&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "006880",
+      "isin": "KR7006880009",
+      "corp": "00136402",
+      "receipt": "20210514000543",
+      "version": "original",
+      "filed": "20210514",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "38e67b636f6eb891859d5c73b6165f9b98b4678e171506605de1a8dac3a66495",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514000543&dcm_no=8068155&lang=ko",
+      "revenue": [
+        "41442538955",
+        "45312708687"
+      ],
+      "operating_profit": [
+        "1938400458",
+        "1070804427"
+      ]
+    },
+    {
+      "stock_code": "006880",
+      "isin": "KR7006880009",
+      "corp": "00136402",
+      "receipt": "20210514001427",
+      "version": "amendment_or_other",
+      "filed": "20210514",
+      "start_session": "20210517",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "4ae065e592bfebc603c4083e2a9efd6d131979286f59dcc6fb9363ff67a1226d",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514001427&dcm_no=8070117&lang=ko",
+      "revenue": [
+        "41442538955",
+        "45312708687"
+      ],
+      "operating_profit": [
+        "1938400458",
+        "1070804427"
+      ]
+    },
+    {
+      "stock_code": "068400",
+      "isin": "KR7068400001",
+      "corp": "00201450",
+      "receipt": "20210514001497",
+      "version": "original",
+      "filed": "20210514",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "c98ecd3da111e9e096334a44269cfec4b4a7c97cfa557b6f11e990e4a9f57fca",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514001497&dcm_no=8070313&lang=ko",
+      "revenue": [
+        "248561873120",
+        "208616486657"
+      ],
+      "operating_profit": [
+        "19677721188",
+        "19227906974"
+      ]
+    },
+    {
+      "stock_code": "068400",
+      "isin": "KR7068400001",
+      "corp": "00201450",
+      "receipt": "20210514001689",
+      "version": "amendment_or_other",
+      "filed": "20210514",
+      "start_session": "20210517",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "a84376158886b18e399878b40f8cc54670917b5705052fd6327e1be2e5e4852b",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514001689&dcm_no=8070815&lang=ko",
+      "revenue": [
+        "248561873120",
+        "208616486657"
+      ],
+      "operating_profit": [
+        "19677721188",
+        "19227906974"
+      ]
+    },
+    {
+      "stock_code": "096770",
+      "isin": "KR7096770003",
+      "corp": "00631518",
+      "receipt": "20210514001509",
+      "version": "original",
+      "filed": "20210514",
+      "start_session": "20210517",
+      "stop_session_exclusive": "20210518",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "6c7cb40c599f74fcb2bdecd90c94424400facbd55367b5d47af02bec08254e2b",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514001509&dcm_no=8070349&lang=ko",
+      "revenue": [
+        "9239757265000",
+        "11047064474000"
+      ],
+      "operating_profit": [
+        "502539294000",
+        "-1815427094000"
+      ]
+    },
+    {
+      "stock_code": "096770",
+      "isin": "KR7096770003",
+      "corp": "00631518",
+      "receipt": "20210517000019",
+      "version": "amendment_or_other",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "4513d2dd2f4c7d78ff625163a8c2bd24628ad5ade371f480ebbae5037968dd6d",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000019&dcm_no=8070964&lang=ko",
+      "revenue": [
+        "9239757265000",
+        "11047064474000"
+      ],
+      "operating_profit": [
+        "502539294000",
+        "-1815427094000"
+      ]
+    },
+    {
+      "stock_code": "049800",
+      "isin": "KR7049800006",
+      "corp": "00303217",
+      "receipt": "20210517000191",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "afd4b5bc5fc3891d95f5bc662f72a44a6cf8d4a8c0b18be39d102fbd741094fb",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000191&dcm_no=8071275&lang=ko",
+      "revenue": [
+        "58465829824",
+        "52746021406"
+      ],
+      "operating_profit": [
+        "971608470",
+        "1478920451"
+      ]
+    },
+    {
+      "stock_code": "049800",
+      "isin": "KR7049800006",
+      "corp": "00303217",
+      "receipt": "20210517000978",
+      "version": "amendment_or_other",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "7f790ce57daf53a1b8d1d9a8f579e6ec27e05386728a3fc98a93d13c0d7c6b14",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000978&dcm_no=8073016&lang=ko",
+      "revenue": [
+        "58465829824",
+        "52746021406"
+      ],
+      "operating_profit": [
+        "971608470",
+        "1478920451"
+      ]
+    },
+    {
+      "stock_code": "010100",
+      "isin": "KR7010100006",
+      "corp": "00160418",
+      "receipt": "20210517000233",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "557c8b7c766bcf9c1141a348ac0873a6cf2336f2bdf841b2e33c3d7dc0ce6516",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000233&dcm_no=8071349&lang=ko",
+      "revenue": [
+        "244415354389",
+        "219917881235"
+      ],
+      "operating_profit": [
+        "8108796263",
+        "6292358789"
+      ]
+    },
+    {
+      "stock_code": "010100",
+      "isin": "KR7010100006",
+      "corp": "00160418",
+      "receipt": "20210517001369",
+      "version": "amendment_or_other",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "f02b12a07845acbf082841936b9aad55a30db5bd62c1d5f0d0c89bbdb4efc533",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001369&dcm_no=8073978&lang=ko",
+      "revenue": [
+        "244415354389",
+        "219917881235"
+      ],
+      "operating_profit": [
+        "8108796263",
+        "6292358789"
+      ]
+    },
+    {
+      "stock_code": "005960",
+      "isin": "KR7005960000",
+      "corp": "00115612",
+      "receipt": "20210517001373",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "8ed639300e0045444844ae514ed17f253ba43bf301ba825834d48307a4d6eab5",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001373&dcm_no=8073727&lang=ko",
+      "revenue": [
+        "257970018922",
+        "301526033385"
+      ],
+      "operating_profit": [
+        "10467802258",
+        "17029634205"
+      ]
+    },
+    {
+      "stock_code": "005960",
+      "isin": "KR7005960000",
+      "corp": "00115612",
+      "receipt": "20210517002084",
+      "version": "amendment_or_other",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "b819122a227ea47b17fc8c4a9b4a57fe2d919c61a11c40401d6f87fad2449c20",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002084&dcm_no=8075919&lang=ko",
+      "revenue": [
+        "257970018922",
+        "301526033385"
+      ],
+      "operating_profit": [
+        "10467802258",
+        "17029634205"
+      ]
+    },
+    {
+      "stock_code": "003960",
+      "isin": "KR7003960002",
+      "corp": "00109718",
+      "receipt": "20210517001413",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": null,
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": true,
+      "sha256": "32f6534e40a5bb2911d2dfcfd91c5d43a5bbca57cafd2f65f077c1cd426ab87b",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001413&dcm_no=8074100&lang=ko",
+      "revenue": [
+        "440745909661",
+        "412233147322"
+      ],
+      "operating_profit": [
+        "25138712859",
+        "8987673099"
+      ]
+    },
+    {
+      "stock_code": "003960",
+      "isin": "KR7003960002",
+      "corp": "00109718",
+      "receipt": "20210517002144",
+      "version": "amendment_or_other",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "655f1a0abc452c0d87b053d176d8fa36c2da3697e341d3c5e2ad208c269b5bf5",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002144&dcm_no=8076088&lang=ko",
+      "revenue": [
+        "440745909661",
+        "412233147322"
+      ],
+      "operating_profit": [
+        "25138712859",
+        "8987673099"
+      ]
+    },
+    {
+      "stock_code": "281820",
+      "isin": "KR7281820001",
+      "corp": "01261893",
+      "receipt": "20210517001672",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210520",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "6b18415509c3fb73c18c97296f3e9932765b276b7156abdf7dca0f7eb2d65fd0",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001672&dcm_no=8074781&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "281820",
+      "isin": "KR7281820001",
+      "corp": "01261893",
+      "receipt": "20210518000091",
+      "version": "amendment_or_other",
+      "filed": "20210518",
+      "start_session": "20210520",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "584967453b092de5da9408413bf8887e9b45aaea66dcf52371577e7cc50cdcb9",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210518000091&dcm_no=8076505&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "097230",
+      "isin": "KR7097230007",
+      "corp": "00633835",
+      "receipt": "20210517001681",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210520",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "be5e0f12a540420a991af756323109efd48870a8fc506d60913ab24407f3df7d",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001681&dcm_no=8074794&lang=ko",
+      "revenue": [
+        "274483000000",
+        "335338000000"
+      ],
+      "operating_profit": [
+        "-25156000000",
+        "17101000000"
+      ]
+    },
+    {
+      "stock_code": "097230",
+      "isin": "KR7097230007",
+      "corp": "00633835",
+      "receipt": "20210518000092",
+      "version": "amendment_or_other",
+      "filed": "20210518",
+      "start_session": "20210520",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "4f9484b20be76f04f59453813a938220ee0ebf71dbb70255fbb16570885fac8b",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210518000092&dcm_no=8076507&lang=ko",
+      "revenue": [
+        "274483000000",
+        "335338000000"
+      ],
+      "operating_profit": [
+        "-25156000000",
+        "17101000000"
+      ]
+    },
+    {
+      "stock_code": "007280",
+      "isin": "KR7007280001",
+      "corp": "00124090",
+      "receipt": "20210504000666",
+      "version": "original",
+      "filed": "20210504",
+      "start_session": "20210506",
+      "stop_session_exclusive": "20210520",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "44fa7e242d5fd37127fab038e93b8111695bbf20209aeb0eaf165d80ca00b44a",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210504000666&dcm_no=8056726&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "007280",
+      "isin": "KR7007280001",
+      "corp": "00124090",
+      "receipt": "20210518000280",
+      "version": "amendment_or_other",
+      "filed": "20210518",
+      "start_session": "20210520",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "1928403109e18ed7d54d44ef5dff100e36c4a6b350cf1269d35e7d8b619d7e29",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210518000280&dcm_no=8077017&lang=ko",
+      "revenue": null,
+      "operating_profit": null
+    },
+    {
+      "stock_code": "214420",
+      "isin": "KR7214420002",
+      "corp": "00816544",
+      "receipt": "20210517001025",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210520",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "59fa2107428a6f464c042bf11c0ec894fd41e0f4f56912273d879d8f202a7dec",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001025&dcm_no=8073140&lang=ko",
+      "revenue": [
+        "27391801967",
+        "33106986315"
+      ],
+      "operating_profit": [
+        "-1902238368",
+        "-7697760770"
+      ]
+    },
+    {
+      "stock_code": "214420",
+      "isin": "KR7214420002",
+      "corp": "00816544",
+      "receipt": "20210518000297",
+      "version": "amendment_or_other",
+      "filed": "20210518",
+      "start_session": "20210520",
+      "stop_session_exclusive": "20210526",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "d56595e6dea7013dd4741a3cacd93ee67148946590fe00c412f69327b7fb1c0e",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210518000297&dcm_no=8077042&lang=ko",
+      "revenue": [
+        "27391801967",
+        "33106986315"
+      ],
+      "operating_profit": [
+        "-1902238368",
+        "-7697760770"
+      ]
+    },
+    {
+      "stock_code": "214420",
+      "isin": "KR7214420002",
+      "corp": "00816544",
+      "receipt": "20210525000331",
+      "version": "amendment_or_other",
+      "filed": "20210525",
+      "start_session": "20210526",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "e7c006a2b88bf40aa8b6fd608c8f203efe0942665e37a7782f1f7c33e4e7cbf1",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210525000331&dcm_no=8082916&lang=ko",
+      "revenue": [
+        "27391801967",
+        "33106986315"
+      ],
+      "operating_profit": [
+        "-1902238368",
+        "-7697760770"
+      ]
+    },
+    {
+      "stock_code": "010060",
+      "isin": "KR7010060002",
+      "corp": "00148896",
+      "receipt": "20210514000740",
+      "version": "original",
+      "filed": "20210514",
+      "start_session": "20210517",
+      "stop_session_exclusive": "20210520",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "bef70081c78f922fe99e5e51e5d10d002bd819d7dd547371b3b1649640964e70",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514000740&dcm_no=8068573&lang=ko",
+      "revenue": [
+        "573677884000",
+        "568602914000"
+      ],
+      "operating_profit": [
+        "47018557000",
+        "-92927197000"
+      ]
+    },
+    {
+      "stock_code": "010060",
+      "isin": "KR7010060002",
+      "corp": "00148896",
+      "receipt": "20210518000324",
+      "version": "amendment_or_other",
+      "filed": "20210518",
+      "start_session": "20210520",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "8183de8116b52714b2c8410562ae987ada6a0062090b69fab7ac0eefba91ea02",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210518000324&dcm_no=8077102&lang=ko",
+      "revenue": [
+        "573677884000",
+        "568602914000"
+      ],
+      "operating_profit": [
+        "47018557000",
+        "-92927197000"
+      ]
+    },
+    {
+      "stock_code": "195870",
+      "isin": "KR7195870001",
+      "corp": "01032413",
+      "receipt": "20210517000759",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210521",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "3cbba845132c6f6823563649bdec3bd7ee6bb6afe29b4c6f205eb6f74a65a53a",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000759&dcm_no=8072500&lang=ko",
+      "revenue": [
+        "137478338064",
+        "107327197717"
+      ],
+      "operating_profit": [
+        "10164555728",
+        "10321997750"
+      ]
+    },
+    {
+      "stock_code": "195870",
+      "isin": "KR7195870001",
+      "corp": "01032413",
+      "receipt": "20210520000060",
+      "version": "amendment_or_other",
+      "filed": "20210520",
+      "start_session": "20210521",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "027a09343f42efe8249d860239d5947cc2535c956de0bb3735670d4625030d69",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210520000060&dcm_no=8077797&lang=ko",
+      "revenue": [
+        "137478338064",
+        "107327197717"
+      ],
+      "operating_profit": [
+        "10164555728",
+        "10321997750"
+      ]
+    },
+    {
+      "stock_code": "011000",
+      "isin": "KR7011000007",
+      "corp": "00118521",
+      "receipt": "20210517001054",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210524",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "eecf8821e4a38ec84e942759b197faabfc81aad241ceaf68c8c68422444705cd",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001054&dcm_no=8073212&lang=ko",
+      "revenue": [
+        "9193312717",
+        "8390944753"
+      ],
+      "operating_profit": [
+        "-3172789539",
+        "-2910789658"
+      ]
+    },
+    {
+      "stock_code": "011000",
+      "isin": "KR7011000007",
+      "corp": "00118521",
+      "receipt": "20210521000254",
+      "version": "amendment_or_other",
+      "filed": "20210521",
+      "start_session": "20210524",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "09d25c840689768be4dfcca2605f263dacdfcd5891c2fd8886291c26ea291b36",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210521000254&dcm_no=8079282&lang=ko",
+      "revenue": [
+        "9193312717",
+        "8390944753"
+      ],
+      "operating_profit": [
+        "-3172789539",
+        "-2910789658"
+      ]
+    },
+    {
+      "stock_code": "005850",
+      "isin": "KR7005850003",
+      "corp": "00125521",
+      "receipt": "20210517000865",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210524",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "884635cff2ad0e853a546deb32313dad3727ec02c39c60af0a9b9a1cdb1ae09e",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000865&dcm_no=8072730&lang=ko",
+      "revenue": [
+        "740375794009",
+        "612943096463"
+      ],
+      "operating_profit": [
+        "56790444018",
+        "30670631401"
+      ]
+    },
+    {
+      "stock_code": "005850",
+      "isin": "KR7005850003",
+      "corp": "00125521",
+      "receipt": "20210521000274",
+      "version": "amendment_or_other",
+      "filed": "20210521",
+      "start_session": "20210524",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "6e966d0ff76ae4da059f3f4cf83a7bdd9d63e0f776569236a4595ea4c58457c4",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210521000274&dcm_no=8079294&lang=ko",
+      "revenue": [
+        "740375794009",
+        "612943096463"
+      ],
+      "operating_profit": [
+        "56790444018",
+        "30670631401"
+      ]
+    },
+    {
+      "stock_code": "003220",
+      "isin": "KR7003220001",
+      "corp": "00111999",
+      "receipt": "20210517002036",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210524",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "0a879a255d01fda58193c57bbfef4eceff8f6d873cad8df7d8e54638a5658642",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002036&dcm_no=8075769&lang=ko",
+      "revenue": [
+        "74993570919",
+        "80605497742"
+      ],
+      "operating_profit": [
+        "-2270701307",
+        "10077915034"
+      ]
+    },
+    {
+      "stock_code": "003220",
+      "isin": "KR7003220001",
+      "corp": "00111999",
+      "receipt": "20210521000347",
+      "version": "amendment_or_other",
+      "filed": "20210521",
+      "start_session": "20210524",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "c73c13f88ae8c42ab0d6bb02d2c752fc3e124dc7762dd07305efcdfc1d21b9d8",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210521000347&dcm_no=8079578&lang=ko",
+      "revenue": [
+        "74993570919",
+        "80605497742"
+      ],
+      "operating_profit": [
+        "-2270701307",
+        "10077915034"
+      ]
+    },
+    {
+      "stock_code": "005490",
+      "isin": "KR7005490008",
+      "corp": "00155319",
+      "receipt": "20210514001563",
+      "version": "original",
+      "filed": "20210514",
+      "start_session": "20210517",
+      "stop_session_exclusive": "20210525",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "54fff5c9d74979489a9b029ecbc3f56d074cb29dee2eecf058edb829984cde9e",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210514001563&dcm_no=8070478&lang=ko",
+      "revenue": [
+        "16068722906869",
+        "14545812808227"
+      ],
+      "operating_profit": [
+        "1552441317171",
+        "705250568115"
+      ]
+    },
+    {
+      "stock_code": "005490",
+      "isin": "KR7005490008",
+      "corp": "00155319",
+      "receipt": "20210524000320",
+      "version": "amendment_or_other",
+      "filed": "20210524",
+      "start_session": "20210525",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "8b93ca5f8fb331deb95cb043a54c22ea6486a84afdd3b46e5e2ccb7add58bed5",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210524000320&dcm_no=8081299&lang=ko",
+      "revenue": [
+        "16068722906869",
+        "14545812808227"
+      ],
+      "operating_profit": [
+        "1552441317171",
+        "705250568115"
+      ]
+    },
+    {
+      "stock_code": "058730",
+      "isin": "KR7058730003",
+      "corp": "00353878",
+      "receipt": "20210517000345",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210526",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "0b3ff83ab10b7baf3bdc069da4c53b8131f2ec3bc5e29ac47ff7426b21d7e538",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000345&dcm_no=8071582&lang=ko",
+      "revenue": [
+        "53183270463",
+        "41993067709"
+      ],
+      "operating_profit": [
+        "-3575630414",
+        "-1770065729"
+      ]
+    },
+    {
+      "stock_code": "058730",
+      "isin": "KR7058730003",
+      "corp": "00353878",
+      "receipt": "20210525000116",
+      "version": "amendment_or_other",
+      "filed": "20210525",
+      "start_session": "20210526",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "9a32802f0b619572cf970915e4b0f00ba763e6c69ac37255b88a114980b1e82f",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210525000116&dcm_no=8082232&lang=ko",
+      "revenue": [
+        "53183270463",
+        "41993067709"
+      ],
+      "operating_profit": [
+        "-3575630414",
+        "-1770065729"
+      ]
+    },
+    {
+      "stock_code": "008500",
+      "isin": "KR7008500001",
+      "corp": "00146542",
+      "receipt": "20210517002043",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210528",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "296d3eb20fb543ee0c7e0cf279057407edff9cf5cd1de16da82fbc3466604fea",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002043&dcm_no=8075802&lang=ko",
+      "revenue": [
+        "11689286689",
+        "8782288500"
+      ],
+      "operating_profit": [
+        "-1232471577",
+        "-2855728972"
+      ]
+    },
+    {
+      "stock_code": "008500",
+      "isin": "KR7008500001",
+      "corp": "00146542",
+      "receipt": "20210527000487",
+      "version": "amendment_or_other",
+      "filed": "20210527",
+      "start_session": "20210528",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "83198d2dfd3a4c8413b601b5633f34babc3e6aba258364e8ba5d851af3ca8eed",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210527000487&dcm_no=8086999&lang=ko",
+      "revenue": [
+        "11689286689",
+        "8782288500"
+      ],
+      "operating_profit": [
+        "-1232471577",
+        "-2855728972"
+      ]
+    },
+    {
+      "stock_code": "068270",
+      "isin": "KR7068270008",
+      "corp": "00413046",
+      "receipt": "20210517001387",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210601",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "5aac0df19b768fee3d5a3a16a5857a73b8bb49daac96b24381c8d60ac5e8499e",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001387&dcm_no=8074037&lang=ko",
+      "revenue": [
+        "456968796893",
+        "372847105071"
+      ],
+      "operating_profit": [
+        "207656108157",
+        "120241411124"
+      ]
+    },
+    {
+      "stock_code": "068270",
+      "isin": "KR7068270008",
+      "corp": "00413046",
+      "receipt": "20210531001767",
+      "version": "amendment_or_other",
+      "filed": "20210531",
+      "start_session": "20210601",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "8c0f4cfa76a5950f764b0dc26441071b356e15c7f969fbed3132c8adfad76e92",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210531001767&dcm_no=8092352&lang=ko",
+      "revenue": [
+        "456968796893",
+        "372847105071"
+      ],
+      "operating_profit": [
+        "207656108157",
+        "120241411124"
+      ]
+    },
+    {
+      "stock_code": "091810",
+      "isin": "KR7091810002",
+      "corp": "00671376",
+      "receipt": "20210517000956",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210602",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "261ae377296ee6693da26042d755f737b449ed3b8a3025052c14ffb8f864e4da",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000956&dcm_no=8072963&lang=ko",
+      "revenue": [
+        "35269080419",
+        "149177730763"
+      ],
+      "operating_profit": [
+        "-45419322174",
+        "-22299099715"
+      ]
+    },
+    {
+      "stock_code": "091810",
+      "isin": "KR7091810002",
+      "corp": "00671376",
+      "receipt": "20210601000046",
+      "version": "amendment_or_other",
+      "filed": "20210601",
+      "start_session": "20210602",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "45950f56020d278068d9e783e056bde304f263eb8d838386eda99eecb126c516",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210601000046&dcm_no=8094342&lang=ko",
+      "revenue": [
+        "35269080419",
+        "149177730763"
+      ],
+      "operating_profit": [
+        "-45419322174",
+        "-22299099715"
+      ]
+    },
+    {
+      "stock_code": "031820",
+      "isin": "KR7031820004",
+      "corp": "00186559",
+      "receipt": "20210517001766",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210602",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "34e06b602e500f22e5e076a035577c17e3cbd4154db71ebeed0724810e8918b2",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001766&dcm_no=8075066&lang=ko",
+      "revenue": [
+        "54747612854",
+        "37212014771"
+      ],
+      "operating_profit": [
+        "-3452947694",
+        "-3434965409"
+      ]
+    },
+    {
+      "stock_code": "031820",
+      "isin": "KR7031820004",
+      "corp": "00186559",
+      "receipt": "20210601000398",
+      "version": "amendment_or_other",
+      "filed": "20210601",
+      "start_session": "20210602",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "24e4e6452ba87fc4101aa2828d6baee1e13888f8a70d4429fd55c1ccbcb84077",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210601000398&dcm_no=8095442&lang=ko",
+      "revenue": [
+        "54747612854",
+        "37212014771"
+      ],
+      "operating_profit": [
+        "-3452947694",
+        "-3434965409"
+      ]
+    },
+    {
+      "stock_code": "336370",
+      "isin": "KR7336370002",
+      "corp": "01412822",
+      "receipt": "20210528001229",
+      "version": "original",
+      "filed": "20210528",
+      "start_session": "20210531",
+      "stop_session_exclusive": "20210604",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "13ca76ecfa5aec5d5c60e9395498898cee90ad97c62836032a5696643ba1d5ba",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210528001229&dcm_no=8089900&lang=ko",
+      "revenue": [
+        "88758655146",
+        "70923954773"
+      ],
+      "operating_profit": [
+        "405847794",
+        "8900051988"
+      ]
+    },
+    {
+      "stock_code": "336370",
+      "isin": "KR7336370002",
+      "corp": "01412822",
+      "receipt": "20210603000212",
+      "version": "amendment_or_other",
+      "filed": "20210603",
+      "start_session": "20210604",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "5440dd0359b49abb0fb49ae971527a0f83d5418ae398154f530b3d3a23c963b9",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210603000212&dcm_no=8098091&lang=ko",
+      "revenue": [
+        "88758655146",
+        "70923954773"
+      ],
+      "operating_profit": [
+        "405847794",
+        "8900051988"
+      ]
+    },
+    {
+      "stock_code": "003230",
+      "isin": "KR7003230000",
+      "corp": "00126955",
+      "receipt": "20210517000900",
+      "version": "original",
+      "filed": "20210517",
+      "start_session": "20210518",
+      "stop_session_exclusive": "20210609",
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "ed9c650a3628d1a6fd1837f45ba9e005bcebcddea81cfda6501b0884d14a2dd4",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517000900&dcm_no=8072837&lang=ko",
+      "revenue": [
+        "140005906880",
+        "156384418000"
+      ],
+      "operating_profit": [
+        "14357546242",
+        "26677991807"
+      ]
+    },
+    {
+      "stock_code": "003230",
+      "isin": "KR7003230000",
+      "corp": "00126955",
+      "receipt": "20210608000309",
+      "version": "amendment_or_other",
+      "filed": "20210608",
+      "start_session": "20210609",
+      "stop_session_exclusive": null,
+      "bounded_to": "20210630",
+      "same_day_quarantined": false,
+      "sha256": "2a74f1f1b81410b08c79bea8e3f28aa204381ced796aaecc8888a03c8d6a123f",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210608000309&dcm_no=8102120&lang=ko",
+      "revenue": [
+        "140005906880",
+        "156384418000"
+      ],
+      "operating_profit": [
+        "14357546242",
+        "26677991807"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+[
+  {
+    "receipt": "20210517001140",
+    "document": "8073409",
+    "corp": "00219574",
+    "archive_sha256": "ea74f7e1ddae2fd6fdc888ef9b112cfe7ea137abb273d2e6237c0e0812f67940",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "424",
+    "prior_as_reported": "-28",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001140&dcmNo=8073409&eleId=14&offset=259802&length=69705&dtd=dart3.xsd",
+        "sha256": "97c54796445082bccfcfce9910f6a16be773cc095c22a38f4d3fa046b32d7e6f",
+        "table": 3,
+        "row": 31,
+        "label": "기본주당순이익(단위:원)",
+        "values": [
+          "424",
+          "-28"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001140&dcmNo=8073409&eleId=15&offset=329511&length=346158&dtd=dart3.xsd",
+        "sha256": "beb92e0e6de48f86351a4b389c290f7976df0bfb860f783e0f3afb26265b3d28",
+        "table": 80,
+        "row": 4,
+        "label": "기본주당연결분기순이익",
+        "values": [
+          "424",
+          "-28"
+        ],
+        "basis": "가중평균유통보통주식수(주)"
+      }
+    ],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "same_receipt_statement_note_and_xbrl_agree",
+    "economic_unit": "KRW/share",
+    "unit_basis": "display statement + ordinary basic EPS note; original XBRL unit retained",
+    "stock_code": "044820",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517000210",
+    "document": "8071071",
+    "corp": "00159795",
+    "archive_sha256": "e342b2113f6cfab2eaeefc20694dbafef3936238b89d597c95de09cb09c09626",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000210&dcmNo=8071071&eleId=14&offset=270146&length=74763&dtd=dart3.xsd",
+        "sha256": "03f5aa95bee2be51eef71a057e643859a0e8161e94ac255e8bbf25f5ca1e22bb",
+        "table": 3,
+        "row": 28,
+        "label": "기본주당이익(손실)(단위:원)",
+        "values": [
+          "177",
+          "247"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "per_share_note_present_requires_explicit_reconciliation",
+    "stock_code": "017960",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517001189",
+    "document": "8073532",
+    "corp": "00116824",
+    "archive_sha256": "8626393d09f9d071e03e1af7d79b256e9c02a7e904b2ec12300fea0672fc33ec",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001189&dcmNo=8073532&eleId=14&offset=306810&length=96518&dtd=dart3.xsd",
+        "sha256": "7d75b40dea70e464b36b03e27e99f752d89e2d012117c02fc4ea4b1b26571cd6",
+        "table": 3,
+        "row": 48,
+        "label": "기본주당순이익(단위:원)",
+        "values": [
+          "131",
+          "1370"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "lifetime_common_only_issuance_not_proved",
+    "stock_code": "000640",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210513000780",
+    "document": "8066770",
+    "corp": "00137809",
+    "archive_sha256": "dddcfb5698fbf8e2fe8f20423918715b8fe8288a5a518b5df8cd3ba2a727f838",
+    "status": "BLOCKED",
+    "first_publication": "UNASSESSED",
+    "current": null,
+    "prior_as_reported": null,
+    "reason": "missing_or_conflicting_xbrl_basic_eps",
+    "stock_code": "001770",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517000849",
+    "document": "8072702",
+    "corp": "00103042",
+    "archive_sha256": "8035d3110664537cb3e2f7c53d791337df05ea720342c076d33b6dae48686dff",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "95",
+    "prior_as_reported": "98",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000849&dcmNo=8072702&eleId=14&offset=275002&length=63722&dtd=dart3.xsd",
+        "sha256": "1809b513fafdacd05df2be4dfd0ae264a03479dd5bffc55528c7d59577e72d03",
+        "table": 3,
+        "row": 29,
+        "label": "기본주당이익(손실)(단위:원)",
+        "values": [
+          "95",
+          "98"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "basic_face_and_xbrl_agree_with_lifetime_ordinary_only_issuance",
+    "economic_unit": "KRW/share",
+    "share_evidence": {
+      "table": 1,
+      "header": [
+        "보통주",
+        "종류주식",
+        "합계"
+      ],
+      "common_share_counts": {
+        "issued": 30000000,
+        "reduced": 0,
+        "balance": 30000000
+      },
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517000849&dcmNo=8072702&eleId=7&offset=57785&length=29261&dtd=dart3.xsd",
+      "sha256": "91175c9c3f99bc9db7217f683a81b14aaf4ebbfec06a1ca664b76fee41402514"
+    },
+    "stock_code": "009070",
+    "reported_positive_base": true,
+    "same_receipt_growth": "-0.0306122448979591836734693878",
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517001750",
+    "document": "8075017",
+    "corp": "00170558",
+    "archive_sha256": "aa00cbc6f9aec4ad82a081a1f966944b8a98f3ed80b06b187d1554e639abb73b",
+    "status": "PASS",
+    "first_publication": "UNASSESSED",
+    "current": "1734",
+    "prior_as_reported": "1404",
+    "statement_evidence": [
+      {
+        "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001750&dcmNo=8075017&eleId=14&offset=203744&length=66067&dtd=dart3.xsd",
+        "sha256": "be4449e9839d29085f1a1447e33f2e442a7da8014c2b6470829d103f43dd89e1",
+        "table": 3,
+        "row": 27,
+        "label": "기본주당이익(손실)(단위:원)",
+        "values": [
+          "1734",
+          "1404"
+        ],
+        "basis": "원; 당분기·전년동기 3개월 열"
+      }
+    ],
+    "note_evidence": [],
+    "xbrl_units": [
+      "shares"
+    ],
+    "reason": "basic_face_and_xbrl_agree_with_lifetime_ordinary_only_issuance",
+    "economic_unit": "KRW/share",
+    "share_evidence": {
+      "table": 1,
+      "header": [
+        "의결권있는보통주",
+        "의결권없는우선주",
+        "합계"
+      ],
+      "common_share_counts": {
+        "issued": 81324796,
+        "reduced": 7525177,
+        "balance": 73799619
+      },
+      "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210517001750&dcmNo=8075017&eleId=7&offset=39601&length=22558&dtd=dart3.xsd",
+      "sha256": "cab40d4b6ff537156ab7ae0a5477c45314079063fe76f53e4de71b03dd761b7a"
+    },
+    "stock_code": "021240",
+    "reported_positive_base": true,
+    "same_receipt_growth": "0.235042735042735042735042735",
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517002041",
+    "stock_code": "006800",
+    "status": "BLOCKED",
+    "reason": "no_archived_xbrl_facts",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  },
+  {
+    "receipt": "20210517001542",
+    "stock_code": "105560",
+    "status": "BLOCKED",
+    "reason": "no_archived_xbrl_facts",
+    "reported_positive_base": false,
+    "same_receipt_growth": null,
+    "corporate_action_comparability": "not_independently_certified",
+    "strategy_eligible": false
+  }
+]

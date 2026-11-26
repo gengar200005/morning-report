@@ -1,0 +1,342 @@
+{
+  "manual_sha256": "0a6dabf3e8d843de90d1b0f996928c1c60faae4bac502e99c330ddfab2d69004",
+  "automated_sha256": "96c83256fb60a6975487d0869afd2752c1b7286ef1bc2ba8e6d38b4fea38233f",
+  "independent_source_confirmation": "same KIND original raw SHA, receipt, official URL, DART candidate and historical ISIN",
+  "filings": 11,
+  "numeric_pairs": 16,
+  "numeric_cells": 32,
+  "missing_pairs": 6,
+  "mismatched_pairs": 0,
+  "details": [
+    {
+      "isin": "KR7019490002",
+      "stock_code": "019490",
+      "field": "revenue",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7019490002",
+      "stock_code": "019490",
+      "field": "operating_profit",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7014990006",
+      "stock_code": "014990",
+      "field": "revenue",
+      "expected": [
+        34719148677,
+        34209640288
+      ],
+      "observed": [
+        34719148677,
+        34209640288
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7014990006",
+      "stock_code": "014990",
+      "field": "operating_profit",
+      "expected": [
+        -9037601090,
+        -4359095488
+      ],
+      "observed": [
+        -9037601090,
+        -4359095488
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7317400000",
+      "stock_code": "317400",
+      "field": "revenue",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7317400000",
+      "stock_code": "317400",
+      "field": "operating_profit",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7004150009",
+      "stock_code": "004150",
+      "field": "revenue",
+      "expected": [
+        96966421000,
+        92141006000
+      ],
+      "observed": [
+        96966421000,
+        92141006000
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7004150009",
+      "stock_code": "004150",
+      "field": "operating_profit",
+      "expected": [
+        6504482000,
+        3187837000
+      ],
+      "observed": [
+        6504482000,
+        3187837000
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7005420005",
+      "stock_code": "005420",
+      "field": "revenue",
+      "expected": [
+        127103425159,
+        80855113086
+      ],
+      "observed": [
+        127103425159,
+        80855113086
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7005420005",
+      "stock_code": "005420",
+      "field": "operating_profit",
+      "expected": [
+        8453739011,
+        1583136544
+      ],
+      "observed": [
+        8453739011,
+        1583136544
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7081000002",
+      "stock_code": "081000",
+      "field": "revenue",
+      "expected": [
+        35064075671,
+        35166734301
+      ],
+      "observed": [
+        35064075671,
+        35166734301
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7081000002",
+      "stock_code": "081000",
+      "field": "operating_profit",
+      "expected": [
+        924053467,
+        3073724402
+      ],
+      "observed": [
+        924053467,
+        3073724402
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7024110009",
+      "stock_code": "024110",
+      "field": "revenue",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7024110009",
+      "stock_code": "024110",
+      "field": "operating_profit",
+      "expected": [
+        780331000000,
+        661321000000
+      ],
+      "observed": [
+        780331000000,
+        661321000000
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7161390000",
+      "stock_code": "161390",
+      "field": "revenue",
+      "expected": [
+        1616835926098,
+        1435764699942
+      ],
+      "observed": [
+        1616835926098,
+        1435764699942
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7161390000",
+      "stock_code": "161390",
+      "field": "operating_profit",
+      "expected": [
+        186022868363,
+        106000067434
+      ],
+      "observed": [
+        186022868363,
+        106000067434
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7139130009",
+      "stock_code": "139130",
+      "field": "revenue",
+      "expected": [
+        null,
+        null
+      ],
+      "observed": [
+        null,
+        null
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7139130009",
+      "stock_code": "139130",
+      "field": "operating_profit",
+      "expected": [
+        178369889648,
+        133273580039
+      ],
+      "observed": [
+        178369889648,
+        133273580039
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7002270007",
+      "stock_code": "002270",
+      "field": "revenue",
+      "expected": [
+        413201320081,
+        409198305236
+      ],
+      "observed": [
+        413201320081,
+        409198305236
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7002270007",
+      "stock_code": "002270",
+      "field": "operating_profit",
+      "expected": [
+        10764438598,
+        9940154001
+      ],
+      "observed": [
+        10764438598,
+        9940154001
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7058730003",
+      "stock_code": "058730",
+      "field": "revenue",
+      "expected": [
+        53183270463,
+        41993067709
+      ],
+      "observed": [
+        53183270463,
+        41993067709
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    },
+    {
+      "isin": "KR7058730003",
+      "stock_code": "058730",
+      "field": "operating_profit",
+      "expected": [
+        -3575630414,
+        -1770065729
+      ],
+      "observed": [
+        -3575630414,
+        -1770065729
+      ],
+      "observed_field_status": "BLOCKED",
+      "equal": true
+    }
+  ]
+}

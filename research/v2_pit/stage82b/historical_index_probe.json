@@ -1,0 +1,66 @@
+{
+  "2017": {
+    "opendart_xbrl": {
+      "first_page_reports": 100,
+      "bytes": 108373,
+      "sha256": "1d66963e460c5ba5fdd5de4952ae6dc0e2c47800f9539b64310cb7012a2078a4",
+      "requested_year_detected": true,
+      "source": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do"
+    },
+    "kind": {
+      "first_page_reports": 0,
+      "bytes": 1650,
+      "sha256": "42c2976acb7df0c9718b465c8c50d6c453875b6d2b82c0edc5f4388985caab33",
+      "requested_year_detected": false,
+      "source": "https://kind.krx.co.kr/disclosure/details.do"
+    }
+  },
+  "2018": {
+    "opendart_xbrl": {
+      "first_page_reports": 100,
+      "bytes": 107023,
+      "sha256": "d7fd8cca3fb44030610c1d65bed450465234d00b3b1db59c9d4b18e03eb7fa04",
+      "requested_year_detected": true,
+      "source": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do"
+    },
+    "kind": {
+      "first_page_reports": 0,
+      "bytes": 1650,
+      "sha256": "42c2976acb7df0c9718b465c8c50d6c453875b6d2b82c0edc5f4388985caab33",
+      "requested_year_detected": false,
+      "source": "https://kind.krx.co.kr/disclosure/details.do"
+    }
+  },
+  "2019": {
+    "opendart_xbrl": {
+      "first_page_reports": 100,
+      "bytes": 110349,
+      "sha256": "3af546342371f0bea2ac6e2584eef9a88b07852e9e016e45317b66c3b0561532",
+      "requested_year_detected": true,
+      "source": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do"
+    },
+    "kind": {
+      "first_page_reports": 0,
+      "bytes": 1650,
+      "sha256": "42c2976acb7df0c9718b465c8c50d6c453875b6d2b82c0edc5f4388985caab33",
+      "requested_year_detected": false,
+      "source": "https://kind.krx.co.kr/disclosure/details.do"
+    }
+  },
+  "2020": {
+    "opendart_xbrl": {
+      "first_page_reports": 100,
+      "bytes": 108734,
+      "sha256": "945af3a922ace8be9406dc3658c3c80fc1da3e8da972401bf5428e46666f37eb",
+      "requested_year_detected": true,
+      "source": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do"
+    },
+    "kind": {
+      "first_page_reports": 0,
+      "bytes": 1650,
+      "sha256": "42c2976acb7df0c9718b465c8c50d6c453875b6d2b82c0edc5f4388985caab33",
+      "requested_year_detected": false,
+      "source": "https://kind.krx.co.kr/disclosure/details.do"
+    }
+  }
+}

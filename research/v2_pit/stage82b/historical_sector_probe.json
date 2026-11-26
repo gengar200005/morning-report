@@ -1,0 +1,87 @@
+{
+  "2017": {
+    "G40": {
+      "date": "20170102",
+      "n": 76,
+      "verified": true,
+      "sha256": "46076126bb2f8935547815897120136c2aa77c7ced89c1d99f02e62617076c88"
+    },
+    "G45": {
+      "date": "20170102",
+      "n": 535,
+      "verified": true,
+      "sha256": "9d20192b203db1098a854c497487b615e9b5762282e26c6f2db324f5353a9405"
+    },
+    "A003": {
+      "error": "HTTPError"
+    }
+  },
+  "2018": {
+    "G40": {
+      "date": "20180102",
+      "n": 74,
+      "verified": true,
+      "sha256": "9adc42f85a46f14f54eacc83447277cc6da73ba52cd5a101f12e8f063a4770f0"
+    },
+    "G45": {
+      "date": "20180102",
+      "n": 574,
+      "verified": true,
+      "sha256": "4fb5670bb415e9448ae381d4fb8688b36d80c375645749f562f3dbb0c1a40f09"
+    },
+    "A003": {
+      "error": "HTTPError"
+    }
+  },
+  "2019": {
+    "G40": {
+      "date": "20190102",
+      "n": 77,
+      "verified": true,
+      "sha256": "230958ac3d9907760fd8112c5445673953c77016bd4bb0552bac9d7f5687527f"
+    },
+    "G45": {
+      "date": "20190102",
+      "n": 584,
+      "verified": true,
+      "sha256": "2bdb9d6face9b1c068354c0fd8dc6635361955c2336fda2499cbd9f30761a54e"
+    },
+    "A003": {
+      "error": "HTTPError"
+    }
+  },
+  "2020": {
+    "G40": {
+      "date": "20200102",
+      "n": 74,
+      "verified": true,
+      "sha256": "8b0b8a54709b933fc14e52749f5d1e43bf1bac10a6b9d75fe53af61750e062fe"
+    },
+    "G45": {
+      "date": "20200102",
+      "n": 551,
+      "verified": true,
+      "sha256": "62ab4e13066b5fb1f4d2aac269def0a6dd7ec0b9c9ff3d36369cd003eac74a67"
+    },
+    "A003": {
+      "error": "HTTPError"
+    }
+  },
+  "2021": {
+    "G40": {
+      "date": "20210104",
+      "n": 141,
+      "verified": true,
+      "sha256": "d9bc0b0ab9f7e0d30ea9b629888700f9eec2a4e0ee41b95b8e24907ad467df7c"
+    },
+    "G45": {
+      "date": "20210104",
+      "n": 558,
+      "verified": true,
+      "sha256": "88cf72d4621b74fd34a867e788e8fcfc5934446658e06c35299667c79178a5ad"
+    },
+    "A003": {
+      "error": "HTTPError"
+    }
+  }
+}

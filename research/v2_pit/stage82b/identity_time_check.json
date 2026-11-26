@@ -1,0 +1,615 @@
+{
+  "purpose": "independent_time_check_on_already_saved_DART_recent_disclosure_pages",
+  "n": 120,
+  "delta_minutes_KIND_minus_DART": {
+    "0": 109,
+    "1": 11
+  },
+  "sources": {
+    "day.html": "bb09ebcbe48eded983ea8f3654e077dabdf75bb435843749c38868775f426653",
+    "market.html": "44a055fea827d653f5aa309b4a14368792e4f4f610780f699b3df16c8462e96b",
+    "mainY.doGET": "148b70d584ed831d67d41b25e805ea3e3be4d0d0711178b6474e7a9bf13ccb0f"
+  },
+  "rows": [
+    {
+      "receipt": "20210517001721",
+      "dart_time": "16:51",
+      "kind_time": "16:51"
+    },
+    {
+      "receipt": "20210517001722",
+      "dart_time": "16:51",
+      "kind_time": "16:51"
+    },
+    {
+      "receipt": "20210517001739",
+      "dart_time": "16:54",
+      "kind_time": "16:54"
+    },
+    {
+      "receipt": "20210517001743",
+      "dart_time": "16:54",
+      "kind_time": "16:54"
+    },
+    {
+      "receipt": "20210517001749",
+      "dart_time": "16:55",
+      "kind_time": "16:55"
+    },
+    {
+      "receipt": "20210517001750",
+      "dart_time": "16:55",
+      "kind_time": "16:55"
+    },
+    {
+      "receipt": "20210517001751",
+      "dart_time": "16:55",
+      "kind_time": "16:55"
+    },
+    {
+      "receipt": "20210517001754",
+      "dart_time": "16:55",
+      "kind_time": "16:55"
+    },
+    {
+      "receipt": "20210517001755",
+      "dart_time": "16:55",
+      "kind_time": "16:55"
+    },
+    {
+      "receipt": "20210517001764",
+      "dart_time": "16:56",
+      "kind_time": "16:56"
+    },
+    {
+      "receipt": "20210517001765",
+      "dart_time": "16:56",
+      "kind_time": "16:56"
+    },
+    {
+      "receipt": "20210517001766",
+      "dart_time": "16:56",
+      "kind_time": "16:56"
+    },
+    {
+      "receipt": "20210517001770",
+      "dart_time": "16:57",
+      "kind_time": "16:57"
+    },
+    {
+      "receipt": "20210517001777",
+      "dart_time": "16:58",
+      "kind_time": "16:58"
+    },
+    {
+      "receipt": "20210517001781",
+      "dart_time": "16:58",
+      "kind_time": "16:58"
+    },
+    {
+      "receipt": "20210517001789",
+      "dart_time": "16:59",
+      "kind_time": "16:59"
+    },
+    {
+      "receipt": "20210517001795",
+      "dart_time": "16:59",
+      "kind_time": "16:59"
+    },
+    {
+      "receipt": "20210517001798",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001801",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001805",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001807",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001808",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001810",
+      "dart_time": "17:00",
+      "kind_time": "17:00"
+    },
+    {
+      "receipt": "20210517001812",
+      "dart_time": "17:01",
+      "kind_time": "17:01"
+    },
+    {
+      "receipt": "20210517001813",
+      "dart_time": "17:01",
+      "kind_time": "17:01"
+    },
+    {
+      "receipt": "20210517001816",
+      "dart_time": "17:01",
+      "kind_time": "17:01"
+    },
+    {
+      "receipt": "20210517001817",
+      "dart_time": "17:01",
+      "kind_time": "17:01"
+    },
+    {
+      "receipt": "20210517001821",
+      "dart_time": "17:01",
+      "kind_time": "17:01"
+    },
+    {
+      "receipt": "20210517001822",
+      "dart_time": "17:01",
+      "kind_time": "17:02"
+    },
+    {
+      "receipt": "20210517001827",
+      "dart_time": "17:02",
+      "kind_time": "17:02"
+    },
+    {
+      "receipt": "20210517001831",
+      "dart_time": "17:02",
+      "kind_time": "17:02"
+    },
+    {
+      "receipt": "20210517001832",
+      "dart_time": "17:02",
+      "kind_time": "17:02"
+    },
+    {
+      "receipt": "20210517001833",
+      "dart_time": "17:03",
+      "kind_time": "17:03"
+    },
+    {
+      "receipt": "20210517001844",
+      "dart_time": "17:04",
+      "kind_time": "17:04"
+    },
+    {
+      "receipt": "20210517001851",
+      "dart_time": "17:05",
+      "kind_time": "17:05"
+    },
+    {
+      "receipt": "20210517001852",
+      "dart_time": "17:05",
+      "kind_time": "17:05"
+    },
+    {
+      "receipt": "20210517001855",
+      "dart_time": "17:05",
+      "kind_time": "17:05"
+    },
+    {
+      "receipt": "20210517001860",
+      "dart_time": "17:05",
+      "kind_time": "17:05"
+    },
+    {
+      "receipt": "20210517001861",
+      "dart_time": "17:05",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001862",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001863",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001864",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001867",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001872",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001873",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001875",
+      "dart_time": "17:06",
+      "kind_time": "17:06"
+    },
+    {
+      "receipt": "20210517001876",
+      "dart_time": "17:06",
+      "kind_time": "17:07"
+    },
+    {
+      "receipt": "20210517001883",
+      "dart_time": "17:08",
+      "kind_time": "17:08"
+    },
+    {
+      "receipt": "20210517001885",
+      "dart_time": "17:08",
+      "kind_time": "17:08"
+    },
+    {
+      "receipt": "20210517001899",
+      "dart_time": "17:10",
+      "kind_time": "17:10"
+    },
+    {
+      "receipt": "20210517001907",
+      "dart_time": "17:11",
+      "kind_time": "17:11"
+    },
+    {
+      "receipt": "20210517001910",
+      "dart_time": "17:11",
+      "kind_time": "17:11"
+    },
+    {
+      "receipt": "20210517001911",
+      "dart_time": "17:11",
+      "kind_time": "17:11"
+    },
+    {
+      "receipt": "20210517001913",
+      "dart_time": "17:11",
+      "kind_time": "17:12"
+    },
+    {
+      "receipt": "20210517001918",
+      "dart_time": "17:12",
+      "kind_time": "17:12"
+    },
+    {
+      "receipt": "20210517001924",
+      "dart_time": "17:13",
+      "kind_time": "17:13"
+    },
+    {
+      "receipt": "20210517001925",
+      "dart_time": "17:13",
+      "kind_time": "17:13"
+    },
+    {
+      "receipt": "20210517001932",
+      "dart_time": "17:14",
+      "kind_time": "17:14"
+    },
+    {
+      "receipt": "20210517001936",
+      "dart_time": "17:14",
+      "kind_time": "17:14"
+    },
+    {
+      "receipt": "20210517001947",
+      "dart_time": "17:15",
+      "kind_time": "17:15"
+    },
+    {
+      "receipt": "20210517001948",
+      "dart_time": "17:15",
+      "kind_time": "17:15"
+    },
+    {
+      "receipt": "20210517001953",
+      "dart_time": "17:15",
+      "kind_time": "17:15"
+    },
+    {
+      "receipt": "20210517001956",
+      "dart_time": "17:15",
+      "kind_time": "17:16"
+    },
+    {
+      "receipt": "20210517001957",
+      "dart_time": "17:16",
+      "kind_time": "17:16"
+    },
+    {
+      "receipt": "20210517001966",
+      "dart_time": "17:16",
+      "kind_time": "17:17"
+    },
+    {
+      "receipt": "20210517001967",
+      "dart_time": "17:16",
+      "kind_time": "17:17"
+    },
+    {
+      "receipt": "20210517001969",
+      "dart_time": "17:17",
+      "kind_time": "17:17"
+    },
+    {
+      "receipt": "20210517001970",
+      "dart_time": "17:17",
+      "kind_time": "17:17"
+    },
+    {
+      "receipt": "20210517001972",
+      "dart_time": "17:18",
+      "kind_time": "17:18"
+    },
+    {
+      "receipt": "20210517001974",
+      "dart_time": "17:18",
+      "kind_time": "17:18"
+    },
+    {
+      "receipt": "20210517001976",
+      "dart_time": "17:19",
+      "kind_time": "17:19"
+    },
+    {
+      "receipt": "20210517001977",
+      "dart_time": "17:19",
+      "kind_time": "17:19"
+    },
+    {
+      "receipt": "20210517001979",
+      "dart_time": "17:19",
+      "kind_time": "17:19"
+    },
+    {
+      "receipt": "20210517001980",
+      "dart_time": "17:19",
+      "kind_time": "17:19"
+    },
+    {
+      "receipt": "20210517001981",
+      "dart_time": "17:19",
+      "kind_time": "17:19"
+    },
+    {
+      "receipt": "20210517001987",
+      "dart_time": "17:20",
+      "kind_time": "17:21"
+    },
+    {
+      "receipt": "20210517001988",
+      "dart_time": "17:21",
+      "kind_time": "17:21"
+    },
+    {
+      "receipt": "20210517001989",
+      "dart_time": "17:21",
+      "kind_time": "17:21"
+    },
+    {
+      "receipt": "20210517001997",
+      "dart_time": "17:22",
+      "kind_time": "17:22"
+    },
+    {
+      "receipt": "20210517002001",
+      "dart_time": "17:22",
+      "kind_time": "17:23"
+    },
+    {
+      "receipt": "20210517002008",
+      "dart_time": "17:23",
+      "kind_time": "17:23"
+    },
+    {
+      "receipt": "20210517002013",
+      "dart_time": "17:24",
+      "kind_time": "17:24"
+    },
+    {
+      "receipt": "20210517002014",
+      "dart_time": "17:24",
+      "kind_time": "17:24"
+    },
+    {
+      "receipt": "20210517002015",
+      "dart_time": "17:24",
+      "kind_time": "17:24"
+    },
+    {
+      "receipt": "20210517002017",
+      "dart_time": "17:24",
+      "kind_time": "17:24"
+    },
+    {
+      "receipt": "20210517002020",
+      "dart_time": "17:25",
+      "kind_time": "17:25"
+    },
+    {
+      "receipt": "20210517002022",
+      "dart_time": "17:26",
+      "kind_time": "17:26"
+    },
+    {
+      "receipt": "20210517002025",
+      "dart_time": "17:26",
+      "kind_time": "17:26"
+    },
+    {
+      "receipt": "20210517002026",
+      "dart_time": "17:26",
+      "kind_time": "17:26"
+    },
+    {
+      "receipt": "20210517002033",
+      "dart_time": "17:27",
+      "kind_time": "17:27"
+    },
+    {
+      "receipt": "20210517002036",
+      "dart_time": "17:27",
+      "kind_time": "17:27"
+    },
+    {
+      "receipt": "20210517002037",
+      "dart_time": "17:27",
+      "kind_time": "17:27"
+    },
+    {
+      "receipt": "20210517002041",
+      "dart_time": "17:28",
+      "kind_time": "17:28"
+    },
+    {
+      "receipt": "20210517002046",
+      "dart_time": "17:28",
+      "kind_time": "17:28"
+    },
+    {
+      "receipt": "20210517002054",
+      "dart_time": "17:29",
+      "kind_time": "17:29"
+    },
+    {
+      "receipt": "20210517002056",
+      "dart_time": "17:29",
+      "kind_time": "17:29"
+    },
+    {
+      "receipt": "20210517002063",
+      "dart_time": "17:30",
+      "kind_time": "17:30"
+    },
+    {
+      "receipt": "20210517002074",
+      "dart_time": "17:32",
+      "kind_time": "17:33"
+    },
+    {
+      "receipt": "20210517002075",
+      "dart_time": "17:33",
+      "kind_time": "17:33"
+    },
+    {
+      "receipt": "20210517002077",
+      "dart_time": "17:33",
+      "kind_time": "17:33"
+    },
+    {
+      "receipt": "20210517002080",
+      "dart_time": "17:33",
+      "kind_time": "17:33"
+    },
+    {
+      "receipt": "20210517002087",
+      "dart_time": "17:34",
+      "kind_time": "17:34"
+    },
+    {
+      "receipt": "20210517002089",
+      "dart_time": "17:34",
+      "kind_time": "17:34"
+    },
+    {
+      "receipt": "20210517002093",
+      "dart_time": "17:34",
+      "kind_time": "17:34"
+    },
+    {
+      "receipt": "20210517002096",
+      "dart_time": "17:35",
+      "kind_time": "17:35"
+    },
+    {
+      "receipt": "20210517002106",
+      "dart_time": "17:36",
+      "kind_time": "17:36"
+    },
+    {
+      "receipt": "20210517002118",
+      "dart_time": "17:39",
+      "kind_time": "17:39"
+    },
+    {
+      "receipt": "20210517002130",
+      "dart_time": "17:41",
+      "kind_time": "17:41"
+    },
+    {
+      "receipt": "20210517002136",
+      "dart_time": "17:43",
+      "kind_time": "17:43"
+    },
+    {
+      "receipt": "20210517002139",
+      "dart_time": "17:43",
+      "kind_time": "17:43"
+    },
+    {
+      "receipt": "20210517002148",
+      "dart_time": "17:47",
+      "kind_time": "17:47"
+    },
+    {
+      "receipt": "20210517002152",
+      "dart_time": "17:47",
+      "kind_time": "17:47"
+    },
+    {
+      "receipt": "20210517002159",
+      "dart_time": "17:48",
+      "kind_time": "17:48"
+    },
+    {
+      "receipt": "20210517002162",
+      "dart_time": "17:49",
+      "kind_time": "17:49"
+    },
+    {
+      "receipt": "20210517002165",
+      "dart_time": "17:52",
+      "kind_time": "17:52"
+    },
+    {
+      "receipt": "20210517002166",
+      "dart_time": "17:52",
+      "kind_time": "17:52"
+    },
+    {
+      "receipt": "20210517002177",
+      "dart_time": "17:55",
+      "kind_time": "17:55"
+    },
+    {
+      "receipt": "20210517002179",
+      "dart_time": "17:56",
+      "kind_time": "17:57"
+    },
+    {
+      "receipt": "20210517002195",
+      "dart_time": "18:07",
+      "kind_time": "18:07"
+    },
+    {
+      "receipt": "20210517002201",
+      "dart_time": "18:29",
+      "kind_time": "18:29"
+    }
+  ]
+}

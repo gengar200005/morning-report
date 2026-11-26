@@ -1,0 +1,455 @@
+{
+  "window": [
+    "2021-04-01",
+    "2021-06-30"
+  ],
+  "source_sha256": {
+    "사업보고서": {
+      "kind_export": "16ca9dd9904b26069cae14b119b07d70b812bbb80da5fe5146a1c7614a172c4f",
+      "kind_screen": "1a0eb381f62c006883ea6190659f053e3d769022f7b34e6eaa8fb39535ee9f87",
+      "opendart_index_query": {
+        "url": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do",
+        "method": "POST",
+        "textCrpCik": "",
+        "textCrpNm": "",
+        "startDate": "2021-04-01",
+        "endDate": "2021-06-30",
+        "rptType": "11011",
+        "recordCountPerPage": 100,
+        "sortStdr": "date",
+        "sortOrdr": "desc"
+      },
+      "opendart_pages": {
+        "1": "0ddc7f966ac2dffd973e3b68c722ee6561bfebbbbe8c21a6e7cebd0269a480a5",
+        "2": "cccc982a22ac624d68fb9d713c60c0cda9c413caeb0520a7091d1f1285c6d1ec",
+        "3": "881d70ee07e95376d6ff64fc2d4de7a8d7f3940e14cfe1166a65efc4a4395c32",
+        "4": "bd6f9e0f5c8de7eb95eef09490f11f17f0f6e8be4459641b9def9024e2c4611b"
+      }
+    },
+    "반기보고서": {
+      "kind_export": "06919d84ce1dda9728756b3b56ee9228d56ff8dabb98308cb9bbd894aa7000aa",
+      "kind_screen": "10d48f24d8d0861d8f9aa68b14cca13a36794fff2af11adc6de7597b03680507",
+      "opendart_index_query": {
+        "url": "https://opendart.fss.or.kr/disclosureinfo/fnltt/xbrl/list.do",
+        "method": "POST",
+        "textCrpCik": "",
+        "textCrpNm": "",
+        "startDate": "2021-04-01",
+        "endDate": "2021-06-30",
+        "rptType": "11012",
+        "recordCountPerPage": 100,
+        "sortStdr": "date",
+        "sortOrdr": "desc"
+      },
+      "opendart_pages": {
+        "1": "99563cfc7303dc3e06e073287f723d6474d031accb588da419acbb22acbebb0e"
+      }
+    }
+  },
+  "rows": [
+    {
+      "stock_code": "018500",
+      "isin": "KR7018500009",
+      "issuer_as_of": "동원금속",
+      "filing_date": "2021-06-28",
+      "first_available_session": "20210629",
+      "kind_receipt": "20210628000551",
+      "kind_filed_title": "[연결포함]사업보고서(일반법인)[정](2021.03)",
+      "document_type": "사업보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210628"
+      ],
+      "dart": {
+        "receipt": "20210628000381",
+        "document": "8123367",
+        "corp_code": "00118008",
+        "company": "동원모빌리티",
+        "title": "사업보고서 (2021.03)",
+        "received": "2021.06.28",
+        "market": "유가증권시장"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": []
+    },
+    {
+      "stock_code": "002630",
+      "isin": "KR7002630002",
+      "issuer_as_of": "오리엔트바이오",
+      "filing_date": "2021-06-29",
+      "first_available_session": "20210630",
+      "kind_receipt": "20210629000382",
+      "kind_filed_title": "[연결포함]사업보고서(일반법인)[정](2021.03)",
+      "document_type": "사업보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210629"
+      ],
+      "dart": {
+        "receipt": "20210629000331",
+        "document": "8124453",
+        "corp_code": "00141626",
+        "company": "오리엔트바이오",
+        "title": "사업보고서 (2021.03)",
+        "received": "2021.06.29",
+        "market": "유가증권시장"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": []
+    },
+    {
+      "stock_code": "001720",
+      "isin": "KR7001720002",
+      "issuer_as_of": "신영증권",
+      "filing_date": "2021-06-16",
+      "first_available_session": "20210617",
+      "kind_receipt": "20210616000344",
+      "kind_filed_title": "[연결포함]사업보고서(일반법인)(2021.03)",
+      "document_type": "사업보고서",
+      "identity": "KIND_ONLY",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210616"
+      ],
+      "dart": null,
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": null
+    },
+    {
+      "stock_code": "008110",
+      "isin": "KR7008110009",
+      "issuer_as_of": "대동전자",
+      "filing_date": "2021-06-17",
+      "first_available_session": "20210618",
+      "kind_receipt": "20210617000459",
+      "kind_filed_title": "[연결포함]사업보고서(일반법인)(2021.03)",
+      "document_type": "사업보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210617"
+      ],
+      "dart": {
+        "receipt": "20210617000340",
+        "document": "8112830",
+        "corp_code": "00157104",
+        "company": "대동전자",
+        "title": "사업보고서 (2021.03)",
+        "received": "2021.06.17",
+        "market": "기타법인"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": []
+    },
+    {
+      "stock_code": "092440",
+      "isin": "KR7092440007",
+      "issuer_as_of": "기신정기",
+      "filing_date": "2021-06-10",
+      "first_available_session": "20210611",
+      "kind_receipt": "20210610000250",
+      "kind_filed_title": "[연결포함]사업보고서(일반법인)(2021.03)",
+      "document_type": "사업보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210610"
+      ],
+      "dart": {
+        "receipt": "20210610000278",
+        "document": "8105188",
+        "corp_code": "00106614",
+        "company": "기신정기",
+        "title": "사업보고서 (2021.03)",
+        "received": "2021.06.10",
+        "market": "유가증권시장"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": [],
+      "statement": {
+        "source": {
+          "stock_code": "092440",
+          "kind_receipt": "20210610000250",
+          "filing_date": "2021.06.10",
+          "doc": "20210610000759",
+          "index": "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20210610000250",
+          "pointer": "https://kind.krx.co.kr/common/disclsviewer.do?method=searchContents&docNo=20210610000759",
+          "body": "https://kind.krx.co.kr/external/2021/06/10/000250/20210610000759/11011.htm",
+          "bytes": 1152639,
+          "sha256": "729b70ec6626f1cc98e1c140ddeb7c72ef9e3506caf9d6edf769fdc5cab555d1"
+        },
+        "index_sha256": "328ad2ac97a5616e154bbec69cc8537a29ce6dd3074c329036d8fe99cfadabac",
+        "pointer_sha256": "54d56d6962753025fcb725de70f639001c66821c085af66a0effed7a5fefef90",
+        "original_document_menu": [
+          "사업보고서(일반법인) (2021.06.10)"
+        ],
+        "table_section_ids": [
+          "toc_14",
+          "toc_15"
+        ],
+        "statement_header": [
+          [
+            "연결 포괄손익계산서"
+          ],
+          [
+            "제 33 기 2020.04.01 부터 2021.03.31 까지"
+          ],
+          [
+            "제 32 기 2019.04.01 부터 2020.03.31 까지"
+          ],
+          [
+            "제 31 기 2018.04.01 부터 2019.03.31 까지"
+          ],
+          [
+            "(단위 : 원)"
+          ]
+        ],
+        "columns": [
+          [
+            "",
+            "제 33 기",
+            "제 32 기",
+            "제 31 기"
+          ],
+          [
+            "매출액",
+            "128,459,666,433",
+            "124,649,549,539",
+            "118,992,210,077"
+          ]
+        ],
+        "quarter_only_status": "BLOCKED",
+        "scope": "CFS",
+        "currency": "KRW",
+        "scale": 1,
+        "reason": "annual_only_no_quarter_column"
+      }
+    },
+    {
+      "stock_code": "008870",
+      "isin": "KR7008870008",
+      "issuer_as_of": "금비",
+      "filing_date": "2021-05-17",
+      "first_available_session": "20210518",
+      "kind_receipt": "20210517000778",
+      "kind_filed_title": "반기보고서(일반법인)(2021.03)",
+      "document_type": "반기보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210517"
+      ],
+      "dart": {
+        "receipt": "20210517000724",
+        "document": "8072418",
+        "corp_code": "00168401",
+        "company": "금비",
+        "title": "반기보고서 (2021.03)",
+        "received": "2021.05.17",
+        "market": "유가증권시장"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": [],
+      "statement": {
+        "source": {
+          "stock_code": "008870",
+          "kind_receipt": "20210517000778",
+          "filing_date": "2021.05.17",
+          "doc": "20210517001817",
+          "index": "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20210517000778",
+          "pointer": "https://kind.krx.co.kr/common/disclsviewer.do?method=searchContents&docNo=20210517001817",
+          "body": "https://kind.krx.co.kr/external/2021/05/17/000778/20210517001817/11012.htm",
+          "bytes": 1345230,
+          "sha256": "d4839de8458875081f0c5d4542150ce81ef617fc095de40795a62adca7cc09f1"
+        },
+        "index_sha256": "8467b39bfc4512cbfc33c01888d2e186c1d197f62724d7e9f9f9b1e67823ba7e",
+        "pointer_sha256": "fb2e00aec64d55242b527dfc78c803b486b7f80837074ed0656f05f374ec4937",
+        "original_document_menu": [
+          "반기보고서(일반법인) (2021.05.17)"
+        ],
+        "table_section_ids": [
+          "toc_14",
+          "toc_15"
+        ],
+        "statement_header": [
+          [
+            "연결 포괄손익계산서"
+          ],
+          [
+            "제 49 기 반기 2020.10.01 부터 2021.03.31 까지"
+          ],
+          [
+            "제 48 기 반기 2019.10.01 부터 2020.03.31 까지"
+          ],
+          [
+            "(단위 : 원)"
+          ]
+        ],
+        "columns": [
+          [
+            "",
+            "제 49 기 반기",
+            "제 48 기 반기"
+          ],
+          [
+            "3개월",
+            "누적",
+            "3개월",
+            "누적"
+          ]
+        ],
+        "quarter_only_status": "PASS",
+        "scope": "CFS",
+        "currency": "KRW",
+        "scale": 1,
+        "revenue": {
+          "current": 54134919889,
+          "prior": 55446195083,
+          "label": "매출액",
+          "original_display": [
+            "54,134,919,889",
+            "109,424,974,378",
+            "55,446,195,083",
+            "109,838,960,624"
+          ]
+        },
+        "operating_profit": {
+          "current": 3876982039,
+          "prior": 2255653227,
+          "label": "영업이익(손실)",
+          "original_display": [
+            "3,876,982,039",
+            "6,948,564,267",
+            "2,255,653,227",
+            "3,165,628,144"
+          ]
+        },
+        "calendar_periods": [
+          [
+            "2021-01-01",
+            "2021-03-31"
+          ],
+          [
+            "2020-01-01",
+            "2020-03-31"
+          ]
+        ]
+      }
+    },
+    {
+      "stock_code": "003610",
+      "isin": "KR7003610003",
+      "issuer_as_of": "방림",
+      "filing_date": "2021-05-17",
+      "first_available_session": "20210518",
+      "kind_receipt": "20210517000324",
+      "kind_filed_title": "반기보고서(일반법인)(2021.03)",
+      "document_type": "반기보고서",
+      "identity": "PASS",
+      "krx_as_of_dates": [
+        "20210331",
+        "20210517"
+      ],
+      "dart": {
+        "receipt": "20210517000289",
+        "document": "8071460",
+        "corp_code": "00122348",
+        "company": "방림",
+        "title": "반기보고서 (2021.03)",
+        "received": "2021.05.17",
+        "market": "유가증권시장"
+      },
+      "kind_corrections_to_20210630": [],
+      "opendart_xbrl_corrections_to_20210630": [],
+      "statement": {
+        "source": {
+          "stock_code": "003610",
+          "kind_receipt": "20210517000324",
+          "filing_date": "2021.05.17",
+          "doc": "20210517000707",
+          "index": "https://kind.krx.co.kr/common/disclsviewer.do?method=search&acptno=20210517000324",
+          "pointer": "https://kind.krx.co.kr/common/disclsviewer.do?method=searchContents&docNo=20210517000707",
+          "body": "https://kind.krx.co.kr/external/2021/05/17/000324/20210517000707/11012.htm",
+          "bytes": 1394907,
+          "sha256": "f8576c02fa0f1739eff0e5cab52d9943824ffe902fa7511dbd306e1b699e88fe"
+        },
+        "index_sha256": "731bc56f11b87a4f91d6442edd6a0fe7fae83e5894ed21a5289f7b2b3b340052",
+        "pointer_sha256": "b7da54122f8f1b179df6933b14bf1a698f43f8f7312aa8aa730b44c14d3f9fc2",
+        "original_document_menu": [
+          "반기보고서(일반법인) (2021.05.17)"
+        ],
+        "table_section_ids": [
+          "toc_14",
+          "toc_15"
+        ],
+        "statement_header": [
+          [
+            "연결 포괄손익계산서"
+          ],
+          [
+            "제 60 기 반기 2020.10.01 부터 2021.03.31 까지"
+          ],
+          [
+            "제 59 기 반기 2019.10.01 부터 2020.03.31 까지"
+          ],
+          [
+            "(단위 : 원)"
+          ]
+        ],
+        "columns": [
+          [
+            "",
+            "제 60 기 반기",
+            "제 59 기 반기"
+          ],
+          [
+            "3개월",
+            "누적",
+            "3개월",
+            "누적"
+          ]
+        ],
+        "quarter_only_status": "PASS",
+        "scope": "CFS",
+        "currency": "KRW",
+        "scale": 1,
+        "revenue": {
+          "current": 33683470842,
+          "prior": 32239467552,
+          "label": "Ⅰ.수익(매출액)",
+          "original_display": [
+            "33,683,470,842",
+            "67,118,897,924",
+            "32,239,467,552",
+            "63,948,031,755"
+          ]
+        },
+        "operating_profit": {
+          "current": 2306474084,
+          "prior": 38176924,
+          "label": "Ⅴ.영업이익(손실)",
+          "original_display": [
+            "2,306,474,084",
+            "3,110,215,423",
+            "38,176,924",
+            "1,621,053,647"
+          ]
+        },
+        "calendar_periods": [
+          [
+            "2021-01-01",
+            "2021-03-31"
+          ],
+          [
+            "2020-01-01",
+            "2020-03-31"
+          ]
+        ]
+      }
+    }
+  ],
+  "dongsung_krx_last_observation_through_20210630": "20210415",
+  "no_imputed_quarter_values": true
+}

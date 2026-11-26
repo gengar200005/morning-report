@@ -1,0 +1,32 @@
+{
+  "stock_code": "058730",
+  "dated_original_DART_receipt": "20210517000345",
+  "dated_original_KIND_receipt": "20210517000380",
+  "amendment_DART_receipt": "20210525000116",
+  "amendment_KIND_receipt": "20210525000158",
+  "publication_kst": "2021-05-25 13:26",
+  "conservative_next_KRX_session": "2021-05-26",
+  "version_menu": [
+    [
+      "",
+      "본문선택"
+    ],
+    [
+      "20210517000867|N",
+      "분기보고서(일반법인) (2021.05.17)"
+    ],
+    [
+      "20210525000463|Y",
+      "[정정]분기보고서(일반법인) (2021.05.25)"
+    ]
+  ],
+  "full_original_html_sha256": "86c392d503157cdd4a1bd28b672f7b88ea6a4ae3877c4d2e63a766cddb68e22f",
+  "full_amendment_html_sha256": "87ed98988ebf24edcaf64a8061ff49f870411134e03e03bcd7480344f6276894",
+  "url": "https://kind.krx.co.kr/external/2021/05/25/000158/20210525000463/11013.htm",
+  "same_normalized_all_cfs_rows": true,
+  "cfs_table_row_counts": [
+    226,
+    226
+  ],
+  "amendment_scope": "The amendment table identifies section III.3 (consolidated statement notes) and III.5 (separate statement notes). All 226 rows of the consolidated statements proper matched between versions after whitespace normalization. Never match the notes based on section numbers alone."
+}

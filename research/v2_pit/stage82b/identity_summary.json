@@ -1,0 +1,60 @@
+{
+  "denominator": 782,
+  "statuses": {
+    "PASS": 772,
+    "BLOCKED": 10
+  },
+  "reasons": {
+    "same_ISIN_on_both_dates_unique_KIND_DART_original": 772,
+    "no_unique_KIND_202103_original": 9,
+    "no_unambiguous_cross_index_issuer_date_period_type": 1
+  },
+  "kind_rows": 824,
+  "source_sha256": {
+    "kind": {
+      "1": {
+        "screen": "43b7f4a87770b0ebaf37e22bd2f8774feefc0dbfb6f8b7ff78ec5f1f9496a552",
+        "export": "d123701e5cb4bec5cc5b5172d27dfb0cf14fea81c217105bab7e51889083fd52"
+      },
+      "2": {
+        "screen": "a8a049442bedb92706e1dc338bdfed1285ff22a779f215cb3444a17f79184a59",
+        "export": "e051af38f14ea92139c1924882597d5d87f3bb7c757649deccfc9ac7b57851da"
+      },
+      "3": {
+        "screen": "1926e0fdd667757cc3f4dc602cc6446c58a16fc55cd4ae935f3df939feb0fd27",
+        "export": "f1505f0b2df30b9f7b47959c1b029fd318781394d739e2106273444dc4be70a0"
+      },
+      "4": {
+        "screen": "9d0bd5891e316ab2eb41334fab991a79277521ae37e9b46cbdab26b729786a44",
+        "export": "5a2cc9912c5a58b2256890c91204230bffb493388201f53d00d07ca6b919b306"
+      },
+      "5": {
+        "screen": "f0b113b37ef9c0ff90193e19be9222e43e35c7a87ea9b99ef5678eb586fc28ef",
+        "export": "f85a3bc7742a09b18096874a1583baf60496935e494debc3303e6eac303267a8"
+      },
+      "6": {
+        "screen": "fe867c2be84c400ea90a41929dab8c1e8eb54896f1f632e0bf58aafa51d9dd9f",
+        "export": "ddd35629e8a87857b9830f87c3cf4716d98a7d55219bbc5772d1a235209d2a92"
+      },
+      "7": {
+        "screen": "ed18ae169170ae801c3deb7b7edb273bc59623929f287cb0a187109af37208ff",
+        "export": "1d79a662ad0e35108ee6c5b112fc3d3bb9bb5ec9a744b8eef0b44d2a7c931b03"
+      },
+      "8": {
+        "screen": "8f7505e8b02cb2c5cb9cb4d73120d4074b233536ac77b42a5c58e14a0f6d0017",
+        "export": "feb765ed7e1d6e9f88026a4da49baff1ae9eb36147a08237688917b9c77744d3"
+      },
+      "9": {
+        "screen": "c3b4649f6352294224c10e7e25d3b9b5f7153745b3c9c8d4f58a352fa3198633",
+        "export": "3994754768c9ee3d9bdbadd059171c4f1f0841908ae9cf27b0d126094199e2f5"
+      }
+    },
+    "dart_index": "c0b73754468ecb85bac9868760fd501af8466f144af236139d98f47c172931b7",
+    "krx_archives": {
+      "KRX_PIT_2021_03_v1.json.gz": "98763126961f999079c0ba82ea9c93c99bc813063ee93a1679fbaf341630f523",
+      "KRX_PIT_2021_04_v1.json.gz": "69ca4e2654534ff0dd3f8f522b1b9c937710ef7f40ac8ab0d6303466ec6a0f32",
+      "KRX_PIT_2021_05_v1.json.gz": "b5550e05d40aebb6bd4ec184b2213c5d02e32c2990bd48f10b4179e1e5fefa40",
+      "KRX_PIT_2021_06_v1.json.gz": "ec3060acc4e4d38988dc805186fe09cd5c03c2d1277be12825002be9657c0089"
+    }
+  }
+}
