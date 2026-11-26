@@ -1,0 +1,301 @@
+{
+  "scope": "bounded source access test; no prices, outcomes, ranks or expanded raw corpus",
+  "query_window": "April 1 to June 30 of each listed year",
+  "samples_selection": "fixed hash-240 June membership intersecting the first historical KIND page. Two later-delisted and two other firms selected for evidence availability only; this convenience subset is unsuitable for accuracy or coverage estimates.",
+  "indexes": {
+    "2017": {
+      "DART_all_market_A003": {
+        "bytes": 104900,
+        "sha256": "445c44b04e3238d4414515e3dd1b0c68456ba18021e0748f88e25e1539324cbd",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "[1/26] [총 2,543건]"
+      },
+      "OpenDART_all_market_quarter_XBRL": {
+        "bytes": 109934,
+        "sha256": "4b8adbd3be453dce29839a571968979ac24c93c69cbdebca83221f3a608c8be5",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "[1/21] [총 2,001건]"
+      },
+      "KIND_historical_KOSPI_0503": {
+        "bytes": 100277,
+        "sha256": "9faeb94e1f5111a06f43eec3410df244235767fe6651453a8280c1b2d6bd4a0e",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "전체 785건 : 1/8"
+      },
+      "KIND_export": {
+        "bytes": 34779,
+        "sha256": "0448e4205ef352c208a5799445e01b786d37deaaf08aa56882a99c7301cff5c3",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": null
+      },
+      "KIND_page1_fixed_June_240_matches": 27
+    },
+    "2019": {
+      "DART_all_market_A003": {
+        "bytes": 105560,
+        "sha256": "763e95fe9e71518c49d5e44eb3ecce10e081b40189ad8c1db9ca766da7f47741",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "[1/28] [총 2,704건]"
+      },
+      "OpenDART_all_market_quarter_XBRL": {
+        "bytes": 110338,
+        "sha256": "ba947bfb7a19ce309fa8e67165a5bd15def841e0f0ab3f9576ce15497fa77f87",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "[1/22] [총 2,142건]"
+      },
+      "KIND_historical_KOSPI_0503": {
+        "bytes": 104913,
+        "sha256": "e5a5cc3e15613bf64ac75917297e9e082a31c6b58531d6e14ea67dbc7d127f8b",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": "전체 827건 : 1/9"
+      },
+      "KIND_export": {
+        "bytes": 35947,
+        "sha256": "a6fc9f8599ef7977541d843f0847fb4485bc9e04c67a39199a0260f4d79c718f",
+        "page": 1,
+        "returned_data_rows": 100,
+        "displayed_pagination": null
+      },
+      "KIND_page1_fixed_June_240_matches": 22
+    }
+  },
+  "samples": [
+    {
+      "stock_code": "003560",
+      "historical_name": "IHQ",
+      "kind_name": "아이에이치큐",
+      "submitter": "아이에이치큐",
+      "kind_receipt": "20170515001112",
+      "timestamp": "2017-05-15 15:55",
+      "filing_date": "20170515",
+      "formation": "20170601",
+      "isin": "KR7003560000",
+      "subsequent_exit": "confirmed_delisted",
+      "title": "분기보고서(일반법인)(2017.03)",
+      "corp_code": "00154426",
+      "receipt": "20170515002877",
+      "document": "5651611",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170515002877&dcm_no=5651611&lang=ko",
+      "sha256": "035f4f8520be467f130ca656c87e206b1588525b0205cbb7f451e8ec5f700d5d",
+      "bytes": 137763,
+      "portal_index_sha256": "73c99abb22e57ecfb2483f5a6b2f6a7a6e8caae1649ee74f48e906b597945097",
+      "signed_fields": {
+        "current": {
+          "revenue": "23881591628",
+          "operating_profit": "1867845123"
+        },
+        "prior_as_reported": {
+          "revenue": "24206926111",
+          "operating_profit": "1045343992"
+        }
+      },
+      "current_quarter_scope_members_occurrences": {
+        "ConsolidatedMember": 6,
+        "SeparateMember": 5
+      },
+      "dart_listing": {
+        "search_url": "https://dart.fss.or.kr/dsab007/detailSearch.ax?currentPage=1&maxResults=100&maxLinks=10&startDate=20170401&endDate=20170630&textCrpCik=00154426&textCrpNm=%EC%95%84%EC%9D%B4%EC%97%90%EC%9D%B4%EC%B9%98%ED%81%90&businessCode=all&option=corp&sort=date&series=asc&corporationType=all&publicType=A003",
+        "sha256": "c48e90e7f0daa723616f757d05b6a6f7837c02a2f544398c3d72b9bf1ad9dca6",
+        "pagination": "[1/1] [총 1건]",
+        "quarter_original": [
+          "20170515002877",
+          "00154426",
+          "분기보고서(2017.03)",
+          "2017.05.15"
+        ],
+        "quarter_filings": [
+          [
+            "20170515002877",
+            "00154426",
+            "분기보고서(2017.03)",
+            "2017.05.15"
+          ]
+        ]
+      }
+    },
+    {
+      "stock_code": "033270",
+      "historical_name": "유나이티드제약",
+      "kind_name": "유나이티드",
+      "submitter": "한국유나이티드제약",
+      "kind_receipt": "20170512000734",
+      "timestamp": "2017-05-12 16:10",
+      "filing_date": "20170512",
+      "formation": "20170601",
+      "isin": "KR7033270000",
+      "subsequent_exit": "present_20261030",
+      "title": "분기보고서(일반법인)(2017.03)",
+      "corp_code": "00158963",
+      "receipt": "20170512004864",
+      "document": "5644992",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20170512004864&dcm_no=5644992&lang=ko",
+      "sha256": "360fd70d46b0396417db27dff4eca443e9aa34bdaefaafef73a313c9229f7968",
+      "bytes": 90368,
+      "portal_index_sha256": "045c5b3af84f1beae0faa4b4aa9846ec68c9a324b5d7e2cd3bfc88e314c59521",
+      "signed_fields": {
+        "current": {
+          "revenue": null,
+          "operating_profit": null
+        },
+        "prior_as_reported": {
+          "revenue": null,
+          "operating_profit": null
+        }
+      },
+      "dart_listing": {
+        "search_url": "https://dart.fss.or.kr/dsab007/detailSearch.ax?currentPage=1&maxResults=100&maxLinks=10&startDate=20170401&endDate=20170630&textCrpCik=00158963&textCrpNm=%EC%9C%A0%EB%82%98%EC%9D%B4%ED%8B%B0%EB%93%9C&businessCode=all&option=corp&sort=date&series=asc&corporationType=all&publicType=A003",
+        "sha256": "f5967844a4488c024a19033aa4f905c8f270555d6322f5da36ba744f295672df",
+        "pagination": "[1/1] [총 1건]",
+        "quarter_original": [
+          "20170512004864",
+          "00158963",
+          "분기보고서(2017.03)",
+          "2017.05.12"
+        ],
+        "quarter_filings": [
+          [
+            "20170512004864",
+            "00158963",
+            "분기보고서(2017.03)",
+            "2017.05.12"
+          ]
+        ]
+      },
+      "current_quarter_scope_members_occurrences": {
+        "SeparateMember": 6
+      }
+    },
+    {
+      "stock_code": "005030",
+      "historical_name": "부산주공",
+      "kind_name": "부산주공",
+      "submitter": "부산주공",
+      "kind_receipt": "20190515002348",
+      "timestamp": "2019-05-15 17:04",
+      "filing_date": "20190515",
+      "formation": "20190603",
+      "isin": "KR7005030002",
+      "subsequent_exit": "confirmed_delisted",
+      "title": "분기보고서(일반법인)(2019.03)",
+      "corp_code": "00124151",
+      "receipt": "20190515002222",
+      "document": "6740351",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20190515002222&dcm_no=6740351&lang=ko",
+      "sha256": "878ca2cba3b04859a5a1bf42ba515aaf389d04abc7db718463688c5e211bc32e",
+      "bytes": 104593,
+      "portal_index_sha256": "68bbcf2e9f69325b27486a8fd99c2a68a53e4b4b426d4ea15a76affda462c704",
+      "signed_fields": {
+        "current": {
+          "revenue": null,
+          "operating_profit": null
+        },
+        "prior_as_reported": {
+          "revenue": null,
+          "operating_profit": null
+        }
+      },
+      "dart_listing": {
+        "search_url": "https://dart.fss.or.kr/dsab007/detailSearch.ax?currentPage=1&maxResults=100&maxLinks=10&startDate=20190401&endDate=20190630&textCrpCik=00124151&textCrpNm=%EB%B6%80%EC%82%B0%EC%A3%BC%EA%B3%B5&businessCode=all&option=corp&sort=date&series=asc&corporationType=all&publicType=A003",
+        "sha256": "1653faecd1943b2d06ae7f99975fef47dea5660d58c5240530c6f4ee07727105",
+        "pagination": "[1/1] [총 1건]",
+        "quarter_original": [
+          "20190515002222",
+          "00124151",
+          "분기보고서(2019.03)",
+          "2019.05.15"
+        ],
+        "quarter_filings": [
+          [
+            "20190515002222",
+            "00124151",
+            "분기보고서(2019.03)",
+            "2019.05.15"
+          ]
+        ]
+      },
+      "current_quarter_scope_members_occurrences": {
+        "SeparateMember": 6
+      }
+    },
+    {
+      "stock_code": "014820",
+      "historical_name": "동원시스템즈",
+      "kind_name": "동원시스템즈",
+      "submitter": "동원시스템즈",
+      "kind_receipt": "20190515000236",
+      "timestamp": "2019-05-15 10:32",
+      "filing_date": "20190515",
+      "formation": "20190603",
+      "isin": "KR7014820005",
+      "subsequent_exit": "present_20261030",
+      "title": "분기보고서(일반법인)(2019.03)",
+      "corp_code": "00132637",
+      "receipt": "20190515000162",
+      "document": "6735684",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20190515000162&dcm_no=6735684&lang=ko",
+      "sha256": "91319f2cccf2e2c5c95b5deb865dfa148eef0112768bafd1772fda69af3c782f",
+      "bytes": 211350,
+      "portal_index_sha256": "9182c82c5e7607665995613784c79f7f65911f1fc778329062f0d2ee0046b529",
+      "signed_fields": {
+        "current": {
+          "revenue": "246232329243",
+          "operating_profit": "21735904063"
+        },
+        "prior_as_reported": {
+          "revenue": "248125639648",
+          "operating_profit": "18014943090"
+        }
+      },
+      "dart_listing": {
+        "search_url": "https://dart.fss.or.kr/dsab007/detailSearch.ax?currentPage=1&maxResults=100&maxLinks=10&startDate=20190401&endDate=20190630&textCrpCik=00132637&textCrpNm=%EB%8F%99%EC%9B%90%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%A6%88&businessCode=all&option=corp&sort=date&series=asc&corporationType=all&publicType=A003",
+        "sha256": "20dfea2bdc8d6ee96d11f6e31e1addd538eb0a1775186ac3791ee93bd29da931",
+        "pagination": "[1/1] [총 1건]",
+        "quarter_original": [
+          "20190515000162",
+          "00132637",
+          "분기보고서(2019.03)",
+          "2019.05.15"
+        ],
+        "quarter_filings": [
+          [
+            "20190515000162",
+            "00132637",
+            "분기보고서(2019.03)",
+            "2019.05.15"
+          ]
+        ]
+      },
+      "current_quarter_scope_members_occurrences": {
+        "SeparateMember": 7,
+        "ConsolidatedMember": 9
+      }
+    }
+  ],
+  "limited_panel_reproduced": {
+    "matching_existing_members_byte_for_byte": true,
+    "months": 60,
+    "n_per_month": 240,
+    "sample_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390",
+    "limited": {
+      "distinct_isins": 270,
+      "issuer_months": 14400,
+      "minimum_month_size": 240,
+      "maximum_month_size": 240,
+      "issuer_months_by_year": {
+        "2017": 2880,
+        "2018": 2880,
+        "2019": 2880,
+        "2020": 2880,
+        "2021": 2880
+      },
+      "possible_calendar_issuer_quarters": 5097
+    }
+  }
+}

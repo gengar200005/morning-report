@@ -1,0 +1,576 @@
+{
+  "formation": "20210601",
+  "horizon": 120,
+  "entry": "20210602",
+  "exit": "20211124",
+  "asof_sha256": "c8c970874d010e6b991b1c7a8e0c6a0d1f0dab5a6b89eb17b139a6635a87e0b0",
+  "gate_sha256": "1d666d35b63d0caf7afdb95c8761234db29452d057fba9ead4fd121d231cb022",
+  "matched_stage5_isin_horizon_checks": 1572,
+  "signals": {
+    "F2": {
+      "top-remainder": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7009810003",
+            "side": "comparison",
+            "price_return": 3.372128637059724,
+            "signed_contribution": -0.0072518895420639225
+          },
+          {
+            "isin": "KR7006200000",
+            "side": "target",
+            "price_return": 0.7781954887218046,
+            "signed_contribution": 0.006766917293233083
+          },
+          {
+            "isin": "KR7298050006",
+            "side": "target",
+            "price_return": 0.7726657645466848,
+            "signed_contribution": 0.006718832735188564
+          },
+          {
+            "isin": "KR7009160003",
+            "side": "target",
+            "price_return": 0.6159250585480094,
+            "signed_contribution": 0.005355870074330516
+          },
+          {
+            "isin": "KR7105840003",
+            "side": "target",
+            "price_return": 0.6010638297872339,
+            "signed_contribution": 0.00522664199814986
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 121,
+              "observed": 115,
+              "equal_weight_mean": -0.07512644911093486
+            },
+            "comparison": {
+              "assigned": 487,
+              "observed": 465,
+              "equal_weight_mean": -0.06785580886513606
+            },
+            "difference": -0.007270640245798793
+          },
+          "after": {
+            "target": {
+              "assigned": 117,
+              "observed": 111,
+              "equal_weight_mean": -0.10276929539965082
+            },
+            "comparison": {
+              "assigned": 486,
+              "observed": 464,
+              "equal_weight_mean": -0.07526956844687067
+            },
+            "difference": -0.02749972695278015
+          },
+          "after_minus_before": -0.020229086706981356
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 121,
+              "observed": 115,
+              "equal_weight_mean": -0.07478176199520345
+            },
+            "comparison": {
+              "assigned": 487,
+              "observed": 465,
+              "equal_weight_mean": -0.06771563781121945
+            },
+            "difference": -0.007066124183984002
+          },
+          "after": {
+            "target": {
+              "assigned": 117,
+              "observed": 111,
+              "equal_weight_mean": -0.10241218712659576
+            },
+            "comparison": {
+              "assigned": 486,
+              "observed": 464,
+              "equal_weight_mean": -0.07512909530016544
+            },
+            "difference": -0.027283091826430322
+          },
+          "after_minus_before": -0.02021696764244632
+        }
+      },
+      "C-A": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7130660004",
+            "side": "comparison",
+            "price_return": 1.4083769633507854,
+            "signed_contribution": -0.01805611491475366
+          },
+          {
+            "isin": "KR7004890000",
+            "side": "target",
+            "price_return": 0.4134808853118712,
+            "signed_contribution": 0.017977429796168315
+          },
+          {
+            "isin": "KR7002790004",
+            "side": "target",
+            "price_return": -0.40920716112531974,
+            "signed_contribution": -0.017791615701100858
+          },
+          {
+            "isin": "KR7081660003",
+            "side": "target",
+            "price_return": -0.35862068965517246,
+            "signed_contribution": -0.015592203898050976
+          },
+          {
+            "isin": "KR7005390000",
+            "side": "target",
+            "price_return": 0.33757961783439483,
+            "signed_contribution": 0.01467737468845195
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 23,
+              "observed": 23,
+              "equal_weight_mean": -0.10880432939699336
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 78,
+              "equal_weight_mean": -0.07876701728591928
+            },
+            "difference": -0.030037312111074077
+          },
+          "after": {
+            "target": {
+              "assigned": 19,
+              "observed": 19,
+              "equal_weight_mean": -0.13082801202613795
+            },
+            "comparison": {
+              "assigned": 80,
+              "observed": 77,
+              "equal_weight_mean": -0.09808057547600636
+            },
+            "difference": -0.032747436550131584
+          },
+          "after_minus_before": -0.002710124439057507
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 23,
+              "observed": 23,
+              "equal_weight_mean": -0.10837385156660163
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 78,
+              "equal_weight_mean": -0.0786052442534838
+            },
+            "difference": -0.02976860731311784
+          },
+          "after": {
+            "target": {
+              "assigned": 19,
+              "observed": 19,
+              "equal_weight_mean": -0.1303069072840848
+            },
+            "comparison": {
+              "assigned": 80,
+              "observed": 77,
+              "equal_weight_mean": -0.09791670149509768
+            },
+            "difference": -0.03239020578898713
+          },
+          "after_minus_before": -0.002621598475869291
+        }
+      },
+      "C-B": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7004890000",
+            "side": "target",
+            "price_return": 0.4134808853118712,
+            "signed_contribution": 0.017977429796168315
+          },
+          {
+            "isin": "KR7002790004",
+            "side": "target",
+            "price_return": -0.40920716112531974,
+            "signed_contribution": -0.017791615701100858
+          },
+          {
+            "isin": "KR7081660003",
+            "side": "target",
+            "price_return": -0.35862068965517246,
+            "signed_contribution": -0.015592203898050976
+          },
+          {
+            "isin": "KR7005390000",
+            "side": "target",
+            "price_return": 0.33757961783439483,
+            "signed_contribution": 0.01467737468845195
+          },
+          {
+            "isin": "KR7047040001",
+            "side": "target",
+            "price_return": -0.29669030732860524,
+            "signed_contribution": -0.012899578579504576
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 23,
+              "observed": 23,
+              "equal_weight_mean": -0.10880432939699336
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 79,
+              "equal_weight_mean": -0.05986612359032413
+            },
+            "difference": -0.04893820580666923
+          },
+          "after": {
+            "target": {
+              "assigned": 18,
+              "observed": 18,
+              "equal_weight_mean": -0.12161344006488978
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 79,
+              "equal_weight_mean": -0.05986612359032413
+            },
+            "difference": -0.06174731647456565
+          },
+          "after_minus_before": -0.012809110667896417
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 23,
+              "observed": 23,
+              "equal_weight_mean": -0.10837385156660163
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 79,
+              "equal_weight_mean": -0.059795407233630825
+            },
+            "difference": -0.04857844433297081
+          },
+          "after": {
+            "target": {
+              "assigned": 18,
+              "observed": 18,
+              "equal_weight_mean": -0.12106338505938923
+            },
+            "comparison": {
+              "assigned": 81,
+              "observed": 79,
+              "equal_weight_mean": -0.059795407233630825
+            },
+            "difference": -0.0612679778257584
+          },
+          "after_minus_before": -0.012689533492787591
+        }
+      }
+    },
+    "F3": {
+      "top-remainder": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7336370002",
+            "side": "target",
+            "price_return": 1.0454545454545454,
+            "signed_contribution": 0.009170653907496013
+          },
+          {
+            "isin": "KR7009810003",
+            "side": "comparison",
+            "price_return": 3.372128637059724,
+            "signed_contribution": -0.0072363275473384635
+          },
+          {
+            "isin": "KR7006200000",
+            "side": "target",
+            "price_return": 0.7781954887218046,
+            "signed_contribution": 0.006826276216857934
+          },
+          {
+            "isin": "KR7007810005",
+            "side": "target",
+            "price_return": 0.691699604743083,
+            "signed_contribution": 0.006067540392483185
+          },
+          {
+            "isin": "KR7055490007",
+            "side": "target",
+            "price_return": 0.6753731343283582,
+            "signed_contribution": 0.005924325739722441
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 121,
+              "observed": 114,
+              "equal_weight_mean": -0.0045160390733769715
+            },
+            "comparison": {
+              "assigned": 487,
+              "observed": 466,
+              "equal_weight_mean": -0.08514520239416482
+            },
+            "difference": 0.08062916332078784
+          },
+          "after": {
+            "target": {
+              "assigned": 117,
+              "observed": 110,
+              "equal_weight_mean": -0.03368682934193423
+            },
+            "comparison": {
+              "assigned": 486,
+              "observed": 465,
+              "equal_weight_mean": -0.09258019989836673
+            },
+            "difference": 0.0588933705564325
+          },
+          "after_minus_before": -0.021735792764355347
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 121,
+              "observed": 114,
+              "equal_weight_mean": -0.0045160390733769715
+            },
+            "comparison": {
+              "assigned": 487,
+              "observed": 466,
+              "equal_weight_mean": -0.08492026986545163
+            },
+            "difference": 0.08040423079207466
+          },
+          "after": {
+            "target": {
+              "assigned": 117,
+              "observed": 110,
+              "equal_weight_mean": -0.03368682934193423
+            },
+            "comparison": {
+              "assigned": 486,
+              "observed": 465,
+              "equal_weight_mean": -0.09235478364378535
+            },
+            "difference": 0.05866795430185112
+          },
+          "after_minus_before": -0.02173627649022354
+        }
+      },
+      "C-A": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7081660003",
+            "side": "target",
+            "price_return": -0.35862068965517246,
+            "signed_contribution": -0.02988505747126437
+          },
+          {
+            "isin": "KR7005390000",
+            "side": "target",
+            "price_return": 0.33757961783439483,
+            "signed_contribution": 0.028131634819532902
+          },
+          {
+            "isin": "KR7284740008",
+            "side": "target",
+            "price_return": -0.21146245059288538,
+            "signed_contribution": -0.017621870882740448
+          },
+          {
+            "isin": "KR7103590006",
+            "side": "target",
+            "price_return": 0.21012101210121004,
+            "signed_contribution": 0.017510084341767502
+          },
+          {
+            "isin": "KR7130660004",
+            "side": "comparison",
+            "price_return": 1.4083769633507854,
+            "signed_contribution": -0.015824460262368376
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 13,
+              "observed": 12,
+              "equal_weight_mean": -0.0035494373499677656
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 89,
+              "equal_weight_mean": -0.09667116490149369
+            },
+            "difference": 0.09312172755152592
+          },
+          "after": {
+            "target": {
+              "assigned": 9,
+              "observed": 8,
+              "equal_weight_mean": -0.0025263422358950266
+            },
+            "comparison": {
+              "assigned": 90,
+              "observed": 88,
+              "equal_weight_mean": -0.11377398454072414
+            },
+            "difference": 0.11124764230482911
+          },
+          "after_minus_before": 0.01812591475330319
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 13,
+              "observed": 12,
+              "equal_weight_mean": -0.0035494373499677656
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 89,
+              "equal_weight_mean": -0.09641813920903326
+            },
+            "difference": 0.0928687018590655
+          },
+          "after": {
+            "target": {
+              "assigned": 9,
+              "observed": 8,
+              "equal_weight_mean": -0.0025263422358950266
+            },
+            "comparison": {
+              "assigned": 90,
+              "observed": 88,
+              "equal_weight_mean": -0.11351808355630393
+            },
+            "difference": 0.1109917413204089
+          },
+          "after_minus_before": 0.0181230394613434
+        }
+      },
+      "C-B": {
+        "removed_by_primary_price_contribution": [
+          {
+            "isin": "KR7081660003",
+            "side": "target",
+            "price_return": -0.35862068965517246,
+            "signed_contribution": -0.02988505747126437
+          },
+          {
+            "isin": "KR7005390000",
+            "side": "target",
+            "price_return": 0.33757961783439483,
+            "signed_contribution": 0.028131634819532902
+          },
+          {
+            "isin": "KR7284740008",
+            "side": "target",
+            "price_return": -0.21146245059288538,
+            "signed_contribution": -0.017621870882740448
+          },
+          {
+            "isin": "KR7103590006",
+            "side": "target",
+            "price_return": 0.21012101210121004,
+            "signed_contribution": 0.017510084341767502
+          },
+          {
+            "isin": "KR7000680009",
+            "side": "target",
+            "price_return": -0.18361955085865256,
+            "signed_contribution": -0.015301629238221046
+          }
+        ],
+        "diagnostic_status": "computed",
+        "price": {
+          "before": {
+            "target": {
+              "assigned": 13,
+              "observed": 12,
+              "equal_weight_mean": -0.0035494373499677656
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 87,
+              "equal_weight_mean": -0.004750956999698923
+            },
+            "difference": 0.0012015196497311576
+          },
+          "after": {
+            "target": {
+              "assigned": 8,
+              "observed": 7,
+              "equal_weight_mean": 0.02334411613878462
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 87,
+              "equal_weight_mean": -0.004750956999698923
+            },
+            "difference": 0.028095073138483542
+          },
+          "after_minus_before": 0.026893553488752386
+        },
+        "partial_economic_same_exclusions": {
+          "before": {
+            "target": {
+              "assigned": 13,
+              "observed": 12,
+              "equal_weight_mean": -0.0035494373499677656
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 87,
+              "equal_weight_mean": -0.004750956999698923
+            },
+            "difference": 0.0012015196497311576
+          },
+          "after": {
+            "target": {
+              "assigned": 8,
+              "observed": 7,
+              "equal_weight_mean": 0.02334411613878462
+            },
+            "comparison": {
+              "assigned": 91,
+              "observed": 87,
+              "equal_weight_mean": -0.004750956999698923
+            },
+            "difference": 0.028095073138483542
+          },
+          "after_minus_before": 0.026893553488752386
+        }
+      }
+    }
+  },
+  "selection": "Five largest absolute signed contributions to the observed equal-weight price spread; ties by ISIN.",
+  "reweighting": "Keep original classifications, remove selected names from both sides, renormalize observed names separately in each original group. Missing remains excluded.",
+  "partial_economic": "Same removed ISINs as the primary price contrast. No additional search."
+}

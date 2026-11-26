@@ -1,0 +1,2224 @@
+{
+  "formation": "20210601",
+  "scope": "single descriptive formation only",
+  "universe": 785,
+  "matched_stage5_isin_horizon_checks": 1572,
+  "new_since_march31": [
+    {
+      "isin": "KR7361610009",
+      "industry_group": "nonfinancial",
+      "status": "new_listing_no_verified_periodic_comparator_provisional_only",
+      "F2": "",
+      "F3": ""
+    },
+    {
+      "isin": "KR7380440008",
+      "industry_group": "financial",
+      "status": "sector_financial_SPAC",
+      "F2": "",
+      "F3": ""
+    },
+    {
+      "isin": "KR7383220001",
+      "industry_group": "nonfinancial",
+      "status": "new_legal_entity_no_prior_year_predecessor_excluded",
+      "F2": "",
+      "F3": ""
+    },
+    {
+      "isin": "KR7383800000",
+      "industry_group": "nonfinancial",
+      "status": "new_legal_entity_no_prior_year_predecessor_excluded",
+      "F2": "",
+      "F3": ""
+    }
+  ],
+  "coverage": {
+    "nonfinancial/PASS": 608,
+    "financial/sector_financial": 52,
+    "nonfinancial/no verified income row; no_supported_fact_in_exact_context": 103,
+    "unknown/sector_unknown": 11,
+    "nonfinancial/nondec_latest_february_filing_explicit_standalone_only": 1,
+    "nonfinancial/current_amendment_has_no_supported_pair": 4,
+    "nonfinancial/identity_unresolved": 1,
+    "nonfinancial/ambiguous income rows; no_supported_fact_in_exact_context": 1,
+    "nonfinancial/new_listing_no_verified_periodic_comparator_provisional_only": 1,
+    "financial/sector_financial_SPAC": 1,
+    "nonfinancial/new_legal_entity_no_prior_year_predecessor_excluded": 2
+  },
+  "sources": {
+    "asof_sha256": "c8c970874d010e6b991b1c7a8e0c6a0d1f0dab5a6b89eb17b139a6635a87e0b0",
+    "gate_sha256": "1d666d35b63d0caf7afdb95c8761234db29452d057fba9ead4fd121d231cb022",
+    "stage5_bundle_sha256": "30665902b7c1220094f5ac3b2a3edfe4cedd9f4f09e4d9685f69eb87817b60dc"
+  },
+  "signals": {
+    "F2": {
+      "20": {
+        "entry": "20210602",
+        "exit": "20210629",
+        "etf_price": 0.016854585609671124,
+        "etf_partial_economic": 0.016854585609671124,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 2,
+              "entry_unavailable": 5,
+              "observed": 597,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.03620849062289428,
+              "median": 0.009160305343511421,
+              "observed": 597,
+              "minus_etf": 0.019353905013223156,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": 0.03635703649145604,
+              "median": 0.009345794392523255,
+              "observed": 597,
+              "minus_etf": 0.019502450881784913,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 2,
+              "observed": 118
+            },
+            "price": {
+              "mean": 0.03351232165065958,
+              "median": 0.009475257566860629,
+              "observed": 118,
+              "minus_etf": 0.016657736040988455,
+              "minus_universe": -0.0026961689722347013
+            },
+            "partial_economic": {
+              "mean": 0.03384824553463511,
+              "median": 0.009475257566860629,
+              "observed": 118,
+              "minus_etf": 0.01699365992496399,
+              "minus_universe": -0.002508790956820925
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 3,
+              "observed": 479,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.03687268256177465,
+              "median": 0.009111617312072884,
+              "observed": 479,
+              "minus_etf": 0.020018096952103527,
+              "minus_universe": 0.0006641919388803708
+            },
+            "partial_economic": {
+              "mean": 0.03697506850169585,
+              "median": 0.009345794392523255,
+              "observed": 479,
+              "minus_etf": 0.020120482892024727,
+              "minus_universe": 0.0006180320102398135
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 2,
+              "observed": 518,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.032960144387002774,
+              "median": 0.007296405672173822,
+              "observed": 518,
+              "minus_etf": 0.01610555877733165,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": 0.033084720540477744,
+              "median": 0.007894736842105288,
+              "observed": 518,
+              "minus_etf": 0.01623013493080662,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 81,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 80
+            },
+            "price": {
+              "mean": 0.04110798618800248,
+              "median": 0.0,
+              "observed": 80,
+              "minus_etf": 0.024253400578331356,
+              "minus_universe": 0.008147841800999707
+            },
+            "partial_economic": {
+              "mean": 0.041361573790332604,
+              "median": 0.0,
+              "observed": 80,
+              "minus_etf": 0.02450698818066148,
+              "minus_universe": 0.00827685324985486
+            }
+          },
+          "B": {
+            "n": 81,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 80
+            },
+            "price": {
+              "mean": 0.02929466020776928,
+              "median": 0.013470443201635707,
+              "observed": 80,
+              "minus_etf": 0.012440074598098157,
+              "minus_universe": -0.0036654841792334927
+            },
+            "partial_economic": {
+              "mean": 0.029364492610003918,
+              "median": 0.013470443201635707,
+              "observed": 80,
+              "minus_etf": 0.012509907000332793,
+              "minus_universe": -0.003720227930473826
+            }
+          },
+          "C": {
+            "n": 23,
+            "statuses": {
+              "observed": 23
+            },
+            "price": {
+              "mean": 0.04086021870064959,
+              "median": -0.027000000000000024,
+              "observed": 23,
+              "minus_etf": 0.024005633090978466,
+              "minus_universe": 0.007900074313646817
+            },
+            "partial_economic": {
+              "mean": 0.041290696531041324,
+              "median": -0.027000000000000024,
+              "observed": 23,
+              "minus_etf": 0.0244361109213702,
+              "minus_universe": 0.00820597599056358
+            }
+          },
+          "D": {
+            "n": 339,
+            "statuses": {
+              "observed": 335,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.03134733746474852,
+              "median": 0.008830022075055233,
+              "observed": 335,
+              "minus_etf": 0.014492751855077396,
+              "minus_universe": -0.0016128069222542535
+            },
+            "partial_economic": {
+              "mean": 0.03143317584396,
+              "median": 0.009111617312072884,
+              "observed": 335,
+              "minus_etf": 0.014578590234288875,
+              "minus_universe": -0.001651544696517744
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": -0.003360360911115072,
+              "matched_cap_turnover": {
+                "effect": -0.0017330468139536385,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": -0.004706675714647532,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": -0.007077630513410441
+            },
+            "partial_economic": {
+              "difference": -0.0031268229670607384,
+              "matched_cap_turnover": {
+                "effect": -0.0015559964260127624,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": -0.00452379825523344,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": -0.006846144033294609
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": -0.0002477674873528901,
+              "matched_cap_turnover": {
+                "effect": 0.04261635226332972,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.013903212270137603,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.002616312650303508
+            },
+            "partial_economic": {
+              "difference": -7.087725929127986e-05,
+              "matched_cap_turnover": {
+                "effect": 0.042578207231258804,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.013799975233190504,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.002437829688305422
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": 0.01156555849288031,
+              "matched_cap_turnover": {
+                "effect": 0.034640178079022706,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.019461589029173477,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": 0.009051169799309526
+            },
+            "partial_economic": {
+              "difference": 0.011926203921037406,
+              "matched_cap_turnover": {
+                "effect": 0.03499880612059781,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.019857367529262288,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": 0.009411139378685873
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.008325934686340733,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.03351232165065958
+              },
+              {
+                "n": 122,
+                "observed": 120,
+                "mean": 0.047872634018663617
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": 0.03388856729436605
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": 0.04744140878984189
+              },
+              {
+                "n": 122,
+                "observed": 118,
+                "mean": 0.01776870749542502
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.01040235388597624,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.03384824553463511
+              },
+              {
+                "n": 122,
+                "observed": 120,
+                "mean": 0.0480383623825083
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": 0.03413357117302902
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": 0.04744140878984189
+              },
+              {
+                "n": 122,
+                "observed": 118,
+                "mean": 0.01776870749542502
+              }
+            ]
+          }
+        }
+      },
+      "60": {
+        "entry": "20210602",
+        "exit": "20210825",
+        "etf_price": -0.037428803905614316,
+        "etf_partial_economic": -0.03615018016970828,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 5,
+              "observed": 592,
+              "unverified_reference": 10
+            },
+            "price": {
+              "mean": -0.03600462964638749,
+              "median": -0.0681059067656491,
+              "observed": 592,
+              "minus_etf": 0.0014241742592268278,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.035854829167449365,
+              "median": -0.0681059067656491,
+              "observed": 592,
+              "minus_etf": 0.00029535100225891453,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "entry_unavailable": 2,
+              "observed": 119
+            },
+            "price": {
+              "mean": -0.02699454900404051,
+              "median": -0.07317073170731703,
+              "observed": 119,
+              "minus_etf": 0.010434254901573806,
+              "minus_universe": 0.009010080642346978
+            },
+            "partial_economic": {
+              "mean": -0.026661448009846288,
+              "median": -0.07317073170731703,
+              "observed": 119,
+              "minus_etf": 0.009488732159861991,
+              "minus_universe": 0.009193381157603077
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 3,
+              "observed": 473,
+              "unverified_reference": 10
+            },
+            "price": {
+              "mean": -0.03827143640418726,
+              "median": -0.06666666666666665,
+              "observed": 473,
+              "minus_etf": -0.0008426324985729428,
+              "minus_universe": -0.0022668067577997705
+            },
+            "partial_economic": {
+              "mean": -0.03816775169970046,
+              "median": -0.06666666666666665,
+              "observed": 473,
+              "minus_etf": -0.002017571529992178,
+              "minus_universe": -0.0023129225322510924
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 514,
+              "unverified_reference": 9
+            },
+            "price": {
+              "mean": -0.04167311549010163,
+              "median": -0.07352788720713249,
+              "observed": 514,
+              "minus_etf": -0.004244311584487313,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.04154756987239728,
+              "median": -0.07352788720713249,
+              "observed": 514,
+              "minus_etf": -0.005397389702689,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 81,
+            "statuses": {
+              "observed": 80,
+              "unverified_reference": 1
+            },
+            "price": {
+              "mean": -0.0462737214859064,
+              "median": -0.08151220175664603,
+              "observed": 80,
+              "minus_etf": -0.008844917580292086,
+              "minus_universe": -0.004600605995804773
+            },
+            "partial_economic": {
+              "mean": -0.04602013388357628,
+              "median": -0.08151220175664603,
+              "observed": 80,
+              "minus_etf": -0.009869953713868,
+              "minus_universe": -0.0044725640111790005
+            }
+          },
+          "B": {
+            "n": 81,
+            "statuses": {
+              "observed": 81
+            },
+            "price": {
+              "mean": -0.02269348723684987,
+              "median": -0.05434782608695654,
+              "observed": 81,
+              "minus_etf": 0.014735316668764445,
+              "minus_universe": 0.018979628253251758
+            },
+            "partial_economic": {
+              "mean": -0.022624516963037883,
+              "median": -0.05434782608695654,
+              "observed": 81,
+              "minus_etf": 0.013525663206670396,
+              "minus_universe": 0.018923052909359396
+            }
+          },
+          "C": {
+            "n": 23,
+            "statuses": {
+              "observed": 23
+            },
+            "price": {
+              "mean": -0.05018738203570793,
+              "median": -0.1049107142857143,
+              "observed": 23,
+              "minus_etf": -0.012758578130093616,
+              "minus_universe": -0.008514266545606303
+            },
+            "partial_economic": {
+              "mean": -0.0497569042053162,
+              "median": -0.1049107142857143,
+              "observed": 23,
+              "minus_etf": -0.01360672403560792,
+              "minus_universe": -0.00820933433291892
+            }
+          },
+          "D": {
+            "n": 339,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 330,
+              "unverified_reference": 8
+            },
+            "price": {
+              "mean": -0.044623034515253346,
+              "median": -0.07001661129568104,
+              "observed": 330,
+              "minus_etf": -0.00719423060963903,
+              "minus_universe": -0.0029499190251517163
+            },
+            "partial_economic": {
+              "mean": -0.044535895554538664,
+              "median": -0.07001661129568104,
+              "observed": 330,
+              "minus_etf": -0.008385715384830385,
+              "minus_universe": -0.002988325682141385
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": 0.011276887400146748,
+              "matched_cap_turnover": {
+                "effect": 0.008510073226119578,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.005223060434975838,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.006679914519287657
+            },
+            "partial_economic": {
+              "difference": 0.01150630368985417,
+              "matched_cap_turnover": {
+                "effect": 0.008684200413969263,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.005404882006127039,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.006908282723212096
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": -0.00391366054980153,
+              "matched_cap_turnover": {
+                "effect": 0.03151611608585189,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.02270032725720737,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.006439593957157146
+            },
+            "partial_economic": {
+              "difference": -0.00373677032173992,
+              "matched_cap_turnover": {
+                "effect": 0.031477971053780966,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.022597090220260272,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.006261122963853241
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": -0.02749389479885806,
+              "matched_cap_turnover": {
+                "effect": -0.03075498219472816,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": -0.0055818350564224685,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.02749389479885806
+            },
+            "partial_economic": {
+              "difference": -0.027132387242278316,
+              "matched_cap_turnover": {
+                "effect": -0.03039635415315306,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": -0.005186056556333656,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.027132387242278316
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.033566083865642304,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.02699454900404051
+              },
+              {
+                "n": 122,
+                "observed": 117,
+                "mean": -0.0250383623022744
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.021467437525776137
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": -0.04662457517913457
+              },
+              {
+                "n": 122,
+                "observed": 115,
+                "mean": -0.060261546020805995
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.03510736563420878,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.026661448009846288
+              },
+              {
+                "n": 122,
+                "observed": 117,
+                "mean": -0.024868384493202937
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.02122243364711316
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": -0.04662457517913457
+              },
+              {
+                "n": 122,
+                "observed": 115,
+                "mean": -0.060261546020805995
+              }
+            ]
+          }
+        }
+      },
+      "120": {
+        "entry": "20210602",
+        "exit": "20211124",
+        "etf_price": -0.08125072649075904,
+        "etf_partial_economic": -0.07799604789027081,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 5,
+              "observed": 580,
+              "unverified_reference": 21
+            },
+            "price": {
+              "mean": -0.06929740132766514,
+              "median": -0.1252177700348432,
+              "observed": 580,
+              "minus_etf": 0.0119533251630939,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.06911667967528524,
+              "median": -0.1252177700348432,
+              "observed": 580,
+              "minus_etf": 0.00887936821498557,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "entry_unavailable": 2,
+              "observed": 115,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": -0.07512644911093486,
+              "median": -0.12166172106824924,
+              "observed": 115,
+              "minus_etf": 0.006124277379824183,
+              "minus_universe": -0.005829047783269717
+            },
+            "partial_economic": {
+              "mean": -0.07478176199520345,
+              "median": -0.12166172106824924,
+              "observed": 115,
+              "minus_etf": 0.0032142858950673647,
+              "minus_universe": -0.005665082319918205
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 3,
+              "observed": 465,
+              "unverified_reference": 17
+            },
+            "price": {
+              "mean": -0.06785580886513606,
+              "median": -0.12563840653728298,
+              "observed": 465,
+              "minus_etf": 0.013394917625622976,
+              "minus_universe": 0.001441592462529076
+            },
+            "partial_economic": {
+              "mean": -0.06771563781121945,
+              "median": -0.12563840653728298,
+              "observed": 465,
+              "minus_etf": 0.010280410079051366,
+              "minus_universe": 0.0014010418640657968
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 506,
+              "unverified_reference": 16
+            },
+            "price": {
+              "mean": -0.07133983325110121,
+              "median": -0.12335106744309404,
+              "observed": 506,
+              "minus_etf": 0.009910893239657825,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.07118041206068815,
+              "median": -0.12335106744309404,
+              "observed": 506,
+              "minus_etf": 0.006815635829582667,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 81,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 78,
+              "unverified_reference": 2
+            },
+            "price": {
+              "mean": -0.07876701728591928,
+              "median": -0.11860772887041354,
+              "observed": 78,
+              "minus_etf": 0.002483709204839757,
+              "minus_universe": -0.0074271840348180684
+            },
+            "partial_economic": {
+              "mean": -0.0786052442534838,
+              "median": -0.11489091604684326,
+              "observed": 78,
+              "minus_etf": -0.0006091963632129799,
+              "minus_universe": -0.007424832192795647
+            }
+          },
+          "B": {
+            "n": 81,
+            "statuses": {
+              "observed": 79,
+              "unverified_reference": 2
+            },
+            "price": {
+              "mean": -0.05986612359032413,
+              "median": -0.11563517915309451,
+              "observed": 79,
+              "minus_etf": 0.02138460290043491,
+              "minus_universe": 0.011473709660777084
+            },
+            "partial_economic": {
+              "mean": -0.059795407233630825,
+              "median": -0.11563517915309451,
+              "observed": 79,
+              "minus_etf": 0.01820064065663999,
+              "minus_universe": 0.011385004827057323
+            }
+          },
+          "C": {
+            "n": 23,
+            "statuses": {
+              "observed": 23
+            },
+            "price": {
+              "mean": -0.10880432939699336,
+              "median": -0.1453287197231834,
+              "observed": 23,
+              "minus_etf": -0.02755360290623432,
+              "minus_universe": -0.037464496145892145
+            },
+            "partial_economic": {
+              "mean": -0.10837385156660163,
+              "median": -0.1453287197231834,
+              "observed": 23,
+              "minus_etf": -0.03037780367633082,
+              "minus_universe": -0.037193439505913486
+            }
+          },
+          "D": {
+            "n": 339,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "observed": 326,
+              "unverified_reference": 12
+            },
+            "price": {
+              "mean": -0.0697000151441382,
+              "median": -0.12585469898467577,
+              "observed": 326,
+              "minus_etf": 0.011550711346620834,
+              "minus_universe": 0.0016398181069630091
+            },
+            "partial_economic": {
+              "mean": -0.06953878433572944,
+              "median": -0.12585469898467577,
+              "observed": 326,
+              "minus_etf": 0.008457263554541378,
+              "minus_universe": 0.0016416277249587108
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": -0.007270640245798793,
+              "matched_cap_turnover": {
+                "effect": -0.006951783481620257,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": -0.028487845962052668,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": -0.021592043171936227
+            },
+            "partial_economic": {
+              "difference": -0.007066124183984002,
+              "matched_cap_turnover": {
+                "effect": -0.006827772226603975,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": -0.028348831145490954,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": -0.021394630416604075
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": -0.030037312111074077,
+              "matched_cap_turnover": {
+                "effect": 0.037908063849407474,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.004161482462104246,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.03771980040865992
+            },
+            "partial_economic": {
+              "difference": -0.02976860731311784,
+              "matched_cap_turnover": {
+                "effect": 0.0380139734939997,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 58,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": 0.004181358266719406,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.03745100850544361
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": -0.04893820580666923,
+              "matched_cap_turnover": {
+                "effect": -0.04136844064788606,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": -0.03172634110373649,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.053593175938501894
+            },
+            "partial_economic": {
+              "difference": -0.04857844433297081,
+              "matched_cap_turnover": {
+                "effect": -0.04101362164643284,
+                "structurally_matched_target": 22,
+                "structurally_matched_peer": 73,
+                "target_in_cells_with_both_observed": 22,
+                "target_total": 23
+              },
+              "matched_sector": {
+                "effect": -0.03133056260364768,
+                "structurally_matched_target": 23,
+                "structurally_matched_peer": 80,
+                "target_in_cells_with_both_observed": 23,
+                "target_total": 23
+              },
+              "adverse_unresolved_stress": -0.053235604707611364
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.08246150576069393,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 115,
+                "mean": -0.07512644911093486
+              },
+              {
+                "n": 122,
+                "observed": 117,
+                "mean": -0.02744490542395575
+              },
+              {
+                "n": 121,
+                "observed": 115,
+                "mean": -0.04189976976191983
+              },
+              {
+                "n": 122,
+                "observed": 120,
+                "mean": -0.09592708639920558
+              },
+              {
+                "n": 122,
+                "observed": 113,
+                "mean": -0.10630241855893803
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.08362179545578101,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 115,
+                "mean": -0.07478176199520345
+              },
+              {
+                "n": 122,
+                "observed": 117,
+                "mean": -0.027116845119224967
+              },
+              {
+                "n": 121,
+                "observed": 115,
+                "mean": -0.04166675685393959
+              },
+              {
+                "n": 122,
+                "observed": 120,
+                "mean": -0.09592708639920558
+              },
+              {
+                "n": 122,
+                "observed": 113,
+                "mean": -0.10630241855893803
+              }
+            ]
+          }
+        }
+      }
+    },
+    "F3": {
+      "20": {
+        "entry": "20210602",
+        "exit": "20210629",
+        "etf_price": 0.016854585609671124,
+        "etf_partial_economic": 0.016854585609671124,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 2,
+              "entry_unavailable": 5,
+              "observed": 597,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.03620849062289428,
+              "median": 0.009160305343511421,
+              "observed": 597,
+              "minus_etf": 0.019353905013223156,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": 0.03635703649145604,
+              "median": 0.009345794392523255,
+              "observed": 597,
+              "minus_etf": 0.019502450881784913,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 2,
+              "entry_unavailable": 1,
+              "observed": 118
+            },
+            "price": {
+              "mean": 0.04952005315720136,
+              "median": 0.023552575564069866,
+              "observed": 118,
+              "minus_etf": 0.03266546754753023,
+              "minus_universe": 0.013311562534307077
+            },
+            "partial_economic": {
+              "mean": 0.04952005315720136,
+              "median": 0.023552575564069866,
+              "observed": 118,
+              "minus_etf": 0.03266546754753023,
+              "minus_universe": 0.01316301666574532
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "entry_unavailable": 4,
+              "observed": 479,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.03292923304659317,
+              "median": 0.007130124777183555,
+              "observed": 479,
+              "minus_etf": 0.016074647436922045,
+              "minus_universe": -0.0032792575763011117
+            },
+            "partial_economic": {
+              "mean": 0.033114372678182666,
+              "median": 0.007692307692307665,
+              "observed": 479,
+              "minus_etf": 0.01625978706851154,
+              "minus_universe": -0.003242663813273372
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 2,
+              "observed": 518,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.032960144387002774,
+              "median": 0.007296405672173822,
+              "observed": 518,
+              "minus_etf": 0.01610555877733165,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": 0.033084720540477744,
+              "median": 0.007894736842105288,
+              "observed": 518,
+              "minus_etf": 0.01623013493080662,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 91,
+            "statuses": {
+              "observed": 91
+            },
+            "price": {
+              "mean": 0.02382265615930494,
+              "median": -0.006802721088435382,
+              "observed": 91,
+              "minus_etf": 0.006968070549633814,
+              "minus_universe": -0.009137488227697835
+            },
+            "partial_economic": {
+              "mean": 0.024154392404199667,
+              "median": -0.005649717514124242,
+              "observed": 91,
+              "minus_etf": 0.007299806794528543,
+              "minus_universe": -0.008930328136278077
+            }
+          },
+          "B": {
+            "n": 91,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 90
+            },
+            "price": {
+              "mean": 0.03474977263052268,
+              "median": 0.020214928407018884,
+              "observed": 90,
+              "minus_etf": 0.017895187020851556,
+              "minus_universe": 0.001789628243519907
+            },
+            "partial_economic": {
+              "mean": 0.03474977263052268,
+              "median": 0.020214928407018884,
+              "observed": 90,
+              "minus_etf": 0.017895187020851556,
+              "minus_universe": 0.001665052090044937
+            }
+          },
+          "C": {
+            "n": 13,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 12
+            },
+            "price": {
+              "mean": 0.1717135178881991,
+              "median": 0.14205996318750702,
+              "observed": 12,
+              "minus_etf": 0.15485893227852798,
+              "minus_universe": 0.13875337350119632
+            },
+            "partial_economic": {
+              "mean": 0.1717135178881991,
+              "median": 0.14205996318750702,
+              "observed": 12,
+              "minus_etf": 0.15485893227852798,
+              "minus_universe": 0.13862879734772138
+            }
+          },
+          "D": {
+            "n": 329,
+            "statuses": {
+              "observed": 325,
+              "unverified_reference": 4
+            },
+            "price": {
+              "mean": 0.029899850247893094,
+              "median": 0.00746268656716409,
+              "observed": 325,
+              "minus_etf": 0.01304526463822197,
+              "minus_universe": -0.0030602941391096802
+            },
+            "partial_economic": {
+              "mean": 0.03000551932239961,
+              "median": 0.008385744234800763,
+              "observed": 325,
+              "minus_etf": 0.013150933712728484,
+              "minus_universe": -0.0030792012180781356
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": 0.01659082011060819,
+              "matched_cap_turnover": {
+                "effect": 0.02429539501115608,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.013818744416034014,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.011352155289269937
+            },
+            "partial_economic": {
+              "difference": 0.01640568047901869,
+              "matched_cap_turnover": {
+                "effect": 0.024062196970314767,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.013641407122914551,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.011169794476094584
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": 0.14789086172889418,
+              "matched_cap_turnover": {
+                "effect": 0.15739573812927718,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.15776538384607458,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.12183290992110983
+            },
+            "partial_economic": {
+              "difference": 0.14755912548399944,
+              "matched_cap_turnover": {
+                "effect": 0.1571054689149943,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.15754244969018,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.12151075645725165
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": 0.13696374525767643,
+              "matched_cap_turnover": {
+                "effect": 0.1503798929726725,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.1443005926260787,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.10872765749652419
+            },
+            "partial_economic": {
+              "difference": 0.13696374525767643,
+              "matched_cap_turnover": {
+                "effect": 0.1503798929726725,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.1443005926260787,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.10873587130884121
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.07222802411503451,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.04952005315720136
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": 0.04355052697743867
+              },
+              {
+                "n": 121,
+                "observed": 121,
+                "mean": 0.03658349766073346
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": 0.03962416386473539
+              },
+              {
+                "n": 122,
+                "observed": 115,
+                "mean": 0.010772272117294595
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.07230661539705416,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.04952005315720136
+              },
+              {
+                "n": 122,
+                "observed": 122,
+                "mean": 0.04366002290469874
+              },
+              {
+                "n": 121,
+                "observed": 121,
+                "mean": 0.03697372494666644
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": 0.03981027367158645
+              },
+              {
+                "n": 122,
+                "observed": 115,
+                "mean": 0.01082085117971869
+              }
+            ]
+          }
+        }
+      },
+      "60": {
+        "entry": "20210602",
+        "exit": "20210825",
+        "etf_price": -0.037428803905614316,
+        "etf_partial_economic": -0.03615018016970828,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 5,
+              "observed": 592,
+              "unverified_reference": 10
+            },
+            "price": {
+              "mean": -0.03600462964638749,
+              "median": -0.0681059067656491,
+              "observed": 592,
+              "minus_etf": 0.0014241742592268278,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.035854829167449365,
+              "median": -0.0681059067656491,
+              "observed": 592,
+              "minus_etf": 0.00029535100225891453,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "entry_unavailable": 1,
+              "observed": 118,
+              "unverified_reference": 2
+            },
+            "price": {
+              "mean": 0.004876836685524142,
+              "median": -0.04100996834377313,
+              "observed": 118,
+              "minus_etf": 0.042305640591138456,
+              "minus_universe": 0.04088146633191163
+            },
+            "partial_economic": {
+              "mean": 0.004876836685524142,
+              "median": -0.04100996834377313,
+              "observed": 118,
+              "minus_etf": 0.04102701685523242,
+              "minus_universe": 0.040731665852973505
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 4,
+              "observed": 474,
+              "unverified_reference": 8
+            },
+            "price": {
+              "mean": -0.04618187231973258,
+              "median": -0.07492215318903123,
+              "observed": 474,
+              "minus_etf": -0.008753068414118263,
+              "minus_universe": -0.010177242673345091
+            },
+            "partial_economic": {
+              "mean": -0.04599477973844277,
+              "median": -0.07492215318903123,
+              "observed": 474,
+              "minus_etf": -0.009844599568734493,
+              "minus_universe": -0.010139950570993407
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 514,
+              "unverified_reference": 9
+            },
+            "price": {
+              "mean": -0.04167311549010163,
+              "median": -0.07352788720713249,
+              "observed": 514,
+              "minus_etf": -0.004244311584487313,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.04154756987239728,
+              "median": -0.07352788720713249,
+              "observed": 514,
+              "minus_etf": -0.005397389702689,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 91,
+            "statuses": {
+              "observed": 91
+            },
+            "price": {
+              "mean": -0.06048267794393217,
+              "median": -0.09124087591240881,
+              "observed": 91,
+              "minus_etf": -0.02305387403831785,
+              "minus_universe": -0.018809562453830538
+            },
+            "partial_economic": {
+              "mean": -0.06015094169903744,
+              "median": -0.0904907975460123,
+              "observed": 91,
+              "minus_etf": -0.02400076152932916,
+              "minus_universe": -0.01860337182664016
+            }
+          },
+          "B": {
+            "n": 91,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 89,
+              "unverified_reference": 1
+            },
+            "price": {
+              "mean": -0.007244418183717299,
+              "median": -0.051004636785162316,
+              "observed": 89,
+              "minus_etf": 0.030184385721897015,
+              "minus_universe": 0.03442869730638433
+            },
+            "partial_economic": {
+              "mean": -0.007244418183717299,
+              "median": -0.051004636785162316,
+              "observed": 89,
+              "minus_etf": 0.02890576198599098,
+              "minus_universe": 0.03430315168867998
+            }
+          },
+          "C": {
+            "n": 13,
+            "statuses": {
+              "observed": 12,
+              "unverified_reference": 1
+            },
+            "price": {
+              "mean": 0.053976348933669364,
+              "median": 0.033107343866319194,
+              "observed": 12,
+              "minus_etf": 0.09140515283928369,
+              "minus_universe": 0.095649464423771
+            },
+            "partial_economic": {
+              "mean": 0.053976348933669364,
+              "median": 0.033107343866319194,
+              "observed": 12,
+              "minus_etf": 0.09012652910337765,
+              "minus_universe": 0.09552391880606664
+            }
+          },
+          "D": {
+            "n": 329,
+            "statuses": {
+              "observed": 322,
+              "unverified_reference": 7
+            },
+            "price": {
+              "mean": -0.0494379522915143,
+              "median": -0.07352788720713249,
+              "observed": 322,
+              "minus_etf": -0.012009148385899983,
+              "minus_universe": -0.0077648368014126695
+            },
+            "partial_economic": {
+              "mean": -0.049331298722524806,
+              "median": -0.07352788720713249,
+              "observed": 322,
+              "minus_etf": -0.013181118552816527,
+              "minus_universe": -0.007783728850127528
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": 0.05105870900525672,
+              "matched_cap_turnover": {
+                "effect": 0.052800519578533586,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.043587583927812805,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.04312767176295445
+            },
+            "partial_economic": {
+              "difference": 0.05087161642396691,
+              "matched_cap_turnover": {
+                "effect": 0.052563003055454464,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.043409655160918006,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.042943770740208366
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": 0.11445902687760154,
+              "matched_cap_turnover": {
+                "effect": 0.1182895783414622,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.13419105341954504,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.0917167603834653
+            },
+            "partial_economic": {
+              "difference": 0.1141272906327068,
+              "matched_cap_turnover": {
+                "effect": 0.1179993091271793,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.13396811926365043,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.09139468149377859
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": 0.061220767117386665,
+              "matched_cap_turnover": {
+                "effect": 0.08553354546858967,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.09178807224610745,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.03483957089372042
+            },
+            "partial_economic": {
+              "difference": 0.061220767117386665,
+              "matched_cap_turnover": {
+                "effect": 0.08553354546858967,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.09178807224610745,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.03484646900458329
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.11234737002242047,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.004876836685524142
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.031725046747403104
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.03944401834067575
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.039658620659551794
+              },
+              {
+                "n": 122,
+                "observed": 113,
+                "mean": -0.07574288089178127
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.11232342486135073,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 118,
+                "mean": 0.004876836685524142
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.03161464589512436
+              },
+              {
+                "n": 121,
+                "observed": 119,
+                "mean": -0.03904723261296238
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.03947251085270073
+              },
+              {
+                "n": 122,
+                "observed": 113,
+                "mean": -0.07569344202294259
+              }
+            ]
+          }
+        }
+      },
+      "120": {
+        "entry": "20210602",
+        "exit": "20211124",
+        "etf_price": -0.08125072649075904,
+        "etf_partial_economic": -0.07799604789027081,
+        "groups": {
+          "eligible": {
+            "n": 608,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 5,
+              "observed": 580,
+              "unverified_reference": 21
+            },
+            "price": {
+              "mean": -0.06929740132766514,
+              "median": -0.1252177700348432,
+              "observed": 580,
+              "minus_etf": 0.0119533251630939,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.06911667967528524,
+              "median": -0.1252177700348432,
+              "observed": 580,
+              "minus_etf": 0.00887936821498557,
+              "minus_universe": 0.0
+            }
+          },
+          "top": {
+            "n": 121,
+            "statuses": {
+              "entry_unavailable": 1,
+              "observed": 114,
+              "unverified_reference": 6
+            },
+            "price": {
+              "mean": -0.0045160390733769715,
+              "median": -0.07690265312678235,
+              "observed": 114,
+              "minus_etf": 0.07673468741738207,
+              "minus_universe": 0.06478136225428817
+            },
+            "partial_economic": {
+              "mean": -0.0045160390733769715,
+              "median": -0.07690265312678235,
+              "observed": 114,
+              "minus_etf": 0.07348000881689384,
+              "minus_universe": 0.06460064060190827
+            }
+          },
+          "remainder": {
+            "n": 487,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "entry_unavailable": 4,
+              "observed": 466,
+              "unverified_reference": 15
+            },
+            "price": {
+              "mean": -0.08514520239416482,
+              "median": -0.1405064504128039,
+              "observed": 466,
+              "minus_etf": -0.003894475903405775,
+              "minus_universe": -0.015847801066499675
+            },
+            "partial_economic": {
+              "mean": -0.08492026986545163,
+              "median": -0.1405064504128039,
+              "observed": 466,
+              "minus_etf": -0.006924221975180819,
+              "minus_universe": -0.01580359019016639
+            }
+          },
+          "joint": {
+            "n": 524,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 506,
+              "unverified_reference": 16
+            },
+            "price": {
+              "mean": -0.07133983325110121,
+              "median": -0.12335106744309404,
+              "observed": 506,
+              "minus_etf": 0.009910893239657825,
+              "minus_universe": 0.0
+            },
+            "partial_economic": {
+              "mean": -0.07118041206068815,
+              "median": -0.12335106744309404,
+              "observed": 506,
+              "minus_etf": 0.006815635829582667,
+              "minus_universe": 0.0
+            }
+          },
+          "A": {
+            "n": 91,
+            "statuses": {
+              "end_unavailable|suspended_or_zero_volume_end": 1,
+              "observed": 89,
+              "unverified_reference": 1
+            },
+            "price": {
+              "mean": -0.09667116490149369,
+              "median": -0.12654320987654322,
+              "observed": 89,
+              "minus_etf": -0.01542043841073465,
+              "minus_universe": -0.025331331650392475
+            },
+            "partial_economic": {
+              "mean": -0.09641813920903326,
+              "median": -0.12654320987654322,
+              "observed": 89,
+              "minus_etf": -0.01842209131876245,
+              "minus_universe": -0.025237727148345115
+            }
+          },
+          "B": {
+            "n": 91,
+            "statuses": {
+              "corporate_action|unverified_reference": 1,
+              "observed": 87,
+              "unverified_reference": 3
+            },
+            "price": {
+              "mean": -0.004750956999698923,
+              "median": -0.07773851590106007,
+              "observed": 87,
+              "minus_etf": 0.07649976949106012,
+              "minus_universe": 0.06658887625140229
+            },
+            "partial_economic": {
+              "mean": -0.004750956999698923,
+              "median": -0.07773851590106007,
+              "observed": 87,
+              "minus_etf": 0.07324509089057189,
+              "minus_universe": 0.06642945506098923
+            }
+          },
+          "C": {
+            "n": 13,
+            "statuses": {
+              "observed": 12,
+              "unverified_reference": 1
+            },
+            "price": {
+              "mean": -0.0035494373499677656,
+              "median": -0.019008929648214823,
+              "observed": 12,
+              "minus_etf": 0.07770128914079127,
+              "minus_universe": 0.06779039590113345
+            },
+            "partial_economic": {
+              "mean": -0.0035494373499677656,
+              "median": -0.019008929648214823,
+              "observed": 12,
+              "minus_etf": 0.07444661054030305,
+              "minus_universe": 0.06763097471072038
+            }
+          },
+          "D": {
+            "n": 329,
+            "statuses": {
+              "observed": 318,
+              "unverified_reference": 11
+            },
+            "price": {
+              "mean": -0.08502608629449955,
+              "median": -0.13553854565336249,
+              "observed": 318,
+              "minus_etf": -0.0037753598037405106,
+              "minus_universe": -0.013686253043398336
+            },
+            "partial_economic": {
+              "mean": -0.08484323146519127,
+              "median": -0.13553854565336249,
+              "observed": 318,
+              "minus_etf": -0.006847183574920451,
+              "minus_universe": -0.013662819404503118
+            }
+          }
+        },
+        "contrasts": {
+          "top-remainder": {
+            "price": {
+              "difference": 0.08062916332078784,
+              "matched_cap_turnover": {
+                "effect": 0.0920071311836849,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.04704900868818961,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.05979296763430429
+            },
+            "partial_economic": {
+              "difference": 0.08040423079207466,
+              "matched_cap_turnover": {
+                "effect": 0.09171559832105682,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 487,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "matched_sector": {
+                "effect": 0.04682528821721716,
+                "structurally_matched_target": 121,
+                "structurally_matched_peer": 475,
+                "target_in_cells_with_both_observed": 121,
+                "target_total": 121
+              },
+              "adverse_unresolved_stress": 0.05957862726460279
+            }
+          },
+          "C-A": {
+            "price": {
+              "difference": 0.09312172755152592,
+              "matched_cap_turnover": {
+                "effect": 0.10438361121681329,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.12616702539263966,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.06757012936901252
+            },
+            "partial_economic": {
+              "difference": 0.0928687018590655,
+              "matched_cap_turnover": {
+                "effect": 0.10414739492350233,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 79,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.12600525236020416,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 63,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": 0.06733142408684864
+            }
+          },
+          "C-B": {
+            "price": {
+              "difference": 0.0012015196497311576,
+              "matched_cap_turnover": {
+                "effect": 0.031886386609877686,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.06315605666513671,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": -0.025261966793151534
+            },
+            "partial_economic": {
+              "difference": 0.0012015196497311576,
+              "matched_cap_turnover": {
+                "effect": 0.031886386609877686,
+                "structurally_matched_target": 12,
+                "structurally_matched_peer": 78,
+                "target_in_cells_with_both_observed": 12,
+                "target_total": 13
+              },
+              "matched_sector": {
+                "effect": 0.06315605666513671,
+                "structurally_matched_target": 13,
+                "structurally_matched_peer": 61,
+                "target_in_cells_with_both_observed": 13,
+                "target_total": 13
+              },
+              "adverse_unresolved_stress": -0.025256711149511543
+            }
+          }
+        },
+        "diagnostics": {
+          "price": {
+            "spearman_ic": 0.16908278891871292,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 114,
+                "mean": -0.0045160390733769715
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.05746473242152822
+              },
+              {
+                "n": 121,
+                "observed": 117,
+                "mean": -0.08357101005857363
+              },
+              {
+                "n": 122,
+                "observed": 119,
+                "mean": -0.05505253569519519
+              },
+              {
+                "n": 122,
+                "observed": 109,
+                "mean": -0.15041625475316098
+              }
+            ]
+          },
+          "partial_economic": {
+            "spearman_ic": 0.1692460468930563,
+            "quintiles_high_to_low": [
+              {
+                "n": 121,
+                "observed": 114,
+                "mean": -0.0045160390733769715
+              },
+              {
+                "n": 122,
+                "observed": 121,
+                "mean": -0.05727334161665015
+              },
+              {
+                "n": 121,
+                "observed": 117,
+                "mean": -0.08311328021086128
+              },
+              {
+                "n": 122,
+                "observed": 119,
+                "mean": -0.054863297992430664
+              },
+              {
+                "n": 122,
+                "observed": 109,
+                "mean": -0.1503650016139062
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

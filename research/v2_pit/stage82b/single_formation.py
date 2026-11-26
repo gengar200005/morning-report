@@ -221,7 +221,7 @@ def summaries(group, hrows, liquidity, sector, score):
     return output
 
 
-def run(a):
+def run(a, diagnostic=None):
     signals=gate_signals(json.loads(a.gate.read_text()),a.asof)
     # The ledger is run only on explicit release after the upstream data gates.
     if not a.release_outcomes:
@@ -275,6 +275,11 @@ def run(a):
         evaluations={i:outcome(bars[i],actions[i],exits[i],1,ends) for i in set().union(*values.values())}
         hrows={h:({i:r[windows[h][1]] for i,r in evaluations.items()},etf[h]) for h in HORIZONS}
         overlap=audit_replayed_outcomes(evaluations,windows,scores,references)
+        if diagnostic is not None:
+            return {'formation':DAY,'horizon':120,'entry':etf[120][0],'exit':etf[120][1],
+                    'asof_sha256':digest(a.asof),'gate_sha256':digest(a.gate),
+                    'matched_stage5_isin_horizon_checks':overlap,
+                    'signals':{s:diagnostic(groups(values[s],scores),hrows[120][0]) for s in signals}}
         fresh=set(members)-march
         return {'formation':DAY,'scope':'single descriptive formation only','universe':len(members),
                 'matched_stage5_isin_horizon_checks':overlap,
@@ -284,9 +289,13 @@ def run(a):
                 'signals':{s:summaries(groups(values[s],scores),hrows,liq,sector,values[s]) for s in signals}}
 
 
-if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__)
+def arguments(description):
+    p=argparse.ArgumentParser(description=description)
     for arg in ('gate','asof','database','archives','stage5'):
         p.add_argument('--'+arg,type=Path,required=True)
     p.add_argument('--release-outcomes',action='store_true')
-    print(json.dumps(run(p.parse_args()),indent=2,ensure_ascii=False,allow_nan=False))
+    return p.parse_args()
+
+
+if __name__=='__main__':
+    print(json.dumps(run(arguments(__doc__)),indent=2,ensure_ascii=False,allow_nan=False))

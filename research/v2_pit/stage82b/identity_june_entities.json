@@ -1,0 +1,968 @@
+{
+  "as_of": "20210601",
+  "membership": {
+    "quarter_end_count": 782,
+    "formation_count": 785,
+    "entrants": [
+      "KR7361610009",
+      "KR7380440008",
+      "KR7383220001",
+      "KR7383800000"
+    ],
+    "exits": [
+      "KR7005190004"
+    ]
+  },
+  "issuers": [
+    {
+      "stock_code": "001720",
+      "isin": "KR7001720002",
+      "name": "신영증권",
+      "listing_date": "19870824",
+      "formation_member": true,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": "20210215",
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210210000924",
+          "title": "분기보고서(일반법인)(2020.12)",
+          "date": "2021-02-10 14:57"
+        }
+      ],
+      "metrics": {},
+      "reason": "financial_sector; excluded under frozen nonfinancial definition",
+      "kind_search_page_sha256": [
+        "9372f191679729993b82e2b0598328d37929c9543dba8fa6b0c045851f21764e",
+        "6681c1794b635cb76ce20a45153e5bbc9a0e3d948adb09f92b9ef7c558414805",
+        "50dce4fca196ef1864dd9d59c2096a87b55b8760b6f077a1b6e253fdb90a5673",
+        "d2360359edd0281d2c92c23f90d06face8c78150c697596b8f89f37cdc2d8a10",
+        "8985ef3839a96c1dffe64ce125084748e19f4df40da69f1a0d7f5c34d42b3810",
+        "812e8a3fe5e8aabe36c793e31ee60fd8889ca71b400172c9db3eabef8618475d",
+        "69f5b7be99297b43bd2a8b03fa2c5267d2919a19826f9b1b5b15c554e5db6797"
+      ],
+      "quarter_end": "20201231",
+      "age_days": 152,
+      "kind_receipt": "20210210000924",
+      "published_kst": "2021-02-10 14:57",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "following_march_annual_after_cutoff": {
+        "filing_date": "2021-06-16",
+        "kind_receipt": "20210616000344",
+        "first_available_session": "20210617",
+        "dart_receipt": null
+      },
+      "source_receipts": [
+        "20210210000924"
+      ]
+    },
+    {
+      "stock_code": "002630",
+      "isin": "KR7002630002",
+      "name": "오리엔트바이오",
+      "listing_date": "19761228",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210215001155",
+      "available_session": "20210216",
+      "period_current": "20201001/20201231",
+      "period_prior": "20191001/20191231",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210215000868",
+          "title": "분기보고서(일반법인)(2020.12)",
+          "date": "2021-02-15 16:30"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          14134201236,
+          10462912521
+        ],
+        "operating_profit": [
+          1408979190,
+          -498061574
+        ]
+      },
+      "reason": "independent XBRL and KIND 3-month CFS values match",
+      "kind_search_page_sha256": [
+        "c6ff0f4554fa4897b9bde3a87ac56a2ed745138b1c09841cbfc5a91d0cdd0f3c"
+      ],
+      "quarter_end": "20201231",
+      "age_days": 152,
+      "kind_receipt": "20210215000868",
+      "published_kst": "2021-02-15 16:30",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "following_march_annual_after_cutoff": {
+        "filing_date": "2021-06-29",
+        "kind_receipt": "20210629000382",
+        "first_available_session": "20210630",
+        "dart_receipt": "20210629000331"
+      },
+      "corp_code": "00141626",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001155&dcm_no=7801130&lang=ko",
+      "sha256": "5c92b6ed050f871a62e30689f9a2ae04bc768912d2e35b320cb6ac9ea6dde30e",
+      "source_receipts": [
+        "20210215000868"
+      ],
+      "F2_pp": 14.728837691207813,
+      "F3_fraction": 0.35088592278979647
+    },
+    {
+      "stock_code": "003550",
+      "isin": "KR7003550001",
+      "name": "LG",
+      "listing_date": "19700213",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210517001244",
+      "available_session": "20210518",
+      "period_current": "20210101/20210331",
+      "period_prior": "20200101/20200331",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210311001573",
+          "title": "[연결포함]사업보고서(일반법인)(2020.12)",
+          "date": "2021-03-11 16:58"
+        },
+        {
+          "receipt": "20210517001312",
+          "title": "분기보고서(일반법인)(2021.03)",
+          "date": "2021-05-17 16:07"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          2180459000000,
+          1509762000000
+        ],
+        "operating_profit": [
+          1000858000000,
+          534723000000
+        ]
+      },
+      "reason": "LX business classified as discontinued. Current and comparative CFS operating lines cover continuing operations. The revenue label is 매출 및 지분법 손익, identical to the receipt-bound XBRL revenue pair; retain original sector/product rules.",
+      "kind_search_page_sha256": [
+        "ec4e5b0beae4ebf9e6eee49ad2e823fc77488d679cec0a8b10dcf33e658a666b"
+      ],
+      "corp_code": "00120021",
+      "quarter_end": "20210331",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517001244&dcm_no=8073663&lang=ko",
+      "sha256": "dffefef4a6d28aa2abeaa5e7cfad94df7c66986874041be9a4387b3ce2893ca7",
+      "kind_receipt": "20210517001312",
+      "source_receipts": [
+        "20210517001312",
+        "20210503000422"
+      ],
+      "F2_pp": 10.483551303338452,
+      "F3_fraction": 0.4442402179946243
+    },
+    {
+      "stock_code": "004310",
+      "isin": "KR7004310009",
+      "name": "현대약품",
+      "listing_date": "19780628",
+      "formation_member": true,
+      "scope": "OFS",
+      "unit": "KRW",
+      "receipt": "20210414001995",
+      "available_session": "20210415",
+      "period_current": "20201201/20210228",
+      "period_prior": "20191201/20200229",
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210218000001",
+          "title": "[정정]사업보고서(일반법인)(2018.11)",
+          "date": "2021-02-18 07:31"
+        },
+        {
+          "receipt": "20210218000004",
+          "title": "[정정]사업보고서(일반법인)(2019.11)",
+          "date": "2021-02-18 07:36"
+        },
+        {
+          "receipt": "20210218000005",
+          "title": "사업보고서(일반법인)(2020.11)",
+          "date": "2021-02-18 07:42"
+        },
+        {
+          "receipt": "20210414000539",
+          "title": "분기보고서(일반법인)(2021.02)",
+          "date": "2021-04-14 16:41"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          30420253186,
+          32132951765
+        ],
+        "operating_profit": [
+          -1052117512,
+          278301680
+        ]
+      },
+      "reason": "explicit_no_consolidated_statement; reported standalone metrics only",
+      "kind_search_page_sha256": [
+        "58a37feb2ff125ff55f6aec0db76250f0ca8c012d1f2c7ac2d11238938cd030f"
+      ],
+      "quarter_end": "20210228",
+      "age_days": 93,
+      "kind_receipt": "20210414000539",
+      "published_kst": "2021-04-14 16:41",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "corp_code": "00164706",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210414001995&dcm_no=8028275&lang=ko",
+      "sha256": "df96553b573f1fd75887e46c80b7b78e708697ed31f92209d5075cd7ff7b02a4",
+      "source_receipts": [
+        "20210414000539"
+      ]
+    },
+    {
+      "stock_code": "005190",
+      "isin": "KR7005190004",
+      "name": "동성화학",
+      "listing_date": "19880701",
+      "formation_member": false,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": null,
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210316001863",
+          "title": "[연결포함]사업보고서(일반법인)(2020.12)",
+          "date": "2021-03-16 17:36"
+        }
+      ],
+      "metrics": {},
+      "reason": "delisted_before_formation",
+      "kind_search_page_sha256": [
+        "76df18384f940e1c0f467d9c38c0c75b86305b6ee65fd5385c497c52749ec654"
+      ],
+      "note": "Acquired by parent 102260 on 2021-04-01. KRX notice names 2021-04-16 as delisting date.",
+      "source_receipts": [
+        "20210413000181",
+        "20210401000557"
+      ]
+    },
+    {
+      "stock_code": "007700",
+      "isin": "KR7007700008",
+      "name": "F&F홀딩스",
+      "listing_date": "19841004",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210517002014",
+      "available_session": "20210518",
+      "period_current": "20210101/20210331",
+      "period_prior": "20200101/20200331",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210315000460",
+          "title": "[연결포함]사업보고서(일반법인)(2020.12)",
+          "date": "2021-03-15 14:11"
+        },
+        {
+          "receipt": "20210517002096",
+          "title": "분기보고서(일반법인)(2021.03)",
+          "date": "2021-05-17 17:24"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          8011589603,
+          4363238120
+        ],
+        "operating_profit": [
+          775356447,
+          -3012828882
+        ]
+      },
+      "reason": "Fashion business classified as discontinued in both periods. Direct continuing CFS revenue and operating income match XBRL; do not apply old combined sales to either surviving or newly listed issuer.",
+      "kind_search_page_sha256": [
+        "283af137b7838609db1ececc776a10fbc33ba4f6c5bc6f5c669d467b8c1cff04"
+      ],
+      "corp_code": "00126487",
+      "quarter_end": "20210331",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002014&dcm_no=8075707&lang=ko",
+      "sha256": "6cfe0bb7ebe3dd4b948ec72c0e9f6ad38080c35e150cdb7ea48ca672724f23e1",
+      "kind_receipt": "20210517002096",
+      "source_receipts": [
+        "20210517002096",
+        "20210503000269"
+      ],
+      "F2_pp": 78.72823218952219,
+      "F3_fraction": 0.8361568593464708
+    },
+    {
+      "stock_code": "008110",
+      "isin": "KR7008110009",
+      "name": "대동전자",
+      "listing_date": "19900605",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210215001244",
+      "available_session": "20210216",
+      "period_current": "20201001/20201231",
+      "period_prior": "20191001/20191231",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210215000983",
+          "title": "분기보고서(일반법인)(2020.12)",
+          "date": "2021-02-15 17:01"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          16154438170,
+          14266360062
+        ],
+        "operating_profit": [
+          4134501741,
+          1391614637
+        ]
+      },
+      "reason": "independent XBRL and KIND 3-month CFS values match",
+      "kind_search_page_sha256": [
+        "4e314e70dc86ee9cb1332dbfb287670668f4383df4c1a25a1b30a648daddef92"
+      ],
+      "quarter_end": "20201231",
+      "age_days": 152,
+      "kind_receipt": "20210215000983",
+      "published_kst": "2021-02-15 17:01",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "following_march_annual_after_cutoff": {
+        "filing_date": "2021-06-17",
+        "kind_receipt": "20210617000459",
+        "first_available_session": "20210618",
+        "dart_receipt": "20210617000340"
+      },
+      "corp_code": "00157104",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001244&dcm_no=7801594&lang=ko",
+      "sha256": "e13ddd254d6faeb700b5eb2afa4362aa05b34185dd2060756396f4463297620f",
+      "source_receipts": [
+        "20210215000983"
+      ],
+      "F2_pp": 15.839078779738832,
+      "F3_fraction": 0.1323447676768723
+    },
+    {
+      "stock_code": "018500",
+      "isin": "KR7018500009",
+      "name": "동원금속",
+      "listing_date": "19951110",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210215001359",
+      "available_session": "20210216",
+      "period_current": "20201001/20201231",
+      "period_prior": "20191001/20191231",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210215001130",
+          "title": "분기보고서(일반법인)(2020.12)",
+          "date": "2021-02-15 17:36"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          90395385317,
+          91283315276
+        ],
+        "operating_profit": [
+          6771455636,
+          7800232043
+        ]
+      },
+      "reason": "independent XBRL and KIND 3-month CFS values match",
+      "kind_search_page_sha256": [
+        "e8a7ceed9ba141ac69628a289685ede4ec449bb27f8134c478588f9ac3b64dbf"
+      ],
+      "quarter_end": "20201231",
+      "age_days": 152,
+      "kind_receipt": "20210215001130",
+      "published_kst": "2021-02-15 17:36",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "following_march_annual_after_cutoff": {
+        "filing_date": "2021-06-28",
+        "kind_receipt": "20210628000551",
+        "first_available_session": "20210629",
+        "dart_receipt": "20210628000381"
+      },
+      "corp_code": "00118008",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001359&dcm_no=7801876&lang=ko",
+      "sha256": "1efd6e2e581449f061f4ccc2c846f1eafa1da9a45ab191f21c3b4d1adbf236f2",
+      "source_receipts": [
+        "20210215001130"
+      ],
+      "F2_pp": -1.054149037567513,
+      "F3_fraction": -0.009727187890966715
+    },
+    {
+      "stock_code": "092440",
+      "isin": "KR7092440007",
+      "name": "기신정기",
+      "listing_date": "20071030",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210215001000",
+      "available_session": "20210216",
+      "period_current": "20201001/20201231",
+      "period_prior": "20191001/20191231",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210215000707",
+          "title": "분기보고서(일반법인)(2020.12)",
+          "date": "2021-02-15 15:51"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          35589762723,
+          33094565931
+        ],
+        "operating_profit": [
+          4434105541,
+          2530800895
+        ]
+      },
+      "reason": "independent XBRL and KIND 3-month CFS values match",
+      "kind_search_page_sha256": [
+        "8f4de5b8325c0515d673089f91a6705176c41fcabbd081fb277b2eba65c0ce13"
+      ],
+      "quarter_end": "20201231",
+      "age_days": 152,
+      "kind_receipt": "20210215000707",
+      "published_kst": "2021-02-15 15:51",
+      "latest_version": "original",
+      "period_check": "latest available periodic filing: complete issuer search through 2021-06-01",
+      "following_march_annual_after_cutoff": {
+        "filing_date": "2021-06-10",
+        "kind_receipt": "20210610000250",
+        "first_available_session": "20210611",
+        "dart_receipt": "20210610000278"
+      },
+      "corp_code": "00106614",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001000&dcm_no=7801086&lang=ko",
+      "sha256": "c1c45680a6175d3c8bc99162c958631dce97c278f4cca805254ff2eb3e539c22",
+      "source_receipts": [
+        "20210215000707"
+      ],
+      "F2_pp": 4.811755782806195,
+      "F3_fraction": 0.07539596673370252
+    },
+    {
+      "stock_code": "102260",
+      "isin": "KR7102260007",
+      "name": "동성케미컬",
+      "listing_date": "20080623",
+      "formation_member": true,
+      "scope": "CFS",
+      "unit": "KRW",
+      "receipt": "20210517002008",
+      "available_session": "20210518",
+      "period_current": "20210101/20210331",
+      "period_prior": "20200101/20200331",
+      "F2_status": "PASS",
+      "F3_status": "PASS",
+      "regulatory_periodic_filings_to_cutoff": [
+        {
+          "receipt": "20210316001747",
+          "title": "[연결포함]사업보고서(일반법인)(2020.12)",
+          "date": "2021-03-16 17:24"
+        },
+        {
+          "receipt": "20210517002091",
+          "title": "분기보고서(일반법인)(2021.03)",
+          "date": "2021-05-17 17:23"
+        }
+      ],
+      "metrics": {
+        "revenue": [
+          248501135207,
+          230321344577
+        ],
+        "operating_profit": [
+          16763674602,
+          17611412817
+        ]
+      },
+      "reason": "Merger report confirms 005190 already was a CFS subsidiary. Historical group revenue and operating income remain comparable. No reassignment of subsidiary amounts. EPS and standalone perimeters not evaluated.",
+      "kind_search_page_sha256": [
+        "ca05ac398fdb22b07cfe61fbdf51c03a8fd6801da46e3cee0e58a9b8bc55a2c9"
+      ],
+      "corp_code": "00679314",
+      "quarter_end": "20210331",
+      "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210517002008&dcm_no=8075699&lang=ko",
+      "sha256": "255398f34144b0d1aa33264d23bd90fa27c9fcc55c40ae2fdcfae6cbe4a3193e",
+      "kind_receipt": "20210517002091",
+      "source_receipts": [
+        "20210517002091",
+        "20210401000557"
+      ],
+      "F2_pp": -0.9005380664097673,
+      "F3_fraction": 0.07893228768435834
+    },
+    {
+      "stock_code": "361610",
+      "isin": "KR7361610009",
+      "name": "SK아이이테크놀로지",
+      "listing_date": "20210511",
+      "formation_member": true,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": null,
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [],
+      "metrics": {},
+      "reason": "preliminary_report_only",
+      "kind_search_page_sha256": [
+        "bf00302f44370ea2b60d57cbefaccd9176b20078fc9e2d46f74fdb460d75aad4"
+      ],
+      "opendart_checked_reports": [
+        {
+          "type": "11011",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11012",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11013",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        }
+      ],
+      "preliminary_only": {
+        "scope": "CFS",
+        "unit": "KRW million",
+        "revenue": [
+          139232,
+          99653
+        ],
+        "operating_profit": [
+          32363,
+          26922
+        ],
+        "kind_receipt": "20210513000071",
+        "next_session": "20210514"
+      },
+      "note": "Listing review records 2019-04-01 as the creation date. On 2021-05-13 the company published preliminary results. Neither the KIND security list nor the OpenDART filing-type search identified an eligible own periodic report with a current three-month pair.",
+      "formation_reference": {
+        "date": "2019-04-01",
+        "basis": "official historical listing review, effective date",
+        "url": "https://kind.krx.co.kr/listinvstg/listinvstgcom.do?bizProcNo=20200731000069&method=searchListInvstgCorpDetail",
+        "sha256": "57f4e74b12cefa036551fac0343a83740cf63ae6359cbf216b3500f99e0b5f78"
+      },
+      "source_receipts": [
+        "20210507000691",
+        "20210513000071"
+      ]
+    },
+    {
+      "stock_code": "380440",
+      "isin": "KR7380440008",
+      "name": "엔에이치스팩19호",
+      "listing_date": "20210521",
+      "formation_member": true,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": null,
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [],
+      "metrics": {},
+      "reason": "new_spac_no_prior_year_and_no_periodic_filing",
+      "kind_search_page_sha256": [
+        "3e0854b15edbc26b118d073db0e6b69d90eea4efdbd793116e3bcf2d4fbae242"
+      ],
+      "opendart_checked_reports": [
+        {
+          "type": "11011",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11012",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11013",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        }
+      ],
+      "note": "IPO notice identifies SPAC, 2021-05-21 listing and 2021-03-04 dividend start. The later issuer confirmation of the formation date is an identity annotation only.",
+      "formation_reference": {
+        "date": "2021-03-04",
+        "basis": "retrospective confirmation of creation date only; no financial input",
+        "url": "https://kind.krx.co.kr/external/2022/08/03/000209/20220803000559/11012.htm",
+        "sha256": "d5dfd9f56a30c028f417916b08f5a816baabff7b2f44f0b5222d75c740a9b6b5"
+      },
+      "krx_listing_industry": "금융 지원 서비스업 (11-66-01); sector for ranking comes from formation-date WICS",
+      "source_receipts": [
+        "20210518000370"
+      ]
+    },
+    {
+      "stock_code": "383220",
+      "isin": "KR7383220001",
+      "name": "F&F",
+      "listing_date": "20210521",
+      "formation_member": true,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": null,
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [],
+      "metrics": {},
+      "reason": "new_company_after_quarter_end_no_own_periodic_filing",
+      "kind_search_page_sha256": [
+        "51e5276903ed4abca673ae43c01f3c8e364355f88a02c1d561e11fb181015340"
+      ],
+      "opendart_checked_reports": [
+        {
+          "type": "11011",
+          "rows": [
+            [
+              "F&F 홀딩스",
+              "사업보고서 \n\t\t\t\t\t\t\t\t(2020.12)",
+              "F&F 홀딩스",
+              "openCorpInfo('00126487'); return false;",
+              "openReportViewer('20210315000334'); return false;"
+            ]
+          ],
+          "sha256": "797b796e28de28468f784fd2b37dde538da489a801c4d8980ab0a68aaf3878cd"
+        },
+        {
+          "type": "11012",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11013",
+          "rows": [
+            [
+              "F&F 홀딩스",
+              "분기보고서 \n\t\t\t\t\t\t\t\t(2021.03)",
+              "F&F 홀딩스",
+              "openCorpInfo('00126487'); return false;",
+              "openReportViewer('20210517002014'); return false;"
+            ]
+          ],
+          "sha256": "88d7c1a500690717e6f937dec74311b74a2cc6a10f1d5e21feadc15ea642ebef"
+        }
+      ],
+      "note": "Fashion business separated from 007700 effective 2021-05-01. The 2021-05-03 report records application for split registration. Predecessor segment or discontinued-operation figures cannot supply an original of 383220.",
+      "source_receipts": [
+        "20210518000357",
+        "20210503000269"
+      ]
+    },
+    {
+      "stock_code": "383800",
+      "isin": "KR7383800000",
+      "name": "LX홀딩스",
+      "listing_date": "20210527",
+      "formation_member": true,
+      "scope": "",
+      "unit": "KRW",
+      "receipt": null,
+      "available_session": null,
+      "period_current": null,
+      "period_prior": null,
+      "F2_status": "BLOCKED",
+      "F3_status": "BLOCKED",
+      "regulatory_periodic_filings_to_cutoff": [],
+      "metrics": {},
+      "reason": "new_company_after_quarter_end_no_own_periodic_filing",
+      "kind_search_page_sha256": [
+        "4c632ffe291e5ff126bb67f5105311072fcc830c00ce37672642a65600356861"
+      ],
+      "opendart_checked_reports": [
+        {
+          "type": "11011",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11012",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        },
+        {
+          "type": "11013",
+          "rows": [],
+          "sha256": "4f9d75973dbc24b3dfe873c6acedc1f377cc65abaf1eea2c3423f903e04e0fc3"
+        }
+      ],
+      "note": "Investment division separated from 003550 effective 2021-05-01. The 2021-05-03 report lists the planned registration application. The parent report does not qualify as an original of 383800.",
+      "source_receipts": [
+        "20210525000477",
+        "20210503000422"
+      ]
+    }
+  ],
+  "corporate_actions": {
+    "003550": [
+      "383800"
+    ],
+    "007700": [
+      "383220"
+    ],
+    "102260": [
+      "005190"
+    ]
+  },
+  "corporate_action_direction": "retained issuer to separated or absorbed issuer; see issuer records for direction and effective dates",
+  "source_receipts": {
+    "20210210000924": {
+      "receipt": "20210210000924",
+      "code": "001720",
+      "title": "분기보고서(일반법인)(2020.12)",
+      "date": "2021-02-10 14:57",
+      "document": "20210210002245",
+      "source_url": "https://kind.krx.co.kr/external/2021/02/10/000924/20210210002245/11013.htm",
+      "source_sha256": "1e407139556f5af810c347b3d2383ab05099dd37b13277e0f32ca68f22fea513",
+      "pointer_sha256": "f539afa77dcad7d8b6a4884375bf59cc40959df280db859be1a36d371c62202c",
+      "viewer_sha256": "85a4facd6c6e5a4130b6acc096eae898d5fac228db5807617a87777dfc26f8cf"
+    },
+    "20210215000707": {
+      "receipt": "20210215000707",
+      "code": "092440",
+      "title": "분기보고서(일반법인)(2020.12)",
+      "date": "2021-02-15 15:51",
+      "document": "20210215001929",
+      "source_url": "https://kind.krx.co.kr/external/2021/02/15/000707/20210215001929/11013.htm",
+      "source_sha256": "4922df3a7e597824fdb83707388edf93478912dd7d7307d9cdf84d27d923cc26",
+      "pointer_sha256": "b6bfc032b7050529d3aa808189fb04eebf71ce6d023cf9e1091e7880c04720bc",
+      "viewer_sha256": "c5616862971d4bba0d087ca624a8d9c61fba118868f8180e4f2ee4ede00d634a"
+    },
+    "20210215000868": {
+      "receipt": "20210215000868",
+      "code": "002630",
+      "title": "분기보고서(일반법인)(2020.12)",
+      "date": "2021-02-15 16:30",
+      "document": "20210215002245",
+      "source_url": "https://kind.krx.co.kr/external/2021/02/15/000868/20210215002245/11013.htm",
+      "source_sha256": "76abd0e9b36f341c7d4f8c99bc56f5fe5a5a59b31b34bb5cc1aae55c5f35b0d5",
+      "pointer_sha256": "664b50e8bdb26fd323f350305eba55c8c33273e2aa58f8a63c4e05aec5d2d5d8",
+      "viewer_sha256": "dccf62ea0ce9a61ac3e277a1bc60270e71c4c6233066030830fe7ea62604c67a"
+    },
+    "20210215000983": {
+      "receipt": "20210215000983",
+      "code": "008110",
+      "title": "분기보고서(일반법인)(2020.12)",
+      "date": "2021-02-15 17:01",
+      "document": "20210215002492",
+      "source_url": "https://kind.krx.co.kr/external/2021/02/15/000983/20210215002492/11013.htm",
+      "source_sha256": "fca59dc3c13da6a609704bf9138ae40b71edfcc008468269c22f49a72e831edc",
+      "pointer_sha256": "25e299e1a2fa0c3fd77eeca32c4088f340e945ebcf74e9b16877db58d87f22d7",
+      "viewer_sha256": "4ce338b74d00ffaed401e7e7b549da1509021b16e48024b3cd7eed0d3106d2fa"
+    },
+    "20210215001130": {
+      "receipt": "20210215001130",
+      "code": "018500",
+      "title": "분기보고서(일반법인)(2020.12)",
+      "date": "2021-02-15 17:36",
+      "document": "20210215002806",
+      "source_url": "https://kind.krx.co.kr/external/2021/02/15/001130/20210215002806/11013.htm",
+      "source_sha256": "2efea62d4bb8845f269100543f19fb1fb3de74f8390de6c098aaea6775f0ef0d",
+      "pointer_sha256": "8893e5ac8e83b42cae1bd01669eac24a6063ba15b1e8a22dddb77d3cd428ad8f",
+      "viewer_sha256": "ae0c94185c00c8e0a169bee83b4937201cb794d72e74b9c394692a8d2c9a8221"
+    },
+    "20210401000557": {
+      "receipt": "20210401000557",
+      "code": "102260",
+      "title": "증권발행실적보고서(합병등)",
+      "date": "2021-04-01 15:33",
+      "document": "20210401001316",
+      "source_url": "https://kind.krx.co.kr/external/2021/04/01/000557/20210401001316/10810.htm",
+      "source_sha256": "6bfd6f45617ab3a44454d7d7edc8e2344001635981bf1063bd1bb14e497acbc3",
+      "pointer_sha256": "c4c4fbc2f3ac31f9658671b93f62c1f944d7a465e25211df4c7d6d2e0a66cefc",
+      "viewer_sha256": "09d14ce86a8bfb0bdd8b1b2c146f156e0cdb699550f9d74f9a0cf1d16fe7e4b3"
+    },
+    "20210413000181": {
+      "receipt": "20210413000181",
+      "code": "005190",
+      "title": "상장폐지",
+      "date": "2021-04-13 17:37",
+      "document": "20210413000449",
+      "source_url": "https://kind.krx.co.kr/external/2021/04/13/000181/20210413000449/68051.htm",
+      "source_sha256": "68fd98fc6348b4f8d3190f059d9ea042beee4d8ee758015b854e519074e7ae68",
+      "pointer_sha256": "e593b2dca7a8a1b5b0191da1901be3d606967b47b1acc8165198ff9cd3309033",
+      "viewer_sha256": "bdd04fe9347cefb674e3333c5657d301bb1324d1aafdc039425b11138a941814"
+    },
+    "20210414000539": {
+      "receipt": "20210414000539",
+      "code": "004310",
+      "title": "분기보고서(일반법인)(2021.02)",
+      "date": "2021-04-14 16:41",
+      "document": "20210414001542",
+      "source_url": "https://kind.krx.co.kr/external/2021/04/14/000539/20210414001542/11013.htm",
+      "source_sha256": "71de546d3eba415f43419286a84f90fd7fe63e79822088cafac8934397e4074f",
+      "pointer_sha256": "8d8dc46a35d1a9588d95ea6d973a60b5667299b19392ecf967c59a53350cc25d",
+      "viewer_sha256": "79568766fba297c7153e2d4b04a5bd08a915d5aa7a325b1e555aedaa30d9a93a"
+    },
+    "20210503000269": {
+      "receipt": "20210503000269",
+      "code": "007700",
+      "title": "증권발행실적보고서(합병등)",
+      "date": "2021-05-03 14:50",
+      "document": "20210503000690",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/03/000269/20210503000690/10810.htm",
+      "source_sha256": "dd09a40115bc1e4db134dd168863fd0dd6342fda56a4d7d26f8bd9839d21e2a0",
+      "pointer_sha256": "5f74a475ed2dc2eef504b9f02774c8145d2c82f7c9db4e5220e71bca5ca12046",
+      "viewer_sha256": "d3209e25cbfd7983b4517fb8e7879df6c2fe3e98a03109eab8cda9467b82f657"
+    },
+    "20210503000422": {
+      "receipt": "20210503000422",
+      "code": "003550",
+      "title": "증권발행실적보고서(합병등)",
+      "date": "2021-05-03 16:21",
+      "document": "20210503000939",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/03/000422/20210503000939/10810.htm",
+      "source_sha256": "97758a72bb987be5e58930d4fbdb35ae07ccb4642d8a4a6d1d08ec934a30491c",
+      "pointer_sha256": "62423568c2f1498d2e1f6e5e49a0abb7b24ab9b215ef801e566a3a28f536870b",
+      "viewer_sha256": "efb9a5c0aed234d6d1d46e863ce60111f5d4fc4f0f62e9ce7da8afda28ddd46c"
+    },
+    "20210507000691": {
+      "receipt": "20210507000691",
+      "code": "361610",
+      "title": "신규상장(에스케이아이이테크놀로지(주), 상장일 2021.05.11)",
+      "date": "2021-05-07 17:40",
+      "document": "20210507001469",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/07/000691/20210507001469/68152.htm",
+      "source_sha256": "5cf9d83b0bd76cddc88ca996df298361bc7655d1d3726118b66737b6229b3828",
+      "pointer_sha256": "4c077929aafa3ac2f59830f31c7c838e5c5a2b6374684a936fdebd99ecf0b4e1",
+      "viewer_sha256": "6331e5e6cc8862b63a6c0fecad60a6872cf45d16c6e9f120097090a53dab2507"
+    },
+    "20210513000071": {
+      "receipt": "20210513000071",
+      "code": "361610",
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)",
+      "date": "2021-05-13 09:27",
+      "document": "20210512000413",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/13/000071/20210512000413/99626.htm",
+      "source_sha256": "290725aa2eb450e9f8361f3f4fed99eb0f4d82bd18a8ea04c83bc266c543b720",
+      "pointer_sha256": "2e8354ec66f88d73ccb18a5508ec7e1abb04228de83f66e49294d74672f1b371",
+      "viewer_sha256": "b3d7a8e6fa3ab70d1a09a46da10655867743a8ec4e02f358a9ae64ed9b1803a6"
+    },
+    "20210517001312": {
+      "receipt": "20210517001312",
+      "code": "003550",
+      "title": "분기보고서(일반법인)(2021.03)",
+      "date": "2021-05-17 16:07",
+      "document": "20210517003001",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/17/001312/20210517003001/11013.htm",
+      "source_sha256": "03f4fab303d0415fa19d19a04700f4451b48ffbeef5894ddc125b592b991cc38",
+      "pointer_sha256": "527907875a3b08f22d216a3ac0b1212e880fe618b16d279bd08a9f3d616bc06b",
+      "viewer_sha256": "e42270926bfdb5a57e72150d3617f1877d97155032820385acf12f73e3242bcb"
+    },
+    "20210517002091": {
+      "receipt": "20210517002091",
+      "code": "102260",
+      "title": "분기보고서(일반법인)(2021.03)",
+      "date": "2021-05-17 17:23",
+      "document": "20210517004886",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/17/002091/20210517004886/11013.htm",
+      "source_sha256": "4d7bb85d1eb07d8f94b827b4f24338add4e77e518346ebbb7eb79f7dc0260537",
+      "pointer_sha256": "788309a70e6c35f6f93e3e2c8c895ce740c0d8e5e6a1fe9e9d5fbb66c4e31d13",
+      "viewer_sha256": "abee4128d1574d91d3876f88f49cbaacd106abd5a88606b148fe74a372a896ab"
+    },
+    "20210517002096": {
+      "receipt": "20210517002096",
+      "code": "007700",
+      "title": "분기보고서(일반법인)(2021.03)",
+      "date": "2021-05-17 17:24",
+      "document": "20210517004896",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/17/002096/20210517004896/11013.htm",
+      "source_sha256": "1e3d286cfc8ed6ed60e6e5fe17cadfcce4f3a0d47c73ccf40950761d1cd7006f",
+      "pointer_sha256": "b38ac6331daa42be704220c334ecc0ae0bba63511529e4eeaec6392aa3234955",
+      "viewer_sha256": "487e29d83d788e8aa81d7eaff94d1a39ca6dc4d29247eefd83b40055e8342d81"
+    },
+    "20210518000357": {
+      "receipt": "20210518000357",
+      "code": "383220",
+      "title": "재상장(주식회사 에프앤에프, 상장일 2021.05.21)",
+      "date": "2021-05-18 16:54",
+      "document": "20210518000880",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/18/000357/20210518000880/68156.htm",
+      "source_sha256": "36a7fe21cc1d11e0b92ed864dc93f4c65382b1fafd94164785d33e3492d1d20a",
+      "pointer_sha256": "e06303a6facbfbc51fa24b0faee0ecc45dcb5ebca3390c31400382923cda6108",
+      "viewer_sha256": "dfe61af30a058342421251c9e5cce928094aa3a522ef80bd0866e177ac02e685"
+    },
+    "20210518000370": {
+      "receipt": "20210518000370",
+      "code": "380440",
+      "title": "신규상장(엔에이치기업인수목적19호 주식회사, 상장일 2021.05.21)",
+      "date": "2021-05-18 16:59",
+      "document": "20210518000910",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/18/000370/20210518000910/68152.htm",
+      "source_sha256": "2de1be0430936056158d7acac1874c60168173b6bc3d6bd1666ce4592d50df3a",
+      "pointer_sha256": "e9a016e96a0bb8e8867d482a67aec6496d34ffb011edec56cbdde103bbe585c6",
+      "viewer_sha256": "28a2e1a7d7cd9bc419eee2eac183d7eb5874690e15c7996e75111a72025d3667"
+    },
+    "20210525000477": {
+      "receipt": "20210525000477",
+      "code": "383800",
+      "title": "재상장((주)엘엑스홀딩스, 상장일 2021.05.27)",
+      "date": "2021-05-25 17:32",
+      "document": "20210525001181",
+      "source_url": "https://kind.krx.co.kr/external/2021/05/25/000477/20210525001181/68156.htm",
+      "source_sha256": "a508038e86ccd2cfad97e30d76a435ea744680226e9ae92e1f83b95d6754ac8e",
+      "pointer_sha256": "bfaef997931b61ad73864afe3848b1bdae81b453d0b136bdab5c581230ddd827",
+      "viewer_sha256": "7e82fbb992a79375a6dd4288df2f727cf457fd5ccc2e390cd6d251b2f191992f"
+    }
+  },
+  "scope_note": "KIND issuer originals and amendments searched 2020-12-01 to 2021-06-01. OpenDART three periodic form searches confirm no own filing with a direct comparable quarter for four entrants. Only the 4 prior-period CFS original pairs add new rankable observations. Explicit OFS figures and provisional reports have no rank."
+}
