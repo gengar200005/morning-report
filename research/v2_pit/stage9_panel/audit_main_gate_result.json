@@ -1,0 +1,51 @@
+{
+  "ledger_sha256": "6d32a47664ad6b2127167562ceaaaf35409c2262ca252b47568347b886325677",
+  "sample_sha256": "eb623f8ff2a7abac1204301ebd545ceb04fbd609f07eb91d0bafe952e0252fa7",
+  "counts": {
+    "fixed": 21,
+    "primary_document_reads": 21,
+    "primary_display_reads": 21,
+    "primary_xbrl_only_reads": 0,
+    "categories": {
+      "quarter": 12,
+      "annual": 3,
+      "post_delist_financial": 1,
+      "cumulative_only": 1,
+      "no_cfs": 4
+    },
+    "direct_numeric_cells": 48,
+    "direct_numeric_verified_one_or_more": 48,
+    "post_delist_financial_op_cells": 2,
+    "in_scope_direct_incorrect": 0,
+    "incorrect_nonmissing_across_sources": 2
+  },
+  "dual_format_matched_cells": 48,
+  "KB_insurance": {
+    "receipt": "20170814001250",
+    "sampled_months": 7,
+    "all_sectors_financial": true,
+    "eligible_signals": 0,
+    "uses_of_post_delisting_filing": 0,
+    "latest_formation": "20170703"
+  },
+  "Hite_Jinro": {
+    "formation": "20180402",
+    "receipt": "20180330000582",
+    "available_session": "20180402",
+    "F2": "-3.393941902813071239756816971",
+    "F3": "-0.0694832532498201239293310952",
+    "method_F2": "annual_minus_nine",
+    "method_F3": "annual_minus_nine"
+  },
+  "Hite_Jinro_amounts_KRW": {
+    "revenue_current": 456918390445,
+    "revenue_prior": 491037256493,
+    "operating_profit_current": 23071858740,
+    "operating_profit_prior": 41460192511
+  },
+  "q4_basis_sha256": "0c47f2f8d07c3fb3e6971d3b7a2085c7512b1c591420d11a262dba6c42480438",
+  "Sundo_Electric": {
+    "daily_replay_sha256": "7224372aa4b4c11779d9753d8db0d9307fbdb57f607ac451dce63f36a2f18d37",
+    "amendment_change_prior_quarter_op_KRW": -106559859
+  }
+}

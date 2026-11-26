@@ -1,0 +1,64 @@
+{
+  "scope": "Two daily KRX boundary checks, separate from the 60 original monthly formations and their sample counts.",
+  "stock_code": "007610",
+  "isin": "KR7007610009",
+  "reports": [
+    {
+      "session": "20201116",
+      "receipt": "20201113000442",
+      "kind_receipt": "20201113000496",
+      "version": "original",
+      "published_kst": "2020-11-13 14:11",
+      "available_session": "20201116",
+      "verified_against_independent_display": true,
+      "amounts_KRW": {
+        "revenue_current": 19989594517,
+        "revenue_prior": 14314772046,
+        "operating_profit_current": 1707258861,
+        "operating_profit_prior": -1602101398
+      },
+      "sources": [
+        {
+          "kind": "kind_html",
+          "sha256": "0cf2938dfb62a759e602c9f240cef8469eca2190fdb6f5d4a3648516be20f73d",
+          "url": "https://kind.krx.co.kr/external/2020/11/13/000496/20201113001146/11013.htm"
+        },
+        {
+          "kind": "xbrl",
+          "sha256": "cd01d23ade39266549121afeca0a9e6c1517d68dcf362945b96cbbb905263d90",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20201113000442&dcm_no=7544109&lang=ko"
+        }
+      ]
+    },
+    {
+      "session": "20201117",
+      "receipt": "20201116001901",
+      "kind_receipt": "20201116001999",
+      "version": "amendment",
+      "published_kst": "2020-11-16 17:13",
+      "available_session": "20201117",
+      "verified_against_independent_display": true,
+      "amounts_KRW": {
+        "revenue_current": 19989594517,
+        "revenue_prior": 14314772046,
+        "operating_profit_current": 1707258861,
+        "operating_profit_prior": -1708661257
+      },
+      "sources": [
+        {
+          "kind": "kind_html",
+          "sha256": "a53663f3f457aa5c25ff78c00d0007807665d17bb0694bcdfd350fdd7d4f1c9d",
+          "url": "https://kind.krx.co.kr/external/2020/11/16/001999/20201116004530/11013.htm"
+        },
+        {
+          "kind": "xbrl",
+          "sha256": "26a0965523b6fa703a15b298ef7bad884951d5967632250e0be6b453d02bbd00",
+          "url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20201116001901&dcm_no=7550746&lang=ko"
+        }
+      ]
+    }
+  ],
+  "manual_input_sha256": "2417c5031864956dcc01bc4c4a1db5485dfa203041e41981f77ba43dd252ae55",
+  "revenue_change_current": 0,
+  "amendment_change_prior_quarter_op_KRW": -106559859
+}

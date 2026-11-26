@@ -1,0 +1,867 @@
+{
+  "supplemental_xml_sha256": "b9a9cee0cd4b60701ec9e6c6efa566e38b3f4b6e4c8e6457a63f8955d79f1039",
+  "frozen_sha256": "eb623f8ff2a7abac1204301ebd545ceb04fbd609f07eb91d0bafe952e0252fa7",
+  "checks_sha256": "6d5e4a2a7e3c40c57894bd4ad6fd37a9ccf73e39920551079cc0b11bd5bd4297",
+  "totals": {
+    "fixed": 21,
+    "primary_document_reads": 21,
+    "primary_display_reads": 21,
+    "primary_xbrl_only_reads": 0,
+    "categories": {
+      "quarter": 12,
+      "annual": 3,
+      "post_delist_financial": 1,
+      "cumulative_only": 1,
+      "no_cfs": 4
+    },
+    "direct_numeric_cells": 48,
+    "direct_numeric_verified_one_or_more": 48,
+    "post_delist_financial_op_cells": 2,
+    "in_scope_direct_incorrect": 0,
+    "incorrect_nonmissing_across_sources": 2
+  },
+  "rows": [
+    {
+      "stock_code": "004910",
+      "isin": "KR7004910006",
+      "company": "조광페인트",
+      "period_end": "2016-09-30",
+      "stratum": "small",
+      "later_exit": "False",
+      "original_receipt": "20161111000076",
+      "identity": "PASS",
+      "evidence": "6ae4feca57d2aa845f9830d0f39698db15eaf32dddaa2c374d0cfd30320331e4",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2016/11/11/000114/20161111000255/11013.htm",
+      "first_public": "2016-11-11 10:26",
+      "available_session": "20161114",
+      "manual": {
+        "revenue_current": 46135912723,
+        "revenue_prior": 48439427451,
+        "operating_profit_current": 3992569882,
+        "operating_profit_prior": 4641325565
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "007690",
+      "isin": "KR7007690001",
+      "company": "국도화학",
+      "period_end": "2016-12-31",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20170329000302",
+      "identity": "PASS",
+      "evidence": "173be4ae7794ea743161f76f23fa16e7dedde2bb82f7758d1dcc1a4dc64c8183",
+      "category": "annual",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2017/03/29/000217/20170329000862/11011.htm",
+      "first_public": "2017-03-29 12:07",
+      "available_session": "20170330",
+      "manual": {
+        "revenue_current": 952633435802,
+        "revenue_prior": 1011877773027,
+        "operating_profit_current": 36983503212,
+        "operating_profit_prior": 77969150965
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      },
+      "original_fy_minus_original_nine_KRW": {
+        "revenue_current": 221689373815,
+        "revenue_prior": 238748201304,
+        "operating_profit_current": 4951809744,
+        "operating_profit_prior": 15784827607
+      },
+      "supporting_9m_receipt": "20161114000547",
+      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate"
+    },
+    {
+      "stock_code": "002790",
+      "isin": "KR7002790004",
+      "company": "아모레G",
+      "period_end": "2017-03-31",
+      "stratum": "large",
+      "later_exit": "False",
+      "original_receipt": "20170515004444",
+      "identity": "PASS",
+      "evidence": "8eaf3235bc8f062d28b9c454b912509a8ad239fa09a2b823cefea1296a2619d1",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2017/05/15/002232/20170515005007/11013.htm",
+      "first_public": "2017-05-15 17:24",
+      "available_session": "20170516",
+      "manual": {
+        "revenue_current": 1855387339029,
+        "revenue_prior": 1759288734554,
+        "operating_profit_current": 378502387152,
+        "operating_profit_prior": 419102601719
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "002550",
+      "isin": "KR7002550002",
+      "company": "KB손해보험",
+      "period_end": "2017-06-30",
+      "stratum": "later_delist",
+      "later_exit": "True",
+      "original_receipt": "20170814001250",
+      "identity": "BLOCKED",
+      "evidence": "653795e73803269635501cb7b36c5a23f45088441c3b1e8ae4f813067fbd7e20",
+      "category": "post_delist_financial",
+      "manual_nonmissing": 2,
+      "verified_numeric": 2,
+      "false_numeric": 2,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20170814001250&dcmNo=5750972&eleId=13&offset=330828&length=96261&dtd=dart3.xsd",
+      "first_public": "20170814",
+      "available_session": "20170816",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": 156574583294,
+        "operating_profit_prior": 141578966655
+      },
+      "per_format": {
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 2,
+          "missed": 0,
+          "incorrect_nonmissing": 2
+        }
+      }
+    },
+    {
+      "stock_code": "011760",
+      "isin": "KR7011760006",
+      "company": "현대상사",
+      "period_end": "2017-09-30",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20171114002645",
+      "identity": "PASS",
+      "evidence": "b4452f97f19fc994aacce6a66caf33139403e74b234b100c05701c1b58bb7dc6",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2017/11/14/002548/20171114005501/11013.htm",
+      "first_public": "2017-11-14 17:37",
+      "available_session": "20171115",
+      "manual": {
+        "revenue_current": 1065606995384,
+        "revenue_prior": 885546245971,
+        "operating_profit_current": 10838762807,
+        "operating_profit_prior": 4494154526
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "000080",
+      "isin": "KR7000080002",
+      "company": "하이트진로",
+      "period_end": "2017-12-31",
+      "stratum": "large",
+      "later_exit": "False",
+      "original_receipt": "20180330000582",
+      "identity": "PASS",
+      "evidence": "ffb5c56ab30ae96c5fa3e64f2dec15848c94a3a26d93c37c1463292f3f707cd1",
+      "category": "annual",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2018/03/30/000537/20180330001721/11011.htm",
+      "first_public": "2018-03-30 11:02",
+      "available_session": "20180402",
+      "manual": {
+        "revenue_current": 1889910216355,
+        "revenue_prior": 1890232768003,
+        "operating_profit_current": 87249748641,
+        "operating_profit_prior": 124005913762
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      },
+      "original_fy_minus_original_nine_KRW": {
+        "revenue_current": 456918390445,
+        "revenue_prior": 491037256493,
+        "operating_profit_current": 23071858740,
+        "operating_profit_prior": 41460192511
+      },
+      "supporting_9m_receipt": "20171114000220",
+      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate",
+      "registered_versions": [
+        {
+          "receipt": "20180330000582",
+          "version": "original",
+          "available_session": "20180402"
+        },
+        {
+          "receipt": "20180411002381",
+          "version": "amendment",
+          "available_session": "20180412"
+        },
+        {
+          "receipt": "20210210001210",
+          "version": "amendment",
+          "available_session": "20210215"
+        }
+      ]
+    },
+    {
+      "stock_code": "049770",
+      "isin": "KR7049770001",
+      "company": "동원F&B",
+      "period_end": "2018-03-31",
+      "stratum": "later_delist",
+      "later_exit": "True",
+      "original_receipt": "20180515000862",
+      "identity": "PASS",
+      "evidence": "2921a42b0a6bce3230da1628acba88e31cb08733cc62d43b72ababc8b9341a36",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20180515000862&dcmNo=6178219&eleId=13&offset=285682&length=78595&dtd=dart3.xsd",
+      "first_public": "2018-05-15 15:05",
+      "available_session": "20180516",
+      "manual": {
+        "revenue_current": 704868306416,
+        "revenue_prior": 632657113478,
+        "operating_profit_current": 22875440478,
+        "operating_profit_prior": 30078616335
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "006220",
+      "isin": "KR7006220008",
+      "company": "제주은행",
+      "period_end": "2018-06-30",
+      "stratum": "small",
+      "later_exit": "False",
+      "original_receipt": "20180814001900",
+      "identity": "PASS",
+      "evidence": "f836a814cd2cb1a9dcb021273c1bdb74de83f390bea97b8a68ebb2d1ab45cd76",
+      "category": "cumulative_only",
+      "manual_nonmissing": 0,
+      "verified_numeric": 0,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2018/08/14/001958/20180814005727/11012.htm",
+      "first_public": "2018-08-14 16:34",
+      "available_session": "20180816",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": null,
+        "operating_profit_prior": null
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "097950",
+      "isin": "KR7097950000",
+      "company": "CJ제일제당",
+      "period_end": "2018-09-30",
+      "stratum": "large",
+      "later_exit": "False",
+      "original_receipt": "20181114001736",
+      "identity": "PASS",
+      "evidence": "d018202b07add5f953243b8a88ee6f2cfae0561fe706d7b051f31719c4f38b57",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20181114001736&dcmNo=6382495&eleId=13&offset=482605&length=92204&dtd=dart3.xsd",
+      "first_public": "2018-11-14 16:17",
+      "available_session": "20181115",
+      "manual": {
+        "revenue_current": 4945574847000,
+        "revenue_prior": 4410655290000,
+        "operating_profit_current": 265193996000,
+        "operating_profit_prior": 269305358000
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "152330",
+      "isin": "KR7152330007",
+      "company": "코리아오토글라스",
+      "period_end": "2018-12-31",
+      "stratum": "later_delist",
+      "later_exit": "True",
+      "original_receipt": "20190329003725",
+      "identity": "PASS",
+      "evidence": "0e1bb4a31abd5e7cde77bfefa27892f0dc0aa435072171714e108a32c4e16cc0",
+      "category": "no_cfs",
+      "manual_nonmissing": 0,
+      "verified_numeric": 0,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20190329003725&dcmNo=6592837&eleId=13&offset=263607&length=169&dtd=dart3.xsd",
+      "first_public": "2019-03-29 17:06",
+      "available_session": "20190401",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": null,
+        "operating_profit_prior": null
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "014710",
+      "isin": "KR7014710008",
+      "company": "사조씨푸드",
+      "period_end": "2019-03-31",
+      "stratum": "small",
+      "later_exit": "False",
+      "original_receipt": "20190515002148",
+      "identity": "PASS",
+      "evidence": "2a6fc2da1373430784fb84425d8bd4e0fda1a54c98b49973fb6154d5ec300e64",
+      "category": "no_cfs",
+      "manual_nonmissing": 0,
+      "verified_numeric": 0,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2019/05/15/002277/20190515004886/11013.htm",
+      "first_public": "2019-05-15 17:00",
+      "available_session": "20190516",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": null,
+        "operating_profit_prior": null
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "037710",
+      "isin": "KR7037710001",
+      "company": "광주신세계",
+      "period_end": "2019-06-30",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20190814002840",
+      "identity": "PASS",
+      "evidence": "f244081e19cbd95a637a0c60c0d84fcde4dc5a38d5afa32e297bb416bea3c947",
+      "category": "no_cfs",
+      "manual_nonmissing": 0,
+      "verified_numeric": 0,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20190814002840&dcmNo=6848832&eleId=13&offset=167563&length=127&dtd=dart3.xsd",
+      "first_public": "2019-08-14 17:44",
+      "available_session": "20190816",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": null,
+        "operating_profit_prior": null
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "138490",
+      "isin": "KR7138490008",
+      "company": "코오롱플라스틱",
+      "period_end": "2019-09-30",
+      "stratum": "later_delist",
+      "later_exit": "True",
+      "original_receipt": "20191114002622",
+      "identity": "PASS",
+      "evidence": "e07f907e2ff0825585fd68a0fc6641b88464c46bdbb5eb83ade0bd0f2f93f502",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20191114002622&dcmNo=6961445&eleId=13&offset=242501&length=59672&dtd=dart3.xsd",
+      "first_public": "2019-11-14 17:37",
+      "available_session": "20191115",
+      "manual": {
+        "revenue_current": 82434483261,
+        "revenue_prior": 85144398625,
+        "operating_profit_current": 2981614175,
+        "operating_profit_prior": 5672420333
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "008250",
+      "isin": "KR7008250003",
+      "company": "이건산업",
+      "period_end": "2019-12-31",
+      "stratum": "small",
+      "later_exit": "False",
+      "original_receipt": "20200330001648",
+      "identity": "PASS",
+      "evidence": "4792024758b5735315f539f25f3a380e3a2f3648591966645904d407f3be70dd",
+      "category": "annual",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2020/03/30/001717/20200330006184/11011.htm",
+      "first_public": "2020-03-30 14:09",
+      "available_session": "20200331",
+      "manual": {
+        "revenue_current": 279669846705,
+        "revenue_prior": 339611060522,
+        "operating_profit_current": 9622212329,
+        "operating_profit_prior": 23690739861
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      },
+      "original_fy_minus_original_nine_KRW": {
+        "revenue_current": 80816143123,
+        "revenue_prior": 92816249901,
+        "operating_profit_current": -138132107,
+        "operating_profit_prior": 4835853079
+      },
+      "supporting_9m_receipt": "20191114000529",
+      "arithmetic_status": "reported-amount subtraction only; independent basis evidence is separate"
+    },
+    {
+      "stock_code": "000520",
+      "isin": "KR7000520007",
+      "company": "삼일제약",
+      "period_end": "2020-03-31",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20200427000014",
+      "identity": "PASS",
+      "evidence": "58351ae2a036f0bd3020e1d9cfa920bf94e558b1329f4eec83b68a62b448623f",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2020/04/27/000101/20200427000131/11013.htm",
+      "first_public": "2020-04-27 09:02",
+      "available_session": "20200428",
+      "manual": {
+        "revenue_current": 32426049094,
+        "revenue_prior": 30431473257,
+        "operating_profit_current": 3306828449,
+        "operating_profit_prior": 2513726672
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "002350",
+      "isin": "KR7002350007",
+      "company": "넥센타이어",
+      "period_end": "2020-06-30",
+      "stratum": "large",
+      "later_exit": "False",
+      "original_receipt": "20200814002568",
+      "identity": "PASS",
+      "evidence": "51d6cb43d693a517819dabd32794d97cb9eb34ddb3fa7cddb7c352fa5ed17583",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2020/08/14/002813/20200814008505/11012.htm",
+      "first_public": "2020-08-14 17:16",
+      "available_session": "20200818",
+      "manual": {
+        "revenue_current": 314671758822,
+        "revenue_prior": 540607927447,
+        "operating_profit_current": -22448660296,
+        "operating_profit_prior": 62854097264
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "007610",
+      "isin": "KR7007610009",
+      "company": "선도전기",
+      "period_end": "2020-09-30",
+      "stratum": "small",
+      "later_exit": "False",
+      "original_receipt": "20201113000442",
+      "identity": "PASS",
+      "evidence": "0cf2938dfb62a759e602c9f240cef8469eca2190fdb6f5d4a3648516be20f73d",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2020/11/13/000496/20201113001146/11013.htm",
+      "first_public": "2020-11-13 14:11",
+      "available_session": "20201116",
+      "manual": {
+        "revenue_current": 19989594517,
+        "revenue_prior": 14314772046,
+        "operating_profit_current": 1707258861,
+        "operating_profit_prior": -1602101398
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      },
+      "registered_versions": [
+        {
+          "receipt": "20201113000442",
+          "version": "original",
+          "available_session": "20201116"
+        },
+        {
+          "receipt": "20201116001901",
+          "version": "amendment",
+          "available_session": "20201117"
+        }
+      ]
+    },
+    {
+      "stock_code": "214390",
+      "isin": "KR7214390007",
+      "company": "경보제약",
+      "period_end": "2020-12-31",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20210318000256",
+      "identity": "PASS",
+      "evidence": "1a28ddeff6b3bdbb70e2406d7fe7c0d8589bb40b202a1dec509a702049c6323e",
+      "category": "no_cfs",
+      "manual_nonmissing": 0,
+      "verified_numeric": 0,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210318000256&dcmNo=7888454&eleId=14&offset=285071&length=131&dtd=dart3.xsd",
+      "first_public": "2021-03-18 11:29",
+      "available_session": "20210319",
+      "manual": {
+        "revenue_current": null,
+        "revenue_prior": null,
+        "operating_profit_current": null,
+        "operating_profit_prior": null
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 0,
+          "matched_numeric": 0,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "010140",
+      "isin": "KR7010140002",
+      "company": "삼성중공업",
+      "period_end": "2021-03-31",
+      "stratum": "large",
+      "later_exit": "False",
+      "original_receipt": "20210517001600",
+      "identity": "PASS",
+      "evidence": "88068c6cb6403133f200175c85afa3fbf51327fcacb2bc73e63d393b5b0097d6",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://kind.krx.co.kr/external/2021/05/17/001672/20210517003833/11013.htm",
+      "first_public": "2021-05-17 16:39",
+      "available_session": "20210518",
+      "manual": {
+        "revenue_current": 1574630475421,
+        "revenue_prior": 1826635992012,
+        "operating_profit_current": -506765297161,
+        "operating_profit_prior": -47836033220
+      },
+      "per_format": {
+        "kind_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "001140",
+      "isin": "KR7001140003",
+      "company": "국보",
+      "period_end": "2021-06-30",
+      "stratum": "later_delist",
+      "later_exit": "True",
+      "original_receipt": "20210817000830",
+      "identity": "PASS",
+      "evidence": "74f51d9707257ecf43c5f9904b9965690c6510bbd99182dd4f3f37a09d503a95",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20210817000830&dcmNo=8179075&eleId=19&offset=158885&length=91393&dtd=dart3.xsd",
+      "first_public": "2021-08-17 15:08",
+      "available_session": "20210818",
+      "manual": {
+        "revenue_current": 24909155545,
+        "revenue_prior": 32928925860,
+        "operating_profit_current": -1551516311,
+        "operating_profit_prior": -4122215763
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    },
+    {
+      "stock_code": "126560",
+      "isin": "KR7126560002",
+      "company": "현대퓨처넷",
+      "period_end": "2021-09-30",
+      "stratum": "middle",
+      "later_exit": "False",
+      "original_receipt": "20211115002465",
+      "identity": "PASS",
+      "evidence": "e95e9c50ee9d79717abf1eb6808f7c15ad02b9962501fa420600accdaf0bf5df",
+      "category": "quarter",
+      "manual_nonmissing": 4,
+      "verified_numeric": 4,
+      "false_numeric": 0,
+      "review_format": "human_read_display",
+      "source": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20211115002465&dcmNo=8279449&eleId=19&offset=271997&length=73461&dtd=dart3.xsd",
+      "first_public": "2021-11-15 17:48",
+      "available_session": "20211116",
+      "manual": {
+        "revenue_current": 33340904509,
+        "revenue_prior": 4945317490,
+        "operating_profit_current": 2239448573,
+        "operating_profit_prior": -827558204
+      },
+      "per_format": {
+        "xbrl": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        },
+        "dart_html": {
+          "supported": 4,
+          "matched_numeric": 4,
+          "missed": 0,
+          "incorrect_nonmissing": 0
+        }
+      }
+    }
+  ]
+}
