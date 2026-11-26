@@ -1,0 +1,116 @@
+[
+  {
+    "receipt": "20171228000002",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20171228000002&dcm_no=5898757&lang=ko",
+    "stored_sha256": "134f9c98bcb1f16a0b633a99c146ef8bdfcc52f462a7f3907d4d400251ebd721",
+    "rechecked_sha256": "2ca546de8b2c465801c452639417539f4f937d7b3867dff5ad28efa6679e4054",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "00145437_2011-05-02.xbrl": "c23f6523b1e3936602a4eaf807a979400cb624b20b2b7ba4c3b5c830885be289",
+      "00145437_entry_point_2011-05-02.xsd": "58f75689816648273a5663acd561c29de1c089e7db26e72e84533f8ccce7bc36",
+      "ifrs_for_00145437\\dimensions_ifrs_for_00145437\\cal_ifrs_for_00145437_2011-05-02.xml": "561db37fbb2af0c934f97d706fdda0bd59ee1ca2951584b7f3c83a22649f2b6c",
+      "ifrs_for_00145437\\dimensions_ifrs_for_00145437\\dim_ifrs_for_00145437_2011-05-02.xml": "3445f94926f4866b9955d00d5f4832f6718fc901b26aa1a8bde80368c58be968",
+      "ifrs_for_00145437\\dimensions_ifrs_for_00145437\\pre_ifrs_for_00145437_2011-05-02.xml": "6ddf504629fd1dec9efd19a7a2be333468bb23fca75ebff9b5cc414d81fc195f",
+      "ifrs_for_00145437\\dimensions_ifrs_for_00145437\\role_ifrs_for_00145437-dim_2011-05-02.xsd": "93fe0936301f8c8c13c0e945e3230f4bfbaac0999fb8527cc7fc00b83fba1e28",
+      "labels\\lab_00145437-en_2011-05-02.xml": "048b6187816410aacc4c72acd82e164ed65d5f62cd0a037025f5f2df90a3ee0a",
+      "labels\\lab_00145437-ko_2011-05-02.xml": "edc52229b99b5cc6a6c2c733ab39e1ea8e24ea2aa1a6d518cffa84124967eef6"
+    }
+  },
+  {
+    "receipt": "20171115000071",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20171115000071&dcm_no=5848437&lang=ko",
+    "stored_sha256": "d43db692282a0f5333af7e82741e9e85186df33a4a0023b1f1a2564f94afd748",
+    "rechecked_sha256": "4e3ae4cff5416145cc68dd616db739cf0d1a14c9dab19e025b5c507aaa4adbc7",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "00135962_2011-05-06.xbrl": "3e18a5e0959846924a3b674d0bb1323ffafc8e70134a1b93c8f90d446bd002e5",
+      "00135962_entry_point_2011-05-06.xsd": "8a265adcbc25c889b22ab039c5ffc266da24e2b21f4294a73ac8d935ce866a3c",
+      "ifrs_for_00135962\\dimensions_ifrs_for_00135962\\cal_ifrs_for_00135962_2011-05-06.xml": "62bf18c9278c7903966834b59f388d5a512e278bb89f29cacf64fbcf2837a55b",
+      "ifrs_for_00135962\\dimensions_ifrs_for_00135962\\dim_ifrs_for_00135962_2011-05-06.xml": "1b9ef4c3651ccf54b07d3075bb3cf03b4112aec667f776c363069a829c06da21",
+      "ifrs_for_00135962\\dimensions_ifrs_for_00135962\\pre_ifrs_for_00135962_2011-05-06.xml": "b111a93314001aa6f783a3e34d272de9ee68b6567b568c5550b2764c487fa3c0",
+      "ifrs_for_00135962\\dimensions_ifrs_for_00135962\\role_ifrs_for_00135962-dim_2011-05-06.xsd": "bc9b6d26818ef92a6ac22c4ded03f7b47cb9e356e3a543e9bb2f2151d08ff008",
+      "labels\\lab_00135962-en_2011-05-06.xml": "59c299609ad06ed7f087f806c6da62453ac0df1785cf6c55f1b026666771a786",
+      "labels\\lab_00135962-ko_2011-05-06.xml": "12241f60e3c1ce3c09560d9bcc6cf555d0fc40e9988f95a23d10971da838e0a4"
+    }
+  },
+  {
+    "receipt": "20210817000484",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210817000484&dcm_no=8177906&lang=ko",
+    "stored_sha256": "6ed9dcad6c9336d5352138c58da87d08e1b0b8f5d2eda5735baa57d0e85fbe12",
+    "rechecked_sha256": "0545544385d7d1188cc319a4655a14b2d3dc34ac267c28b2666c7bd2852f7808",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "00154055_2017-10-31.xbrl": "0aa4cbddb64a3e9a16b3bb1e76bda588398aa16c4efec76c4bf1f89d55867484",
+      "00154055_entry_point_2017-10-31.xsd": "9677b946a189ed6b8ee14147f59ad4c6d32804092937fa6bdeefbba058662051",
+      "ifrs_for_00154055\\dimensions_ifrs_for_00154055\\cal_ifrs_for_00154055_2017-10-31.xml": "0ba0f6fd340cd88356b1ec0176cf5005396a2372646394414cde2cf372d3f95c",
+      "ifrs_for_00154055\\dimensions_ifrs_for_00154055\\dim_ifrs_for_00154055_2017-10-31.xml": "3d3028b42fb1289f73141f85af10d1217e95eac6c1b96e5e18183273a27cb907",
+      "ifrs_for_00154055\\dimensions_ifrs_for_00154055\\pre_ifrs_for_00154055_2017-10-31.xml": "488d63c660d0a262f3eec6faa1dbf606c10452be1e819c50e181e4236a0d2c51",
+      "ifrs_for_00154055\\dimensions_ifrs_for_00154055\\role_ifrs_for_00154055-dim_2017-10-31.xsd": "febf8efaabb4f6c9002bdbcc30f434e815f6aa38a6f69f2610cac781544b3c8e",
+      "labels\\lab_00154055-en_2017-10-31.xml": "5257f6dcacbcd069d75cdd8656e7d32898d0ac7b643f9a2122cfccf382580e7a",
+      "labels\\lab_00154055-ko_2017-10-31.xml": "8b4ec29c4b266c53d6a9469dd54e2b532779cec2aee9ec4d0a1c2e9936dadb06"
+    }
+  },
+  {
+    "receipt": "20210317000292",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210317000292&dcm_no=7882493&lang=ko",
+    "stored_sha256": "e347241a837ed3f8d8268385aaffdfd4c47926670088e44d17322e1e97e56d4d",
+    "rechecked_sha256": "8431d573cf355795623454539787a994feddc3d02e2f6176d7530615133ed456",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "01263022_2018-03-15.xbrl": "6a0725dd6a61eaaa40036138de4a92c63cbd8da65207054729354a565cf8cae2",
+      "01263022_entry_point_2018-03-15.xsd": "64c1645135f4a062f56c25f796f7cd37d2b2066de1863ca42da17d8412787545",
+      "ifrs_for_01263022\\dimensions_ifrs_for_01263022\\cal_ifrs_for_01263022_2018-03-15.xml": "249fb8486644d90297eca74a79ea24ad5e71727579c99bbb15a7b49813377e80",
+      "ifrs_for_01263022\\dimensions_ifrs_for_01263022\\dim_ifrs_for_01263022_2018-03-15.xml": "21ff540be295ccb10948906f3c1bcee3eb2c5bb3eda3e59e6ac225915fea2c6c",
+      "ifrs_for_01263022\\dimensions_ifrs_for_01263022\\pre_ifrs_for_01263022_2018-03-15.xml": "8cfb1ee8f396d9ca48257336da710406e4690356b2ecf29c16a08c494fe519ab",
+      "ifrs_for_01263022\\dimensions_ifrs_for_01263022\\role_ifrs_for_01263022-dim_2018-03-15.xsd": "b7c99b73339deb70970696634ecf768a0cf95394801e324866a379f5d277f659",
+      "labels\\lab_01263022-en_2018-03-15.xml": "6d5c7c4c6c19557da4b645a4e7f20316e4a1fac9b98ebee70563a2149c32da2c",
+      "labels\\lab_01263022-ko_2018-03-15.xml": "f0ad10f3ab7a2bbb7402a14c5ad7f11bb7e14c874b6aed01c32eeebd8118545a"
+    }
+  },
+  {
+    "receipt": "20210817000770",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210817000770&dcm_no=8178877&lang=ko",
+    "stored_sha256": "8add80745a236ab2c4fe7620c4aece0bdaa303d04563cf811aaa1dd00841801f",
+    "rechecked_sha256": "739a4b6a971d756a6759e860630e52799019570787882fa9917ff88263e58289",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "00122898_2015-03-24.xbrl": "2411e5e07ee7a417e125fcb8cc66a45c8cae1d510b011a0d9eb1cbd12e8c7963",
+      "00122898_entry_point_2015-03-24.xsd": "5599def4023c4f901bb327e8c25e31ec401080123464d1c92cf5d7af423e37d4",
+      "ifrs_for_00122898\\dimensions_ifrs_for_00122898\\cal_ifrs_for_00122898_2015-03-24.xml": "056eefee7449b3a9b6d07e1078b2bd75974aef59f09c24b8dbdb0d74e22de200",
+      "ifrs_for_00122898\\dimensions_ifrs_for_00122898\\dim_ifrs_for_00122898_2015-03-24.xml": "ae6a8a6d8a678d58e775338b0f266ecca9315aee412f5a97fb6d8acac73e7d6b",
+      "ifrs_for_00122898\\dimensions_ifrs_for_00122898\\pre_ifrs_for_00122898_2015-03-24.xml": "c0b7daccd75405a2f283a768a6af2c5a52037e6e73991120c7d7013675f83074",
+      "ifrs_for_00122898\\dimensions_ifrs_for_00122898\\role_ifrs_for_00122898-dim_2015-03-24.xsd": "2ff9a8f1b0511c5b07b698f48b006f89fe35eab02ebb2b154604a6e1ebca87ba",
+      "labels\\lab_00122898-en_2015-03-24.xml": "dd2d206e319ded9fb209a5702590bbb0550cfcb9aa16c555b113d3fcd65dc5e2",
+      "labels\\lab_00122898-ko_2015-03-24.xml": "54de8a6b9bb4803a8c8020ea5ad1aa26ddabaf6d05ef5fb9da6b3f96d8f56bb8"
+    }
+  },
+  {
+    "receipt": "20211115001780",
+    "kind": "xbrl",
+    "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115001780&dcm_no=8277663&lang=ko",
+    "stored_sha256": "680b9084c748cc6e6dece95a1248bab51c3fdb345fb62e1223c29a5e7b1d6838",
+    "rechecked_sha256": "b018be67c0503752fce1c31cfc4d86075089a96d385351b3e0277f3ff21008eb",
+    "every_member_equal": true,
+    "member_count": 8,
+    "member_manifest": {
+      "00390055_2017-07-24.xbrl": "61d4241a01078e1aa478ae4821b6e08f2e2f28ad93423228453395198a368c80",
+      "00390055_entry_point_2017-07-24.xsd": "e009bbdd7bccba4e17cb5df2c87288be1660785c1e6ad87820e2a20c0ddc83a0",
+      "ifrs_for_00390055\\dimensions_ifrs_for_00390055\\cal_ifrs_for_00390055_2017-07-24.xml": "504354b8bbca4172910fb845e5a406622b548f184bb7d57a2699e89a228ca539",
+      "ifrs_for_00390055\\dimensions_ifrs_for_00390055\\dim_ifrs_for_00390055_2017-07-24.xml": "1ae94bc92766e940d7666930d2179d2681c8deac6c87745e9d6f2eae9e87dc15",
+      "ifrs_for_00390055\\dimensions_ifrs_for_00390055\\pre_ifrs_for_00390055_2017-07-24.xml": "306142a1608ae4130ab6306190648bf903594d935aa4d031d8853a6c12896282",
+      "ifrs_for_00390055\\dimensions_ifrs_for_00390055\\role_ifrs_for_00390055-dim_2017-07-24.xsd": "e16f422650bf60493234bb9e6baa660f65822beb15533fe06a8905dd475ea754",
+      "labels\\lab_00390055-en_2017-07-24.xml": "eb0f8a3b344cc5a17755d4de2806b33328fc760cd1dffb847e40f75edc6cd4cc",
+      "labels\\lab_00390055-ko_2017-07-24.xml": "3a95614a8efdf102645c0a29cae801f99633a177b89a87b74c7c937f3f922c74"
+    }
+  }
+]

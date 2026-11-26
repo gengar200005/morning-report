@@ -1,0 +1,83 @@
+{
+  "preflight_distinct_new_files": 81,
+  "preflight_received": 81,
+  "preflight_http_count": 107,
+  "duplicated_unique_new_files": 8,
+  "duplicate_http_count": 10,
+  "quarantine": [
+    "20171115000071",
+    "20171228000002",
+    "20210317000292",
+    "20210817000484",
+    "20210817000770",
+    "20211115001780"
+  ],
+  "source_cases": [
+    {
+      "receipt": "20171115000071",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20171228000002",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20180330002464",
+      "kind": "kind_html",
+      "overlap_http_count": 3,
+      "second_response": "same_sha_as_preserved_body_under_immutable_insert_check",
+      "technical_facts_status": "eligible",
+      "first_vs_later_recheck": "not_needed"
+    },
+    {
+      "receipt": "20210317000292",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20210817000484",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20210817000770",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20211115001780",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "different_wrapper_second_bytes_not_retained",
+      "technical_facts_status": "QUARANTINED",
+      "first_vs_later_recheck": "all_8_members_match_wrapper_differs"
+    },
+    {
+      "receipt": "20211115002137",
+      "kind": "xbrl",
+      "overlap_http_count": 1,
+      "second_response": "same_sha_as_preserved_body_under_immutable_insert_check",
+      "technical_facts_status": "eligible",
+      "first_vs_later_recheck": "not_needed"
+    }
+  ],
+  "full_collector": "single cross-process flock; original hash never replaced; KIND alternate allowed",
+  "probe_additional_http": 6
+}

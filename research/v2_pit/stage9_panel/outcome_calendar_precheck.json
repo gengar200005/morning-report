@@ -1,0 +1,67 @@
+{
+  "known_window": [
+    "20210602",
+    "20211124"
+  ],
+  "by_horizon": {
+    "20": {
+      "total": 60,
+      "calendar_mature": 60,
+      "right_censored": [],
+      "mature_dates_overlapping_known_120_window": [
+        "20210104",
+        "20210201",
+        "20210302",
+        "20210401",
+        "20210503",
+        "20210601",
+        "20210701",
+        "20210802",
+        "20210901",
+        "20211001",
+        "20211101"
+      ]
+    },
+    "60": {
+      "total": 60,
+      "calendar_mature": 58,
+      "right_censored": [
+        "20211101",
+        "20211201"
+      ],
+      "mature_dates_overlapping_known_120_window": [
+        "20210104",
+        "20210201",
+        "20210302",
+        "20210401",
+        "20210503",
+        "20210601",
+        "20210701",
+        "20210802",
+        "20210901",
+        "20211001"
+      ]
+    },
+    "120": {
+      "total": 60,
+      "calendar_mature": 55,
+      "right_censored": [
+        "20210802",
+        "20210901",
+        "20211001",
+        "20211101",
+        "20211201"
+      ],
+      "mature_dates_overlapping_known_120_window": [
+        "20210104",
+        "20210201",
+        "20210302",
+        "20210401",
+        "20210503",
+        "20210601",
+        "20210701"
+      ]
+    }
+  },
+  "source": "Stage 2 sessions only. Minimum cell counts and outcomes not examined."
+}

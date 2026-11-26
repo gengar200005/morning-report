@@ -1,0 +1,141 @@
+{
+  "fixed_draw_sha256": "3502b4a74917040f132bf204487eb0aea929818433ac1f9cb46573237904f605",
+  "audit_rows_sha256": "73ac0d1cd05c2dcd27bcad151a2e15e60d52e2f4e44d54736b8e333beba05faf",
+  "generation_meta_sha256": "d17d489e2512d117aad880f6a57d1804d128288cfec20033317737ad5b121dbb",
+  "all_cached_by_source": {
+    "kind_html": 80,
+    "xbrl": 459
+  },
+  "requests_by_phase": {
+    "technical": {
+      "distinct_initial_file_attempts": 81,
+      "completed": {
+        "PASS": 81
+      },
+      "http_requests": 107,
+      "http_results": {
+        "200:received": 107
+      },
+      "response_bytes": 28464357,
+      "elapsed_wall_s": 337.73,
+      "median_response_seconds": 4.651
+    },
+    "full": {
+      "distinct_initial_file_attempts": 409,
+      "completed": {
+        "PASS": 146
+      },
+      "http_requests": 168,
+      "http_results": {
+        "200:received": 168
+      },
+      "response_bytes": 38428398,
+      "elapsed_wall_s": 273.11,
+      "median_response_seconds": 4.151
+    }
+  },
+  "fixed_by_year": {
+    "2016": {
+      "fixed": 8,
+      "unique_original": 8,
+      "source_received": 8,
+      "direct_CFS_pair": 1,
+      "annual_CFS_pair": 3
+    },
+    "2017": {
+      "fixed": 16,
+      "unique_original": 16,
+      "source_received": 16,
+      "direct_CFS_pair": 9,
+      "annual_CFS_pair": 3
+    },
+    "2018": {
+      "fixed": 16,
+      "unique_original": 15,
+      "source_received": 16,
+      "direct_CFS_pair": 11,
+      "annual_CFS_pair": 4
+    },
+    "2019": {
+      "fixed": 16,
+      "unique_original": 4,
+      "source_received": 15,
+      "direct_CFS_pair": 7,
+      "annual_CFS_pair": 3
+    },
+    "2020": {
+      "fixed": 16,
+      "unique_original": 0,
+      "source_received": 12,
+      "direct_CFS_pair": 5,
+      "annual_CFS_pair": 2
+    },
+    "2021": {
+      "fixed": 12,
+      "unique_original": 4,
+      "source_received": 8,
+      "direct_CFS_pair": 4,
+      "annual_CFS_pair": 0
+    }
+  },
+  "fixed_by_stratum": {
+    "later_delist": {
+      "fixed": 21,
+      "unique_original": 12,
+      "source_received": 21,
+      "direct_CFS_pair": 8,
+      "annual_CFS_pair": 3
+    },
+    "small": {
+      "fixed": 21,
+      "unique_original": 12,
+      "source_received": 20,
+      "direct_CFS_pair": 9,
+      "annual_CFS_pair": 5
+    },
+    "middle": {
+      "fixed": 21,
+      "unique_original": 11,
+      "source_received": 19,
+      "direct_CFS_pair": 12,
+      "annual_CFS_pair": 4
+    },
+    "large": {
+      "fixed": 21,
+      "unique_original": 12,
+      "source_received": 15,
+      "direct_CFS_pair": 8,
+      "annual_CFS_pair": 3
+    }
+  },
+  "fixed_by_quarter": {
+    "3": {
+      "fixed": 24,
+      "unique_original": 12,
+      "source_received": 21,
+      "direct_CFS_pair": 11,
+      "annual_CFS_pair": 0
+    },
+    "4": {
+      "fixed": 20,
+      "unique_original": 11,
+      "source_received": 19,
+      "direct_CFS_pair": 0,
+      "annual_CFS_pair": 14
+    },
+    "1": {
+      "fixed": 20,
+      "unique_original": 13,
+      "source_received": 18,
+      "direct_CFS_pair": 13,
+      "annual_CFS_pair": 1
+    },
+    "2": {
+      "fixed": 20,
+      "unique_original": 11,
+      "source_received": 17,
+      "direct_CFS_pair": 13,
+      "annual_CFS_pair": 0
+    }
+  }
+}

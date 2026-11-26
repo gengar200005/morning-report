@@ -1,0 +1,11 @@
+{
+  "runtime_present_boolean": {
+    "OPENDART_API_KEY": false,
+    "DART_API_KEY": false,
+    "OPEN_DART_API_KEY": false
+  },
+  "authenticated_requests": 0,
+  "status": "BLOCKED_NO_RUNTIME_KEY",
+  "public_route": "OpenDART original XBRL downloads plus KIND and DART historical document indexes; no credential needed.",
+  "previous_workflow_review": "See stage82b/auth_status.json. No workflow run, credential value printed or secret storage modified."
+}
