@@ -1,0 +1,145 @@
+{
+  "population_issuer_months": 46106,
+  "selected_issuer_months": 14400,
+  "formation_dates": 60,
+  "selected_distinct_isins": 270,
+  "entire_market_distinct_isins": 824,
+  "historical_membership_and_top_240_roster_match": true,
+  "audited_dimensions": {
+    "sector_name": {
+      "IT": {
+        "population": 3811,
+        "sample": 1106,
+        "percentage_point_difference": -0.5852
+      },
+      "unknown": {
+        "population": 456,
+        "sample": 165,
+        "percentage_point_difference": 0.1568
+      },
+      "건강관리": {
+        "population": 3146,
+        "sample": 821,
+        "percentage_point_difference": -1.122
+      },
+      "경기관련소비재": {
+        "population": 10369,
+        "sample": 2926,
+        "percentage_point_difference": -2.17
+      },
+      "금융": {
+        "population": 3054,
+        "sample": 1323,
+        "percentage_point_difference": 2.5636
+      },
+      "산업재": {
+        "population": 10334,
+        "sample": 3765,
+        "percentage_point_difference": 3.7323
+      },
+      "소재": {
+        "population": 8766,
+        "sample": 2471,
+        "percentage_point_difference": -1.853
+      },
+      "에너지": {
+        "population": 730,
+        "sample": 150,
+        "percentage_point_difference": -0.5416
+      },
+      "유틸리티": {
+        "population": 1007,
+        "sample": 240,
+        "percentage_point_difference": -0.5174
+      },
+      "커뮤니케이션서비스": {
+        "population": 940,
+        "sample": 327,
+        "percentage_point_difference": 0.2321
+      },
+      "필수소비재": {
+        "population": 3493,
+        "sample": 1106,
+        "percentage_point_difference": 0.1045
+      }
+    },
+    "industry_group": {
+      "financial": {
+        "population": 3054,
+        "sample": 1323,
+        "percentage_point_difference": 2.5636
+      },
+      "nonfinancial": {
+        "population": 42596,
+        "sample": 12912,
+        "percentage_point_difference": -2.7204
+      },
+      "unknown": {
+        "population": 456,
+        "sample": 165,
+        "percentage_point_difference": 0.1568
+      }
+    },
+    "cap_quartile": {
+      "1": {
+        "population": 11547,
+        "sample": 3563,
+        "percentage_point_difference": -0.3014
+      },
+      "2": {
+        "population": 11518,
+        "sample": 3487,
+        "percentage_point_difference": -0.7663
+      },
+      "3": {
+        "population": 11538,
+        "sample": 3658,
+        "percentage_point_difference": 0.3778
+      },
+      "4": {
+        "population": 11503,
+        "sample": 3692,
+        "percentage_point_difference": 0.6899
+      }
+    },
+    "turnover_quartile": {
+      "1": {
+        "population": 11547,
+        "sample": 3486,
+        "percentage_point_difference": -0.8361
+      },
+      "2": {
+        "population": 11518,
+        "sample": 3630,
+        "percentage_point_difference": 0.2268
+      },
+      "3": {
+        "population": 11538,
+        "sample": 3554,
+        "percentage_point_difference": -0.3444
+      },
+      "4": {
+        "population": 11503,
+        "sample": 3730,
+        "percentage_point_difference": 0.9537
+      }
+    },
+    "exit_in_check_register": {
+      "matched_later_exit": {
+        "population": 3185,
+        "sample": 1007,
+        "percentage_point_difference": 0.0851
+      },
+      "other_or_unmatched": {
+        "population": 42921,
+        "sample": 13393,
+        "percentage_point_difference": -0.0851
+      }
+    }
+  },
+  "scope": "Monthly stocks counted repeatedly. Confirmed later exits used exclusively for descriptive audit. Unmatched is not confirmed survival.",
+  "input_sha256": {
+    "limited_issuer_months.csv": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390",
+    "context.csv": "6794bc104e34dad94e2c1527e97e3317be1861e82ebbe97b85891a7bd32e8ea1"
+  }
+}

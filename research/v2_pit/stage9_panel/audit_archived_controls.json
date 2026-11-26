@@ -1,0 +1,211 @@
+{
+  "scope": "Earlier, known statements used only as controls for the Stage 9 reader. Not counted as new holdout successes.",
+  "display_and_xbrl_checks": [
+    {
+      "kind_receipt": "20210813000756",
+      "source_type": "xbrl",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "9270a690fba1998784d7d64144e7f7aad79b390f3e4ecfedf36893ae48eada26",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20210813000756",
+      "source_type": "kind_html",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "5660939bdeababb5faac74ac2a67ea4b169808c2f01b905374b96de3c836333e",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20210817000838",
+      "source_type": "xbrl",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "b65a6b53fc54d0846d706fa2687a3235352eec9a85e1448abc47daa160337ec2",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20210817000838",
+      "source_type": "kind_html",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "ca7514a3c58f9030c74e1f1a526a176253b11e71d205fda1677547b6fb97b58c",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20210817001292",
+      "source_type": "xbrl",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "6e13df3d94390346b4592f467ae0f6beef81333bf5f76aa427417c589ea82933",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20210817001292",
+      "source_type": "kind_html",
+      "period_end": "2021-06-30",
+      "duration": 3,
+      "sha256": "7d01a87d789f2d3cdd4de74b6533e93c077ff77f6882b232db6b31b287b973c1",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20211115002545",
+      "source_type": "xbrl",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "be7d8d5bee05d1b396ab0c509e0825606f828e36cb8bb949680e029590120610",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20211115002545",
+      "source_type": "kind_html",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "891d9e77adc921aed7214466149422f8ff59cf63d5ae1182cdcd929b1f779a71",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20211115000796",
+      "source_type": "xbrl",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "0c46f4a6b6b91a7d3927a5ba4c6d2c06364fb63571073aea4aae8f114c984d5a",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "kind_receipt": "20211115000796",
+      "source_type": "kind_html",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "0475da61a7d2baa92fcfc9a74d06efd6505fc635839e267c194fb73bb2b95835",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "kind_receipt": "20211115002460",
+      "source_type": "xbrl",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "71c09faa6b51d113697912889dfa6c31cb99c3903822ab1bffc07af94b9fd1f0",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20211115002460",
+      "source_type": "kind_html",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "c45ee3f4431bdaf72a67a0f8fd4aaf180d7ca82c542aeb8a42c2089b0e2fb0af",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20220214000937",
+      "source_type": "xbrl",
+      "period_end": "2021-12-31",
+      "duration": 3,
+      "sha256": "60de40c2134bc3f207c16aefdb5ca74409f0d1c24920e2bcd315a3fb129399bc",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20220214000937",
+      "source_type": "kind_html",
+      "period_end": "2021-12-31",
+      "duration": 3,
+      "sha256": "704e50ee3d3b3e54af5b9e1987c21089c3be18363bde679cee263d40a6da3219",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20220322001011",
+      "source_type": "xbrl",
+      "period_end": "2021-12-31",
+      "duration": 12,
+      "sha256": "79fcf844aa26b5fbd7aac2091f24cb14be338f116dd858123067ef4fb900f8c9",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20211115001552",
+      "source_type": "xbrl",
+      "period_end": "2021-09-30",
+      "duration": 9,
+      "sha256": "7d4c466338bbc2197df19affbbe86a29c9f0e3ef81f15a7121a82ba4975a62e8",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "kind_receipt": "20220323000957",
+      "source_type": "xbrl",
+      "period_end": "2021-12-31",
+      "duration": 3,
+      "sha256": "2c5cd69d2a07b280be64f8555a24a4abf49ba3d5c3caab1b19b341cd2086208c",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "kind_receipt": "20220323000957",
+      "source_type": "kind_html",
+      "period_end": "2021-12-31",
+      "duration": 3,
+      "sha256": "fb4e027c63434bb0d458598a8844c3bd40b1e4a4fe51e1c9994c9b9e38ef32d0",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "kind_receipt": "20211115001465",
+      "source_type": "xbrl",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "cb86f2cc47766b71c73f677455cba7a7a7bd70eacae4f487366dc8b989a98152",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "kind_receipt": "20211115001465",
+      "source_type": "kind_html",
+      "period_end": "2021-09-30",
+      "duration": 3,
+      "sha256": "09d79b75bbf46bbe64f52fc971a14541a3887af53881c79e94ed0bbccc35d92b",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    }
+  ],
+  "historical_xbrl_regression": [
+    {
+      "receipt": "20170515002877",
+      "source_sha256": "035f4f8520be467f130ca656c87e206b1588525b0205cbb7f451e8ec5f700d5d",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    },
+    {
+      "receipt": "20170512004864",
+      "source_sha256": "360fd70d46b0396417db27dff4eca443e9aa34bdaefaafef73a313c9229f7968",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "receipt": "20190515002222",
+      "source_sha256": "878ca2cba3b04859a5a1bf42ba515aaf389d04abc7db718463688c5e211bc32e",
+      "monetary_matches": 0,
+      "missing_matches": 4
+    },
+    {
+      "receipt": "20190515000162",
+      "source_sha256": "91319f2cccf2e2c5c95b5deb865dfa148eef0112768bafd1772fda69af3c782f",
+      "monetary_matches": 4,
+      "missing_matches": 0
+    }
+  ]
+}

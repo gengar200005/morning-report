@@ -38,6 +38,8 @@ def run(path,panel,prior,archives):
             if v['code'] not in codes or r['dart_receipt'][:8]>'20211201':continue
             store(out,r['dart_receipt'],v['kind_docno'],r['corp_code'],'kind_html',v['url'],
                   (directory/(r['kind']+'.htm')).read_bytes(),v['sha256'])
+        for r in json.loads((archives/'mr-delisted'/'field_receipt_validation.json').read_text())['facts']:
+            if r['isin'] in universe:known.setdefault(r['corp_code'],r)
         directory=archives/'mr-delisted'
         for r in json.loads((directory/'packages.json').read_text()):
             f=directory/r['filename']
@@ -66,6 +68,23 @@ def run(path,panel,prior,archives):
                 row=old.execute('SELECT hash,raw FROM page WHERE url=?',(url,)).fetchone()
                 if row:
                     store(out,r['receipt'],r['document'],r['corp_code'],'kind_html',url,zlib.decompress(row[1]),r['source_sha256'])
+        directory=archives/'mr82hold'
+        for f in sorted(directory.glob('??????-source.json')):
+            r=json.loads(f.read_text())
+            if r['isin'] in universe:
+                store(out,r['dart_receipt_candidate'],r['doc_no'],r['corp_code'],'kind_html',r['url'],
+                      (directory/(r['kind_receipt']+'.htm')).read_bytes(),r['sha256'])
+        dc=json.loads((directory/'dasco_correction.json').read_text())
+        if dc['stock_code'] in codes:
+            issuer=json.loads((directory/(dc['stock_code']+'-source.json')).read_text())
+            store(out,dc['amendment_DART_receipt'],dc['url'].split('/')[-2],issuer['corp_code'],'kind_html',dc['url'],
+                  (directory/(dc['amendment_KIND_receipt']+'.htm')).read_bytes(),dc['full_amendment_html_sha256'])
+        for f in (archives/'mr82-kind').glob('special_*.json'):
+            r=json.loads(f.read_text())
+            if r['isin'] in universe:
+                body=archives/'mr-identity'/'nondec'/(r['kind_receipt']+'.htm')
+                store(out,r['receipt'],r['source_url'].split('/')[-2],r['corp_code'],'kind_html',
+                      r['source_url'],body.read_bytes(),r['source_sha256'])
         print(out.execute('SELECT kind,count(*),sum(length(body)) FROM packages GROUP BY kind').fetchall())
 
 if __name__=='__main__':

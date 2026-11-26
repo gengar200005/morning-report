@@ -1,0 +1,26 @@
+{
+  "modified_inputs_for_parser_controls_only": true,
+  "source_sha256": "035f4f8520be467f130ca656c87e206b1588525b0205cbb7f451e8ec5f700d5d",
+  "checks": {
+    "zero": {
+      "value": 0,
+      "status": "exact_consolidated_quarter_fact"
+    },
+    "nil": {
+      "value": null,
+      "status": "nil_or_nonfinite"
+    },
+    "unknown_unit": {
+      "value": null,
+      "status": "unit_not_KRW"
+    },
+    "two_values": {
+      "value": null,
+      "status": "conflicting_values"
+    },
+    "six_month_period": {
+      "value": null,
+      "status": "no_supported_fact_in_exact_context"
+    }
+  }
+}

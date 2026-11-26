@@ -37,3 +37,27 @@ class CollectionTest(unittest.TestCase):
                available_session='20210517',document='12345',version='original',identity_status='PASS')
         draws=[dict(isin='A',period_end='2021-03-31')]
         self.assertEqual(plan([r],draws,[],[],'technical'),[])
+
+class AsOfAcquisitionTest(unittest.TestCase):
+    def test_prior_reference_only_used_for_annual_but_never_as_primary(self):
+        from stage9_panel.collection_targets import target_receipts
+        with TemporaryDirectory() as directory:
+            path=Path(directory)/'economic.sqlite'
+            sessions=['20160104','20160401','20160404','20161114','20161115','20170403','20170404','20170502']
+            with sqlite3.connect(path) as db:
+                db.execute('CREATE TABLE sessions(day TEXT)')
+                db.executemany('INSERT INTO sessions VALUES(?)', [(d,) for d in sessions])
+            def row(rc,period,stamp,available,report,identity):
+                return dict(receipt=rc,isin='A',corp_code='00111111',stock_code='001234',
+                            kind_receipt=rc,period_end=period,filing_date=stamp,available_session=available,
+                            report_type=report,identity_status=identity,original_receipt=rc,version='original',
+                            comparator_identity_status='PASS',comparator_identity_basis='dated_master_and_link')
+            rows=[row('20151114000001','20150930','20151114','20160104','11013','BLOCKED'),
+                  row('20160401000001','20151231','20160401','20160404','11011','PASS'),
+                  row('20161114000001','20160930','20161114','20161115','11013','PASS'),
+                  row('20170403000001','20161231','20170403','20170404','11011','PASS')]
+            roster=[dict(formation='20170502',historical_isin='A')]
+            coverage=[dict(formation='20170502',isin='A',complete='1')]
+            self.assertEqual(target_receipts(rows,roster,path,coverage,[],[],[]),{r['receipt'] for r in rows})
+            monthly_fin=[dict(formation='20170502',isin='A',industry_group='financial')]
+            self.assertEqual(target_receipts(rows,roster,path,coverage,monthly_fin,[],[]),set())

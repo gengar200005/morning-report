@@ -222,7 +222,7 @@ def plan(manifest,draw,audit,panel,phase):
     sort=lambda v:hashlib.sha256(('stage9-tech-support-v1|'+v[0]['receipt']).encode()).digest()
     return sorted(base,key=sort)+sorted(checks,key=sort)+sorted(supp,key=sort)[:2]+sorted(extra_amend,key=sort)[:4]
 
-def reserve(db,jobs,phase,retry_blocked=False):
+def reserve(db,jobs,phase,retry_blocked=False,limit=None):
     seen=set()
     accepted=[]
     with db:
@@ -240,9 +240,10 @@ def reserve(db,jobs,phase,retry_blocked=False):
                 db.execute('INSERT INTO reservations VALUES(?,?,?)',(*key,phase))
                 remaining-=1
             accepted.append((r,k))
+            if limit is not None and len(accepted)>=limit:break
     return accepted
 
-def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,display_queue=None):
+def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,display_queue=None,batch_size=300):
     initialize(path)
     if workers is None:workers=3 if phase=='technical' else 5
     allrows=read_csv(manifest)
@@ -258,10 +259,15 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
     coverage=manifest.parent/'monthly_coverage.csv'
     industry=panel.parent/'context.csv'
     main=audit.with_name('audit_main_frozen.csv')
+    first_year=set()
     if phase=='full' and sessions_db.exists() and coverage.is_file():
         from stage9_panel.collection_targets import target_receipts
-        needed=target_receipts(allrows,roster,sessions_db,read_csv(coverage),read_csv(industry) if industry.exists() else [],
+        coverage_rows=read_csv(coverage)
+        industry_rows=read_csv(industry) if industry.exists() else []
+        needed=target_receipts(allrows,roster,sessions_db,coverage_rows,industry_rows,
                                drawrows,audits+(read_csv(main) if main.exists() else []))
+        first_year=target_receipts(allrows,[r for r in roster if r['formation'].startswith('2017')],
+                                   sessions_db,coverage_rows,industry_rows,[],[])
         jobs=[(r,'xbrl' if r.get('document') else 'kind_html') for r in rows
               if (r['identity_status']=='PASS' or r.get('comparator_identity_status')=='PASS') and r['receipt'] in needed]
     else:
@@ -280,17 +286,19 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
                 checks.extend([(r,'kind_html'),(r,k)])
             elif key in base:
                 checks.append((r,k))
-        jobs=checks+jobs
+        # A stable hash interleaves issuers/years during long collections.
+        ordered=sorted(jobs,key=lambda j:(j[0]['receipt'] not in first_year,sha(('stage9-full-v1|'+j[0]['receipt']).encode())))
+        jobs=checks+ordered
     if phase=='full' and display_queue is not None:
         eligible={r['receipt']:r for r,kind in jobs if r.get('kind_receipt')}
-        jobs.extend((eligible[r['receipt']],'kind_html') for r in read_csv(display_queue)
-                    if r['receipt'] in eligible)
+        supplements=[(eligible[r['receipt']],'kind_html') for r in read_csv(display_queue) if r['receipt'] in eligible]
+        jobs=checks+supplements+jobs
     if phase=='full':
         # A failed original ZIP can still have the independently identified full
         # KRX rendering of the same dated filing. Both receipts remain attributable.
         with connect(path) as db:
             blocked={r[0] for r in db.execute("SELECT receipt FROM completed WHERE kind='xbrl' AND status='BLOCKED' UNION SELECT receipt FROM quarantine WHERE kind='xbrl'")}
-        jobs.extend((r,'kind_html') for r,k in list(jobs) if k=='xbrl' and r['receipt'] in blocked and r.get('kind_receipt'))
+        jobs=[(r,'kind_html') for r,k in jobs if k=='xbrl' and r['receipt'] in blocked and r.get('kind_receipt')]+jobs
     early=manifest.parent/'technical_download_candidates.csv'
     if phase=='technical' and early.is_file():
         frozen={(r['isin'],r['stock_code'],r['period_end']) for r in read_csv(draw)}
@@ -298,7 +306,7 @@ def collect(path,manifest,draw,audit,panel,phase,workers,interval,retry_blocked,
             if ((r['isin'],r['stock_code'],r['period_end']) in frozen and r['document']
                     and r.get('FSS_full_list_hash') and r.get('OpenDART_download_index_hash')):
                 jobs.append((r,'xbrl'))
-    with connect(path) as db:accepted=reserve(db,jobs,phase,retry_blocked)
+    with connect(path) as db:accepted=reserve(db,jobs,phase,retry_blocked,batch_size if phase=='full' else None)
     print(f'{phase} planned {len(jobs)} pending {len(accepted)}',flush=True)
     with ThreadPoolExecutor(max_workers=workers) as pool:
         totals=Counter()
@@ -316,6 +324,7 @@ if __name__=='__main__':
     a.add_argument('--interval',type=float,default=0.65)
     a.add_argument('--retry-blocked',action='store_true')
     a.add_argument('--display-queue',type=Path)
+    a.add_argument('--batch-size',type=int,default=300)
     args=a.parse_args()
     args.path.parent.mkdir(parents=True,exist_ok=True)
     # A concurrent snapshot refresh must never request a second copy of a reserved file.
