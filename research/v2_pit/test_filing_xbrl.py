@@ -28,7 +28,7 @@ class FilingXbrlTest(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.archive = Path(directory.name) / 'sample.zip'
 
-    def run_extract(self, contexts, facts, bad_hash=False):
+    def run_extract(self, contexts, facts, bad_hash=False, *, cumulative=False):
         xml = (f'<xbrl xmlns="http://www.xbrl.org/2003/instance" xmlns:i="{IFRS}" '
                'xmlns:iso="http://www.xbrl.org/2003/iso4217" xmlns:d="http://xbrl.org/2006/xbrldi" '
                'xmlns:u="urn:extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
@@ -41,7 +41,7 @@ class FilingXbrlTest(unittest.TestCase):
             z.writestr('instance.xbrl', xml)
         digest = hashlib.sha256(self.archive.read_bytes()).hexdigest()
         return extract(self.archive, '20211115000001', '123', '00126380', 2021, 3,
-                       'wrong' if bad_hash else digest)['fields']
+                       'wrong' if bad_hash else digest, cumulative=cumulative)['fields']
 
     def test_consolidated_three_months_excludes_ytd_standalone_extra_dimensions(self):
         contexts = (context('quarter') + context('ytd', start='2021-01-01')
@@ -53,6 +53,16 @@ class FilingXbrlTest(unittest.TestCase):
         self.assertEqual(data['current']['revenue']['value'], '0')
         self.assertEqual(data['prior_as_reported']['revenue']['value'], '-2')
         self.assertIsNone(data['current']['operating_profit']['value'])
+
+    def test_cumulative_period_separates_three_month_facts(self):
+        contexts = (context('quarter') + context('ytd', start='2021-01-01')
+                    + context('prior', '2020-01-01', '2020-09-30')
+                    + context('standalone', start='2021-01-01', axis=AXIS.replace('i:ConsolidatedMember', 'i:SeparateMember')))
+        amounts = fact('quarter', 11) + fact('ytd', 31) + fact('prior', 28) + fact('standalone', 88)
+        data = self.run_extract(contexts, amounts, cumulative=True)
+        self.assertEqual(data['current']['revenue']['value'], '31')
+        self.assertEqual(data['prior_as_reported']['revenue']['value'], '28')
+        self.assertEqual(data['current']['revenue']['reason'], 'exact_consolidated_calendar_ytd_fact')
 
     def test_duplicate_semantic_contexts_must_agree(self):
         contexts = context('a') + context('b')

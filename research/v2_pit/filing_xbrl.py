@@ -30,9 +30,12 @@ COMMON_LABELS = {'보통주기본주당이익(손실)', '보통주기본주당�
                  '보통주기본주당순이익(손실)', '보통주기본주당순이익'}
 
 
-def period(year, quarter):
+def period(year, quarter, *, cumulative=False):
+    if not 1 <= quarter <= 4:
+        raise ValueError('Invalid calendar quarter')
     end_month = quarter * 3
-    return (date(year, end_month - 2, 1).isoformat(),
+    start_month = 1 if cumulative else end_month - 2
+    return (date(year, start_month, 1).isoformat(),
             date(year, end_month, calendar.monthrange(year, end_month)[1]).isoformat())
 
 
@@ -125,7 +128,7 @@ def field_for(tag, extensions, corp):
     return None
 
 
-def classify(candidates, field):
+def classify(candidates, field, *, cumulative=False):
     result = {'status': 'BLOCKED', 'value': None, 'candidates': candidates}
     if not candidates:
         result['reason'] = 'no_supported_fact_in_exact_context'
@@ -151,12 +154,15 @@ def classify(candidates, field):
     elif any(f['unit'] != 'KRW' for f in candidates):
         result['reason'] = 'unit_not_KRW'
     else:
-        result.update(status='PASS', reason='exact_consolidated_quarter_fact', value=str(next(iter(values))))
+        reason = 'exact_consolidated_calendar_ytd_fact' if cumulative else 'exact_consolidated_quarter_fact'
+        result.update(status='PASS', reason=reason, value=str(next(iter(values))))
     return result
 
 
-def extract(archive, receipt, document, corp, year, quarter, sha256):
-    periods = {'current': period(year, quarter), 'prior_as_reported': period(year - 1, quarter)}
+def extract(archive, receipt, document, corp, year, quarter, sha256, *, cumulative=False):
+    """Default to three months. Cumulative mode selects Jan 1 through the calendar quarter-end."""
+    periods = {'current': period(year, quarter, cumulative=cumulative),
+               'prior_as_reported': period(year-1, quarter, cumulative=cumulative)}
     if (not re.fullmatch(r'\d{14}', receipt) or not re.fullmatch(r'\d+', document)
             or not re.fullmatch(r'\d{8}', corp) or not 2016 <= year <= 2023
             or not periods['current'][1] <= date.fromisoformat(receipt[:8]).isoformat() <= '2023-12-31'):
@@ -213,7 +219,7 @@ def extract(archive, receipt, document, corp, year, quarter, sha256):
     return {'receipt': receipt, 'document': document, 'corp': corp, 'periods': periods,
             'source_url': f'https://dart.fss.or.kr/pdf/download/ifrs.do?rcp_no={receipt}&dcm_no={document}&lang=ko',
             'archive_sha256': sha256, 'instance': instances[0], 'instance_sha256': hashlib.sha256(raw).hexdigest(),
-            'fields': {when: {field: classify(facts[when, field], field) for field in FIELDS}
+            'fields': {when: {field: classify(facts[when, field], field, cumulative=cumulative) for field in FIELDS}
                        for when in periods}}
 
 

@@ -1,0 +1,674 @@
+{
+  "method": "9 fixed security/calendar-quarter cases. Separate audited outcomes from extraction eligibility.",
+  "manual_sha256": "6e96c38daddd18973a9c8bfe03f65852429b4ff8c44085ed828a3b3efd1c8682",
+  "frozen_direct_sha256": "f4b0f017c85edfbdd1da01901dd869e877736b841c3f4842ac71fa5196925a28",
+  "direct_numeric_filings": 6,
+  "direct_numeric_cells": 24,
+  "explicit_no_cfs_issuers": 2,
+  "q4_derived_filings": 1,
+  "eligible_amounts_by_quarter": {
+    "2021Q2": "3/3",
+    "2021Q3": "2/3",
+    "2021Q4": "2/3"
+  },
+  "cosmax_q4": {
+    "computed_krw": {
+      "revenue": [
+        421214297075,
+        354471489731
+      ],
+      "operating_profit": [
+        30423544691,
+        10486514627
+      ]
+    },
+    "issuer_IR_units_KRW_100m": {
+      "revenue": [
+        4212,
+        3545
+      ],
+      "operating_profit": [
+        304,
+        105
+      ]
+    },
+    "issuer_dated": "2022-03-07",
+    "issuer_ir_url": "https://www.cosmax.com/new/upload/ckeditor/Files/20220307_131002_0293987.pdf",
+    "issuer_archive_status": "Search-indexed PDF text available; original PDF binary unavailable at legacy URL during replay. Hash not asserted.",
+    "periodic_signal_start": "20220323",
+    "later_amendment_start": "20220817",
+    "basis": "Same-parent CFS exact-KRW YTD and FY; published prior-year columns reproduce both prior originals. Later amendment does not alter values. IR checks all four results only to its reported KRW 100m precision. The pool of subsidiaries can change during a year; this is consolidated performance as reported."
+  },
+  "sources": [
+    {
+      "company": "코스맥스",
+      "code": "192820",
+      "title": "분기보고서(일반법인)(2020.09)",
+      "kind_receipt": "20201116001159",
+      "kind_doc": "20201116002569",
+      "dart_receipt": "20201116001056",
+      "corp_code": "01009789",
+      "kind_url": "https://kind.krx.co.kr/external/2020/11/16/001159/20201116002569/11013.htm",
+      "kind_html_sha256": "61e90fd23aff20055675682c3752e0ca606e5b9cd3050e40db8b245df633eb8b",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20201116001056&dcm_no=7548597&lang=ko",
+      "zip_sha256": "1407d253a11d518af894e4837e66b57f12097c125bd5ae2ca317db84c7071f0b",
+      "xbrl_instance_sha256": "852e4c5acd56becc1ef00b45d972633dc21c5b5e947c7b43b9209abbe377d1fb",
+      "kind_published_kst": "2020-11-16 15:53",
+      "available_session": "20201117",
+      "target_contexts": {
+        "current": [
+          "2020-01-01",
+          "2020-09-30"
+        ],
+        "prior_as_reported": [
+          "2019-01-01",
+          "2019-09-30"
+        ]
+      }
+    },
+    {
+      "company": "코스맥스",
+      "code": "192820",
+      "title": "[연결포함]사업보고서(일반법인)(2020.12)",
+      "kind_receipt": "20210318001184",
+      "kind_doc": "20210318004986",
+      "dart_receipt": "20210318000961",
+      "corp_code": "01009789",
+      "kind_url": "https://kind.krx.co.kr/external/2021/03/18/001184/20210318004986/11011.htm",
+      "kind_html_sha256": "4bc5fc02eb17059aeace08481cda07069f5828d6515b325b897b66c88130674e",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210318000961&dcm_no=7892072&lang=ko",
+      "zip_sha256": "74e2c9417a86f7d96f8df68736dcf959af9b0db622c82d373ad7a02d7edc7a96",
+      "xbrl_instance_sha256": "e4e3073e98536d79bae8a4a9c45479a4b6128cff0d09af97aa1a348f3c3d5981",
+      "kind_published_kst": "2021-03-18 16:47",
+      "available_session": "20210319",
+      "target_contexts": {
+        "current": [
+          "2020-01-01",
+          "2020-12-31"
+        ],
+        "prior_as_reported": [
+          "2019-01-01",
+          "2019-12-31"
+        ]
+      }
+    },
+    {
+      "company": "금비",
+      "code": "008870",
+      "title": "분기보고서(일반법인)(2021.06)",
+      "kind_receipt": "20210813000756",
+      "kind_doc": "20210813002194",
+      "dart_receipt": "20210813000636",
+      "corp_code": "00168401",
+      "kind_url": "https://kind.krx.co.kr/external/2021/08/13/000756/20210813002194/11013.htm",
+      "kind_html_sha256": "5660939bdeababb5faac74ac2a67ea4b169808c2f01b905374b96de3c836333e",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210813000636&dcm_no=8173664&lang=ko",
+      "zip_sha256": "9270a690fba1998784d7d64144e7f7aad79b390f3e4ecfedf36893ae48eada26",
+      "xbrl_instance_sha256": "224e3d6a64b3742b78a61b70581cb6c2b4866f5ece558c9fe5a426e132ce1a8f",
+      "kind_published_kst": "2021-08-13 15:06",
+      "available_session": "20210817",
+      "target_contexts": {
+        "current": [
+          "2021-04-01",
+          "2021-06-30"
+        ],
+        "prior_as_reported": [
+          "2020-04-01",
+          "2020-06-30"
+        ]
+      }
+    },
+    {
+      "company": "한일철강",
+      "code": "002220",
+      "title": "반기보고서(일반법인)(2021.06)",
+      "kind_receipt": "20210817000838",
+      "kind_doc": "20210817002590",
+      "dart_receipt": "20210817000708",
+      "corp_code": "00163196",
+      "kind_url": "https://kind.krx.co.kr/external/2021/08/17/000838/20210817002590/11012.htm",
+      "kind_html_sha256": "ca7514a3c58f9030c74e1f1a526a176253b11e71d205fda1677547b6fb97b58c",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210817000708&dcm_no=8178655&lang=ko",
+      "zip_sha256": "b65a6b53fc54d0846d706fa2687a3235352eec9a85e1448abc47daa160337ec2",
+      "xbrl_instance_sha256": "96fab0cf43d045552151e37f3c28c4cbc749422f6c643a63b33c9fd4858aa980",
+      "kind_published_kst": "2021-08-17 14:40",
+      "available_session": "20210818",
+      "target_contexts": {
+        "current": [
+          "2021-04-01",
+          "2021-06-30"
+        ],
+        "prior_as_reported": [
+          "2020-04-01",
+          "2020-06-30"
+        ]
+      }
+    },
+    {
+      "company": "GS리테일",
+      "code": "007070",
+      "title": "반기보고서(일반법인)(2021.06)",
+      "kind_receipt": "20210817001292",
+      "kind_doc": "20210817004059",
+      "dart_receipt": "20210817001115",
+      "corp_code": "00140177",
+      "kind_url": "https://kind.krx.co.kr/external/2021/08/17/001292/20210817004059/11012.htm",
+      "kind_html_sha256": "7d01a87d789f2d3cdd4de74b6533e93c077ff77f6882b232db6b31b287b973c1",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210817001115&dcm_no=8180061&lang=ko",
+      "zip_sha256": "6e13df3d94390346b4592f467ae0f6beef81333bf5f76aa427417c589ea82933",
+      "xbrl_instance_sha256": "19edc8850ca354962f832243e60a3fefcfade2b737921ab4b45ccec3e6f5ca5c",
+      "kind_published_kst": "2021-08-17 15:47",
+      "available_session": "20210818",
+      "target_contexts": {
+        "current": [
+          "2021-04-01",
+          "2021-06-30"
+        ],
+        "prior_as_reported": [
+          "2020-04-01",
+          "2020-06-30"
+        ]
+      }
+    },
+    {
+      "company": "문배철강",
+      "code": "008420",
+      "title": "분기보고서(일반법인)(2021.09)",
+      "kind_receipt": "20211115000796",
+      "kind_doc": "20211115001634",
+      "dart_receipt": "20211115000686",
+      "corp_code": "00121570",
+      "kind_url": "https://kind.krx.co.kr/external/2021/11/15/000796/20211115001634/11013.htm",
+      "kind_html_sha256": "0475da61a7d2baa92fcfc9a74d06efd6505fc635839e267c194fb73bb2b95835",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115000686&dcm_no=8275039&lang=ko",
+      "zip_sha256": "0c46f4a6b6b91a7d3927a5ba4c6d2c06364fb63571073aea4aae8f114c984d5a",
+      "xbrl_instance_sha256": "7855488fd4449aa6796b3238a2fff9bc62c7be29050079b06de8c77e07477e8d",
+      "kind_published_kst": "2021-11-15 14:22",
+      "available_session": "20211116",
+      "target_contexts": {
+        "current": [
+          "2021-07-01",
+          "2021-09-30"
+        ],
+        "prior_as_reported": [
+          "2020-07-01",
+          "2020-09-30"
+        ]
+      }
+    },
+    {
+      "company": "한국제지",
+      "code": "027970",
+      "title": "분기보고서(일반법인)(2021.09)",
+      "kind_receipt": "20211115001465",
+      "kind_doc": "20211115003043",
+      "dart_receipt": "20211115001306",
+      "corp_code": "00133706",
+      "kind_url": "https://kind.krx.co.kr/external/2021/11/15/001465/20211115003043/11013.htm",
+      "kind_html_sha256": "09d79b75bbf46bbe64f52fc971a14541a3887af53881c79e94ed0bbccc35d92b",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115001306&dcm_no=8276482&lang=ko",
+      "zip_sha256": "cb86f2cc47766b71c73f677455cba7a7a7bd70eacae4f487366dc8b989a98152",
+      "xbrl_instance_sha256": "55f277ae8bdfccb1afc74d3b9f9853e0f1199f5b92485efcfab3f91a05532fed",
+      "kind_published_kst": "2021-11-15 15:59",
+      "available_session": "20211116",
+      "target_contexts": {
+        "current": [
+          "2021-07-01",
+          "2021-09-30"
+        ],
+        "prior_as_reported": [
+          "2020-07-01",
+          "2020-09-30"
+        ]
+      }
+    },
+    {
+      "company": "코스맥스",
+      "code": "192820",
+      "title": "분기보고서(일반법인)(2021.09)",
+      "kind_receipt": "20211115001552",
+      "kind_doc": "20211115003234",
+      "dart_receipt": "20211115001389",
+      "corp_code": "01009789",
+      "kind_url": "https://kind.krx.co.kr/external/2021/11/15/001552/20211115003234/11013.htm",
+      "kind_html_sha256": "989850adca04ea78b6dbdb98fa1978653434b5132fd95cf554386278d0500315",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115001389&dcm_no=8276680&lang=ko",
+      "zip_sha256": "7d4c466338bbc2197df19affbbe86a29c9f0e3ef81f15a7121a82ba4975a62e8",
+      "xbrl_instance_sha256": "da0dc254963c6de437afc96d572d3ac1d95fd34ede6ba7f437790d056372ef80",
+      "kind_published_kst": "2021-11-15 16:03",
+      "available_session": "20211116",
+      "target_contexts": {
+        "current": [
+          "2021-01-01",
+          "2021-09-30"
+        ],
+        "prior_as_reported": [
+          "2020-01-01",
+          "2020-09-30"
+        ]
+      }
+    },
+    {
+      "company": "대교",
+      "code": "019680",
+      "title": "분기보고서(일반법인)(2021.09)",
+      "kind_receipt": "20211115002460",
+      "kind_doc": "20211115005303",
+      "dart_receipt": "20211115002277",
+      "corp_code": "00108913",
+      "kind_url": "https://kind.krx.co.kr/external/2021/11/15/002460/20211115005303/11013.htm",
+      "kind_html_sha256": "c45ee3f4431bdaf72a67a0f8fd4aaf180d7ca82c542aeb8a42c2089b0e2fb0af",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115002277&dcm_no=8278918&lang=ko",
+      "zip_sha256": "71c09faa6b51d113697912889dfa6c31cb99c3903822ab1bffc07af94b9fd1f0",
+      "xbrl_instance_sha256": "9cca75e256a510b6c2890d75cd024df22cf73b74f12bd222c0bbe07f8cd2560c",
+      "kind_published_kst": "2021-11-15 17:17",
+      "available_session": "20211116",
+      "target_contexts": {
+        "current": [
+          "2021-07-01",
+          "2021-09-30"
+        ],
+        "prior_as_reported": [
+          "2020-07-01",
+          "2020-09-30"
+        ]
+      }
+    },
+    {
+      "company": "대동전자",
+      "code": "008110",
+      "title": "반기보고서(일반법인)(2021.09)",
+      "kind_receipt": "20211115002545",
+      "kind_doc": "20211115005491",
+      "dart_receipt": "20211115002355",
+      "corp_code": "00157104",
+      "kind_url": "https://kind.krx.co.kr/external/2021/11/15/002545/20211115005491/11012.htm",
+      "kind_html_sha256": "891d9e77adc921aed7214466149422f8ff59cf63d5ae1182cdcd929b1f779a71",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20211115002355&dcm_no=8279138&lang=ko",
+      "zip_sha256": "be7d8d5bee05d1b396ab0c509e0825606f828e36cb8bb949680e029590120610",
+      "xbrl_instance_sha256": "c4a329cc6b0dc62f6e9f8891f86059f9173cdebae783cb03c73feb2f829a665f",
+      "kind_published_kst": "2021-11-15 17:25",
+      "available_session": "20211116",
+      "target_contexts": {
+        "current": [
+          "2021-07-01",
+          "2021-09-30"
+        ],
+        "prior_as_reported": [
+          "2020-07-01",
+          "2020-09-30"
+        ]
+      }
+    },
+    {
+      "company": "오리엔트바이오",
+      "code": "002630",
+      "title": "분기보고서(일반법인)(2021.12)",
+      "kind_receipt": "20220214000937",
+      "kind_doc": "20220214002606",
+      "dart_receipt": "20220214000839",
+      "corp_code": "00141626",
+      "kind_url": "https://kind.krx.co.kr/external/2022/02/14/000937/20220214002606/11013.htm",
+      "kind_html_sha256": "704e50ee3d3b3e54af5b9e1987c21089c3be18363bde679cee263d40a6da3219",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20220214000839&dcm_no=8385128&lang=ko",
+      "zip_sha256": "60de40c2134bc3f207c16aefdb5ca74409f0d1c24920e2bcd315a3fb129399bc",
+      "xbrl_instance_sha256": "ac607de2d80a711c26d58894aa99182147f13f252182f54c482ab07103a98e75",
+      "kind_published_kst": "2022-02-14 16:13",
+      "available_session": "20220215",
+      "target_contexts": {
+        "current": [
+          "2021-10-01",
+          "2021-12-31"
+        ],
+        "prior_as_reported": [
+          "2020-10-01",
+          "2020-12-31"
+        ]
+      }
+    },
+    {
+      "company": "코스맥스",
+      "code": "192820",
+      "title": "[연결포함]사업보고서(일반법인)(2021.12)",
+      "kind_receipt": "20220322001011",
+      "kind_doc": "20220322004165",
+      "dart_receipt": "20220322000743",
+      "corp_code": "01009789",
+      "kind_url": "https://kind.krx.co.kr/external/2022/03/22/001011/20220322004165/11011.htm",
+      "kind_html_sha256": "a14f8b20cc0ed429cbe62135103b9c69b5e0dfabe062ef6516aca238374f160b",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20220322000743&dcm_no=8491353&lang=ko",
+      "zip_sha256": "79fcf844aa26b5fbd7aac2091f24cb14be338f116dd858123067ef4fb900f8c9",
+      "xbrl_instance_sha256": "3231fe1f56b3d25f14873f68a48b39959b9ff97ce6eddfca2d5298aa8bb45492",
+      "kind_published_kst": "2022-03-22 16:29",
+      "available_session": "20220323",
+      "target_contexts": {
+        "current": [
+          "2021-01-01",
+          "2021-12-31"
+        ],
+        "prior_as_reported": [
+          "2020-01-01",
+          "2020-12-31"
+        ]
+      }
+    },
+    {
+      "company": "한국제지",
+      "code": "027970",
+      "title": "사업보고서(일반법인)(2021.12)",
+      "kind_receipt": "20220323000957",
+      "kind_doc": "20220323003851",
+      "dart_receipt": "20220323000788",
+      "corp_code": "00133706",
+      "kind_url": "https://kind.krx.co.kr/external/2022/03/23/000957/20220323003851/11011.htm",
+      "kind_html_sha256": "fb4e027c63434bb0d458598a8844c3bd40b1e4a4fe51e1c9994c9b9e38ef32d0",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20220323000788&dcm_no=8496702&lang=ko",
+      "zip_sha256": "2c5cd69d2a07b280be64f8555a24a4abf49ba3d5c3caab1b19b341cd2086208c",
+      "xbrl_instance_sha256": "8a040ca43f8f7724b3d5b91ac4c2ac9d6383cad49c7e6b1c67b72fd1b7a82275",
+      "kind_published_kst": "2022-03-23 16:05",
+      "available_session": "20220324",
+      "target_contexts": {
+        "current": [
+          "2021-10-01",
+          "2021-12-31"
+        ],
+        "prior_as_reported": [
+          "2020-10-01",
+          "2020-12-31"
+        ]
+      }
+    },
+    {
+      "company": "코스맥스",
+      "code": "192820",
+      "title": "[정정][연결포함]사업보고서(일반법인)(2021.12)",
+      "kind_receipt": "20220816001160",
+      "kind_doc": "20220816003680",
+      "dart_receipt": "20220816001048",
+      "corp_code": "01009789",
+      "kind_url": "https://kind.krx.co.kr/external/2022/08/16/001160/20220816003680/11011.htm",
+      "kind_html_sha256": "d2479bee8ae1e4b5d6095b624aa7465387f48074c0c5b50bfe225776c609e993",
+      "xbrl_url": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20220816001048&dcm_no=8770161&lang=ko",
+      "zip_sha256": "4a44b759101092cc7f7e03c704a439c722ee59f7bd2e6ecf4b27c482daed43da",
+      "xbrl_instance_sha256": "124f0c0fa712a065f127d8b06b631643f67ffaeeea63f6a1f1177530bd3af9d8",
+      "kind_published_kst": "2022-08-16 15:30",
+      "available_session": "20220817",
+      "target_contexts": {
+        "current": [
+          "2021-01-01",
+          "2021-12-31"
+        ],
+        "prior_as_reported": [
+          "2020-01-01",
+          "2020-12-31"
+        ]
+      }
+    }
+  ],
+  "inputs_checked": [
+    {
+      "receipt": "20210813000756",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          61464378654,
+          51534017044
+        ],
+        "operating_profit": [
+          3331303067,
+          1226458899
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          61464378654,
+          51534017044
+        ],
+        "operating_profit": [
+          3331303067,
+          1226458899
+        ]
+      }
+    },
+    {
+      "receipt": "20210817000838",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          65600972795,
+          41148103454
+        ],
+        "operating_profit": [
+          11000369921,
+          -1432623157
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          65600972795,
+          41148103454
+        ],
+        "operating_profit": [
+          11000369921,
+          -1432623157
+        ]
+      }
+    },
+    {
+      "receipt": "20210817001292",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          2285577311166,
+          2210715548209
+        ],
+        "operating_profit": [
+          42801052745,
+          59161869476
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          2285577311166,
+          2210715548209
+        ],
+        "operating_profit": [
+          42801052745,
+          59161869476
+        ]
+      }
+    },
+    {
+      "receipt": "20211115002545",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          11980241435,
+          6564285089
+        ],
+        "operating_profit": [
+          1525308028,
+          -400948320
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          11980241435,
+          6564285089
+        ],
+        "operating_profit": [
+          1525308028,
+          -400948320
+        ]
+      }
+    },
+    {
+      "receipt": "20211115000796",
+      "method": "explicit_no_cfs",
+      "manual": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "receipt": "20211115002460",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          158825893936,
+          152202426992
+        ],
+        "operating_profit": [
+          -1009514663,
+          -8171263392
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          158825893936,
+          152202426992
+        ],
+        "operating_profit": [
+          -1009514663,
+          -8171263392
+        ]
+      }
+    },
+    {
+      "receipt": "20220214000937",
+      "method": "direct",
+      "manual": {
+        "revenue": [
+          17211509307,
+          14134201236
+        ],
+        "operating_profit": [
+          1013571158,
+          1408979190
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          17211509307,
+          14134201236
+        ],
+        "operating_profit": [
+          1013571158,
+          1408979190
+        ]
+      }
+    },
+    {
+      "receipt": "20220322001011",
+      "method": "annual",
+      "manual": {
+        "revenue": [
+          1591487621503,
+          1382880688515
+        ],
+        "operating_profit": [
+          122599910142,
+          66641426851
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          1591487621503,
+          1382880688515
+        ],
+        "operating_profit": [
+          122599910142,
+          66641426851
+        ]
+      }
+    },
+    {
+      "receipt": "20211115001552",
+      "method": "nine_month",
+      "manual": {
+        "revenue": [
+          1170273324428,
+          1028409198784
+        ],
+        "operating_profit": [
+          92176365451,
+          56154912224
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          1170273324428,
+          1028409198784
+        ],
+        "operating_profit": [
+          92176365451,
+          56154912224
+        ]
+      }
+    },
+    {
+      "receipt": "20220323000957",
+      "method": "explicit_no_cfs",
+      "manual": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "receipt": "20211115001465",
+      "method": "explicit_no_cfs",
+      "manual": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      },
+      "submitted_xbrl": {
+        "revenue": [
+          null,
+          null
+        ],
+        "operating_profit": [
+          null,
+          null
+        ]
+      }
+    }
+  ]
+}
