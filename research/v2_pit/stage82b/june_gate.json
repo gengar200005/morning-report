@@ -1,0 +1,23 @@
+{
+  "formation": "20210601",
+  "passed_signals": [
+    "F2",
+    "F3"
+  ],
+  "q1_quality_pass": true,
+  "quarter_forms_checked": true,
+  "asof_complete": true,
+  "asof_sha256": "c8c970874d010e6b991b1c7a8e0c6a0d1f0dab5a6b89eb17b139a6635a87e0b0",
+  "population": 785,
+  "eligible_signal_issuers": 608,
+  "scope": "Single cross-section, regular filings only, after amendments. Complete denominators and status rows, verified observed comparators only. No return observations used to form the ledger.",
+  "evidence": {
+    "census_summary.json": "b5068d03f951a258afadc8ed2246b3518e8682a23ab6d84650fa40e9d9489a0a",
+    "coverage_bias.json": "ca40753023bbcb11f662f9486b87dfc47cae75e1bed444a1dd4593a87fb0db71",
+    "census_audit.json": "9d1a41fc9344680f8ec68bf68079fb65e07fb993b06da2c3bd0864551c18eab1",
+    "census_amendments.json": "939a300bf758a093552b0e29ae63ef7525402e204b9147f298ca5f0c97275989",
+    "quarter_holdout_result.json": "8b1491c97e2cbd32870802f2fd29eeec1372f1d6d428d0e3493f3afdca9fdaff",
+    "june_filing_overrides.json": "f605cf936fc4236abd1c171f6b824627f5092e3f6ed49d31bd8cf8ea6b89fcae",
+    "june_context.csv": "dea8f3a42a2284bb7e690fc8f0c724cf17745f1442a32e7591eba26cd831f267"
+  }
+}

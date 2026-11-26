@@ -1,0 +1,111 @@
+{
+  "formation": "20210601",
+  "scope": "June additions and non-December reporters. See identity_june_entities.json for original corporate evidence, version checks and continuing legal issuers.",
+  "decisions": [
+    {
+      "isin": "KR7092440007",
+      "action": "replace",
+      "observation": {
+        "quarter_end": "20201231",
+        "receipt": "20210215001000",
+        "published": "20210215",
+        "available_session": "20210216",
+        "identity_status": "PASS",
+        "sha256": "c1c45680a6175d3c8bc99162c958631dce97c278f4cca805254ff2eb3e539c22|4922df3a7e597824fdb83707388edf93478912dd7d7307d9cdf84d27d923cc26",
+        "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001000&dcm_no=7801086&lang=ko|https://kind.krx.co.kr/external/2021/02/15/000707/20210215001929/11013.htm",
+        "revenue_reason": "PASS",
+        "revenue_current_KRW": "35589762723",
+        "revenue_prior_KRW": "33094565931",
+        "operating_profit_reason": "PASS",
+        "operating_profit_current_KRW": "4434105541",
+        "operating_profit_prior_KRW": "2530800895"
+      },
+      "reason": "Current quarterly-report available on formation, fiscal March year-end; next annual report not yet filed."
+    },
+    {
+      "isin": "KR7002630002",
+      "action": "replace",
+      "observation": {
+        "quarter_end": "20201231",
+        "receipt": "20210215001155",
+        "published": "20210215",
+        "available_session": "20210216",
+        "identity_status": "PASS",
+        "sha256": "5c92b6ed050f871a62e30689f9a2ae04bc768912d2e35b320cb6ac9ea6dde30e|76abd0e9b36f341c7d4f8c99bc56f5fe5a5a59b31b34bb5cc1aae55c5f35b0d5",
+        "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001155&dcm_no=7801130&lang=ko|https://kind.krx.co.kr/external/2021/02/15/000868/20210215002245/11013.htm",
+        "revenue_reason": "PASS",
+        "revenue_current_KRW": "14134201236",
+        "revenue_prior_KRW": "10462912521",
+        "operating_profit_reason": "PASS",
+        "operating_profit_current_KRW": "1408979190",
+        "operating_profit_prior_KRW": "-498061574"
+      },
+      "reason": "Current quarterly-report available on formation, fiscal March year-end; next annual report not yet filed."
+    },
+    {
+      "isin": "KR7008110009",
+      "action": "replace",
+      "observation": {
+        "quarter_end": "20201231",
+        "receipt": "20210215001244",
+        "published": "20210215",
+        "available_session": "20210216",
+        "identity_status": "PASS",
+        "sha256": "e13ddd254d6faeb700b5eb2afa4362aa05b34185dd2060756396f4463297620f|fca59dc3c13da6a609704bf9138ae40b71edfcc008468269c22f49a72e831edc",
+        "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001244&dcm_no=7801594&lang=ko|https://kind.krx.co.kr/external/2021/02/15/000983/20210215002492/11013.htm",
+        "revenue_reason": "PASS",
+        "revenue_current_KRW": "16154438170",
+        "revenue_prior_KRW": "14266360062",
+        "operating_profit_reason": "PASS",
+        "operating_profit_current_KRW": "4134501741",
+        "operating_profit_prior_KRW": "1391614637"
+      },
+      "reason": "Current quarterly-report available on formation, fiscal March year-end; next annual report not yet filed."
+    },
+    {
+      "isin": "KR7018500009",
+      "action": "replace",
+      "observation": {
+        "quarter_end": "20201231",
+        "receipt": "20210215001359",
+        "published": "20210215",
+        "available_session": "20210216",
+        "identity_status": "PASS",
+        "sha256": "1efd6e2e581449f061f4ccc2c846f1eafa1da9a45ab191f21c3b4d1adbf236f2|2efea62d4bb8845f269100543f19fb1fb3de74f8390de6c098aaea6775f0ef0d",
+        "source": "https://opendart.fss.or.kr/cmm/downloadIfrs.do?rcp_no=20210215001359&dcm_no=7801876&lang=ko|https://kind.krx.co.kr/external/2021/02/15/001130/20210215002806/11013.htm",
+        "revenue_reason": "PASS",
+        "revenue_current_KRW": "90395385317",
+        "revenue_prior_KRW": "91283315276",
+        "operating_profit_reason": "PASS",
+        "operating_profit_current_KRW": "6771455636",
+        "operating_profit_prior_KRW": "7800232043"
+      },
+      "reason": "Current quarterly-report available on formation, fiscal March year-end; next annual report not yet filed."
+    },
+    {
+      "isin": "KR7361610009",
+      "action": "quarantine",
+      "reason": "new_listing_no_verified_periodic_comparator_provisional_only"
+    },
+    {
+      "isin": "KR7380440008",
+      "action": "quarantine",
+      "reason": "sector_financial_SPAC"
+    },
+    {
+      "isin": "KR7383220001",
+      "action": "quarantine",
+      "reason": "new_legal_entity_no_prior_year_predecessor_excluded"
+    },
+    {
+      "isin": "KR7383800000",
+      "action": "quarantine",
+      "reason": "new_legal_entity_no_prior_year_predecessor_excluded"
+    },
+    {
+      "isin": "KR7004310009",
+      "action": "quarantine",
+      "reason": "nondec_latest_february_filing_explicit_standalone_only"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "population": 785,
+  "F2": 608,
+  "F3": 608,
+  "status": {
+    "PASS": 608,
+    "sector_financial": 52,
+    "no verified income row; no_supported_fact_in_exact_context": 103,
+    "sector_unknown": 11,
+    "nondec_latest_february_filing_explicit_standalone_only": 1,
+    "current_amendment_has_no_supported_pair": 4,
+    "identity_unresolved": 1,
+    "ambiguous income rows; no_supported_fact_in_exact_context": 1,
+    "new_listing_no_verified_periodic_comparator_provisional_only": 1,
+    "sector_financial_SPAC": 1,
+    "new_legal_entity_no_prior_year_predecessor_excluded": 2
+  },
+  "sha256": "c8c970874d010e6b991b1c7a8e0c6a0d1f0dab5a6b89eb17b139a6635a87e0b0"
+}
