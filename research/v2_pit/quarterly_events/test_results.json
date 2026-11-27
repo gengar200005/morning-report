@@ -1,0 +1,24 @@
+{
+  "research": {
+    "all_passed": 160,
+    "suite_counts": [
+      108,
+      5,
+      9,
+      38
+    ]
+  },
+  "general": {
+    "passed": 68,
+    "failed": 6,
+    "unchanged_failure_ids": [
+      "tests/test_sector_breadth.py::TestApplyTickerOverrides::test_zero_padding",
+      "tests/test_sector_breadth.py::TestCapWeights::test_extreme_case_cap_exceeds_full",
+      "tests/test_sector_breadth.py::TestClassifyGrade::test_inf",
+      "tests/test_sector_breadth.py::TestLoadOverrides::test_reads_ticker_overrides",
+      "tests/test_sector_breadth.py::TestOverridesIntegration::test_overrides_propagate_to_scores",
+      "tests/test_sector_mapping.py::test_load_ticker_to_sector_has_164"
+    ]
+  },
+  "base_commit": "b046d8351345d3416ea84ef754d5ce51351e99a7"
+}

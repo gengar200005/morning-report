@@ -1,0 +1,28 @@
+{
+  "phase": "development_quarterly_events",
+  "data_quality_pass": false,
+  "passed_signals": [],
+  "performance_access_released": false,
+  "outcomes_read": false,
+  "qualifying_formation_count_certified": 0,
+  "prioritised_signal": "F3",
+  "estimated_max_formations_120_within_budget": 4,
+  "estimated_cheapest_six_new_filings": 339,
+  "required_formations": 6,
+  "required_years": 3,
+  "filings_downloaded": 0,
+  "reason": "PIT_UNCERTIFIED_AND_COLLECTION_COST",
+  "archived_inputs": {
+    "market": "936473ccfaccce1ca6b270a34a2441766b21226eb16fdc15a4863d3e87fbfca5",
+    "raw": "eb39a1df1278a7e0c86968f15570984ef1ea06bc672d849e1a2ce2e4a951e5a8",
+    "prior": "6b1b53de9605782883a6867e487d259e1f62bbb5520c38b6a107f8b86c96125b",
+    "facts": "0e19c64a86f8a6855fefbc946f7f13b6474b6544daffb0e728b1608bcac08d62",
+    "exits": "04d067b618836ac265f143d0cc092bc1ce384124aaf1896bb17f2c5b484a6a6b"
+  },
+  "snapshot_outputs": {
+    "formation_roster.csv": "eed849aea3c90ea6705e48dc7bfc905005cc5af96bd1f2fcebf60f4efea1c070",
+    "filing_recovery_ledger.csv": "80c832c23ad184a0fb877f55278737fbfb998ba784288be896bbc1ce92f72c18",
+    "source_audit.json": "642cdb62409adb2a12ccf20a77f0fc8a3ab0490d7f106e88d814901f6b6d4463"
+  },
+  "preregistration": "e400730e53a44514955d3cde07e3f44a9bd209ab"
+}

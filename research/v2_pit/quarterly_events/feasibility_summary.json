@@ -1,0 +1,578 @@
+{
+  "archive_hashes": {
+    "market": "936473ccfaccce1ca6b270a34a2441766b21226eb16fdc15a4863d3e87fbfca5",
+    "raw": "eb39a1df1278a7e0c86968f15570984ef1ea06bc672d849e1a2ce2e4a951e5a8",
+    "prior": "6b1b53de9605782883a6867e487d259e1f62bbb5520c38b6a107f8b86c96125b",
+    "facts": "0e19c64a86f8a6855fefbc946f7f13b6474b6544daffb0e728b1608bcac08d62",
+    "exits": "04d067b618836ac265f143d0cc092bc1ce384124aaf1896bb17f2c5b484a6a6b"
+  },
+  "row_hashes": {
+    "formation_roster.csv": "eed849aea3c90ea6705e48dc7bfc905005cc5af96bd1f2fcebf60f4efea1c070",
+    "filing_recovery_ledger.csv": "80c832c23ad184a0fb877f55278737fbfb998ba784288be896bbc1ce92f72c18",
+    "source_audit.json": "642cdb62409adb2a12ccf20a77f0fc8a3ab0490d7f106e88d814901f6b6d4463"
+  },
+  "formations": [
+    {
+      "quarter": "2017Q1",
+      "period": "2017-03-31",
+      "ordinary_population": 748,
+      "deadline": "20170515",
+      "formation": "20170516",
+      "entry": "20170517",
+      "horizon_end": {
+        "20": "20170614",
+        "60": "20170809",
+        "120": "20171110"
+      },
+      "previous_sector_date": "20170502",
+      "proxy_industry": {
+        "nonfinancial": 210,
+        "financial": 24,
+        "unknown": 6
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 222,
+      "potential_after_100": 240,
+      "largest_denominator_at_80pct": 300,
+      "marginal_cost_with_proxy": 0,
+      "nonfinancial_diagnostics": {
+        "denominator": 210,
+        "XBRL_candidate_receipt": 176,
+        "XBRL_candidate_F3": 139,
+        "XBRL_candidate_F2": 137,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2017Q2",
+      "period": "2017-06-30",
+      "ordinary_population": 749,
+      "deadline": "20170814",
+      "formation": "20170816",
+      "entry": "20170817",
+      "horizon_end": {
+        "20": "20170913",
+        "60": "20171116",
+        "120": "20180213"
+      },
+      "previous_sector_date": "20170801",
+      "proxy_industry": {
+        "nonfinancial": 213,
+        "financial": 23,
+        "unknown": 4
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 228,
+      "potential_after_100": 240,
+      "largest_denominator_at_80pct": 300,
+      "marginal_cost_with_proxy": 0,
+      "nonfinancial_diagnostics": {
+        "denominator": 213,
+        "XBRL_candidate_receipt": 181,
+        "XBRL_candidate_F3": 142,
+        "XBRL_candidate_F2": 140,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2017Q3",
+      "period": "2017-09-30",
+      "ordinary_population": 750,
+      "deadline": "20171114",
+      "formation": "20171115",
+      "entry": "20171116",
+      "horizon_end": {
+        "20": "20171213",
+        "60": "20180212",
+        "120": "20180514"
+      },
+      "previous_sector_date": "20171101",
+      "proxy_industry": {
+        "nonfinancial": 214,
+        "financial": 23,
+        "unknown": 3
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 222,
+      "potential_after_100": 240,
+      "largest_denominator_at_80pct": 300,
+      "marginal_cost_with_proxy": 0,
+      "nonfinancial_diagnostics": {
+        "denominator": 214,
+        "XBRL_candidate_receipt": 176,
+        "XBRL_candidate_F3": 144,
+        "XBRL_candidate_F2": 144,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2018Q1",
+      "period": "2018-03-31",
+      "ordinary_population": 759,
+      "deadline": "20180515",
+      "formation": "20180516",
+      "entry": "20180517",
+      "horizon_end": {
+        "20": "20180618",
+        "60": "20180813",
+        "120": "20181113"
+      },
+      "previous_sector_date": "20180502",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 23,
+        "unknown": 0
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 3,
+      "potential_after_100": 103,
+      "largest_denominator_at_80pct": 128,
+      "marginal_cost_with_proxy": 171,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2018Q2",
+      "period": "2018-06-30",
+      "ordinary_population": 767,
+      "deadline": "20180814",
+      "formation": "20180816",
+      "entry": "20180817",
+      "horizon_end": {
+        "20": "20180913",
+        "60": "20181115",
+        "120": "20190215"
+      },
+      "previous_sector_date": "20180801",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 23,
+        "unknown": 0
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 1,
+      "potential_after_100": 101,
+      "largest_denominator_at_80pct": 126,
+      "marginal_cost_with_proxy": 173,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2018Q3",
+      "period": "2018-09-30",
+      "ordinary_population": 768,
+      "deadline": "20181114",
+      "formation": "20181115",
+      "entry": "20181116",
+      "horizon_end": {
+        "20": "20181213",
+        "60": "20190215",
+        "120": "20190515"
+      },
+      "previous_sector_date": "20181101",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 22,
+        "unknown": 1
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 2,
+      "potential_after_100": 102,
+      "largest_denominator_at_80pct": 127,
+      "marginal_cost_with_proxy": 172,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2019Q1",
+      "period": "2019-03-31",
+      "ordinary_population": 771,
+      "deadline": "20190515",
+      "formation": "20190516",
+      "entry": "20190517",
+      "horizon_end": {
+        "20": "20190614",
+        "60": "20190809",
+        "120": "20191108"
+      },
+      "previous_sector_date": "20190502",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 22,
+        "unknown": 1
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 3,
+      "potential_after_100": 103,
+      "largest_denominator_at_80pct": 128,
+      "marginal_cost_with_proxy": 171,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2019Q2",
+      "period": "2019-06-30",
+      "ordinary_population": 770,
+      "deadline": "20190814",
+      "formation": "20190816",
+      "entry": "20190819",
+      "horizon_end": {
+        "20": "20190917",
+        "60": "20191114",
+        "120": "20200213"
+      },
+      "previous_sector_date": "20190801",
+      "proxy_industry": {
+        "nonfinancial": 216,
+        "financial": 22,
+        "unknown": 2
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 1,
+      "potential_after_100": 101,
+      "largest_denominator_at_80pct": 126,
+      "marginal_cost_with_proxy": 172,
+      "nonfinancial_diagnostics": {
+        "denominator": 216,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2019Q3",
+      "period": "2019-09-30",
+      "ordinary_population": 776,
+      "deadline": "20191114",
+      "formation": "20191115",
+      "entry": "20191118",
+      "horizon_end": {
+        "20": "20191213",
+        "60": "20200214",
+        "120": "20200514"
+      },
+      "previous_sector_date": "20191101",
+      "proxy_industry": {
+        "nonfinancial": 213,
+        "financial": 22,
+        "unknown": 5
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 1,
+      "potential_after_100": 101,
+      "largest_denominator_at_80pct": 126,
+      "marginal_cost_with_proxy": 170,
+      "nonfinancial_diagnostics": {
+        "denominator": 213,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2020Q1",
+      "period": "2020-03-31",
+      "ordinary_population": 776,
+      "deadline": "20200515",
+      "formation": "20200518",
+      "entry": "20200519",
+      "horizon_end": {
+        "20": "20200615",
+        "60": "20200810",
+        "120": "20201109"
+      },
+      "previous_sector_date": "20200504",
+      "proxy_industry": {
+        "nonfinancial": 214,
+        "financial": 21,
+        "unknown": 5
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 1,
+      "potential_after_100": 101,
+      "largest_denominator_at_80pct": 126,
+      "marginal_cost_with_proxy": 171,
+      "nonfinancial_diagnostics": {
+        "denominator": 214,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2020Q2",
+      "period": "2020-06-30",
+      "ordinary_population": 774,
+      "deadline": "20200814",
+      "formation": "20200818",
+      "entry": "20200819",
+      "horizon_end": {
+        "20": "20200915",
+        "60": "20201116",
+        "120": "20210215"
+      },
+      "previous_sector_date": "20200803",
+      "proxy_industry": {
+        "nonfinancial": 215,
+        "financial": 21,
+        "unknown": 4
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 1,
+      "potential_after_100": 101,
+      "largest_denominator_at_80pct": 126,
+      "marginal_cost_with_proxy": 171,
+      "nonfinancial_diagnostics": {
+        "denominator": 215,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2020Q3",
+      "period": "2020-09-30",
+      "ordinary_population": 777,
+      "deadline": "20201116",
+      "formation": "20201117",
+      "entry": "20201118",
+      "horizon_end": {
+        "20": "20201215",
+        "60": "20210216",
+        "120": "20210513"
+      },
+      "previous_sector_date": "20201102",
+      "proxy_industry": {
+        "nonfinancial": 215,
+        "financial": 21,
+        "unknown": 4
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 3,
+      "potential_after_100": 103,
+      "largest_denominator_at_80pct": 128,
+      "marginal_cost_with_proxy": 169,
+      "nonfinancial_diagnostics": {
+        "denominator": 215,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2021Q1",
+      "period": "2021-03-31",
+      "ordinary_population": 782,
+      "deadline": "20210517",
+      "formation": "20210518",
+      "entry": "20210520",
+      "horizon_end": {
+        "20": "20210616",
+        "60": "20210811",
+        "120": "20211111"
+      },
+      "previous_sector_date": "20210503",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 21,
+        "unknown": 2
+      },
+      "identity_sample_count": 236,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 240,
+      "potential_after_100": 240,
+      "largest_denominator_at_80pct": 300,
+      "marginal_cost_with_proxy": 0,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 214,
+        "census_F3": 178,
+        "census_F2": 178
+      }
+    },
+    {
+      "quarter": "2021Q2",
+      "period": "2021-06-30",
+      "ordinary_population": 791,
+      "deadline": "20210817",
+      "formation": "20210818",
+      "entry": "20210819",
+      "horizon_end": {
+        "20": "20210915",
+        "60": "20211117",
+        "120": null
+      },
+      "previous_sector_date": "20210802",
+      "proxy_industry": {
+        "nonfinancial": 214,
+        "financial": 21,
+        "unknown": 5
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 4,
+      "potential_after_100": 104,
+      "largest_denominator_at_80pct": 130,
+      "marginal_cost_with_proxy": 168,
+      "nonfinancial_diagnostics": {
+        "denominator": 214,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    },
+    {
+      "quarter": "2021Q3",
+      "period": "2021-09-30",
+      "ordinary_population": 795,
+      "deadline": "20211115",
+      "formation": "20211116",
+      "entry": "20211117",
+      "horizon_end": {
+        "20": "20211214",
+        "60": null,
+        "120": null
+      },
+      "previous_sector_date": "20211101",
+      "proxy_industry": {
+        "nonfinancial": 217,
+        "financial": 20,
+        "unknown": 3
+      },
+      "identity_sample_count": null,
+      "count_certified_PIT": null,
+      "archived_possible_upper": 6,
+      "potential_after_100": 106,
+      "largest_denominator_at_80pct": 132,
+      "marginal_cost_with_proxy": 168,
+      "nonfinancial_diagnostics": {
+        "denominator": 217,
+        "XBRL_candidate_receipt": 0,
+        "XBRL_candidate_F3": 0,
+        "XBRL_candidate_F2": 0,
+        "census_identity": 0,
+        "census_F3": 0,
+        "census_F2": 0
+      }
+    }
+  ],
+  "market_schema_fields": {
+    "basic": [
+      "ISU_ABBRV",
+      "ISU_CD",
+      "ISU_ENG_NM",
+      "ISU_NM",
+      "ISU_SRT_CD",
+      "KIND_STKCERT_TP_NM",
+      "LIST_DD",
+      "LIST_SHRS",
+      "MKT_TP_NM",
+      "PARVAL",
+      "SECT_TP_NM",
+      "SECUGRP_NM"
+    ],
+    "daily": [
+      "ACC_TRDVAL",
+      "ACC_TRDVOL",
+      "BAS_DD",
+      "CMPPREVDD_PRC",
+      "FLUC_RT",
+      "ISU_CD",
+      "ISU_NM",
+      "LIST_SHRS",
+      "MKTCAP",
+      "MKT_NM",
+      "SECT_TP_NM",
+      "TDD_CLSPRC",
+      "TDD_HGPRC",
+      "TDD_LWPRC",
+      "TDD_OPNPRC"
+    ]
+  },
+  "sessions": 1229,
+  "budget": 100,
+  "source_reuse": {
+    "raw_archive_receipts": 1682,
+    "raw_archive_files": 1950,
+    "raw_xbrl_screened_in_candidate_windows": 649,
+    "prior_xbrl_receipts": 749,
+    "prior_kind_unique_external_hashes": 174,
+    "prior_other_payloads": 44
+  },
+  "cost_scope": "Optimistic stock-quarters. Any dated retained receipt in the window may supply one successful issuer. Same-date uses admitted for the upper bound. Existing accounting and identity checks can only reduce these estimates. Prior WICS classifications approximate the nonfinancial count.",
+  "max_possible_120_individual_under_cost_proxy": 4,
+  "cheapest_six_cost_proxy": 339,
+  "cheapest_six_cost_if_50_more_ineligible_each_date": 259,
+  "new_filing_payloads": 0,
+  "outcomes_read": false,
+  "audited_documents": 8,
+  "audited_cells": 32,
+  "audit_mismatches": 0
+}
