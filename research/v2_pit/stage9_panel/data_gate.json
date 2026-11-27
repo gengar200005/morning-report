@@ -1,0 +1,119 @@
+{
+  "phase": "development",
+  "data_quality_pass": false,
+  "passed_signals": [],
+  "asof_complete": false,
+  "performance_access_released": false,
+  "status": "BLOCKED_UNCERTIFIED_MULTIPERIOD_PIT",
+  "sample_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390",
+  "context_sha256": "6794bc104e34dad94e2c1527e97e3317be1861e82ebbe97b85891a7bd32e8ea1",
+  "asof_sha256": null,
+  "rates_sha256": null,
+  "as_of": "2026-11-27",
+  "annual_data": {
+    "2017": {
+      "sample": 2880,
+      "nonfinancial": 2551,
+      "financial": 285,
+      "unknown": 44,
+      "identity_confirmed": null,
+      "F2_valid": null,
+      "F3_valid": null,
+      "F2_pass": false,
+      "F3_pass": false,
+      "status": "not_certified",
+      "hard_impossibility_proven": false
+    },
+    "2018": {
+      "sample": 2880,
+      "nonfinancial": 2594,
+      "financial": 273,
+      "unknown": 13,
+      "identity_confirmed": null,
+      "F2_valid": null,
+      "F3_valid": null,
+      "F2_pass": false,
+      "F3_pass": false,
+      "status": "not_certified",
+      "hard_impossibility_proven": false
+    },
+    "2019": {
+      "sample": 2880,
+      "nonfinancial": 2594,
+      "unknown": 24,
+      "financial": 262,
+      "identity_confirmed": null,
+      "F2_valid": null,
+      "F3_valid": null,
+      "F2_pass": false,
+      "F3_pass": false,
+      "status": "not_certified",
+      "hard_impossibility_proven": false
+    },
+    "2020": {
+      "sample": 2880,
+      "nonfinancial": 2577,
+      "unknown": 49,
+      "financial": 254,
+      "identity_confirmed": null,
+      "F2_valid": null,
+      "F3_valid": null,
+      "F2_pass": false,
+      "F3_pass": false,
+      "status": "not_certified",
+      "hard_impossibility_proven": false
+    },
+    "2021": {
+      "sample": 2880,
+      "nonfinancial": 2596,
+      "unknown": 35,
+      "financial": 249,
+      "identity_confirmed": null,
+      "F2_valid": null,
+      "F3_valid": null,
+      "F2_pass": false,
+      "F3_pass": false,
+      "status": "not_certified",
+      "hard_impossibility_proven": false
+    }
+  },
+  "excluded_months_not_evaluated_as_zeros": true,
+  "archived_2021Q1_single_census": "PASS, separate earlier gate",
+  "june_2021_single_formation": "Previously opened in stage82b only",
+  "primary_contrasts": {
+    "F2:top_minus_rest": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    },
+    "F2:C_minus_A": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    },
+    "F2:C_minus_B": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    },
+    "F3:top_minus_rest": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    },
+    "F3:C_minus_A": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    },
+    "F3:C_minus_B": {
+      "status": "not_run",
+      "holm_family_placeholder": 1,
+      "observed_p": null
+    }
+  },
+  "market_returns_read_in_this_analysis": false,
+  "development_valid_outcome_months": null,
+  "diagnosis_2022_2023": "not_released",
+  "holdout_2024_2026": "not_released"
+}

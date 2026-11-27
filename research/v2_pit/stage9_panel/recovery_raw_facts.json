@@ -1,0 +1,127 @@
+{
+  "scope": "One row per XBRL receipt in this raw part, including financial firms. A version is not assumed original. No HTML fallback, price data, or PIT selection.",
+  "exact_pair": "Two integer KRW CFS figures ending on the declared report date and one year earlier, each covering exactly three months. No YTD subtraction. Zero retained. Missing cells left empty in CSV.",
+  "slice_sha256": "eb39a1df1278a7e0c86968f15570984ef1ea06bc672d849e1a2ce2e4a951e5a8",
+  "per_document_csv_sha256": "0e19c64a86f8a6855fefbc946f7f13b6474b6544daffb0e728b1608bcac08d62",
+  "receipt_count": 1643,
+  "distinct_source_sha256": 1636,
+  "receipt_status": {
+    "parsed": 1641,
+    "quarantined": 2
+  },
+  "unparsed_reasons": {},
+  "amendment_metadata_values": {
+    "false": 1633,
+    "true": 8
+  },
+  "total": {
+    "parsed_xbrl_receipts": 1641,
+    "with_cfs_context": 1370,
+    "exact_3m_revenue_pair": 905,
+    "exact_3m_operating_profit_pair": 917,
+    "both_exact_pairs": 896
+  },
+  "by_period_end": {
+    "2015-09-30": {
+      "parsed_xbrl_receipts": 207,
+      "with_cfs_context": 177,
+      "exact_3m_revenue_pair": 169,
+      "exact_3m_operating_profit_pair": 170,
+      "both_exact_pairs": 166
+    },
+    "2015-12-31": {
+      "parsed_xbrl_receipts": 155,
+      "with_cfs_context": 126,
+      "exact_3m_revenue_pair": 1,
+      "exact_3m_operating_profit_pair": 2,
+      "both_exact_pairs": 1
+    },
+    "2016-03-31": {
+      "parsed_xbrl_receipts": 2,
+      "with_cfs_context": 2,
+      "exact_3m_revenue_pair": 0,
+      "exact_3m_operating_profit_pair": 0,
+      "both_exact_pairs": 0
+    },
+    "2016-09-30": {
+      "parsed_xbrl_receipts": 232,
+      "with_cfs_context": 194,
+      "exact_3m_revenue_pair": 186,
+      "exact_3m_operating_profit_pair": 188,
+      "both_exact_pairs": 184
+    },
+    "2016-12-31": {
+      "parsed_xbrl_receipts": 235,
+      "with_cfs_context": 195,
+      "exact_3m_revenue_pair": 1,
+      "exact_3m_operating_profit_pair": 2,
+      "both_exact_pairs": 1
+    },
+    "2017-03-31": {
+      "parsed_xbrl_receipts": 229,
+      "with_cfs_context": 191,
+      "exact_3m_revenue_pair": 183,
+      "exact_3m_operating_profit_pair": 185,
+      "both_exact_pairs": 181
+    },
+    "2017-06-30": {
+      "parsed_xbrl_receipts": 228,
+      "with_cfs_context": 192,
+      "exact_3m_revenue_pair": 182,
+      "exact_3m_operating_profit_pair": 186,
+      "both_exact_pairs": 180
+    },
+    "2017-09-30": {
+      "parsed_xbrl_receipts": 218,
+      "with_cfs_context": 183,
+      "exact_3m_revenue_pair": 182,
+      "exact_3m_operating_profit_pair": 183,
+      "both_exact_pairs": 182
+    },
+    "2017-12-31": {
+      "parsed_xbrl_receipts": 135,
+      "with_cfs_context": 110,
+      "exact_3m_revenue_pair": 1,
+      "exact_3m_operating_profit_pair": 1,
+      "both_exact_pairs": 1
+    }
+  },
+  "by_period_year": {
+    "2015": {
+      "parsed_xbrl_receipts": 362,
+      "with_cfs_context": 303,
+      "exact_3m_revenue_pair": 170,
+      "exact_3m_operating_profit_pair": 172,
+      "both_exact_pairs": 167
+    },
+    "2016": {
+      "parsed_xbrl_receipts": 469,
+      "with_cfs_context": 391,
+      "exact_3m_revenue_pair": 187,
+      "exact_3m_operating_profit_pair": 190,
+      "both_exact_pairs": 185
+    },
+    "2017": {
+      "parsed_xbrl_receipts": 810,
+      "with_cfs_context": 676,
+      "exact_3m_revenue_pair": 548,
+      "exact_3m_operating_profit_pair": 555,
+      "both_exact_pairs": 544
+    }
+  },
+  "parsed_field_cells": {
+    "exact_consolidated_quarter_fact": 3654,
+    "no_supported_fact_in_exact_context": 2910
+  },
+  "true_zero_field_cells": 0,
+  "frozen_direct_quarter_controls": {
+    "manual_csv_sha256": "b217efa6a1db99907a18946872578a5e256a896a22e17a9b63274cc84b54e315",
+    "receipts": [
+      "20161111000076",
+      "20170515004444",
+      "20171114002645"
+    ],
+    "amounts": 12,
+    "mismatches": []
+  }
+}

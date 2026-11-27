@@ -1,0 +1,78 @@
+{
+  "current": {
+    "commit": "d3408edc339c6f48940078d81aa2dd9bf6a9c6a4",
+    "research": {
+      "root": {
+        "run": 108,
+        "passed": 108
+      },
+      "82b": {
+        "run": 9,
+        "passed": 9
+      },
+      "9": {
+        "run": 38,
+        "passed": 38
+      }
+    },
+    "general": {
+      "run": 74,
+      "passed": 68,
+      "failed": 6,
+      "failure_ids": [
+        "tests/test_sector_breadth.py::TestApplyTickerOverrides::test_zero_padding",
+        "tests/test_sector_breadth.py::TestCapWeights::test_extreme_case_cap_exceeds_full",
+        "tests/test_sector_breadth.py::TestClassifyGrade::test_inf",
+        "tests/test_sector_breadth.py::TestLoadOverrides::test_reads_ticker_overrides",
+        "tests/test_sector_breadth.py::TestOverridesIntegration::test_overrides_propagate_to_scores",
+        "tests/test_sector_mapping.py::test_load_ticker_to_sector_has_164"
+      ]
+    },
+    "research_total": 155,
+    "working_tree_changes_tested": {
+      "audit_ledger.py": "a0465bddbc7e472b3b49a06d22a2e91ea61beae6465a53e0082b2d7d9f74188a",
+      "test_audit_ledger.py": "edef828c915848b9a0baff48bb6988a4d65c0fc2678ac13bef268fa486b4d753"
+    },
+    "source_scope": "Checkout at the listed commit plus the recorded audit implementation and synthetic regression fixture in the 2026-11-27 working tree."
+  },
+  "baseline": {
+    "commit": "1ab461e6d4c4d3d89faff1f3472e7840f4b0507a",
+    "research": {
+      "root": {
+        "run": 93,
+        "passed": 93
+      },
+      "82b": {
+        "run": 9,
+        "passed": 9
+      }
+    },
+    "general": {
+      "run": 74,
+      "passed": 68,
+      "failed": 6,
+      "failure_ids": [
+        "tests/test_sector_breadth.py::TestApplyTickerOverrides::test_zero_padding",
+        "tests/test_sector_breadth.py::TestCapWeights::test_extreme_case_cap_exceeds_full",
+        "tests/test_sector_breadth.py::TestClassifyGrade::test_inf",
+        "tests/test_sector_breadth.py::TestLoadOverrides::test_reads_ticker_overrides",
+        "tests/test_sector_breadth.py::TestOverridesIntegration::test_overrides_propagate_to_scores",
+        "tests/test_sector_mapping.py::test_load_ticker_to_sector_has_164"
+      ]
+    },
+    "research_total": 102
+  },
+  "general_failure_ids_identical": true,
+  "general_new_failures": [],
+  "commands": {
+    "research": "For each listed suite run python -m unittest discover -v -s research/v2_pit[/stage82b or /stage9_panel] from repository root with research/v2_pit, stage82b and stage9_panel on PYTHONPATH.",
+    "general": "python -m pytest -q tests"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "pytest": "9.2.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "lxml": "6.1.1"
+  }
+}

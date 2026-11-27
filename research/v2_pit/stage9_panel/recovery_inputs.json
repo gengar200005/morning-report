@@ -1,0 +1,155 @@
+{
+  "market": {
+    "sample_sha256": "84e5723e32f798a3fa7266c4dba6fa3fb076a014b4b01700077d4540ca369390",
+    "context_sha256": "6794bc104e34dad94e2c1527e97e3317be1861e82ebbe97b85891a7bd32e8ea1",
+    "months": 60,
+    "krx_months": 60,
+    "wics_files": 600,
+    "universe_firm_months": 46106,
+    "sample_rows": 14400,
+    "eligible_by_year": {
+      "2017": {
+        "nonfinancial": 2551,
+        "financial": 285,
+        "unknown": 44
+      },
+      "2018": {
+        "nonfinancial": 2594,
+        "financial": 273,
+        "unknown": 13
+      },
+      "2019": {
+        "nonfinancial": 2594,
+        "unknown": 24,
+        "financial": 262
+      },
+      "2020": {
+        "nonfinancial": 2577,
+        "unknown": 49,
+        "financial": 254
+      },
+      "2021": {
+        "nonfinancial": 2596,
+        "unknown": 35,
+        "financial": 249
+      }
+    },
+    "eligible_by_formation_quarter": {
+      "2017Q1": {
+        "nonfinancial": 639,
+        "financial": 72,
+        "unknown": 9
+      },
+      "2017Q2": {
+        "nonfinancial": 634,
+        "financial": 73,
+        "unknown": 13
+      },
+      "2017Q3": {
+        "nonfinancial": 637,
+        "financial": 71,
+        "unknown": 12
+      },
+      "2017Q4": {
+        "nonfinancial": 641,
+        "financial": 69,
+        "unknown": 10
+      },
+      "2018Q1": {
+        "nonfinancial": 642,
+        "financial": 69,
+        "unknown": 9
+      },
+      "2018Q2": {
+        "nonfinancial": 651,
+        "financial": 69
+      },
+      "2018Q3": {
+        "nonfinancial": 650,
+        "financial": 69,
+        "unknown": 1
+      },
+      "2018Q4": {
+        "nonfinancial": 651,
+        "unknown": 3,
+        "financial": 66
+      },
+      "2019Q1": {
+        "nonfinancial": 653,
+        "unknown": 3,
+        "financial": 64
+      },
+      "2019Q2": {
+        "nonfinancial": 651,
+        "financial": 66,
+        "unknown": 3
+      },
+      "2019Q3": {
+        "nonfinancial": 647,
+        "financial": 66,
+        "unknown": 7
+      },
+      "2019Q4": {
+        "nonfinancial": 643,
+        "financial": 66,
+        "unknown": 11
+      },
+      "2020Q1": {
+        "nonfinancial": 643,
+        "unknown": 12,
+        "financial": 65
+      },
+      "2020Q2": {
+        "nonfinancial": 642,
+        "unknown": 15,
+        "financial": 63
+      },
+      "2020Q3": {
+        "nonfinancial": 645,
+        "unknown": 12,
+        "financial": 63
+      },
+      "2020Q4": {
+        "nonfinancial": 647,
+        "unknown": 10,
+        "financial": 63
+      },
+      "2021Q1": {
+        "nonfinancial": 647,
+        "unknown": 9,
+        "financial": 64
+      },
+      "2021Q2": {
+        "nonfinancial": 650,
+        "financial": 63,
+        "unknown": 7
+      },
+      "2021Q3": {
+        "nonfinancial": 648,
+        "financial": 62,
+        "unknown": 10
+      },
+      "2021Q4": {
+        "nonfinancial": 651,
+        "financial": 60,
+        "unknown": 9
+      }
+    },
+    "archive_sha256": "936473ccfaccce1ca6b270a34a2441766b21226eb16fdc15a4863d3e87fbfca5"
+  },
+  "raw": {
+    "receipts": 1682,
+    "files": 1950,
+    "formats": {
+      "xbrl": 1643,
+      "dart_html": 162,
+      "dart_notes": 6,
+      "kind_html": 137,
+      "dart_overview": 2
+    },
+    "first_receipt": "20151102000095",
+    "last_receipt": "20180406002292",
+    "manifest_sha256": "ae4c735f8c2ead5204f3dce8af586d2777c724f9eaab99a01b349c4745de5038",
+    "archive_sha256": "eb39a1df1278a7e0c86968f15570984ef1ea06bc672d849e1a2ce2e4a951e5a8"
+  }
+}

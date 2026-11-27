@@ -23,6 +23,30 @@ def day(s):
     return s.replace('-','')[:8]
 
 
+def latest_body_candidates(history, formation):
+    """Keep uncertain attachments as possible revisions until the contemporaneous link is proven."""
+    visible=[v for v in history if v['period']<=formation and v['published']<formation]
+    if not visible:
+        return []
+    period=max(v['period'] for v in visible)
+    quarter=[v for v in visible if v['period']==period]
+    originals=[v for v in quarter if v['version']=='original']
+    def verified_annex(v):
+        if (v.get('amendment_scope')!='nonfinancial_attachment_only' or v['version']!='amendment'
+                or v.get('attachment_name') not in ('정관','내부회계관리제도운영보고서')
+                or v.get('identity_status')!='PASS' or len(originals)!=1
+                or not re.fullmatch('[a-f0-9]{64}',v.get('source_fss_viewer_sha256',''))):
+            return False
+        orig=originals[0]
+        return (orig.get('identity_status')=='PASS' and bool(orig['receipt'])
+                and orig['receipt']==v.get('original_receipt') and orig['receipt'] in v.get('main_receipts_at_event','').split('|')
+                and bool(orig.get('corp_code')) and orig['corp_code']==v.get('corp_code')
+                and orig['report_type']==v['report_type'] and orig['published']<=v['published'])
+    candidates=[v for v in quarter if not verified_annex(v)]
+    latest=max(v['published'] for v in candidates)
+    return [v for v in candidates if v['published']==latest]
+
+
 def audit(panel, ledger, versions, db, output):
     if sha256(panel.read_bytes()).hexdigest()!=ROSTER:
         raise ValueError('frozen roster hash changed')
@@ -39,8 +63,8 @@ def audit(panel, ledger, versions, db, output):
             continue
         rd=v['receipt'][:8] if re.fullmatch(r'\d{14}',v['receipt']) else ''
         pub=max(day(v['filing_date']),day(v.get('kind_timestamp','')[:10]),rd)
-        ver=(day(v['period_end']),pub,v.get('ordering_timestamp',v.get('kind_timestamp','')),v['receipt'],
-             v.get('kind_timestamp',''),v.get('dart_timestamp',''))
+        ver=dict(v, period=day(v['period_end']), published=pub,
+                 order=v.get('ordering_timestamp',v.get('kind_timestamp','')))
         index[v['isin']].append(ver)
         if v['receipt']:
             by_receipt[v['isin'],v['receipt']]=ver
@@ -67,27 +91,25 @@ def audit(panel, ledger, versions, db, output):
         check(ver is not None,'unknown_receipt')
         if not ver:
             continue
-        period,pub=ver[:2]
+        period,pub=ver['period'],ver['published']
         check(period==day(r['period_end']) and pub==day(r['filing_date']),'metadata_inconsistent')
         n=bisect_right(sessions,pub)
         check(n<len(sessions) and sessions[n]<=day(r['available_session'])<=t,'availability_or_next_session')
-        eligible=[v for v in index[isin] if v[0]<=t and v[1]<t]
-        latest=max((v[:2] for v in eligible),default=())
-        check(ver[:2]==latest,'newer_period_or_version')
-        same=[v for v in eligible if v[:2]==latest]
+        same=latest_body_candidates(index[isin],t)
+        check(ver in same,'newer_period_or_version')
         if len(same)>1:
-            ordering=[v[2] for v in same]
+            ordering=[v['order'] for v in same]
             check(all(s and day(s[:10])==pub for s in ordering)
-                  and ordering.count(max(ordering))==1 and ver[2]==max(ordering),'unresolved_version_clock')
-            for ix in (4,5):
-                stamps=[v[ix] for v in same]
+                  and ordering.count(max(ordering))==1 and ver['order']==max(ordering),'unresolved_version_clock')
+            for clock in ('kind_timestamp','dart_timestamp'):
+                stamps=[v.get(clock,'') for v in same]
                 if all(s and day(s[:10])==pub for s in stamps):
-                    check(ver[ix]==max(stamps),'opposed_registry_clock')
+                    check(ver.get(clock,'')==max(stamps),'opposed_registry_clock')
         check(0<=(date.fromisoformat(t)-date.fromisoformat(period)).days<=180,'stale_period')
         for detail in json.loads(r['components'] or '{}').values():
             for ref in detail.get('receipts',[]):
                 obj=by_receipt.get((isin,ref))
-                check(bool(obj and obj[1]<t),'future_or_unidentified_q4_component')
+                check(bool(obj and obj['published']<t),'future_or_unidentified_q4_component')
             if detail.get('basis_available_session'):
                 check(day(detail['basis_available_session'])<=t,'future_basis_confirmation')
         cur,prior=(Decimal(r[k]) for k in ('revenue_current','revenue_prior'))

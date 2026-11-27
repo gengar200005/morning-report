@@ -1,5 +1,21 @@
 # 월 240종목 제한 연구의 자료 복원
 
+## 2026-11-27 보존분 검산
+
+실제 보존이 확인된 입력은 60개월 시장자료 ZIP과 Raw_01 공시 ZIP이다. 11월 27일 증빙 ZIP에 부분 검산 원장, 전체 SHA-256 목록, 테스트 및 추가 소규모 검수 자료를 담았다. 아래 명령에서 `MARKET`, `RAW`, `OUT`에는 각각 기존 ZIP 두 개와 결과 디렉터리를 지정한다.
+
+```sh
+s=research/v2_pit/stage9_panel
+mkdir -p "$OUT"
+python "$s/recovery_archive.py" "$MARKET" "$RAW" "$OUT/retained_manifest.csv" "$OUT/recovery_inputs.json"
+PYTHONPATH=research/v2_pit python "$s/recovery_raw_facts.py" "$RAW" "$OUT/raw_facts_by_document.csv" "$OUT/recovery_raw_facts.json"
+python "$s/recovery_displays.py" "$RAW" research/v2_pit "$OUT"
+```
+
+## 전체 원장이 있는 경우의 재생 절차
+
+다음 절차에는 전체 정정 색인과 원문 매니페스트, SQLite 등이 추가로 필요하다. 이번 보존분에는 이 입력 전부가 없어 전체 원장 재생을 완료하지 못했다. 11월 27일 증빙 ZIP과 아래에서 가정한 전체 증빙 색인은 범위가 다르다.
+
 소스는 이 연구 브랜치와 기준 커밋 `1ab461e6d4c4d3d89faff1f3472e7840f4b0507a`에 있다. 시장 입력 묶음과 공시 증빙 색인, 원문 분할 ZIP은 비공개 증빙을 사용한다. 가격 분석을 실행하기 전에도 아래 순서로 공시 검증을 재현할 수 있다.
 
 1. 연구 저장소 옆에 `work_inputs/stage9`를 만든다. 공시 증빙 색인을 그 폴더에 풀고, 동봉한 `raw_parts.json`으로 각 원문 분할 파일의 SHA-256을 확인한다. 분할 파일들을 한 디렉터리에 모아 `python restore_raw.py 분할파일디렉터리 raw/receipts.sqlite`를 실행한다. 원문 파일명·URL·법인·문서번호는 `raw_manifest.csv`에 있다.
